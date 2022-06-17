@@ -9,7 +9,16 @@ namespace Drawer.Application.Authentication
 {
     public static class AuthenticationCommands
     {
-        public static RegisterCommand RegisterCommand(string email, string password, string displayName)
+        public static RegisterCommand Register(string email, string password, string displayName)
             => new(email, password, displayName);
+
+        public static ConfirmEmailCommand ConfirmEmail(string email, string returnUri)
+            => new(email, returnUri);
+
+        public static VerifyEmailCommand VerifyEmail(string email, string token)
+            => new(email, token);
+
+        public static LoginCommand Login(string email, string password)
+            => new(email, password);
     }
 }

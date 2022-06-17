@@ -1,3 +1,4 @@
+using Drawer.Domain.Models.Authentication;
 using Drawer.Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -15,7 +16,7 @@ namespace Drawer.IntergrationTest
     /// <summary>
     /// Api 서버 인스턴스
     /// </summary>
-    public class ApiInstance 
+    public class ApiInstance
     {
         public HttpClient Client { get; set; }
 
@@ -29,7 +30,7 @@ namespace Drawer.IntergrationTest
                     {
                         services.RemoveAll(typeof(DbContextOptions<DrawerIdentityDbContext>));
 
-                        var jsonString = File.ReadAllText("Secrets/draw_identity_db_secret.json");
+                        var jsonString = File.ReadAllText("Secrets/drawer_identity_db_secret.json");
                         var jObj = JObject.Parse(jsonString);
                         var connectionString = jObj["DrawerIdentityDb"]["ConnectionString"].ToString();
 
@@ -39,14 +40,14 @@ namespace Drawer.IntergrationTest
                         });
 
                         var scope = services.BuildServiceProvider().CreateScope();
-                        var dbContext = scope.ServiceProvider.GetService<DrawerIdentityDbContext>();
-                        dbContext?.Database.Migrate();
-
+                        SeedData.Initialize(scope);
                     });
                 });
 
             Client = factory.CreateClient();
             Client.BaseAddress = new Uri(Client.BaseAddress!.AbsoluteUri + "api/");
+
+
         }
     }
 }

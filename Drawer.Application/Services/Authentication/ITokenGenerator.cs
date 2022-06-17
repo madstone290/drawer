@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Drawer.Application.Services.Authentication
 {
-    public interface ITokenService
+    public interface ITokenGenerator
     {
         string GenenateAccessToken(User user);
 

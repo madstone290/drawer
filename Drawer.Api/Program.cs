@@ -4,7 +4,8 @@ using Drawer.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddJsonFile("Secrets/draw_identity_db_secret.json");
+builder.Configuration.AddJsonFile("Secrets/drawer_identity_db_secret.json");
+builder.Configuration.AddJsonFile("Secrets/email_secret.json");
 
 builder.Services.AddApplicationDependency();
 builder.Services.AddInfrastructureDependency(builder.Configuration);

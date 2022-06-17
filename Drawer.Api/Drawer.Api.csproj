@@ -22,7 +22,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Secrets\draw_identity_db_secret.json">
+    <Content Update="Secrets\email_secret.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Secrets\drawer_identity_db_secret.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

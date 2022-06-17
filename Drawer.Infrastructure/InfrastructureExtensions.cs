@@ -1,9 +1,14 @@
-﻿using Drawer.Domain.Models.Authentication;
+﻿using Drawer.Application.Services.Authentication;
+using Drawer.Domain.Models.Authentication;
+using Drawer.Infrastructure.Authentication;
 using Drawer.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NETCore.MailKit.Core;
+using NETCore.MailKit.Extensions;
+using NETCore.MailKit.Infrastructure.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,10 +34,23 @@ namespace Drawer.Infrastructure
                 options.Password.RequireDigit = false;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
+
                 options.User.RequireUniqueEmail = true;
+
+                options.SignIn.RequireConfirmedEmail = true;
             })
                 .AddEntityFrameworkStores<DrawerIdentityDbContext>()
                 .AddDefaultTokenProviders();
+
+            var mailKitOptions = configuration.GetSection("Email").Get<MailKitOptions>();
+            if (mailKitOptions == null)
+                throw new Exception("이메일 설정이 없습니다");
+
+            services.AddSingleton(mailKitOptions);
+            services.AddScoped<IEmailSender, EmailSender>();
+
+            services.AddScoped<ITokenGenerator, TokenGenerator>();
         }
     }
 }
+
