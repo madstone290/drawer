@@ -1,11 +1,23 @@
+using Drawer.Api.ActionFilters;
+using Drawer.Application;
+using Drawer.Infrastructure;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Configuration.AddJsonFile("Secrets/draw_identity_db_secret.json");
+
+builder.Services.AddApplicationDependency();
+builder.Services.AddInfrastructureDependency(builder.Configuration);
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
+builder.Services.AddScoped<DefaultExceptionFilter>();
+
+
 
 var app = builder.Build();
 
