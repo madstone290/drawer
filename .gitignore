@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# 보안 파일. 모든 보안 파일은 아래형식중 하나를 지켜야 한다.
+*[Ss]ecrets/
+
 # User-specific files
 *.rsuser
 *.suo
