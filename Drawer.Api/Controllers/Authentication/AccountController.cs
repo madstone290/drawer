@@ -3,6 +3,7 @@ using Drawer.Application.Authentication;
 using Drawer.Application.Services.Authentication.Commands;
 using Drawer.Contract.Authentication;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Drawer.Api.Controllers.Authentication
@@ -57,6 +58,29 @@ namespace Drawer.Api.Controllers.Authentication
             var result = await _mediator.Send(command);
             return Ok(result);
         }
+
+        [HttpPost]
+        [Route("Refresh")]
+        [ProducesResponseType(typeof(RefreshResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> RefreshAsync([FromBody] RefreshModel model)
+        {
+            var command = AuthenticationCommands.Refresh(model.Email, model.RefreshToken);
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// API 권한 테스트 용도로만 사용한다
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("SecurityTest")]
+        [Authorize]
+        public IActionResult SecurityTest()
+        {
+            return Ok("You are authorized");
+        }
+
 
     }
 }

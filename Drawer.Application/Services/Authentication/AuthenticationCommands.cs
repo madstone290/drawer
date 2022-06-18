@@ -20,5 +20,8 @@ namespace Drawer.Application.Authentication
 
         public static LoginCommand Login(string email, string password)
             => new(email, password);
+
+        public static RefreshCommand Refresh(string email, string refreshToken)
+            => new(email, refreshToken);
     }
 }

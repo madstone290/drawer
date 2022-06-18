@@ -16,6 +16,8 @@ namespace Drawer.Infrastructure.Data
         /// </summary>
         private const string TABLE_PREFIX = "__Identity__";
 
+        public DbSet<RefreshToken> RefreshTokens { get; set; } = default!;
+
         public DrawerIdentityDbContext(DbContextOptions options) : base(options)
         {
         }

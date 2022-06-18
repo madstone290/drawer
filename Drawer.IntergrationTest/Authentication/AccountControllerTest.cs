@@ -9,16 +9,19 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Drawer.IntergrationTest.Authentication
 {
     public class AccountControllerTest : IClassFixture<ApiInstance>
     {
         private readonly HttpClient _client;
+        private readonly ITestOutputHelper _outputHelper;
 
-        public AccountControllerTest(ApiInstance apiInstance)
+        public AccountControllerTest(ApiInstance apiInstance, ITestOutputHelper outputHelper)
         {
             _client = apiInstance.Client;
+            _outputHelper = outputHelper;
         }
 
         [Theory]
@@ -101,7 +104,86 @@ namespace Drawer.IntergrationTest.Authentication
             loginResult.Should().NotBeNull();
             loginResult!.AccessToken.Should().NotBeNullOrWhiteSpace();
             loginResult!.RefreshToken.Should().NotBeNullOrWhiteSpace();
+
+            _outputHelper.WriteLine($"AT: {loginResult.AccessToken}");
+            _outputHelper.WriteLine($"RT: {loginResult.RefreshToken}");
         }
+
+        [Theory]
+        [InlineData("master@master.com", "master")]
+        public async Task Refresh_Returns_Ok_With_ValidAccessToken(string email, string password)
+        {
+            // Arrange
+            var loginModel = new LoginModel(email, password);
+            var loginResponse = await _client.PostAsJsonAsync("account/login", loginModel);
+            var loginResult = await loginResponse.Content.ReadFromJsonAsync<LoginResult>();
+            var refreshModel = new RefreshModel(email, loginResult!.RefreshToken);
+
+            // Act
+            var refreshResponse = await _client.PostAsJsonAsync("account/refresh", refreshModel);
+
+            // Assert
+            refreshResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+            var refreshResult = await refreshResponse.Content.ReadFromJsonAsync<RefreshResult>();
+            refreshResult.Should().NotBeNull();
+            refreshResult!.AccessToken.Should().NotBeNullOrWhiteSpace();
+
+            _outputHelper.WriteLine($"AT: {loginResult.AccessToken}");
+        }
+
+        [Theory]
+        [InlineData("master@master.com", "master")]
+        public async Task Refresh_With_InvalidRefreshToken_Returns_Badrequest(string email, string password)
+        {
+            // Arrange
+            var loginModel = new LoginModel(email, password);
+            var loginResponse = await _client.PostAsJsonAsync("account/login", loginModel);
+            var loginResult = await loginResponse.Content.ReadFromJsonAsync<LoginResult>();
+            var refreshModel = new RefreshModel(email, loginResult!.RefreshToken + "fail");
+
+            // Act
+            var refreshResponse = await _client.PostAsJsonAsync("account/refresh", refreshModel);
+
+            // Assert
+            refreshResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
+        }
+
+        [Fact]
+        public async Task SecurityTest_With_InvalidAccessToken_Returns_Unauthorized()
+        {
+            // Arrange
+            var accessToken = Guid.NewGuid().ToString();
+            var request = new HttpRequestMessage(HttpMethod.Post, "account/SecurityTest");
+            request.SetBearerToken(accessToken);
+            
+            // Act
+            var response = await _client.SendAsync(request);
+
+            // Assert
+            response.StatusCode.Should().Be(System.Net.HttpStatusCode.Unauthorized);
+        }
+
+
+        [Theory]
+        [InlineData("master@master.com", "master")]
+        public async Task SecurityTest_With_ValidAccessToken_Returns_Unauthorized(string email, string password)
+        {
+            // Arrange
+            var loginModel = new LoginModel(email, password);
+            var loginResponse = await _client.PostAsJsonAsync("account/login", loginModel);
+            var loginResult = await loginResponse.Content.ReadFromJsonAsync<LoginResult>();
+
+            var request = new HttpRequestMessage(HttpMethod.Post, "account/SecurityTest");
+            request.SetBearerToken(loginResult!.AccessToken);
+
+            // Act
+            var response = await _client.SendAsync(request);
+
+            // Assert
+            response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+        }
+
+
 
 
     }

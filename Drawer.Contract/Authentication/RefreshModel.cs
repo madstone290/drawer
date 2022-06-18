@@ -4,12 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drawer.Domain.Models
+namespace Drawer.Contract.Authentication
 {
-    public class Entity
-    {
-        public long Id { get; set; }
-
-       
-    }
+    public record RefreshModel(string Email, string RefreshToken);
 }

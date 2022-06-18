@@ -1,6 +1,8 @@
 ﻿using Drawer.Application.Services.Authentication;
+using Drawer.Application.Services.Authentication.Repos;
 using Drawer.Domain.Models.Authentication;
 using Drawer.Infrastructure.Authentication;
+using Drawer.Infrastructure.Authentication.Repos;
 using Drawer.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -42,13 +44,19 @@ namespace Drawer.Infrastructure
                 .AddEntityFrameworkStores<DrawerIdentityDbContext>()
                 .AddDefaultTokenProviders();
 
+            // 리파지토리 추가
+            services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+
             var mailKitOptions = configuration.GetSection("Email").Get<MailKitOptions>();
             if (mailKitOptions == null)
                 throw new Exception("이메일 설정이 없습니다");
-
             services.AddSingleton(mailKitOptions);
             services.AddScoped<IEmailSender, EmailSender>();
 
+            var jwtSettings = configuration.GetSection("JwtSettings").Get<JwtSettings>();
+            if (jwtSettings == null)
+                throw new Exception("JWT 설정이 없습니다"); 
+            services.AddSingleton(jwtSettings);
             services.AddScoped<ITokenGenerator, TokenGenerator>();
         }
     }

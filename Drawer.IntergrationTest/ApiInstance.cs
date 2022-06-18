@@ -10,6 +10,8 @@ using System;
 using System.IO;
 using System.Net.Http;
 using Xunit;
+using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace Drawer.IntergrationTest
 {
@@ -18,7 +20,7 @@ namespace Drawer.IntergrationTest
     /// </summary>
     public class ApiInstance
     {
-        public HttpClient Client { get; set; }
+        public HttpClient Client { get; }
 
         public ApiInstance()
         {

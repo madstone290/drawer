@@ -17,5 +17,7 @@ namespace Drawer.Application
         public const string ConfirmEmailSubject = "회원가입 이메일 확인";
 
         public const string InvalidLoginInfo = "로그인정보가 유효하지 않습니다";
+
+        public const string InvalidRefreshToken = "리프레시 토큰이 유효하지 않습니다";
     }
 }

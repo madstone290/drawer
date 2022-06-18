@@ -9,15 +9,24 @@ namespace Drawer.Domain.Models.Authentication
 {
     public class User : IdentityUser
     {
-        public string DisplayName { get; set; } = default!;
-
-        public string? RefreshToken { get; set; }
+        public string DisplayName { get; private set; }
 
         public User(string email, string displayName)
         {
-            Email = email;
-            UserName = email;
-            DisplayName = displayName;
+            Email = email.Trim();
+            UserName = email.Trim();
+            DisplayName = displayName.Trim();
         }
+
+        /// <summary>
+        /// 이름을 변경한다.
+        /// </summary>
+        /// <param name="displayName"></param>
+        public void SetDisplayName(string displayName)
+        {
+            DisplayName = displayName.Trim();
+        }
+
+
     }
 }

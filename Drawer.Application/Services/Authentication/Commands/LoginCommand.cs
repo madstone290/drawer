@@ -1,4 +1,5 @@
 ﻿using Drawer.Application.Config;
+using Drawer.Application.Services.Authentication.Repos;
 using Drawer.Domain.Models.Authentication;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -13,11 +14,17 @@ namespace Drawer.Application.Services.Authentication.Commands
     {
         public string Email { get; }
         public string Password { get; }
+        public TimeSpan RefreshTokenLifetime { get; } = TimeSpan.FromDays(7);
 
         public LoginCommand(string email, string password)
         {
             Email = email;
             Password = password;
+        }
+
+        public LoginCommand(string email, string password, TimeSpan refreshTokenLifetime) : this(email, password)
+        {
+            RefreshTokenLifetime = refreshTokenLifetime;
         }
     }
 
@@ -37,11 +44,15 @@ namespace Drawer.Application.Services.Authentication.Commands
     {
         private readonly UserManager<User> _userManager;
         private readonly ITokenGenerator _tokenGenerator;
+        private readonly IRefreshTokenRepository _refreshTokenRepository;
 
-        public LoginCommandHandler(UserManager<User> userManager, ITokenGenerator tokenGenerator)
+        public LoginCommandHandler(UserManager<User> userManager,
+            ITokenGenerator tokenGenerator,
+            IRefreshTokenRepository refreshTokenRepository)
         {
             _userManager = userManager;
             _tokenGenerator = tokenGenerator;
+            _refreshTokenRepository = refreshTokenRepository;
         }
 
         public async Task<LoginResult> Handle(LoginCommand command, CancellationToken cancellationToken)
@@ -50,16 +61,22 @@ namespace Drawer.Application.Services.Authentication.Commands
             if (user == null)
                 throw new AppException(Messages.InvalidLoginInfo);
 
-            if(!user.EmailConfirmed)
+            if (!user.EmailConfirmed)
                 throw new AppException(Messages.InvalidLoginInfo);
 
             var passwordMatch = await _userManager.CheckPasswordAsync(user, command.Password);
             if (!passwordMatch)
                 throw new AppException(Messages.InvalidLoginInfo);
 
-            return new LoginResult(
-                _tokenGenerator.GenenateAccessToken(user),
-                _tokenGenerator.GenerateRefreshToken(user));
+            var claims = await _userManager.GetClaimsAsync(user);
+
+            var accessToken = _tokenGenerator.GenenateAccessToken(claims);
+            var refreshToken = _tokenGenerator.GenerateRefreshToken();
+
+            var refreshTokenEntity = new RefreshToken(user.Id, refreshToken, command.RefreshTokenLifetime);
+            await _refreshTokenRepository.AddAsync(refreshTokenEntity);
+
+            return new LoginResult(accessToken, refreshToken);
         }
     }
 }
