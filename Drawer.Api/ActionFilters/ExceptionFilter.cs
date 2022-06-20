@@ -1,4 +1,5 @@
 ﻿using Drawer.Application.Config;
+using Drawer.Contract.Common;
 using Drawer.Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -20,11 +21,7 @@ namespace Drawer.Api.ActionFilters
                 context.Exception is AppException)
             {
                 _logger.LogInformation(context.Exception, "BadRequest");
-                
-                var error = new
-                {
-                    Error = context.Exception.Message,
-                };
+                var error = new ErrorResponse(context.Exception.Message);
                 context.Result = new BadRequestObjectResult(error);
             }
             else
