@@ -54,12 +54,17 @@ namespace Drawer.Application.Services.Authentication.Commands
         public async Task<RegisterResult> Handle(RegisterCommand command, CancellationToken cancellationToken)
         {
             User user = await _userManager.FindByEmailAsync(command.Email);
-            if (user != null)
+            if (user != null && user.EmailConfirmed)
                 throw new AppException(Messages.EmailRegistered);
+
+            // 이메일인증이 되지 않은 경우 재가입
+            // TODO 임시 비밀번호를 저장하여 인증이 완료될떄 비밀번호 추가할 것
+            if (user != null && !user.EmailConfirmed)
+                await _userManager.DeleteAsync(user);
 
             user = new User(command.Email, command.DisplayName);
             var createResult = await _userManager.CreateAsync(user, command.Password);
-            if (!createResult.Succeeded) 
+            if (!createResult.Succeeded)
             {
                 var errorMessage = string.Join(", ", createResult.Errors.Select(x => x.Description));
                 throw new AppException(errorMessage);
