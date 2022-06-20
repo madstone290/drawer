@@ -61,12 +61,12 @@ namespace Drawer.Application.Services.Authentication.Commands
             if (user == null)
                 throw new AppException(Messages.InvalidLoginInfo);
 
-            if (!user.EmailConfirmed)
-                throw new AppException(Messages.InvalidLoginInfo);
-
             var passwordMatch = await _userManager.CheckPasswordAsync(user, command.Password);
             if (!passwordMatch)
                 throw new AppException(Messages.InvalidLoginInfo);
+
+            if (!user.EmailConfirmed)
+                throw new AppException(Messages.EmailNotConfirmed);
 
             var claims = await _userManager.GetClaimsAsync(user);
 
