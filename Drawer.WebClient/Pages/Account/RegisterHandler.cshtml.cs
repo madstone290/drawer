@@ -1,5 +1,6 @@
 using Drawer.Contract.Authentication;
 using Drawer.Contract.Common;
+using Drawer.WebClient.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -34,9 +35,7 @@ namespace Drawer.WebClient.Pages.Account
 				return Redirect(returnUri + $"?error={Uri.EscapeDataString(error!.Message)}");
 			}
 
-
-            var request = HttpContext.Request;
-            var registerCompletedUri = request.Scheme + "://" + request.Host.Value + "/account/registerCompleted";
+            var registerCompletedUri = UriUtils.GetAbsoluteUri(HttpContext.Request, "/acount/registerCompleted)");
             var confirmResponseMessage = await _httpClient.PostAsJsonAsync("/api/account/confirmemail", 
                 new ConfirmEmailRequest(email, registerCompletedUri!));
 
