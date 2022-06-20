@@ -35,7 +35,7 @@ namespace Drawer.WebClient.Pages.Account
 				return Redirect(returnUri + $"?error={Uri.EscapeDataString(error!.Message)}");
 			}
 
-            var registerCompletedUri = UriUtils.GetAbsoluteUri(HttpContext.Request, "/acount/registerCompleted)");
+            var registerCompletedUri = HttpContext.Request.GetAbsoluteUri("/acount/registerCompleted)");
             var confirmResponseMessage = await _httpClient.PostAsJsonAsync("/api/account/confirmemail", 
                 new ConfirmEmailRequest(email, registerCompletedUri!));
 

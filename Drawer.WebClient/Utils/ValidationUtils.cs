@@ -1,21 +1,12 @@
 ﻿using FluentValidation;
 
-namespace Drawer.WebClient
+namespace Drawer.WebClient.Utils
 {
-    public static class Extensions
+    public static class ValidationUtils
     {
-        public static string AddQueryParam(this string uri, string name, string value)
-        {
-            bool hasQuery = uri.Contains('?');
-
-            if(hasQuery)
-                return uri + "&" + name + "=" + value;
-            else 
-                return uri + "?" + name + "=" + value;
-        }
-
         /// <summary>
         /// TModel의 입력값을 검사한다.
+        /// MudForm Validation에 사용한다.
         /// </summary>
         /// <typeparam name="TModel"></typeparam>
         /// <param name="validator"></param>
