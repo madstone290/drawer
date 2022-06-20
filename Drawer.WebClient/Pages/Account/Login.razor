@@ -1,0 +1,36 @@
+﻿@page "/account/login"
+
+<MudGrid>
+    <MudItem xs="12" sm="7">
+        <MudPaper Class="pa-4 mt-4">
+            <MudText Typo="Typo.h2" Color="Color.Primary" DisableElevation="true">로그인</MudText>
+        </MudPaper>
+        @if (!string.IsNullOrWhiteSpace(Error))
+        {
+        <MudPaper Class="pa-4 mt-4">
+            @Error
+        </MudPaper>
+        }
+
+        <MudPaper Class="pa-4">
+            <MudForm @ref="Form" Model="@Input" Validation="@Validator.ValidateValue()">
+                <MudTextField @bind-Value="@Input.Email"
+                              For="@(()=>Input.Email)"
+                              Label="이메일" />
+
+                <MudTextField @bind-Value="@Input.Password"
+                              For="@(()=>Input.Password)"
+                              Label="비밀번호" 
+                              InputType="InputType.Password" />
+
+                <MudCheckBox @bind-Checked="@Input.RememberEmail"
+                             For="@(()=>Input.RememberEmail)"
+                             Label="이메일 기억하기" />
+            </MudForm>
+        </MudPaper>
+        <MudPaper Class="pa-4 mt-4">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true" OnClick="@SubmitAsync">로그인</MudButton>
+        </MudPaper>
+    </MudItem>
+
+</MudGrid>
