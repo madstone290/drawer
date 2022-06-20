@@ -2,6 +2,8 @@
 {
     public static class Paths
     {
+        public const string Base = "/";
+
         public static class Account
         {
             public const string EmailSent = "/Account/EmailSent";

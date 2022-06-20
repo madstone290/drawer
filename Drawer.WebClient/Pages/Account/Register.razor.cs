@@ -60,11 +60,9 @@ namespace Drawer.WebClient.Pages.Account
             if (Form.IsValid)
             {
                 // 회원가입 진행
-                var redirectUri = "/account/emailsent";
-                var returnUri = "/account/register";
-                var navigationUri = "/account/registerhandler"
-                    .AddQueryParam("returnUri", returnUri)
-                    .AddQueryParam("redirectUri", redirectUri)
+                var navigationUri = Paths.Account.RegisterHandler
+                    .AddQueryParam("returnUri", Paths.Account.Register)
+                    .AddQueryParam("redirectUri", Paths.Account.EmailSent)
                     .AddQueryParam("displayName", Input.DisplayName!)
                     .AddQueryParam("email", Input.Email!)
                     .AddQueryParam("password", Input.Password1!);

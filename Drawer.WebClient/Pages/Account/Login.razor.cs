@@ -49,7 +49,7 @@ namespace Drawer.WebClient.Pages.Account
             var state = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             if (state.User.Identity?.IsAuthenticated == true)
             {
-                NavigationManager.NavigateTo("/");
+                NavigationManager.NavigateTo(Paths.Base);
             }
 
             // 로그인 옵션 불러오기
@@ -69,7 +69,7 @@ namespace Drawer.WebClient.Pages.Account
                 // 로그인 진행
                 var redirectUri = NavigationManager.BaseUri;
                 var returnUri = NavigationManager.Uri;
-                var navigationUri = "/account/loginhandler"
+                var navigationUri = Paths.Account.LoginHandler
                     .AddQueryParam("returnUri", returnUri)
                     .AddQueryParam("redirectUri", redirectUri)
                     .AddQueryParam("email", Input.Email!)
