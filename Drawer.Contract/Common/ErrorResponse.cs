@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace Drawer.Contract.Common
 {
-    public record ErrorResponse(string Error);
+    public record ErrorResponse(string Message);
 }
