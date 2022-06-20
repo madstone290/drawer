@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace Drawer.Contract.Authentication
 {
-    public record RefreshModel(string Email, string RefreshToken);
+    public record LoginRequest(string Email, string Password);
 }

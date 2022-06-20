@@ -1,5 +1,4 @@
-﻿using Drawer.Application.Services.Authentication.Commands;
-using Drawer.Contract.Authentication;
+﻿using Drawer.Contract.Authentication;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;
@@ -31,17 +30,17 @@ namespace Drawer.IntergrationTest.Authentication
         public async Task Register_Returns_Ok_With_RegisterInfo(string email, string password, string displayName)
         {
             // Arrange
-            var registerModel = new RegisterModel(email, password, displayName);
+            var registerRequest = new RegisterRequest(email, password, displayName);
             
             // Act
-            var response = await _client.PostAsJsonAsync("account/register", registerModel);
+            var responseMessage = await _client.PostAsJsonAsync("account/register", registerRequest);
 
             // Assert
-            response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var registerResult = await response.Content.ReadFromJsonAsync<RegisterResult>();
-            registerResult.Should().NotBeNull();
-            registerResult!.Email.Should().Be(registerModel.Email);
-            registerResult!.DisplayName.Should().Be(registerModel.DisplayName);
+            responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+            var registerResponse = await responseMessage.Content.ReadFromJsonAsync<RegisterResponse>();
+            registerResponse.Should().NotBeNull();
+            registerResponse!.Email.Should().Be(registerRequest.Email);
+            registerResponse!.DisplayName.Should().Be(registerRequest.DisplayName);
         }
 
         [Theory]
@@ -51,20 +50,20 @@ namespace Drawer.IntergrationTest.Authentication
         public async Task Register_With_DuplicateEmail_Returns_BadRequest(string email,string password, string displayName)
         {
             // Arrange
-            var registerModel = new RegisterModel(email, password, displayName);
+            var registerRequest = new RegisterRequest(email, password, displayName);
 
             // Act
-            var firstResponse = await _client.PostAsJsonAsync("account/register", registerModel);
-            var secondResponse = await _client.PostAsJsonAsync("account/register", registerModel);
-
+            var firstResponseMessage = await _client.PostAsJsonAsync("account/register", registerRequest);
+            var secondResponseMessage = await _client.PostAsJsonAsync("account/register", registerRequest);
+            
             // Assert
-            firstResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var registerResult = await firstResponse.Content.ReadFromJsonAsync<RegisterResult>();
-            registerResult.Should().NotBeNull();
-            registerResult!.Email.Should().Be(registerModel.Email);
-            registerResult!.DisplayName.Should().Be(registerModel.DisplayName);
+            firstResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+            var registerResponse = await firstResponseMessage.Content.ReadFromJsonAsync<RegisterResponse>();
+            registerResponse.Should().NotBeNull();
+            registerResponse!.Email.Should().Be(registerRequest.Email);
+            registerResponse!.DisplayName.Should().Be(registerRequest.DisplayName);
 
-            secondResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
+            secondResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
         }
 
         [Theory]
@@ -74,16 +73,16 @@ namespace Drawer.IntergrationTest.Authentication
         public async Task Login_With_UnconfirmedEmail_Returns_BadRequest(string email, string password, string displayName)
         {
             // Arrange
-            var registerModel = new RegisterModel(email, password, displayName);
-            var registerResult = await _client.PostAsJsonAsync("account/register", registerModel);
-            registerResult.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var loginModel = new LoginModel(email, password);
+            var registerRequest = new RegisterRequest(email, password, displayName);
+            var registerResponseMessage = await _client.PostAsJsonAsync("account/register", registerRequest);
+            registerResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+            var loginRequest = new LoginRequest(email, password);
 
             // Act
-            var response = await _client.PostAsJsonAsync("account/login", loginModel);
+            var loginResponseMessage = await _client.PostAsJsonAsync("account/login", loginRequest);
 
             // Assert
-            response.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
+            loginResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
         }
 
         
@@ -93,20 +92,20 @@ namespace Drawer.IntergrationTest.Authentication
         public async Task Login_With_ConfirmedEmail_Returns_Ok_With_Tokens(string email, string password)
         {
             // Arrange
-            var loginModel = new LoginModel(email, password);
+            var loginRequest = new LoginRequest(email, password);
 
             // Act
-            var response = await _client.PostAsJsonAsync("account/login", loginModel);
+            var loginResponseMessage = await _client.PostAsJsonAsync("account/login", loginRequest);
 
             // Assert
-            response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var loginResult = await response.Content.ReadFromJsonAsync<LoginResult>();
-            loginResult.Should().NotBeNull();
-            loginResult!.AccessToken.Should().NotBeNullOrWhiteSpace();
-            loginResult!.RefreshToken.Should().NotBeNullOrWhiteSpace();
+            loginResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+            var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
+            loginResponse.Should().NotBeNull();
+            loginResponse!.AccessToken.Should().NotBeNullOrWhiteSpace();
+            loginResponse!.RefreshToken.Should().NotBeNullOrWhiteSpace();
 
-            _outputHelper.WriteLine($"AT: {loginResult.AccessToken}");
-            _outputHelper.WriteLine($"RT: {loginResult.RefreshToken}");
+            _outputHelper.WriteLine($"AT: {loginResponse.AccessToken}");
+            _outputHelper.WriteLine($"RT: {loginResponse.RefreshToken}");
         }
 
         [Theory]
@@ -114,21 +113,21 @@ namespace Drawer.IntergrationTest.Authentication
         public async Task Refresh_Returns_Ok_With_ValidAccessToken(string email, string password)
         {
             // Arrange
-            var loginModel = new LoginModel(email, password);
-            var loginResponse = await _client.PostAsJsonAsync("account/login", loginModel);
-            var loginResult = await loginResponse.Content.ReadFromJsonAsync<LoginResult>();
-            var refreshModel = new RefreshModel(email, loginResult!.RefreshToken);
+            var loginRequest = new LoginRequest(email, password);
+            var loginResponseMessage = await _client.PostAsJsonAsync("account/login", loginRequest);
+            var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
+            var refreshRequest = new RefreshRequest(email, loginResponse!.RefreshToken);
 
             // Act
-            var refreshResponse = await _client.PostAsJsonAsync("account/refresh", refreshModel);
+            var refreshResponseMessage = await _client.PostAsJsonAsync("account/refresh", refreshRequest);
 
             // Assert
-            refreshResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var refreshResult = await refreshResponse.Content.ReadFromJsonAsync<RefreshResult>();
-            refreshResult.Should().NotBeNull();
-            refreshResult!.AccessToken.Should().NotBeNullOrWhiteSpace();
+            refreshResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+            var refreshResponse = await refreshResponseMessage.Content.ReadFromJsonAsync<RefreshResponse>();
+            refreshResponse.Should().NotBeNull();
+            refreshResponse!.AccessToken.Should().NotBeNullOrWhiteSpace();
 
-            _outputHelper.WriteLine($"AT: {loginResult.AccessToken}");
+            _outputHelper.WriteLine($"AT: {loginResponse.AccessToken}");
         }
 
         [Theory]
@@ -136,16 +135,16 @@ namespace Drawer.IntergrationTest.Authentication
         public async Task Refresh_With_InvalidRefreshToken_Returns_Badrequest(string email, string password)
         {
             // Arrange
-            var loginModel = new LoginModel(email, password);
-            var loginResponse = await _client.PostAsJsonAsync("account/login", loginModel);
-            var loginResult = await loginResponse.Content.ReadFromJsonAsync<LoginResult>();
-            var refreshModel = new RefreshModel(email, loginResult!.RefreshToken + "fail");
+            var loginRequest = new LoginRequest(email, password);
+            var loginResponseMessage = await _client.PostAsJsonAsync("account/login", loginRequest);
+            var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
+            var refreshRequest = new RefreshRequest(email, loginResponse!.RefreshToken + "fail");
 
             // Act
-            var refreshResponse = await _client.PostAsJsonAsync("account/refresh", refreshModel);
+            var refreshResponseMessage = await _client.PostAsJsonAsync("account/refresh", refreshRequest);
 
             // Assert
-            refreshResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
+            refreshResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
         }
 
         [Fact]
@@ -153,14 +152,14 @@ namespace Drawer.IntergrationTest.Authentication
         {
             // Arrange
             var accessToken = Guid.NewGuid().ToString();
-            var request = new HttpRequestMessage(HttpMethod.Post, "account/SecurityTest");
-            request.SetBearerToken(accessToken);
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, "account/SecurityTest");
+            requestMessage.SetBearerToken(accessToken);
             
             // Act
-            var response = await _client.SendAsync(request);
+            var responseMessage = await _client.SendAsync(requestMessage);
 
             // Assert
-            response.StatusCode.Should().Be(System.Net.HttpStatusCode.Unauthorized);
+            responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.Unauthorized);
         }
 
 
@@ -169,12 +168,12 @@ namespace Drawer.IntergrationTest.Authentication
         public async Task SecurityTest_With_ValidAccessToken_Returns_Unauthorized(string email, string password)
         {
             // Arrange
-            var loginModel = new LoginModel(email, password);
-            var loginResponse = await _client.PostAsJsonAsync("account/login", loginModel);
-            var loginResult = await loginResponse.Content.ReadFromJsonAsync<LoginResult>();
+            var loginRequest = new LoginRequest(email, password);
+            var loginResponseMessage = await _client.PostAsJsonAsync("account/login", loginRequest);
+            var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
 
             var request = new HttpRequestMessage(HttpMethod.Post, "account/SecurityTest");
-            request.SetBearerToken(loginResult!.AccessToken);
+            request.SetBearerToken(loginResponse!.AccessToken);
 
             // Act
             var response = await _client.SendAsync(request);

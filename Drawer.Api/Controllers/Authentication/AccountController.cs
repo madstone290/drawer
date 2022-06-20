@@ -21,20 +21,20 @@ namespace Drawer.Api.Controllers.Authentication
 
         [HttpPost]
         [Route("Register")]
-        [ProducesResponseType(typeof(RegisterResult), StatusCodes.Status200OK)]
-        public async Task<IActionResult> RegisterAsync([FromBody] RegisterModel model)
+        [ProducesResponseType(typeof(RegisterResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> RegisterAsync([FromBody] RegisterRequest request)
         {
-            var command = AuthenticationCommands.Register(model.Email, model.Password, model.DisplayName);
+            var command = AuthenticationCommands.Register(request.Email, request.Password, request.DisplayName);
             var result = await _mediator.Send(command);
-            return Ok(result);
+            return Ok(new RegisterResponse(result.Id, result.Email, result.DisplayName));
         }
 
         [HttpPost]
         [Route("ConfirmEmail")]
-        public async Task<IActionResult> ConfirmEmailAsync([FromBody] ConfirmEmailModel model)
+        public async Task<IActionResult> ConfirmEmailAsync([FromBody] ConfirmEmailRequest request)
         {
-            var returnUri = Url.RouteUrl(nameof(VerifyEmailAsync), new { model.RedirectUri }, HttpContext.Request.Scheme)!;
-            var command = AuthenticationCommands.ConfirmEmail(model.Email, returnUri);
+            var returnUri = Url.RouteUrl(nameof(VerifyEmailAsync), new { request.RedirectUri }, HttpContext.Request.Scheme)!;
+            var command = AuthenticationCommands.ConfirmEmail(request.Email, returnUri);
             var result = await _mediator.Send(command);
             return Ok();
         }
@@ -51,22 +51,22 @@ namespace Drawer.Api.Controllers.Authentication
 
         [HttpPost]
         [Route("Login")]
-        [ProducesResponseType(typeof(LoginResult), StatusCodes.Status200OK)]
-        public async Task<IActionResult> LoginAsync([FromBody] LoginModel model)
+        [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> LoginAsync([FromBody] LoginRequest request)
         {
-            var command = AuthenticationCommands.Login(model.Email, model.Password);
+            var command = AuthenticationCommands.Login(request.Email, request.Password);
             var result = await _mediator.Send(command);
-            return Ok(result);
+            return Ok(new LoginResponse(result.AccessToken, result.RefreshToken));
         }
 
         [HttpPost]
         [Route("Refresh")]
-        [ProducesResponseType(typeof(RefreshResult), StatusCodes.Status200OK)]
-        public async Task<IActionResult> RefreshAsync([FromBody] RefreshModel model)
+        [ProducesResponseType(typeof(RefreshResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> RefreshAsync([FromBody] RefreshRequest model)
         {
             var command = AuthenticationCommands.Refresh(model.Email, model.RefreshToken);
             var result = await _mediator.Send(command);
-            return Ok(result);
+            return Ok(new RefreshResponse(result.AccessToken));
         }
 
         /// <summary>
