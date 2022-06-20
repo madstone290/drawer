@@ -6,5 +6,8 @@ using System.Threading.Tasks;
 
 namespace Drawer.Contract.Common
 {
-    public record ErrorResponse(string Message, string? Code = null);
+    public class ErrorCodes
+    {
+        public const string NotConfirmedEmail = "NotConfirmedEmail";
+    }
 }

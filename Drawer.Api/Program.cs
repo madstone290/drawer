@@ -56,7 +56,7 @@ builder.Services.AddSwaggerGen();
 
 
 builder.Services.AddScoped<DefaultExceptionFilter>();
-
+builder.Services.AddSingleton<ExceptionCodeProvider>();
 
 
 var app = builder.Build();

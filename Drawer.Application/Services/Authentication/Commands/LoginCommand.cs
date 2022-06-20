@@ -1,4 +1,5 @@
 ﻿using Drawer.Application.Config;
+using Drawer.Application.Services.Authentication.Exceptions;
 using Drawer.Application.Services.Authentication.Repos;
 using Drawer.Domain.Models.Authentication;
 using Microsoft.AspNetCore.Identity;
@@ -59,14 +60,14 @@ namespace Drawer.Application.Services.Authentication.Commands
         {
             var user = await _userManager.FindByEmailAsync(command.Email);
             if (user == null)
-                throw new AppException(Messages.InvalidLoginInfo);
+                throw new InvalidLoginException();
 
             var passwordMatch = await _userManager.CheckPasswordAsync(user, command.Password);
             if (!passwordMatch)
-                throw new AppException(Messages.InvalidLoginInfo);
+                throw new InvalidLoginException();
 
             if (!user.EmailConfirmed)
-                throw new AppException(Messages.EmailNotConfirmed);
+                throw new NotConfirmedEmailException();
 
             var claims = await _userManager.GetClaimsAsync(user);
 

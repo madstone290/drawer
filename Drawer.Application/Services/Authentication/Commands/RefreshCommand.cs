@@ -1,4 +1,5 @@
 ﻿using Drawer.Application.Config;
+using Drawer.Application.Services.Authentication.Exceptions;
 using Drawer.Application.Services.Authentication.Repos;
 using Drawer.Domain.Models.Authentication;
 using Microsoft.AspNetCore.Identity;
@@ -41,14 +42,14 @@ namespace Drawer.Application.Services.Authentication.Commands
         {
             var user = await _userManager.FindByEmailAsync(command.Email);
             if (user == null)
-                throw new AppException(Messages.InvalidLoginInfo);
+                throw new InvalidLoginException();
             if (!user.EmailConfirmed)
-                throw new AppException(Messages.InvalidLoginInfo);
+                throw new InvalidLoginException();
 
             var refreshTokens = await _refreshTokenRepository.FindByUserIdAsync(user.Id);
             var refreshToken = refreshTokens.FirstOrDefault(x => x.Token == command.RefreshToken && x.IsActive);
             if (refreshToken == null)
-                throw new AppException(Messages.InvalidRefreshToken);
+                throw new InvalidRefreshTokenException();
 
             // 기간 만료된 토큰 삭제
             var expiredTokens = refreshTokens.Where(x => x.IsExpired).ToList();

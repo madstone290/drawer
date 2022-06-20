@@ -1,5 +1,6 @@
 ﻿using Drawer.Application.Config;
 using Drawer.Application.Helpers;
+using Drawer.Application.Services.Authentication.Exceptions;
 using Drawer.Domain.Models.Authentication;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -48,7 +49,7 @@ namespace Drawer.Application.Services.Authentication.Commands
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user is null)
-                throw new AppException(Messages.EmailNotRegistered);
+                throw new InvalidEmailException();
 
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             var linkUri = request.ReturnUri

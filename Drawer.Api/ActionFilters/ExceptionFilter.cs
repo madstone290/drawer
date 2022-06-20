@@ -9,10 +9,12 @@ namespace Drawer.Api.ActionFilters
     public class DefaultExceptionFilter : IExceptionFilter
     {
         private readonly ILogger<DefaultExceptionFilter> _logger;
+        private readonly ExceptionCodeProvider _codeProvider;
 
-        public DefaultExceptionFilter(ILogger<DefaultExceptionFilter> logger)
+        public DefaultExceptionFilter(ILogger<DefaultExceptionFilter> logger, ExceptionCodeProvider codeProvider)
         {
             _logger = logger;
+            _codeProvider = codeProvider;
         }
 
         public void OnException(ExceptionContext context)
@@ -21,12 +23,14 @@ namespace Drawer.Api.ActionFilters
                 context.Exception is AppException)
             {
                 _logger.LogInformation(context.Exception, "BadRequest");
-                var error = new ErrorResponse(context.Exception.Message);
+
+                var error = new ErrorResponse(context.Exception.Message, _codeProvider.GetErrorCode(context.Exception));
                 context.Result = new BadRequestObjectResult(error);
             }
             else
             {
                 _logger.LogError(context.Exception, "InternalServerError");
+
                 context.Result = new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
 
