@@ -32,10 +32,12 @@ namespace Drawer.Infrastructure
             // AspNetCore Identity 기본설정
             services.AddIdentity<User, IdentityRole>(options =>
             {
-                options.Password.RequiredLength = 2;
+                options.Password.RequiredLength = 8;
                 options.Password.RequireDigit = false;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
+                options.Password.RequireLowercase = false;
+                
 
                 options.User.RequireUniqueEmail = true;
 
