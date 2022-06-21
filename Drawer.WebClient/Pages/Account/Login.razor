@@ -1,29 +1,24 @@
 ﻿@using Drawer.WebClient.Utils
 @attribute [Route(Paths.Account.Login)]
-
+<ContentError @ref="@ContentError"/>
 <MudGrid>
     <MudItem xs="12" sm="7">
         <MudPaper Class="pa-4 mt-4">
             <MudText Typo="Typo.h2" Color="Color.Primary" DisableElevation="true">로그인</MudText>
         </MudPaper>
-        @if (!string.IsNullOrWhiteSpace(@Error))
-        {
-            <MudText Color="Color.Error">@Error</MudText>
-        }
-
         <MudPaper Class="pa-4">
-            <MudForm @ref="Form" Model="@Input" Validation="@Validator.ValidateValue()">
-                <MudTextField @bind-Value="@Input.Email"
-                              For="@(()=>Input.Email)"
+            <MudForm @ref="Form" Model="@Model" Validation="@Validator.ValidateValue()">
+                <MudTextField @bind-Value="@Model.Email"
+                              For="@(()=>Model.Email)"
                               Label="이메일" />
 
-                <MudTextField @bind-Value="@Input.Password"
-                              For="@(()=>Input.Password)"
+                <MudTextField @bind-Value="@Model.Password"
+                              For="@(()=>Model.Password)"
                               Label="비밀번호" 
                               InputType="InputType.Password" />
 
-                <MudCheckBox @bind-Checked="@Input.RememberEmail"
-                             For="@(()=>Input.RememberEmail)"
+                <MudCheckBox @bind-Checked="@Model.RememberEmail"
+                             For="@(()=>Model.RememberEmail)"
                              Label="이메일 기억하기" />
             </MudForm>
         </MudPaper>

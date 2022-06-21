@@ -14,6 +14,8 @@
             public const string Register = "/Account/Register";
             public const string RegisterHandler = "/Account/RegisterHandler";
             public const string RegisterCompleted= "/Account/RegisterCompleted";
+
+            public const string Settings = "/Account/Settings";
         }
         
     }

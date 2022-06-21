@@ -1,0 +1,16 @@
+﻿@if (Visible)
+{
+<MudAlert Severity="Severity.Error">@Text</MudAlert>    
+}
+
+@code{
+    public bool Visible => !string.IsNullOrWhiteSpace(Text);
+
+    public string? Text { get; private set; }
+
+    public void UpdateText (string? text)
+    {
+        Text = text;
+        StateHasChanged();
+    }
+}

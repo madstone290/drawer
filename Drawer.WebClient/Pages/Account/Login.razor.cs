@@ -1,4 +1,6 @@
-﻿using Drawer.WebClient.Utils;
+﻿using Drawer.WebClient.Pages.Account.Models;
+using Drawer.WebClient.Shared;
+using Drawer.WebClient.Utils;
 using FluentValidation;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -9,33 +11,15 @@ namespace Drawer.WebClient.Pages.Account
 {
     public partial class Login
     {
-        public class InputModel
-        {
-            public string? Email { get; set; }
-
-            public string? Password { get; set; }
-
-            public bool RememberEmail { get; set; }
-        }
-
-        public class InputModelValidator : AbstractValidator<InputModel>
-        {
-            public InputModelValidator()
-            {
-                RuleFor(x => x.Email)
-                    .Cascade(CascadeMode.Stop)
-                    .NotEmpty()
-                    .EmailAddress();
-            }
-        }
-
-
         [Parameter]
         [SupplyParameterFromQuery]
         public string? Error { get; set; }
 
-        public InputModel Input { get; set; } = new InputModel();
-        public InputModelValidator Validator { get; set; } = new InputModelValidator();
+        public ContentError ContentError { get; set; } = null!;
+
+
+        public LoginModel Model { get; set; } = new LoginModel();
+        public LoginModelValidator Validator { get; set; } = new LoginModelValidator();
         public MudForm Form { get; private set; } = null!;
 
         [Inject] NavigationManager NavigationManager { get; set; } = null!;
@@ -54,7 +38,10 @@ namespace Drawer.WebClient.Pages.Account
 
             // 로그인 옵션 불러오기
             await LoadOptionsAsync();
-           
+
+            ContentError.UpdateText(Error);
+
+
         }
 
 
@@ -68,8 +55,8 @@ namespace Drawer.WebClient.Pages.Account
 
                 // 로그인 진행
                 var navigationUri = Paths.Account.LoginHandler
-                    .AddQueryParam("email", Input.Email!)
-                    .AddQueryParam("password", Input.Password!);
+                    .AddQueryParam("email", Model.Email!)
+                    .AddQueryParam("password", Model.Password!);
 
                 NavigationManager.NavigateTo(navigationUri, true);
             }
@@ -81,9 +68,9 @@ namespace Drawer.WebClient.Pages.Account
         /// <returns></returns>
         async Task SaveOptionsAsync()
         {
-            if (Input.RememberEmail)
+            if (Model.RememberEmail)
             {
-                await LocalStorage.SetAsync(Constants.LocalStorageKeys.Email, Input.Email!);
+                await LocalStorage.SetAsync(Constants.LocalStorageKeys.Email, Model.Email!);
             }
             else
             {
@@ -100,8 +87,8 @@ namespace Drawer.WebClient.Pages.Account
             var emailStorageResult = await LocalStorage.GetAsync<string>(Constants.LocalStorageKeys.Email);
             if (emailStorageResult.Success)
             {
-                Input.Email = emailStorageResult.Value;
-                Input.RememberEmail = true;
+                Model.Email = emailStorageResult.Value;
+                Model.RememberEmail = true;
             }
         }
 

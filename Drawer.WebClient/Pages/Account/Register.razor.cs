@@ -1,4 +1,5 @@
-﻿using Drawer.WebClient.Utils;
+﻿using Drawer.WebClient.Pages.Account.Models;
+using Drawer.WebClient.Utils;
 using FluentValidation;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -7,48 +8,8 @@ namespace Drawer.WebClient.Pages.Account
 {
     public partial class Register
     {
-        public class InputModel
-        {
-            public string? DisplayName { get; set; }
-
-            public string? Email { get; set; }
-
-            public string? Password1 { get; set; }
-
-            public string? Password2 { get; set; }
-        }
-
-        public class InputModelValidator : AbstractValidator<InputModel>
-        {
-            public InputModelValidator()
-            {
-                RuleFor(x => x.DisplayName)
-                    .NotEmpty()
-                    .Length(1, 100);
-
-                RuleFor(x => x.Email)
-                   .Cascade(CascadeMode.Stop)
-                   .NotEmpty()
-                   .EmailAddress();
-
-                RuleFor(x => x.Password1)
-                    .Cascade(CascadeMode.Stop)
-                    .NotEmpty()
-                    .Length(8, 100);
-
-                RuleFor(x => x.Password2)
-                    .Cascade(CascadeMode.Stop)
-                    .NotEmpty()
-                    .Length(8, 100)
-                    .Equal(x=> x.Password1)
-                    .WithMessage(Messages.PasswordDoesNotMatch);
-            }
-
-        }
-
-
-        public InputModel Input { get; set; } = new InputModel();
-        public InputModelValidator Validator { get; set; } = new InputModelValidator();
+        public RegisterModel Model { get; set; } = new RegisterModel();
+        public RegisterModelValidator Validator { get; set; } = new RegisterModelValidator();
         public MudForm Form { get; set; } = null!;
 
         [Parameter]
@@ -65,9 +26,9 @@ namespace Drawer.WebClient.Pages.Account
             {
                 // 회원가입 진행
                 var navigationUri = Paths.Account.RegisterHandler
-                    .AddQueryParam("displayName", Input.DisplayName!)
-                    .AddQueryParam("email", Input.Email!)
-                    .AddQueryParam("password", Input.Password1!);
+                    .AddQueryParam("displayName", Model.DisplayName!)
+                    .AddQueryParam("email", Model.Email!)
+                    .AddQueryParam("password", Model.Password!);
 
                 NavigationManager.NavigateTo(navigationUri, true);
             }

@@ -8,22 +8,22 @@
 <MudGrid>
     <MudItem xs="12" sm="7">
         <MudPaper Class="pa-4">
-            <MudForm @ref="Form" Model="@Input" Validation="@Validator.ValidateValue()">
-                <MudTextField @bind-Value="@Input.DisplayName"
-                              For="@(()=>Input.DisplayName)"
+            <MudForm @ref="Form" Model="@Model" Validation="@Validator.ValidateValue()">
+                <MudTextField @bind-Value="@Model.DisplayName"
+                              For="@(()=>Model.DisplayName)"
                               Label="이름" />
 
-                <MudTextField @bind-Value="@Input.Email"
-                              For="@(()=>Input.Email)"
+                <MudTextField @bind-Value="@Model.Email"
+                              For="@(()=>Model.Email)"
                               Label="이메일" />
 
-                <MudTextField @bind-Value="@Input.Password1"
-                              For="@(()=>Input.Password1)"
+                <MudTextField @bind-Value="@Model.Password"
+                              For="@(()=>Model.Password)"
                               Label="비밀번호"
                               InputType="InputType.Password" />
 
-                <MudTextField @bind-Value="@Input.Password2"
-                              For="@(()=>Input.Password2)"
+                <MudTextField @bind-Value="@Model.ConfirmPassword"
+                              For="@(()=>Model.ConfirmPassword)"
                               Label="비밀번호 확인"
                               InputType="InputType.Password" />
             </MudForm>

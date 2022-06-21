@@ -1,0 +1,48 @@
+﻿@using Drawer.WebClient.Utils
+
+<MudForm Model="@Model" @bind-IsValid="FormIsValid" Validation="@Validator.ValidateValue()">
+    <MudCard Elevation="25">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText>비밀번호 변경</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudGrid>
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="Model.Password"
+                                  For="@(() => Model.Password)"
+                                  Label="현재 비밀번호"
+                                  Variant="Variant.Outlined"
+                                     Adornment="Adornment.End"
+                                  InputType="@PasswordInputType"
+                                  AdornmentIcon="@PasswordIcon"
+                                  OnAdornmentClick="@(() => TogglePasswordVisibility())" />
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="Model.NewPassword"
+                                  For="@(() => Model.NewPassword)"
+                                  Label="새 비밀번호"
+                                  Variant="Variant.Outlined"
+                                  Adornment="Adornment.End"
+                                  InputType="@NewPasswordInputType"
+                                  AdornmentIcon="@NewPasswordIcon"
+                                  OnAdornmentClick="@(() => ToggleNewPasswordVisibility())" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="Model.ConfirmNewPassword"
+                                  For="@(() => Model.ConfirmNewPassword)"
+                                  Label="새 비밀번호 확인"
+                                  Variant="Variant.Outlined"
+                                  Adornment="Adornment.End"
+                                  InputType="@ConfirmNewPasswordInputType"
+                                  AdornmentIcon="@ConfirmNewPasswordIcon"
+                                  OnAdornmentClick="@(() => ToggleConfirmNewPasswordVisibility())" />
+                </MudItem>
+            </MudGrid>
+        </MudCardContent>
+        <MudCardActions Class="pb-4 pl-4">
+            <MudButton Variant="Variant.Filled" Disabled="@(!FormIsValid)" Color="Color.Primary" Class="ml-auto" OnClick="@ChanagePasswordClick">비밀번호 변경</MudButton>
+        </MudCardActions>
+    </MudCard>
+</MudForm>
