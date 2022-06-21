@@ -9,7 +9,7 @@ using MudBlazor;
 
 namespace Drawer.WebClient.Pages.Account
 {
-    public partial class Login
+    public partial class Login  
     {
         [Parameter]
         [SupplyParameterFromQuery]

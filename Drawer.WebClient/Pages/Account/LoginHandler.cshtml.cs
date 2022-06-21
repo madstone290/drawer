@@ -14,10 +14,10 @@ namespace Drawer.WebClient.Pages.Account
     {
 		private readonly HttpClient _httpClient;
 
-        public LoginHandlerModel(IHttpClientFactory httpClientFactory)
-        {
-			_httpClient = httpClientFactory.CreateClient(Constants.HttpClient.DrawerApi);
-        }
+		public LoginHandlerModel(HttpClient httpClient)
+		{
+			_httpClient = httpClient;
+		}
 
         public async Task<IActionResult> OnGetAsync(string email, string password)
         {

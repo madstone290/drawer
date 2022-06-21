@@ -14,7 +14,7 @@ namespace Drawer.WebClient.Pages.Account
 
         [Parameter]
         [SupplyParameterFromQuery]
-        public string Error { get; set; }
+        public string? Error { get; set; }
 
         [Inject] NavigationManager NavigationManager { get; set; } = null!;
 

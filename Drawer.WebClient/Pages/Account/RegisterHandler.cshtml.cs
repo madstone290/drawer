@@ -10,9 +10,9 @@ namespace Drawer.WebClient.Pages.Account
     {
         private readonly HttpClient _httpClient;
 
-        public RegisterHandlerModel(IHttpClientFactory httpClientFactory)
+        public RegisterHandlerModel(HttpClient httpClient)
         {
-            _httpClient = httpClientFactory.CreateClient(Constants.HttpClient.DrawerApi);
+            _httpClient = httpClient;
         }
 
         /// <summary>

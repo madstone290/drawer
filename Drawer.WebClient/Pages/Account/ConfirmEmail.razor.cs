@@ -24,7 +24,7 @@ namespace Drawer.WebClient.Pages.Account
         [SupplyParameterFromQuery]
         public string Email { get; set; } = null!;
 
-        [Inject] IHttpClientFactory HttpClientFactory { get; set; } = null!;
+        [Inject] HttpClient HttpClient { get; set; } = null!;
         [Inject] NavigationManager NavigationManager { get; set; } = null!;
 
         protected override Task OnInitializedAsync()
@@ -34,9 +34,8 @@ namespace Drawer.WebClient.Pages.Account
 
         async Task Send()
         {
-            var client = HttpClientFactory.CreateClient(Constants.HttpClient.DrawerApi);
             var registerCompletedUri =  NavigationManager.BaseUri.AddPath(Paths.Account.RegisterCompleted);
-            var confirmResponseMessage = await client.PostAsJsonAsync("/api/account/confirmemail",
+            var confirmResponseMessage = await HttpClient.PostAsJsonAsync("/api/account/confirmemail",
                 new ConfirmEmailRequest(Email, registerCompletedUri!));
 
             if (!confirmResponseMessage.IsSuccessStatusCode)

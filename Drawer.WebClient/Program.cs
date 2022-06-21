@@ -13,9 +13,10 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddMudServices();
 
-builder.Services.AddHttpClient(Constants.HttpClient.DrawerApi, options => 
+// Drawer.Api 클라이언트
+builder.Services.AddSingleton<HttpClient>((sp) => new HttpClient()
 {
-    options.BaseAddress = new Uri("https://localhost:6001");
+    BaseAddress = new Uri("https://localhost:6001")
 });
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

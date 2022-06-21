@@ -26,7 +26,7 @@ namespace Drawer.WebClient.Pages.Account.Models
                 .Length(8, 100);
 
 
-            RuleFor(x => x.NewPassword)
+            RuleFor(x => x.ConfirmNewPassword)
                 .Cascade(CascadeMode.Stop)
                 .NotEmpty()
                 .Length(8, 100)
