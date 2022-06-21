@@ -1,6 +1,6 @@
 ﻿using Drawer.Application.Config;
 using Drawer.Application.Helpers;
-using Drawer.Application.Services.Authentication.Exceptions;
+using Drawer.Application.Exceptions;
 using Drawer.Domain.Models.Authentication;
 using MediatR;
 using Microsoft.AspNetCore.Identity;

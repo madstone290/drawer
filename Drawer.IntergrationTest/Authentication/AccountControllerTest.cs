@@ -12,7 +12,8 @@ using Xunit.Abstractions;
 
 namespace Drawer.IntergrationTest.Authentication
 {
-    public class AccountControllerTest : IClassFixture<ApiInstance>
+    [Collection(ApiInstanceCollection.Default)]
+    public class AccountControllerTest 
     {
         private readonly HttpClient _client;
         private readonly ITestOutputHelper _outputHelper;
@@ -88,7 +89,7 @@ namespace Drawer.IntergrationTest.Authentication
         
         [Theory]
         // 이메일 인증 테스트가 어렵기 때문에 마스터 계정을 이용한다
-        [InlineData("master@master.com", "master")]
+        [ClassData(typeof(UserSeeds.EmailPassword))]
         public async Task Login_With_ConfirmedEmail_Returns_Ok_With_Tokens(string email, string password)
         {
             // Arrange
@@ -109,7 +110,7 @@ namespace Drawer.IntergrationTest.Authentication
         }
 
         [Theory]
-        [InlineData("master@master.com", "master")]
+        [ClassData(typeof(UserSeeds.EmailPassword))]
         public async Task Refresh_Returns_Ok_With_ValidAccessToken(string email, string password)
         {
             // Arrange
@@ -131,7 +132,7 @@ namespace Drawer.IntergrationTest.Authentication
         }
 
         [Theory]
-        [InlineData("master@master.com", "master")]
+        [ClassData(typeof(UserSeeds.EmailPassword))]
         public async Task Refresh_With_InvalidRefreshToken_Returns_Badrequest(string email, string password)
         {
             // Arrange
@@ -162,9 +163,8 @@ namespace Drawer.IntergrationTest.Authentication
             responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.Unauthorized);
         }
 
-
         [Theory]
-        [InlineData("master@master.com", "master")]
+        [ClassData(typeof(UserSeeds.EmailPassword))]
         public async Task SecurityTest_With_ValidAccessToken_Returns_Unauthorized(string email, string password)
         {
             // Arrange

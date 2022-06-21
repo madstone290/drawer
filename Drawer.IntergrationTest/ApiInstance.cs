@@ -18,7 +18,7 @@ namespace Drawer.IntergrationTest
     /// <summary>
     /// Api 서버 인스턴스
     /// </summary>
-    public class ApiInstance
+    public class ApiInstance : IDisposable
     {
         public HttpClient Client { get; }
 
@@ -50,6 +50,10 @@ namespace Drawer.IntergrationTest
             Client.BaseAddress = new Uri(Client.BaseAddress!.AbsoluteUri + "api/");
 
 
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

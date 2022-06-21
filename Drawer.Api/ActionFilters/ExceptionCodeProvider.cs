@@ -1,4 +1,4 @@
-﻿using Drawer.Application.Services.Authentication.Exceptions;
+﻿using Drawer.Application.Exceptions;
 using Drawer.Contract.Common;
 
 namespace Drawer.Api.ActionFilters

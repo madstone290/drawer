@@ -4,10 +4,12 @@ using Drawer.Domain.Models.Authentication;
 using Drawer.Infrastructure.Authentication;
 using Drawer.Infrastructure.Authentication.Repos;
 using Drawer.Infrastructure.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using NETCore.MailKit.Core;
 using NETCore.MailKit.Extensions;
 using NETCore.MailKit.Infrastructure.Internal;
@@ -37,7 +39,6 @@ namespace Drawer.Infrastructure
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
                 options.Password.RequireLowercase = false;
-                
 
                 options.User.RequireUniqueEmail = true;
 
@@ -45,6 +46,43 @@ namespace Drawer.Infrastructure
             })
                 .AddEntityFrameworkStores<DrawerIdentityDbContext>()
                 .AddDefaultTokenProviders();
+
+          
+            var jwtSettings = configuration.GetSection("JwtSettings").Get<JwtSettings>()
+                    ?? throw new Exception("JWT설정이 없습니다");
+
+            // jwt인증
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                // 기본 인증시도 스킴이 없을경우 401이후 리디렉트로 404예외가 발생한다.
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+
+                    ValidIssuer = jwtSettings.Issuer,
+                    ValidAudience = jwtSettings.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key))
+                };
+                options.Events = new JwtBearerEvents()
+                {
+                    OnAuthenticationFailed = (c) =>
+                    {
+                        return Task.CompletedTask;
+                    },
+                    OnMessageReceived = (c) =>
+                    {
+                        return Task.CompletedTask;
+                    }
+                };
+            });
 
             // 리파지토리 추가
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
@@ -55,9 +93,6 @@ namespace Drawer.Infrastructure
             services.AddSingleton(mailKitOptions);
             services.AddScoped<IEmailSender, EmailSender>();
 
-            var jwtSettings = configuration.GetSection("JwtSettings").Get<JwtSettings>();
-            if (jwtSettings == null)
-                throw new Exception("JWT 설정이 없습니다"); 
             services.AddSingleton(jwtSettings);
             services.AddScoped<ITokenGenerator, TokenGenerator>();
         }

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drawer.Application.Services.Authentication.Exceptions
+namespace Drawer.Application.Exceptions
 {
     /// <summary>
     /// 리프레시 토큰이 유효하지 않을 경우 발생하는 예외

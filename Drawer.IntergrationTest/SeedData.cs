@@ -29,13 +29,19 @@ namespace Drawer.IntergrationTest
             dbContext.SaveChanges();
 
             var userManager = scope.ServiceProvider.GetService<UserManager<User>>();
-            var masterUser = new User("master@master.com", "master")
+
+            foreach(var userRequest in new UserSeeds().Users)
             {
-                EmailConfirmed = true
-            };
-            var creatResult = userManager.CreateAsync(masterUser, "master").GetAwaiter().GetResult();
-            if(!creatResult.Succeeded)
-                throw new Exception(string.Join(", ", creatResult.Errors.Select(x=> x.Description)));
+                var user = new User(userRequest.Email, userRequest.DisplayName)
+                {
+                    EmailConfirmed = true
+                };
+
+                var creatResult = userManager!.CreateAsync(user, userRequest.Password).GetAwaiter().GetResult();
+                if (!creatResult.Succeeded)
+                    throw new Exception(string.Join(", ", creatResult.Errors.Select(x => x.Description)));
+            }
+          
 
         }
     }

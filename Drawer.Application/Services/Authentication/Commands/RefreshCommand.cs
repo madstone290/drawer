@@ -1,5 +1,5 @@
 ﻿using Drawer.Application.Config;
-using Drawer.Application.Services.Authentication.Exceptions;
+using Drawer.Application.Exceptions;
 using Drawer.Application.Services.Authentication.Repos;
 using Drawer.Domain.Models.Authentication;
 using Microsoft.AspNetCore.Identity;

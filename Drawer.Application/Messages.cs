@@ -16,5 +16,8 @@ namespace Drawer.Application
 
         public const string ConfirmEmailSubject = "회원가입 이메일 확인";
         public const string ClickLinkToVerify = "링크를 눌러 메일을 검증하세요";
+
+        public const string NotExistingUser = "존재하지 않는 사용자입니다";
+
     }
 }

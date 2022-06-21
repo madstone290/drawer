@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drawer.Application.Services.Authentication.Exceptions
+namespace Drawer.Application.Exceptions
 {
     /// <summary>
     /// UserManager의 동작이 실패했을 경우 발생하는 예외
