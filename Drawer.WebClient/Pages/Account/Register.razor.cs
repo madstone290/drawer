@@ -51,6 +51,10 @@ namespace Drawer.WebClient.Pages.Account
         public InputModelValidator Validator { get; set; } = new InputModelValidator();
         public MudForm Form { get; set; } = null!;
 
+        [Parameter]
+        [SupplyParameterFromQuery]
+        public string Error { get; set; }
+
         [Inject] NavigationManager NavigationManager { get; set; } = null!;
 
         async Task SubmitAsync()
@@ -61,8 +65,6 @@ namespace Drawer.WebClient.Pages.Account
             {
                 // 회원가입 진행
                 var navigationUri = Paths.Account.RegisterHandler
-                    .AddQueryParam("returnUri", Paths.Account.Register)
-                    .AddQueryParam("redirectUri", Paths.Account.EmailSent)
                     .AddQueryParam("displayName", Input.DisplayName!)
                     .AddQueryParam("email", Input.Email!)
                     .AddQueryParam("password", Input.Password1!);

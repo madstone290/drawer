@@ -67,11 +67,7 @@ namespace Drawer.WebClient.Pages.Account
                 await SaveOptionsAsync();
 
                 // 로그인 진행
-                var redirectUri = NavigationManager.BaseUri;
-                var returnUri = NavigationManager.Uri;
                 var navigationUri = Paths.Account.LoginHandler
-                    .AddQueryParam("returnUri", returnUri)
-                    .AddQueryParam("redirectUri", redirectUri)
                     .AddQueryParam("email", Input.Email!)
                     .AddQueryParam("password", Input.Password!);
 

@@ -1,6 +1,10 @@
 ﻿@using Drawer.WebClient.Utils
 @attribute [Route(Paths.Account.Register)]
 
+@if (!string.IsNullOrWhiteSpace(@Error))
+{
+    <MudText Color="Color.Error">@Error</MudText>
+}
 <MudGrid>
     <MudItem xs="12" sm="7">
         <MudPaper Class="pa-4">

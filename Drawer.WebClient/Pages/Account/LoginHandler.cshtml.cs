@@ -1,5 +1,6 @@
 using Drawer.Contract.Authentication;
 using Drawer.Contract.Common;
+using Drawer.WebClient.Utils;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components;
@@ -18,13 +19,20 @@ namespace Drawer.WebClient.Pages.Account
 			_httpClient = httpClientFactory.CreateClient(Constants.HttpClient.DrawerApi);
         }
 
-        public async Task<IActionResult> OnGetAsync(string returnUri, string redirectUri, string email, string password)
+        public async Task<IActionResult> OnGetAsync(string email, string password)
         {
 			var loginResponseMessage = await _httpClient.PostAsJsonAsync("/api/account/login", new LoginRequest(email, password));
 			if (!loginResponseMessage.IsSuccessStatusCode)
 			{
 				var error = await loginResponseMessage.Content.ReadFromJsonAsync<ErrorResponse>();
-				return Redirect(returnUri + $"?error={Uri.EscapeDataString(error!.Message)}");
+				if(error!.Code == ErrorCodes.NotConfirmedEmail)
+                {
+					return Redirect(Paths.Account.ConfirmEmail.AddQueryParam("email", email));
+                }
+                else
+                {
+					return Redirect(Paths.Account.Login.AddQueryParam("error", error!.Message));
+				}
 			}
 			
 			var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
@@ -42,7 +50,7 @@ namespace Drawer.WebClient.Pages.Account
 			   new ClaimsPrincipal(claimsIdentity),
 			   authProperties);
 
-			return Redirect(redirectUri);
+			return Redirect(Paths.Base);
 		}
 
 

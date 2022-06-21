@@ -24,7 +24,7 @@ namespace Drawer.WebClient.Pages.Account
         /// <param name="email">로그인 이메일</param>
         /// <param name="password">로그인 비밀번호</param>
         /// <returns></returns>
-        public async Task<IActionResult> OnGetAsync(string returnUri, string redirectUri, string displayName, string email, string password)
+        public async Task<IActionResult> OnGetAsync(string displayName, string email, string password)
         {
 			var registerResponseMessage = await _httpClient.PostAsJsonAsync("/api/account/register", 
 				new RegisterRequest(email, password, displayName));
@@ -32,20 +32,10 @@ namespace Drawer.WebClient.Pages.Account
 			if (!registerResponseMessage.IsSuccessStatusCode)
 			{
 				var error = await registerResponseMessage.Content.ReadFromJsonAsync<ErrorResponse>();
-				return Redirect(returnUri + $"?error={Uri.EscapeDataString(error!.Message)}");
+				return Redirect(Paths.Account.Register.AddQueryParam("error", error!.Message));
 			}
 
-            var registerCompletedUri = HttpContext.Request.GetAbsoluteUri(Paths.Account.RegisterCompleted);
-            var confirmResponseMessage = await _httpClient.PostAsJsonAsync("/api/account/confirmemail", 
-                new ConfirmEmailRequest(email, registerCompletedUri!));
-
-            if (!confirmResponseMessage.IsSuccessStatusCode)
-            {
-                var error = await confirmResponseMessage.Content.ReadFromJsonAsync<ErrorResponse>();
-                return Redirect(returnUri + $"?error={Uri.EscapeDataString(error!.Message)}");
-            }
-
-            return Redirect(redirectUri);
+            return Redirect(Paths.Account.ConfirmEmail.AddQueryParam("email", email));
 
 		}
     }

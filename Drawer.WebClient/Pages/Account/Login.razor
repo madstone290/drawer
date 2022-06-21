@@ -6,11 +6,9 @@
         <MudPaper Class="pa-4 mt-4">
             <MudText Typo="Typo.h2" Color="Color.Primary" DisableElevation="true">로그인</MudText>
         </MudPaper>
-        @if (!string.IsNullOrWhiteSpace(Error))
+        @if (!string.IsNullOrWhiteSpace(@Error))
         {
-        <MudPaper Class="pa-4 mt-4">
-            @Error
-        </MudPaper>
+            <MudText Color="Color.Error">@Error</MudText>
         }
 
         <MudPaper Class="pa-4">

@@ -6,7 +6,7 @@
 
         public static class Account
         {
-            public const string EmailSent = "/Account/EmailSent";
+            public const string ConfirmEmail = "/Account/ConfirmEmail";
             public const string Login = "/Account/Login";
             public const string LoginHandler = "/Account/LoginHandler";
             public const string Logout = "/Account/Logout";
