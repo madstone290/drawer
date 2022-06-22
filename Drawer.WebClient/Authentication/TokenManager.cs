@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using System.Security.Claims;
 
-namespace Drawer.WebClient.Token
+namespace Drawer.WebClient.Authentication
 {
     public class TokenManager : ITokenManager
     {
@@ -11,13 +11,13 @@ namespace Drawer.WebClient.Token
 
         private readonly HttpClient _httpClient;
 
-        private readonly ProtectedLocalStorage _localStorage;
+        private readonly ITokenStorage _tokenStorage;
 
-        public TokenManager(HttpClient httpClient, AuthenticationStateProvider stateProvider, ProtectedLocalStorage localStorage)
+        public TokenManager(HttpClient httpClient, AuthenticationStateProvider stateProvider, ITokenStorage tokenStorage)
         {
             _httpClient = httpClient;
             _stateProvider = stateProvider;
-            _localStorage = localStorage;
+            _tokenStorage = tokenStorage;
         }
 
         public async Task<TokenResult> RefreshAccessTokenAsync()
@@ -32,18 +32,20 @@ namespace Drawer.WebClient.Token
             var responseMessage = await _httpClient.PostAsJsonAsync("/api/account/refresh", new RefreshRequest(emailClaim.Value, refreshTokenClaim.Value));
             var response = await responseMessage.Content.ReadFromJsonAsync<RefreshResponse>();
 
-            await _localStorage.SetAsync("AccessToken", response!.AccessToken);
+            await _tokenStorage.SaveAccessTokenAsync(response!.AccessToken);
             return new TokenResult(true, response!.AccessToken);
         }
 
         public async Task<TokenResult> GetAccessTokenAsync()
         {
-            var accessTokenResult = await _localStorage.GetAsync<string>("AccessToken");
-
-            if (accessTokenResult.Success)
-                return new TokenResult(true, accessTokenResult.Value!);
+            var accessToken = await _tokenStorage.GetAccessTokenAsync();
+            
+            if (!string.IsNullOrWhiteSpace(accessToken))
+                return new TokenResult(true, accessToken);
             else
                 return new TokenResult(false, null);
+
+
 
         }
     }

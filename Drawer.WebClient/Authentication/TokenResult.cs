@@ -1,4 +1,4 @@
-﻿namespace Drawer.WebClient.Token
+﻿namespace Drawer.WebClient.Authentication
 {
     public class TokenResult
     {

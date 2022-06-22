@@ -1,7 +1,7 @@
 using Drawer.WebClient;
 using Drawer.WebClient.Api;
 using Drawer.WebClient.Authentication;
-using Drawer.WebClient.Token;
+using Drawer.WebClient.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -30,6 +30,7 @@ builder.Services.AddSingleton<HttpClient>((sp) => new HttpClient()
 });
 
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ITokenStorage, TokenStorage>();
 builder.Services.AddScoped<ITokenManager, TokenManager>();
 builder.Services.AddScoped<IAuthenticationManager, AuthenticationManager>();
 builder.Services.AddScoped<ApiClient>();

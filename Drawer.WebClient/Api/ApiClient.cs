@@ -1,5 +1,5 @@
 ﻿using Drawer.Contract.Common;
-using Drawer.WebClient.Token;
+using Drawer.WebClient.Authentication;
 using Drawer.WebClient.Utils;
 
 namespace Drawer.WebClient.Api
