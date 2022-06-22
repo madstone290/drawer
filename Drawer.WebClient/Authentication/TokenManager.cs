@@ -1,4 +1,5 @@
-﻿using Drawer.Contract.Authentication;
+﻿using Drawer.Contract;
+using Drawer.Contract.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using System.Security.Claims;
@@ -43,7 +44,7 @@ namespace Drawer.WebClient.Authentication
             if (!loginState.IsLoggedIn)
                 return new TokenResult(false, null);
 
-            var responseMessage = await _httpClient.PostAsJsonAsync("/api/account/refresh", 
+            var responseMessage = await _httpClient.PostAsJsonAsync(ApiRoutes.Account.Refresh, 
                 new RefreshRequest(loginState.Email!, loginState.RefreshToken!));
 
             var response = await responseMessage.Content.ReadFromJsonAsync<RefreshResponse>();
