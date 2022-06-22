@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -57,8 +58,9 @@ namespace Drawer.Application.Services.Authentication.Commands
                 await _refreshTokenRepository.RemoveAsync(token);
 
             var claims = await _userManager.GetClaimsAsync(user);
-            var accessToken = _tokenGenerator.GenenateAccessToken(claims);
+            claims.Add(new Claim(ClaimTypes.Email, user.Email));
 
+            var accessToken = _tokenGenerator.GenenateAccessToken(claims);
             return new RefreshResult(accessToken);
         }
     }
