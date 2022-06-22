@@ -44,7 +44,7 @@ namespace Drawer.WebClient.Authentication
             {
                 new Claim(ClaimTypes.Email, email),
                 new Claim(TokenClaimTypes.AccessToken, loginResponse!.AccessToken),
-                new Claim(TokenClaimTypes.AccessToken, loginResponse!.RefreshToken)
+                new Claim(TokenClaimTypes.RefreshToken, loginResponse!.RefreshToken)
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

@@ -85,7 +85,7 @@ namespace Drawer.WebClient.Authentication
                 return LoginState.False();
 
             var emailClaim = state.User.Claims.First(x => x.Type == ClaimTypes.Email);
-            var refreshTokenClaim = state.User.Claims.First(x => x.Type == "RefreshToken");
+            var refreshTokenClaim = state.User.Claims.First(x => x.Type == TokenClaimTypes.RefreshToken);
             return LoginState.True(emailClaim.Value, refreshTokenClaim.Value);
         }
     }
