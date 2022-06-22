@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Drawer.WebClient.Pages.Account.Models
+namespace Drawer.WebClient.Pages.User.Models
 {
     public class SecurityModel
     {

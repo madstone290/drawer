@@ -1,12 +1,12 @@
 ﻿using Drawer.Contract;
 using Drawer.Contract.Common;
 using Drawer.Contract.UserInformation;
-using Drawer.WebClient.Pages.Account.Models;
+using Drawer.WebClient.Pages.User.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 
-namespace Drawer.WebClient.Pages.Account.Components
+namespace Drawer.WebClient.Pages.User.Components
 {
     public partial class Security
     {

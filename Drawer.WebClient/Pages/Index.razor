@@ -1,6 +1,27 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 
 <PageTitle>Index</PageTitle>
 <MudText Typo="Typo.h3" GutterBottom="true">Hello, world!</MudText>
 <MudText Class="mb-8">Welcome to your new app, powered by MudBlazor!</MudText>
 <MudAlert Severity="Severity.Normal">You can find documentation and examples on our website here: <MudLink Href="https://mudblazor.com" Typo="Typo.body2" Color="Color.Inherit"><b>www.mudblazor.com</b></MudLink></MudAlert>
+
+@code
+{
+    [Inject] 
+    AuthenticationStateProvider AuthenticationStateProvider{ get; set; }
+
+    [Inject]
+    ProtectedLocalStorage LocalStorage{ get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var accessTokenClaim = state.User.Claims.FirstOrDefault(x => x.Type == "AccessToken");
+        if(accessTokenClaim!= null)
+        {
+            // 홈으로 올때 액세스 토큰을 갱신시킨다.
+            await LocalStorage.SetAsync("AccessToken", accessTokenClaim.Value);
+        }
+
+    }
+}

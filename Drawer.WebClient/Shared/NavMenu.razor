@@ -1,7 +1,9 @@
 ﻿<MudNavMenu>
     <MudNavLink Href="/" Match="NavLinkMatch.All">Home</MudNavLink>
+    <MudNavGroup Title="User" Expanded="true" Icon="@Icons.Material.Filled.Settings">
+         <MudNavLink Href="/User/Settings" Match="NavLinkMatch.Prefix">설정</MudNavLink>   
+    </MudNavGroup>
      <MudNavGroup Title="Account" Expanded="true" Icon="@Icons.Material.Filled.Settings">
-         <MudNavLink Href="/Account/Settings" Match="NavLinkMatch.Prefix">설정</MudNavLink>   
          <MudNavLink Href="/Account/Register" Match="NavLinkMatch.Prefix">회원가입</MudNavLink>
         <MudNavLink Href="/Account/Login" Match="NavLinkMatch.Prefix">로그인</MudNavLink>
         <MudNavLink Href="/Account/Logout" Match="NavLinkMatch.Prefix">로그아웃</MudNavLink>

@@ -1,4 +1,6 @@
 using Drawer.WebClient;
+using Drawer.WebClient.Api;
+using Drawer.WebClient.Token;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -13,17 +15,23 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddMudServices();
 
-// Drawer.Api 클라이언트
-builder.Services.AddSingleton<HttpClient>((sp) => new HttpClient()
-{
-    BaseAddress = new Uri("https://localhost:6001")
-});
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
         options.Cookie.Name = "Drawer.Blazor.Cookie";
     });
+
+// Drawer.Api 클라이언트
+builder.Services.AddSingleton<HttpClient>((sp) => new HttpClient()
+{
+    BaseAddress = new Uri("https://localhost:6001")
+});
+
+builder.Services.AddScoped<ITokenManager, TokenManager>();
+builder.Services.AddScoped<ApiClient>();
+
+
 
 var app = builder.Build();
 

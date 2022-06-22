@@ -15,7 +15,12 @@
             public const string RegisterHandler = "/Account/RegisterHandler";
             public const string RegisterCompleted= "/Account/RegisterCompleted";
 
-            public const string Settings = "/Account/Settings";
+           
+        }
+
+        public static class User
+        {
+            public const string Settings = "/User/Settings";
         }
         
     }

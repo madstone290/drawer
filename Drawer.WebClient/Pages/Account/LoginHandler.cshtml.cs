@@ -4,6 +4,7 @@ using Drawer.WebClient.Utils;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Security.Claims;
@@ -13,11 +14,13 @@ namespace Drawer.WebClient.Pages.Account
     public class LoginHandlerModel : PageModel
     {
 		private readonly HttpClient _httpClient;
+		private readonly ProtectedLocalStorage _localStorage;
 
-		public LoginHandlerModel(HttpClient httpClient)
-		{
-			_httpClient = httpClient;
-		}
+        public LoginHandlerModel(HttpClient httpClient, ProtectedLocalStorage localStorage)
+        {
+            _httpClient = httpClient;
+            _localStorage = localStorage;
+        }
 
         public async Task<IActionResult> OnGetAsync(string email, string password)
         {
