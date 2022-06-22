@@ -1,5 +1,6 @@
 ﻿using Drawer.Domain.Models.Authentication;
 using Drawer.Infrastructure.Data;
+using Drawer.IntergrationTest.Seeds;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Drawer.IntergrationTest
 {
-    public static class SeedData
+    public static class SeedManager
     {
         public static void Initialize(IServiceScope scope)
         {

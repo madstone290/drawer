@@ -1,5 +1,6 @@
 ﻿using Drawer.Contract;
 using Drawer.Contract.Authentication;
+using Drawer.IntergrationTest.Seeds;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;
@@ -90,7 +91,7 @@ namespace Drawer.IntergrationTest.Authentication
         
         [Theory]
         // 이메일 인증 테스트가 어렵기 때문에 마스터 계정을 이용한다
-        [ClassData(typeof(UserSeeds.EmailPassword))]
+        [ClassData(typeof(UserSeeds.LoginUser))]
         public async Task Login_With_ConfirmedEmail_Returns_Ok_With_Tokens(string email, string password)
         {
             // Arrange
@@ -111,7 +112,7 @@ namespace Drawer.IntergrationTest.Authentication
         }
 
         [Theory]
-        [ClassData(typeof(UserSeeds.EmailPassword))]
+        [ClassData(typeof(UserSeeds.RefreshUser_1))]
         public async Task Refresh_Returns_Ok_With_ValidAccessToken(string email, string password)
         {
             // Arrange
@@ -133,7 +134,7 @@ namespace Drawer.IntergrationTest.Authentication
         }
 
         [Theory]
-        [ClassData(typeof(UserSeeds.EmailPassword))]
+        [ClassData(typeof(UserSeeds.RefreshUser_2))]
         public async Task Refresh_With_InvalidRefreshToken_Returns_Badrequest(string email, string password)
         {
             // Arrange
@@ -165,7 +166,7 @@ namespace Drawer.IntergrationTest.Authentication
         }
 
         [Theory]
-        [ClassData(typeof(UserSeeds.EmailPassword))]
+        [ClassData(typeof(UserSeeds.LoginUser))]
         public async Task SecurityTest_With_ValidAccessToken_Returns_Unauthorized(string email, string password)
         {
             // Arrange
