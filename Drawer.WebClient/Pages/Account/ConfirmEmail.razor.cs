@@ -35,7 +35,7 @@ namespace Drawer.WebClient.Pages.Account
         async Task Send()
         {
             var registerCompletedUri =  NavigationManager.BaseUri.AddPath(Paths.Account.RegisterCompleted);
-            var confirmResponseMessage = await HttpClient.PostAsJsonAsync("/api/account/confirmemail",
+            var confirmResponseMessage = await HttpClient.PostAsJsonAsync(Paths.Account.ConfirmEmail,
                 new ConfirmEmailRequest(Email, registerCompletedUri!));
 
             if (!confirmResponseMessage.IsSuccessStatusCode)

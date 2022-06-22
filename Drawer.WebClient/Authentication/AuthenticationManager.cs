@@ -1,4 +1,5 @@
-﻿using Drawer.Contract.Authentication;
+﻿using Drawer.Contract;
+using Drawer.Contract.Authentication;
 using Drawer.Contract.Common;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -23,7 +24,7 @@ namespace Drawer.WebClient.Authentication
 
         public async Task<AuthenticationResult> LoginAsync(string email, string password)
         {
-            var loginResponseMessage = await _httpClient.PostAsJsonAsync("/api/account/login", new LoginRequest(email, password));
+            var loginResponseMessage = await _httpClient.PostAsJsonAsync(ApiRoutes.Account.Login, new LoginRequest(email, password));
             if (!loginResponseMessage.IsSuccessStatusCode)
             {
                 var error = await loginResponseMessage.Content.ReadFromJsonAsync<ErrorResponse>();

@@ -6,7 +6,6 @@ namespace Drawer.Api.Controllers
 {
     [ServiceFilter(typeof(DefaultExceptionFilter))]
     [ApiController]
-    [Route("api/[controller]")]
     [Produces("application/json")]
     [Consumes("application/json")]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

@@ -26,7 +26,7 @@ namespace Drawer.WebClient.Pages.Account
         /// <returns></returns>
         public async Task<IActionResult> OnGetAsync(string displayName, string email, string password)
         {
-			var registerResponseMessage = await _httpClient.PostAsJsonAsync("/api/account/register", 
+			var registerResponseMessage = await _httpClient.PostAsJsonAsync(Paths.Account.Register, 
 				new RegisterRequest(email, password, displayName));
 
 			if (!registerResponseMessage.IsSuccessStatusCode)

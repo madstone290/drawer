@@ -43,11 +43,11 @@ namespace Drawer.IntergrationTest.UserInformation
         {
             // Arrange
             var loginRequest = new LoginRequest(email, password);
-            var loginResponseMessage = await _client.PostAsJsonAsync("/api/account/login", loginRequest);
+            var loginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, loginRequest);
             var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
 
             var getUserRequestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.User.GetUser);
-            getUserRequestMessage.Headers.Add("Authorization", $"bearer {loginResponse!.AccessToken}");
+            getUserRequestMessage.SetBearerToken(loginResponse!.AccessToken);
 
             // Act
             var responseMessage = await _client.SendAsync(getUserRequestMessage);
@@ -68,12 +68,12 @@ namespace Drawer.IntergrationTest.UserInformation
             // Arrange
             string displayName = Guid.NewGuid().ToString();
             var loginRequest = new LoginRequest(email, password);
-            var loginResponseMessage = await _client.PostAsJsonAsync("/api/account/login", loginRequest);
+            var loginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, loginRequest);
             var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
 
             var updateUserRequestMessage = new HttpRequestMessage(HttpMethod.Put, ApiRoutes.User.UpdateUser);
             updateUserRequestMessage.Content = JsonContent.Create(new UpdateUserRequest(displayName));
-            updateUserRequestMessage.Headers.Add("Authorization", $"bearer {loginResponse!.AccessToken}");
+            updateUserRequestMessage.SetBearerToken(loginResponse!.AccessToken);
 
             // Act
             var responseMessage = await _client.SendAsync(updateUserRequestMessage);
@@ -94,12 +94,12 @@ namespace Drawer.IntergrationTest.UserInformation
             // Arrange
             var newPassword = Guid.NewGuid().ToString();
             var loginRequest = new LoginRequest(email, password);
-            var loginResponseMessage = await _client.PostAsJsonAsync("/api/account/login", loginRequest);
+            var loginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, loginRequest);
             var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
 
             var updatePasswordRequestMessage = new HttpRequestMessage(HttpMethod.Put, ApiRoutes.User.UpdatePassword);
             updatePasswordRequestMessage.Content = JsonContent.Create(new UpdatePasswordRequest("salt" + password, newPassword));
-            updatePasswordRequestMessage.Headers.Add("Authorization", $"bearer {loginResponse!.AccessToken}");
+            updatePasswordRequestMessage.SetBearerToken(loginResponse!.AccessToken);
 
             // Act
             var responseMessage = await _client.SendAsync(updatePasswordRequestMessage);
@@ -117,16 +117,16 @@ namespace Drawer.IntergrationTest.UserInformation
             // Arrange
             var newPassword = Guid.NewGuid().ToString();
             var loginRequest = new LoginRequest(email, password);
-            var loginResponseMessage = await _client.PostAsJsonAsync("/api/account/login", loginRequest);
+            var loginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, loginRequest);
             var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
 
             var updatePasswordRequestMessage = new HttpRequestMessage(HttpMethod.Put, ApiRoutes.User.UpdatePassword);
             updatePasswordRequestMessage.Content = JsonContent.Create(new UpdatePasswordRequest(password, newPassword));
-            updatePasswordRequestMessage.Headers.Add("Authorization", $"bearer {loginResponse!.AccessToken}");
+            updatePasswordRequestMessage.SetBearerToken(loginResponse!.AccessToken);
 
             // Act
             var responseMessage = await _client.SendAsync(updatePasswordRequestMessage);
-            var newLoginResponseMessage = await _client.PostAsJsonAsync("/api/account/login", new LoginRequest(email, newPassword));
+            var newLoginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, new LoginRequest(email, newPassword));
 
             // Assert
             responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);

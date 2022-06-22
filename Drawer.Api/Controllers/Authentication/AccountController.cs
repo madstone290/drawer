@@ -1,6 +1,7 @@
 ﻿using Drawer.Api.Controllers;
 using Drawer.Application.Authentication;
 using Drawer.Application.Services.Authentication.Commands;
+using Drawer.Contract;
 using Drawer.Contract.Authentication;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -20,7 +21,7 @@ namespace Drawer.Api.Controllers.Authentication
         }
 
         [HttpPost]
-        [Route("Register")]
+        [Route(ApiRoutes.Account.Register)]
         [ProducesResponseType(typeof(RegisterResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> RegisterAsync([FromBody] RegisterRequest request)
         {
@@ -30,7 +31,7 @@ namespace Drawer.Api.Controllers.Authentication
         }
 
         [HttpPost]
-        [Route("ConfirmEmail")]
+        [Route(ApiRoutes.Account.ConfirmEmail)]
         public async Task<IActionResult> ConfirmEmailAsync([FromBody] ConfirmEmailRequest request)
         {
             var returnUri = Url.RouteUrl(nameof(VerifyEmailAsync), new { request.RedirectUri }, HttpContext.Request.Scheme)!;
@@ -40,7 +41,7 @@ namespace Drawer.Api.Controllers.Authentication
         }
 
         [HttpGet]
-        [Route("VerifyEmail", Name = nameof(VerifyEmailAsync))]
+        [Route(ApiRoutes.Account.ConfirmEmail, Name = nameof(VerifyEmailAsync))]
         [ProducesResponseType(StatusCodes.Status302Found)]
         public async Task<IActionResult> VerifyEmailAsync([FromQuery] string email, [FromQuery] string token, [FromQuery] string redirectUri)
         {
@@ -50,7 +51,7 @@ namespace Drawer.Api.Controllers.Authentication
         }
 
         [HttpPost]
-        [Route("Login")]
+        [Route(ApiRoutes.Account.Login)]
         [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> LoginAsync([FromBody] LoginRequest request)
         {
@@ -60,7 +61,7 @@ namespace Drawer.Api.Controllers.Authentication
         }
 
         [HttpPost]
-        [Route("Refresh")]
+        [Route(ApiRoutes.Account.Refresh)]
         [ProducesResponseType(typeof(RefreshResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> RefreshAsync([FromBody] RefreshRequest model)
         {
@@ -74,7 +75,7 @@ namespace Drawer.Api.Controllers.Authentication
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [Route("SecurityTest")]
+        [Route(ApiRoutes.Account.SecurityTest)]
         [Authorize]
         public IActionResult SecurityTest()
         {

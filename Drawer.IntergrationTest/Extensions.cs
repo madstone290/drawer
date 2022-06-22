@@ -11,6 +11,7 @@ namespace Drawer.IntergrationTest
     {
         public static void SetBearerToken(this HttpRequestMessage request, string token)
         {
+            request.Headers.Remove("Authorization");
             request.Headers.Add("Authorization", $"bearer {token}");
         }
 

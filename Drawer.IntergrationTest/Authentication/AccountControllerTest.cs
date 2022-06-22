@@ -1,4 +1,5 @@
-﻿using Drawer.Contract.Authentication;
+﻿using Drawer.Contract;
+using Drawer.Contract.Authentication;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;
@@ -34,7 +35,7 @@ namespace Drawer.IntergrationTest.Authentication
             var registerRequest = new RegisterRequest(email, password, displayName);
             
             // Act
-            var responseMessage = await _client.PostAsJsonAsync("account/register", registerRequest);
+            var responseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Register, registerRequest);
 
             // Assert
             responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
@@ -54,8 +55,8 @@ namespace Drawer.IntergrationTest.Authentication
             var registerRequest = new RegisterRequest(email, password, displayName);
 
             // Act
-            var firstResponseMessage = await _client.PostAsJsonAsync("account/register", registerRequest);
-            var secondResponseMessage = await _client.PostAsJsonAsync("account/register", registerRequest);
+            var firstResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Register, registerRequest);
+            var secondResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Register, registerRequest);
             
             // Assert
             firstResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
@@ -75,12 +76,12 @@ namespace Drawer.IntergrationTest.Authentication
         {
             // Arrange
             var registerRequest = new RegisterRequest(email, password, displayName);
-            var registerResponseMessage = await _client.PostAsJsonAsync("account/register", registerRequest);
+            var registerResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Register, registerRequest);
             registerResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
             var loginRequest = new LoginRequest(email, password);
 
             // Act
-            var loginResponseMessage = await _client.PostAsJsonAsync("account/login", loginRequest);
+            var loginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, loginRequest);
 
             // Assert
             loginResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
@@ -96,7 +97,7 @@ namespace Drawer.IntergrationTest.Authentication
             var loginRequest = new LoginRequest(email, password);
 
             // Act
-            var loginResponseMessage = await _client.PostAsJsonAsync("account/login", loginRequest);
+            var loginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, loginRequest);
 
             // Assert
             loginResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
@@ -115,12 +116,12 @@ namespace Drawer.IntergrationTest.Authentication
         {
             // Arrange
             var loginRequest = new LoginRequest(email, password);
-            var loginResponseMessage = await _client.PostAsJsonAsync("account/login", loginRequest);
+            var loginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, loginRequest);
             var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
             var refreshRequest = new RefreshRequest(email, loginResponse!.RefreshToken);
 
             // Act
-            var refreshResponseMessage = await _client.PostAsJsonAsync("account/refresh", refreshRequest);
+            var refreshResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Refresh, refreshRequest);
 
             // Assert
             refreshResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
@@ -137,12 +138,12 @@ namespace Drawer.IntergrationTest.Authentication
         {
             // Arrange
             var loginRequest = new LoginRequest(email, password);
-            var loginResponseMessage = await _client.PostAsJsonAsync("account/login", loginRequest);
+            var loginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, loginRequest);
             var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
             var refreshRequest = new RefreshRequest(email, loginResponse!.RefreshToken + "fail");
 
             // Act
-            var refreshResponseMessage = await _client.PostAsJsonAsync("account/refresh", refreshRequest);
+            var refreshResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Refresh, refreshRequest);
 
             // Assert
             refreshResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
@@ -153,7 +154,7 @@ namespace Drawer.IntergrationTest.Authentication
         {
             // Arrange
             var accessToken = Guid.NewGuid().ToString();
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, "account/SecurityTest");
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Account.SecurityTest);
             requestMessage.SetBearerToken(accessToken);
             
             // Act
@@ -169,10 +170,10 @@ namespace Drawer.IntergrationTest.Authentication
         {
             // Arrange
             var loginRequest = new LoginRequest(email, password);
-            var loginResponseMessage = await _client.PostAsJsonAsync("account/login", loginRequest);
+            var loginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, loginRequest);
             var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
 
-            var request = new HttpRequestMessage(HttpMethod.Post, "account/SecurityTest");
+            var request = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Account.SecurityTest);
             request.SetBearerToken(loginResponse!.AccessToken);
 
             // Act
