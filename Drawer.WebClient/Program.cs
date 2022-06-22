@@ -1,5 +1,6 @@
 using Drawer.WebClient;
 using Drawer.WebClient.Api;
+using Drawer.WebClient.Authentication;
 using Drawer.WebClient.Token;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components;
@@ -28,7 +29,9 @@ builder.Services.AddSingleton<HttpClient>((sp) => new HttpClient()
     BaseAddress = new Uri("https://localhost:6001")
 });
 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ITokenManager, TokenManager>();
+builder.Services.AddScoped<IAuthenticationManager, AuthenticationManager>();
 builder.Services.AddScoped<ApiClient>();
 
 
