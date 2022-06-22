@@ -24,9 +24,9 @@ namespace Drawer.WebClient.Pages.Account
             await TokenStorage.ClearAccessTokenAsync();
 
             if (RedirectUri == null)
-                _navigationManager.NavigateTo(Paths.Base);
+                NavManager.NavigateTo(Paths.Base);
             else
-                _navigationManager.NavigateTo(RedirectUri);
+                NavManager.NavigateTo(RedirectUri);
         }
     }
 }

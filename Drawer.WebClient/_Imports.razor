@@ -10,5 +10,5 @@
 @using Drawer.WebClient.Shared
 @using MudBlazor
 
-
-@inject NavigationManager _navigationManager;
+@attribute [Authorize]
+@inject NavigationManager NavManager;

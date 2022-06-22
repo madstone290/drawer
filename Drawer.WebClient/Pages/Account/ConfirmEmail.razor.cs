@@ -25,7 +25,6 @@ namespace Drawer.WebClient.Pages.Account
         public string Email { get; set; } = null!;
 
         [Inject] HttpClient HttpClient { get; set; } = null!;
-        [Inject] NavigationManager NavigationManager { get; set; } = null!;
 
         protected override Task OnInitializedAsync()
         {
@@ -34,7 +33,7 @@ namespace Drawer.WebClient.Pages.Account
 
         async Task Send()
         {
-            var registerCompletedUri =  NavigationManager.BaseUri.AddPath(Paths.Account.RegisterCompleted);
+            var registerCompletedUri =  NavManager.BaseUri.AddPath(Paths.Account.RegisterCompleted);
             var confirmResponseMessage = await HttpClient.PostAsJsonAsync(Paths.Account.ConfirmEmail,
                 new ConfirmEmailRequest(Email, registerCompletedUri!));
 

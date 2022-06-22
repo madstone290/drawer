@@ -1,5 +1,7 @@
 ﻿@using Drawer.WebClient.Utils
 @attribute [Route(Paths.Account.Login)]
+@attribute [AllowAnonymous]
+
 <ContentError Text="@Error"/>
 <MudGrid>
     <MudItem xs="12" sm="7">

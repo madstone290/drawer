@@ -31,9 +31,9 @@ namespace Drawer.WebClient.Pages.Account
             }
 
             if (RedirectUri == null)
-                _navigationManager.NavigateTo(Paths.Base);
+                NavManager.NavigateTo(Paths.Base);
             else
-                _navigationManager.NavigateTo(RedirectUri);
+                NavManager.NavigateTo(RedirectUri);
 
 
         }

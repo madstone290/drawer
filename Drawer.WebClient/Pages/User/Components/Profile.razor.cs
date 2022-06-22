@@ -1,10 +1,8 @@
 ﻿using Drawer.Contract;
-using Drawer.Contract.Common;
 using Drawer.Contract.UserInformation;
 using Drawer.WebClient.Api;
 using Drawer.WebClient.Pages.User.Models;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 
 namespace Drawer.WebClient.Pages.User.Components
@@ -42,10 +40,6 @@ namespace Drawer.WebClient.Pages.User.Components
             else
             {
                 ErrorText = apiResponseMessage.ErrorMessage;
-                //if(apiResponseMessage.IsUnauthorized)
-                //{
-                //    _navigationManager.NavigateTo(Paths.Account.Login);
-                //}
             }
 
         }
@@ -67,7 +61,7 @@ namespace Drawer.WebClient.Pages.User.Components
                 ErrorText = apiResponseMessage.ErrorMessage;
                 if (apiResponseMessage.IsUnauthorized)
                 {
-                    _navigationManager.NavigateTo(Paths.Account.Login);
+                    NavManager.NavigateTo(Paths.Account.Login);
                 }
             }
         }

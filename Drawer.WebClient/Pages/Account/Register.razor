@@ -1,5 +1,6 @@
 ﻿@using Drawer.WebClient.Utils
 @attribute [Route(Paths.Account.Register)]
+@attribute [AllowAnonymous]
 
 @if (!string.IsNullOrWhiteSpace(@Error))
 {
