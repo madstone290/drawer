@@ -43,8 +43,8 @@ namespace Drawer.WebClient.Authentication
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Email, email),
-                new Claim("AccessToken", loginResponse!.AccessToken),
-                new Claim("RefreshToken", loginResponse!.RefreshToken)
+                new Claim(TokenClaimTypes.AccessToken, loginResponse!.AccessToken),
+                new Claim(TokenClaimTypes.AccessToken, loginResponse!.RefreshToken)
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

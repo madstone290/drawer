@@ -4,7 +4,7 @@ namespace Drawer.WebClient.Authentication
 {
     public class TokenStorage : ITokenStorage
     {
-        private const string AccessTokenKey = "AccessToken";
+        private const string AccessTokenKey = TokenClaimTypes.AccessToken;
 
         private readonly ProtectedLocalStorage _localStorage;
 

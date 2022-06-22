@@ -1,6 +1,6 @@
 ﻿namespace Drawer.WebClient
 {
-    public class Constants
+    public static class Constants
     {
         public class LocalStorageKeys
         {

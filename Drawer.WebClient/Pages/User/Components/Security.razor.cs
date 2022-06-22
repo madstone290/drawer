@@ -56,7 +56,7 @@ namespace Drawer.WebClient.Pages.User.Components
             if (Form.IsValid)
             {
                 var state = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-                var at = state.User.Claims.FirstOrDefault(x => x.Type == "AccessToken").Value;
+                var at = state.User.Claims.FirstOrDefault(x => x.Type == TokenClaimTypes.AccessToken).Value;
 
                 var requstMessage = new HttpRequestMessage(HttpMethod.Put, ApiRoutes.User.UpdatePassword);
                 requstMessage.Headers.Add("Authorization", $"bearer {at}");

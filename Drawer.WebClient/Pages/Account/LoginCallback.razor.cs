@@ -24,7 +24,7 @@ namespace Drawer.WebClient.Pages.Account
         {
             // 로그인 쿠키에 포함된 액세스 토큰을 저장소에 보관한다.
             var state = await StateProvider.GetAuthenticationStateAsync();
-            var accessTokenClaim = state.User.Claims.FirstOrDefault(x => x.Type == "AccessToken");
+            var accessTokenClaim = state.User.Claims.FirstOrDefault(x => x.Type == TokenClaimTypes.AccessToken);
             if (accessTokenClaim != null)
             {
                 await TokenStorage.SaveAccessTokenAsync(accessTokenClaim.Value);
