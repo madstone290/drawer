@@ -9,9 +9,7 @@ namespace Drawer.WebClient.Pages.Account
 
         void Submit()
         {
-            var navigationUri = Paths.Account.LogoutHandler
-                .AddQueryParam("redirectUri", NavigationManager.BaseUri);
-            NavigationManager.NavigateTo(navigationUri, true);
+            NavigationManager.NavigateTo(Paths.Account.LogoutHandler, true);
         }
     }
 }

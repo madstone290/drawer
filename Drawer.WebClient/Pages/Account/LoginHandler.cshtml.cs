@@ -14,12 +14,12 @@ namespace Drawer.WebClient.Pages.Account
             _authenticationManager = authenticationManager;
         }
 
-        public async Task<IActionResult> OnGetAsync(string email, string password)
+        public async Task<IActionResult> OnGetAsync(string email, string password, string redirectUri)
         {
             var loginResult = await _authenticationManager.LoginAsync(email, password);
             if (loginResult.IsSuccessful)
             {
-                return Redirect(Paths.Base);
+                return Redirect(Paths.Account.LoginCallback.AddQueryParam("redirectUri", redirectUri));
             }
             else if (loginResult.IsUnconfirmedEmail)
             {

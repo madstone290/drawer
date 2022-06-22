@@ -19,6 +19,11 @@ namespace Drawer.WebClient.Pages.Account.Models
                 .Cascade(CascadeMode.Stop)
                 .NotEmpty()
                 .EmailAddress();
+
+            RuleFor(x => x.Password)
+                .Cascade(CascadeMode.Stop)
+                .NotEmpty()
+                .Length(8, 100);
         }
     }
 }

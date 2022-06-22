@@ -1,4 +1,5 @@
 using Drawer.WebClient.Authentication;
+using Drawer.WebClient.Utils;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -18,10 +19,7 @@ namespace Drawer.WebClient.Pages.Account
         {
             await _authenticationManager.LogoutAsync();
 
-            if (redirectUri == null)
-                return Redirect(Paths.Base);
-            else
-                return Redirect(redirectUri);
+            return Redirect(Paths.Account.LogoutCallback.AddQueryParam("redirectUri", redirectUri));
         }
     }
 }
