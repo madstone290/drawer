@@ -9,7 +9,7 @@ namespace Drawer.Application
     public class Messages
     {
         public const string DuplicateEmail = "중복 이메일입니다";
-        public const string NotConfirmedEmail = "인증되지 않은 이메일입니다";
+        public const string UnconfirmedEmail = "인증되지 않은 이메일입니다";
         public const string InvalidEmail = "유효하지 않은 이메일입니다";
         public const string InvalidLogin = "로그인정보가 유효하지 않습니다";
         public const string InvalidRefreshToken = "리프레시 토큰이 유효하지 않습니다";

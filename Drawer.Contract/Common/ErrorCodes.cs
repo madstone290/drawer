@@ -8,6 +8,6 @@ namespace Drawer.Contract.Common
 {
     public class ErrorCodes
     {
-        public const string NotConfirmedEmail = "NotConfirmedEmail";
+        public const string UnconfirmedEmail = "UnconfirmedEmail";
     }
 }

@@ -28,7 +28,7 @@ namespace Drawer.WebClient.Pages.Account
 			if (!loginResponseMessage.IsSuccessStatusCode)
 			{
 				var error = await loginResponseMessage.Content.ReadFromJsonAsync<ErrorResponse>();
-				if(error!.Code == ErrorCodes.NotConfirmedEmail)
+				if(error!.Code == ErrorCodes.UnconfirmedEmail)
                 {
 					return Redirect(Paths.Account.ConfirmEmail.AddQueryParam("email", email));
                 }

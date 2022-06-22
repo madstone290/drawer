@@ -10,8 +10,8 @@ namespace Drawer.Api.ActionFilters
     {
         public string GetErrorCode(Exception exception)
         {
-            if (exception is NotConfirmedEmailException)
-                return ErrorCodes.NotConfirmedEmail;
+            if (exception is UnconfirmedEmailException)
+                return ErrorCodes.UnconfirmedEmail;
 
             return string.Empty;
         }
