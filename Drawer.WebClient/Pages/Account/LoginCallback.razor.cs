@@ -1,7 +1,7 @@
-﻿using Drawer.WebClient.Authentication;
+﻿using Drawer.Contract.Constants;
+using Drawer.WebClient.Authentication;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace Drawer.WebClient.Pages.Account
 {

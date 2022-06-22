@@ -1,6 +1,7 @@
 ﻿using Drawer.Contract;
 using Drawer.Contract.Authentication;
 using Drawer.Contract.Common;
+using Drawer.Contract.Constants;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;

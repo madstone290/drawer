@@ -1,4 +1,4 @@
-﻿namespace Drawer.WebClient
+﻿namespace Drawer.Contract.Constants
 {
     public static class TokenClaimTypes
     {

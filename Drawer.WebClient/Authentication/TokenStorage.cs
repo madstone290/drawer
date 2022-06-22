@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+﻿using Drawer.Contract.Constants;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace Drawer.WebClient.Authentication
 {
