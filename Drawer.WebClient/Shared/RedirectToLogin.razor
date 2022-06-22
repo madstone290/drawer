@@ -1,0 +1,12 @@
+﻿@using Drawer.WebClient.Pages
+@using Drawer.WebClient.Utils
+
+@code {
+    protected override Task OnInitializedAsync()
+    {
+        // 로그인 후 로그인 페이지 리디렉트를 생성한 곳으로 다시 돌아간다
+        _navigationManager.NavigateTo(Paths.Account.Login.AddQueryParam("redirectUri", _navigationManager.Uri));
+
+        return Task.CompletedTask;
+    }
+}

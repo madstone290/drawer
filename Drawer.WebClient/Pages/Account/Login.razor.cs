@@ -11,12 +11,19 @@ namespace Drawer.WebClient.Pages.Account
 {
     public partial class Login  
     {
+        /// <summary>
+        /// 로그인핸들러에서 발생한 에러.
+        /// </summary>
         [Parameter]
         [SupplyParameterFromQuery]
         public string? Error { get; set; }
 
-        public ContentError ContentError { get; set; } = null!;
-
+        /// <summary>
+        /// 로그인이 완료된 후 리디렉트할 곳의 Uri
+        /// </summary>
+        [Parameter]
+        [SupplyParameterFromQuery]
+        public string? RedirectUri { get; set; }
 
         public LoginModel Model { get; set; } = new LoginModel();
         public LoginModelValidator Validator { get; set; } = new LoginModelValidator();
@@ -38,10 +45,6 @@ namespace Drawer.WebClient.Pages.Account
 
             // 로그인 옵션 불러오기
             await LoadOptionsAsync();
-
-            ContentError.UpdateText(Error);
-
-
         }
 
 
@@ -56,7 +59,8 @@ namespace Drawer.WebClient.Pages.Account
                 // 로그인 진행
                 var navigationUri = Paths.Account.LoginHandler
                     .AddQueryParam("email", Model.Email!)
-                    .AddQueryParam("password", Model.Password!);
+                    .AddQueryParam("password", Model.Password!)
+                    .AddQueryParam("redirectUri", RedirectUri);
 
                 NavigationManager.NavigateTo(navigationUri, true);
             }

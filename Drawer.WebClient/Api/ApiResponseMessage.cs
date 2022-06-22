@@ -8,9 +8,9 @@
         public bool IsSuccessful { get; set; }
 
         /// <summary>
-        /// 로그인 리디렉트 여부
+        /// 요청에 대한 권한 여부
         /// </summary>
-        public bool NeedToLogin { get; set; }
+        public bool IsUnauthorized { get; set; }
 
         /// <summary>
         /// 에러 식별 코드
@@ -49,7 +49,7 @@
         /// <param name="error"></param>
         /// <returns></returns>
         public static ApiResponseMessage<TData> Unauthorized(string error) => 
-            new() { ErrorMessage = error, IsSuccessful = false, NeedToLogin = true };
+            new() { ErrorMessage = error, IsSuccessful = false, IsUnauthorized = true };
 
     }
 

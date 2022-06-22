@@ -6,7 +6,7 @@
                     <FocusOnNavigate RouteData="@routeData" Selector="h1" />
                 </Authorizing>
                 <NotAuthorized>
-                    <p>Sorry, You are not authorized</p>
+                    <RedirectToLogin />
                 </NotAuthorized>
             </AuthorizeRouteView>
         </Found>
