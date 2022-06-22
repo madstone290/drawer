@@ -60,8 +60,6 @@ namespace Drawer.WebClient.Authentication
         public async Task<AuthenticationResult> LogoutAsync()
         {
             await _httpContext.SignOutAsync();
-            
-            // 로컬스토리지 accesstoken을 삭제해야하는데...
 
             return AuthenticationResult.Success();
         }
