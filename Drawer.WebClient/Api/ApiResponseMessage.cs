@@ -13,39 +13,43 @@
         public bool NeedToLogin { get; set; }
 
         /// <summary>
-        /// 에러메시지
+        /// 에러 식별 코드
         /// </summary>
-        public string? Error { get; set; }
+        public string? ErrorCode { get; set; }
+
+        /// <summary>
+        /// 에러 메시지
+        /// </summary>
+        public string? ErrorMessage { get; set; }
 
         /// <summary>
         /// 페이로드 데이터
         /// </summary>
         public TData Data { get; set; } = default!;
 
-        public ApiResponseMessage()
-        {
-        }
-
         /// <summary>
         /// 성공 응답을 받았다.
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static ApiResponseMessage<TData> Success(TData data) => new() { Data = data, IsSuccessful = true };
+        public static ApiResponseMessage<TData> Success(TData data) =>
+            new() { Data = data, IsSuccessful = true };
 
         /// <summary>
         /// 실패 응답을 받았다.
         /// </summary>
-        /// <param name="error"></param>
+        /// <param name="errorCode"></param>
         /// <returns></returns>
-        public static ApiResponseMessage<TData> Fail(string error) => new() { Error = error, IsSuccessful = false };
+        public static ApiResponseMessage<TData> Fail(string errorMessage, string? errorCode = null) => 
+            new() { ErrorCode = errorCode, ErrorMessage = errorMessage, IsSuccessful = false };
 
         /// <summary>
         /// 권한이 없어 요청을 실행할 수 없다.
         /// </summary>
         /// <param name="error"></param>
         /// <returns></returns>
-        public static ApiResponseMessage<TData> Unauthorized(string error) => new() { Error = error, IsSuccessful = false, NeedToLogin = true };
+        public static ApiResponseMessage<TData> Unauthorized(string error) => 
+            new() { ErrorMessage = error, IsSuccessful = false, NeedToLogin = true };
 
     }
 

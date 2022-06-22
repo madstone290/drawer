@@ -41,7 +41,7 @@ namespace Drawer.WebClient.Pages.User.Components
             }
             else
             {
-                ErrorText = apiResponseMessage.Error;
+                ErrorText = apiResponseMessage.ErrorMessage;
                 if(apiResponseMessage.NeedToLogin)
                 {
                     _navigationManager.NavigateTo(Paths.Account.Login);
@@ -64,7 +64,7 @@ namespace Drawer.WebClient.Pages.User.Components
             }
             else
             {
-                ErrorText = apiResponseMessage.Error;
+                ErrorText = apiResponseMessage.ErrorMessage;
                 if (apiResponseMessage.NeedToLogin)
                 {
                     _navigationManager.NavigateTo(Paths.Account.Login);

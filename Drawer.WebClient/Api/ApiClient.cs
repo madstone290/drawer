@@ -1,4 +1,5 @@
-﻿using Drawer.WebClient.Token;
+﻿using Drawer.Contract.Common;
+using Drawer.WebClient.Token;
 using Drawer.WebClient.Utils;
 
 namespace Drawer.WebClient.Api
@@ -57,9 +58,9 @@ namespace Drawer.WebClient.Api
             }
             else if (responseMessage.StatusCode == System.Net.HttpStatusCode.BadRequest)
             {
-                var jsonResult = await responseMessage.Content.ReadNullableJsonAsync<ErrorMessage>();
+                var jsonResult = await responseMessage.Content.ReadNullableJsonAsync<ErrorResponse>();
                 if (jsonResult.IsSuccessful)
-                    return ApiResponseMessage<TResponseData>.Fail(jsonResult.Data!.Message);
+                    return ApiResponseMessage<TResponseData>.Fail(jsonResult.Data!.Message, jsonResult.Data!.Code);
                 else
                     return ApiResponseMessage<TResponseData>.Fail("실패응답의 Json변환에 실패하였습니다");
             }
