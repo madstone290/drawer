@@ -16,6 +16,19 @@
         /// </summary>
         /// <returns></returns>
         Task<AuthenticationResult> LogoutAsync();
+
+        /// <summary>
+        /// 유저의 상태를 확인한다.
+        /// </summary>
+        /// <returns></returns>
+        Task<UserAuthenticationState> GetUserStateAsync();
+
+        /// <summary>
+        /// 권한을 확인한다.
+        /// </summary>
+        /// <param name="permission"></param>
+        /// <returns></returns>
+        Task<bool> AuthorizeAsync(string permission);
         
     }
 }

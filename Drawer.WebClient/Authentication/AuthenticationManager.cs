@@ -4,6 +4,7 @@ using Drawer.Contract.Common;
 using Drawer.Contract.Constants;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
 
 namespace Drawer.WebClient.Authentication
@@ -17,10 +18,13 @@ namespace Drawer.WebClient.Authentication
 
         private readonly HttpContext _httpContext;
 
-        public AuthenticationManager(HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
+        private readonly AuthenticationStateProvider _stateProvider;
+
+        public AuthenticationManager(HttpClient httpClient, IHttpContextAccessor httpContextAccessor, AuthenticationStateProvider stateProvider)
         {
             _httpClient = httpClient;
             _httpContext = httpContextAccessor.HttpContext!;
+            _stateProvider = stateProvider;
         }
 
         public async Task<AuthenticationResult> LoginAsync(string email, string password)
@@ -62,8 +66,31 @@ namespace Drawer.WebClient.Authentication
         public async Task<AuthenticationResult> LogoutAsync()
         {
             await _httpContext.SignOutAsync();
-
+            
             return AuthenticationResult.Success();
+        }
+
+        public async Task<UserAuthenticationState> GetUserStateAsync()
+        {
+            var state = await _stateProvider.GetAuthenticationStateAsync();
+            if (state == null)
+                return UserAuthenticationState.Unauthenticated();
+
+            if (state.User.Identity == null)
+                return UserAuthenticationState.Unauthenticated();
+
+            if (!state.User.Identity.IsAuthenticated)
+                return UserAuthenticationState.Unauthenticated();
+
+            var emailClaim = state.User.Claims.First(x => x.Type == ClaimTypes.Email);
+            var refreshTokenClaim = state.User.Claims.First(x => x.Type == TokenClaimTypes.RefreshToken);
+            return UserAuthenticationState.Authenticated(emailClaim.Value, refreshTokenClaim.Value);
+        }
+
+        public async Task<bool> AuthorizeAsync(string permission)
+        {
+            var state = await _stateProvider.GetAuthenticationStateAsync();
+            return state.User.Claims.Any(x => x.Type == permission);
         }
     }
 }
