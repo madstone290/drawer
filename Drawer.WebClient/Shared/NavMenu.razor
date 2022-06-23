@@ -9,35 +9,9 @@
     <MudNavGroup Title="User" Expanded="true" Icon="@Icons.Material.Filled.Settings">
          <MudNavLink Href="@Paths.User.Settings" Match="NavLinkMatch.Prefix">설정</MudNavLink>   
     </MudNavGroup>
-     <MudNavGroup Title="Account" Expanded="true" Icon="@Icons.Material.Filled.Settings">
-         <MudNavLink Href="@Paths.Account.Register" Match="NavLinkMatch.Prefix" Class="@RegisterVisibility()">회원가입</MudNavLink>
-        <MudNavLink Href="@Paths.Account.Login" Match="NavLinkMatch.Prefix">로그인</MudNavLink>
-        <MudNavLink Href="@Paths.Account.Logout" Match="NavLinkMatch.Prefix" Class="@Visibility()">로그아웃</MudNavLink>
-    </MudNavGroup>
 </MudNavMenu>
 
 
 @code {
-    public bool IsAuthenticated { get; set; } 
-    public bool HasEmail { get; set; } 
-
-    [Inject] IAuthenticationManager AuthenticationManager { get; set; } = null!;
-
-    protected override async Task OnInitializedAsync()
-    {
-        var state = await AuthenticationManager.GetUserStateAsync();
-        IsAuthenticated = state.IsAuthenticated;
-        HasEmail = await AuthenticationManager.AuthorizeAsync(System.Security.Claims.ClaimTypes.Email);
-    }
-
-    public string? RegisterVisibility()
-    {
-       return HasEmail ? null : "d-none";
-    }
-
-    public string? Visibility()
-    {
-        return IsAuthenticated ? null : "d-none";
-    }
 
 }
