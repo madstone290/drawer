@@ -1,6 +1,5 @@
 ﻿@using Drawer.WebClient.Utils
 
-<ContentError Text="@ErrorText" />
 <MudForm @ref="@Form" Model="@Model" @bind-IsValid="FormIsValid" Validation="@Validator.ValidateValue()">
     <MudCard Elevation="25">
         <MudCardHeader>
@@ -15,7 +14,7 @@
                                   For="@(() => Model.Password)"
                                   Label="현재 비밀번호"
                                   Variant="Variant.Outlined"
-                                     Adornment="Adornment.End"
+                                  Adornment="Adornment.End"
                                   InputType="@PasswordInputType"
                                   AdornmentIcon="@PasswordIcon"
                                   OnAdornmentClick="@(() => TogglePasswordVisibility())" />

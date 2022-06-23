@@ -1,20 +1,18 @@
-﻿using Drawer.Contract;
-using Drawer.Contract.Common;
-using Drawer.Contract.Constants;
-using Drawer.Contract.UserInformation;
-using Drawer.WebClient.Pages.User.Models;
+﻿using Drawer.WebClient.Pages.User.Presenters;
+using Drawer.WebClient.Pages.User.ViewModels;
+using Drawer.WebClient.Pages.User.Views;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 
 namespace Drawer.WebClient.Pages.User.Components
 {
-    public partial class Security
+    public partial class Security : ISecurityView
     {
         public SecurityModel Model { get; set; } = new SecurityModel();
         public SecurityModelValidator Validator { get; set; } = new SecurityModelValidator();
         public MudForm Form { get; set; } = null!;
-        public bool FormIsValid { get; set; }
+        public bool FormIsValid { get; set; } 
 
         private bool _passwordVisible = false;
         public InputType PasswordInputType => _passwordVisible ? InputType.Text : InputType.Password;
@@ -28,13 +26,13 @@ namespace Drawer.WebClient.Pages.User.Components
         public InputType ConfirmNewPasswordInputType => _confirmNewPasswordVisible ? InputType.Text : InputType.Password;
         public string ConfirmNewPasswordIcon => _confirmNewPasswordVisible ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff;
 
+        [Inject] SecurityPresenter Presenter { get; set; } = null!;
 
-        [Inject]
-        public HttpClient HttpClient { get; set; } = null!;
-        [Inject]
-        public AuthenticationStateProvider AuthenticationStateProvider { get; set; } = null!;
-
-        public string? ErrorText { get; set; }
+        protected override Task OnInitializedAsync()
+        {
+            Presenter.View = this;
+            return base.OnInitializedAsync();
+        }
 
         void TogglePasswordVisibility()
         {
@@ -56,29 +54,7 @@ namespace Drawer.WebClient.Pages.User.Components
             await Form.Validate();
             if (Form.IsValid)
             {
-                var state = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-                var at = state.User.Claims.FirstOrDefault(x => x.Type == TokenClaimTypes.AccessToken).Value;
-
-                var requstMessage = new HttpRequestMessage(HttpMethod.Put, ApiRoutes.User.UpdatePassword);
-                requstMessage.Headers.Add("Authorization", $"bearer {at}");
-                requstMessage.Content = JsonContent.Create(new UpdatePasswordRequest(Model.Password!, Model.NewPassword!));
-                var responseMessage = await HttpClient.SendAsync(requstMessage);
-
-                if (responseMessage.IsSuccessStatusCode)
-                {
-                    //snackbar
-                }
-                else if (responseMessage.StatusCode == System.Net.HttpStatusCode.BadRequest
-                  || responseMessage.StatusCode == System.Net.HttpStatusCode.InternalServerError)
-                {
-                    var error = await responseMessage.Content.ReadFromJsonAsync<ErrorResponse>();
-                    ErrorText = error?.Message;
-                }
-                else
-                {
-                    ErrorText = responseMessage.StatusCode.ToString();
-                }
-
+                await Presenter.ChanagePasswordAsync();
             }
         }
 

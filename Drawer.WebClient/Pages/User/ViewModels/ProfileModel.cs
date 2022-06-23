@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Drawer.WebClient.Pages.User.Models
+namespace Drawer.WebClient.Pages.User.ViewModels
 {
     public class ProfileModel
     {

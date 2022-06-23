@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using Drawer.WebClient.Api;
+using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 
 namespace Drawer.WebClient.Utils
@@ -29,6 +30,9 @@ namespace Drawer.WebClient.Utils
         /// <returns></returns>
         public static async Task<JsonResult<T>> ReadNullableJsonAsync<T>(this HttpContent content, JsonSerializerOptions? options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (typeof(T) == typeof(Unit))
+                return new JsonResult<T>(true, default);
+
             bool isSuccessful;
             T? data;
             try
@@ -54,8 +58,11 @@ namespace Drawer.WebClient.Utils
         /// <param name="jsonTypeInfo"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static async Task<JsonResult<T?>> ReadNullableJsonAsync<T>(this HttpContent content, JsonTypeInfo<T> jsonTypeInfo, CancellationToken cancellationToken = default(CancellationToken))
+        public static async Task<JsonResult<T>> ReadNullableJsonAsync<T>(this HttpContent content, JsonTypeInfo<T> jsonTypeInfo, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (typeof(T) == typeof(Unit))
+                return new JsonResult<T>(true, default);
+
             bool isSuccessful;
             T? data;
             try
@@ -68,7 +75,7 @@ namespace Drawer.WebClient.Utils
                 data = default;
                 isSuccessful = false;
             }
-            return new JsonResult<T?>(isSuccessful, data);
+            return new JsonResult<T>(isSuccessful, data);
         }
 
 

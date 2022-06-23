@@ -1,6 +1,5 @@
 ﻿@using Drawer.WebClient.Utils
 
-<ContentError Text="@ErrorText" />
 <MudGrid>
     <MudItem xs="12" sm="8" md="9">
         <MudForm @ref="@Form" @bind-IsValid="@FormIsValid" Model="@Model" Validation="@Validator.ValidateValue()">
