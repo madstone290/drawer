@@ -1,6 +1,6 @@
 ﻿using Drawer.Application.Config;
 using Drawer.Contract.Common;
-using Drawer.Domain.Exceptions;
+using Drawer.Domain.Config;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 

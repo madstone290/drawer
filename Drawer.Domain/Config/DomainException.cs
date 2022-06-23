@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drawer.Domain.Exceptions
+namespace Drawer.Domain.Config
 {
     public class DomainException : Exception
     {
