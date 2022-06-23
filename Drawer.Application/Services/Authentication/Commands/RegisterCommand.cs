@@ -62,8 +62,7 @@ namespace Drawer.Application.Services.Authentication.Commands
             var createResult = await _userManager.CreateAsync(user, command.Password);
             if (!createResult.Succeeded)
             {
-                var errorMessage = string.Join(", ", createResult.Errors.Select(x => x.Description));
-                throw new UserManagerFailException(errorMessage);
+                throw new IdentityErrorException(createResult.Errors);
             }
 
             return new RegisterResult(user.Id, user.Email, user.DisplayName);

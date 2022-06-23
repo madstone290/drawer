@@ -42,8 +42,8 @@ namespace Drawer.Application.Services.Authentication.Commands
                 throw new InvalidEmailException();
 
             var result = await _userManager.ConfirmEmailAsync(user, command.Token);
-            if (!result.Succeeded)
-                throw new UserManagerFailException(string.Join(", ", result.Errors.Select(x => x.Description)));
+            if (!result.Succeeded) 
+                throw new IdentityErrorException(result.Errors);
 
             return Unit.Value;
         }

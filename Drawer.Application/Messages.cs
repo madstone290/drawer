@@ -19,5 +19,7 @@ namespace Drawer.Application
 
         public const string NotExistingUser = "존재하지 않는 사용자입니다";
 
+        public const string PasswordMitmatch = "비밀번호가 일치하지 않습니다";
+
     }
 }

@@ -29,7 +29,7 @@ namespace Drawer.Application.Services.UserInformation.Commands
 
             var result = await _userManager.ChangePasswordAsync(user, request.Password, request.NewPassword);
             if (!result.Succeeded)
-                throw new UserManagerFailException(string.Join(", ", result.Errors.Select(x => x.Description)));
+                throw new IdentityErrorException(result.Errors);
 
             return Unit.Value;
         }
