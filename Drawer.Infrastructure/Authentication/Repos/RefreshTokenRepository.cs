@@ -12,7 +12,7 @@ namespace Drawer.Infrastructure.Authentication.Repos
 {
     public class RefreshTokenRepository : AuthenticationRepository<RefreshToken>, IRefreshTokenRepository
     {
-        public RefreshTokenRepository(DrawerIdentityDbContext dbContext) : base(dbContext)
+        public RefreshTokenRepository(DrawerDbContext dbContext) : base(dbContext)
         {
         }
 

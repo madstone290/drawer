@@ -55,7 +55,8 @@ namespace Drawer.Application.Services.Authentication.Commands
             // 기간 만료된 토큰 삭제
             var expiredTokens = refreshTokens.Where(x => x.IsExpired).ToList();
             foreach(var token in expiredTokens)
-                await _refreshTokenRepository.RemoveAsync(token);
+                _refreshTokenRepository.Remove(token);
+            await _refreshTokenRepository.SaveChangesAsync();
 
             var claims = await _userManager.GetClaimsAsync(user);
             claims.Add(new Claim(ClaimTypes.Email, user.Email));

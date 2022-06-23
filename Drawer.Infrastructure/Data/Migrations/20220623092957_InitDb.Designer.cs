@@ -9,11 +9,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Drawer.Infrastructure.Data.Migrations.DrawerIdentity
+namespace Drawer.Infrastructure.Data.Migrations
 {
-    [DbContext(typeof(DrawerIdentityDbContext))]
-    [Migration("20220618014053_AddRefreshToken")]
-    partial class AddRefreshToken
+    [DbContext(typeof(DrawerDbContext))]
+    [Migration("20220623092957_InitDb")]
+    partial class InitDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -32,9 +32,6 @@ namespace Drawer.Infrastructure.Data.Migrations.DrawerIdentity
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("Expires")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<DateTime?>("Revoked")
                         .HasColumnType("timestamp with time zone");
 
@@ -46,11 +43,12 @@ namespace Drawer.Infrastructure.Data.Migrations.DrawerIdentity
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("UtcExpires")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("__Identity__RefreshToken");
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("Drawer.Domain.Models.Authentication.User", b =>
@@ -118,7 +116,180 @@ namespace Drawer.Infrastructure.Data.Migrations.DrawerIdentity
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.ToTable("__Identity__AspNetUsers", (string)null);
+                    b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("Drawer.Domain.Models.Locations.Position", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("CompanyId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Positions");
+                });
+
+            modelBuilder.Entity("Drawer.Domain.Models.Locations.WorkPlace", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WorkPlaces");
+                });
+
+            modelBuilder.Entity("Drawer.Domain.Models.Locations.WorkPlaceZone", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long?>("ZoneTypeId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ZoneTypeId");
+
+                    b.ToTable("WorkPlaceZones");
+                });
+
+            modelBuilder.Entity("Drawer.Domain.Models.Locations.WorkPlaceZoneType", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WorkPlaceZoneTypes");
+                });
+
+            modelBuilder.Entity("Drawer.Domain.Models.Organization.Company", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CompanyId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("OwnerId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Companies");
+                });
+
+            modelBuilder.Entity("Drawer.Domain.Models.Organization.CompanyMember", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("CompanyId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CompanyMembers");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -144,7 +315,7 @@ namespace Drawer.Infrastructure.Data.Migrations.DrawerIdentity
                         .IsUnique()
                         .HasDatabaseName("RoleNameIndex");
 
-                    b.ToTable("__Identity__AspNetRoles", (string)null);
+                    b.ToTable("AspNetRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -169,7 +340,7 @@ namespace Drawer.Infrastructure.Data.Migrations.DrawerIdentity
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("__Identity__AspNetRoleClaims", (string)null);
+                    b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -194,7 +365,7 @@ namespace Drawer.Infrastructure.Data.Migrations.DrawerIdentity
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("__Identity__AspNetUserClaims", (string)null);
+                    b.ToTable("AspNetUserClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -216,7 +387,7 @@ namespace Drawer.Infrastructure.Data.Migrations.DrawerIdentity
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("__Identity__AspNetUserLogins", (string)null);
+                    b.ToTable("AspNetUserLogins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -231,7 +402,7 @@ namespace Drawer.Infrastructure.Data.Migrations.DrawerIdentity
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("__Identity__AspNetUserRoles", (string)null);
+                    b.ToTable("AspNetUserRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -250,16 +421,16 @@ namespace Drawer.Infrastructure.Data.Migrations.DrawerIdentity
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("__Identity__AspNetUserTokens", (string)null);
+                    b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Drawer.Domain.Models.Authentication.RefreshToken", b =>
+            modelBuilder.Entity("Drawer.Domain.Models.Locations.WorkPlaceZone", b =>
                 {
-                    b.HasOne("Drawer.Domain.Models.Authentication.User", null)
-                        .WithMany("RefreshTokens")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("Drawer.Domain.Models.Locations.WorkPlaceZoneType", "ZoneType")
+                        .WithMany()
+                        .HasForeignKey("ZoneTypeId");
+
+                    b.Navigation("ZoneType");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -311,11 +482,6 @@ namespace Drawer.Infrastructure.Data.Migrations.DrawerIdentity
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Drawer.Domain.Models.Authentication.User", b =>
-                {
-                    b.Navigation("RefreshTokens");
                 });
 #pragma warning restore 612, 618
         }

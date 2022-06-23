@@ -1,9 +1,12 @@
 ﻿using Drawer.Application.Services.Authentication;
 using Drawer.Application.Services.Authentication.Repos;
+using Drawer.Application.Services.Organization;
+using Drawer.Application.Services.Organization.Repos;
 using Drawer.Domain.Models.Authentication;
 using Drawer.Infrastructure.Authentication;
 using Drawer.Infrastructure.Authentication.Repos;
 using Drawer.Infrastructure.Data;
+using Drawer.Infrastructure.Repos.Organization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +29,7 @@ namespace Drawer.Infrastructure
         public static void AddInfrastructureDependency(this IServiceCollection services, IConfiguration configuration)
         {
             var connectionString = configuration["DrawerIdentityDb:ConnectionString"];
-            services.AddDbContext<DrawerIdentityDbContext>(options =>
+            services.AddDbContext<DrawerDbContext>(options =>
             {
                 options.UseNpgsql(connectionString);
             });
@@ -44,7 +47,7 @@ namespace Drawer.Infrastructure
 
                 options.SignIn.RequireConfirmedEmail = true;
             })
-                .AddEntityFrameworkStores<DrawerIdentityDbContext>()
+                .AddEntityFrameworkStores<DrawerDbContext>()
                 .AddDefaultTokenProviders();
 
           
@@ -95,6 +98,11 @@ namespace Drawer.Infrastructure
 
             services.AddSingleton(jwtSettings);
             services.AddScoped<ITokenGenerator, TokenGenerator>();
+
+            services.AddScoped<IOrganizationUnitOfWork, OrganizationUnitOfWork>();
+            services.AddScoped<ICompanyRepository, CompanyRepository>();
+            services.AddScoped<ICompanyMemberRepository, CompanyMemberRepository>();
+
         }
     }
 }

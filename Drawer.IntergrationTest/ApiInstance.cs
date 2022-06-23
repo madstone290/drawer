@@ -30,13 +30,13 @@ namespace Drawer.IntergrationTest
 
                     webHostBuilder.ConfigureTestServices(services =>
                     {
-                        services.RemoveAll(typeof(DbContextOptions<DrawerIdentityDbContext>));
+                        services.RemoveAll(typeof(DbContextOptions<DrawerDbContext>));
 
                         var jsonString = File.ReadAllText("Secrets/drawer_identity_db_secret.json");
                         var jObj = JObject.Parse(jsonString);
                         var connectionString = jObj["DrawerIdentityDb"]["ConnectionString"].ToString();
 
-                        services.AddDbContext<DrawerIdentityDbContext>(options =>
+                        services.AddDbContext<DrawerDbContext>(options =>
                         {
                             options.UseNpgsql(connectionString);
                         });

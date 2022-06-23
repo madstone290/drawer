@@ -1,19 +1,20 @@
 ﻿using Drawer.Application.Services;
 using Drawer.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drawer.Infrastructure.Authentication
+namespace Drawer.Infrastructure.Repos
 {
-    public class AuthenticationRepository<TEntity> : IRepository<TEntity>
-        where TEntity : class
+    public class Repository<TEntity> : IRepository<TEntity>
+       where TEntity : class
     {
         protected readonly DrawerDbContext _dbContext;
 
-        public AuthenticationRepository(DrawerDbContext dbContext)
+        public Repository(DrawerDbContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -21,11 +22,6 @@ namespace Drawer.Infrastructure.Authentication
         public async Task AddAsync(TEntity entity)
         {
             await _dbContext.AddAsync(entity);
-        }
-
-        public async Task<TEntity?> FindByIdAsync(long id)
-        {
-            return await _dbContext.FindAsync<TEntity>(id);
         }
 
         public void Remove(TEntity entity)

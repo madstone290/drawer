@@ -78,6 +78,7 @@ namespace Drawer.Application.Services.Authentication.Commands
 
             var refreshTokenEntity = new RefreshToken(user.Id, refreshToken, command.RefreshTokenLifetime);
             await _refreshTokenRepository.AddAsync(refreshTokenEntity);
+            await _refreshTokenRepository.SaveChangesAsync();
 
             return new LoginResult(accessToken, refreshToken);
         }

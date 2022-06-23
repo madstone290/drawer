@@ -16,7 +16,7 @@ namespace Drawer.IntergrationTest
     {
         public static void Initialize(IServiceScope scope)
         {
-            var dbContext = scope.ServiceProvider.GetService<DrawerIdentityDbContext>()
+            var dbContext = scope.ServiceProvider.GetService<DrawerDbContext>()
                           ?? throw new Exception("DrawerIdentityDbContext is null");
             dbContext.Database.Migrate();
 

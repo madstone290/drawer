@@ -27,6 +27,5 @@ namespace Drawer.Domain.Models.Authentication
             DisplayName = displayName.Trim();
         }
 
-
     }
 }

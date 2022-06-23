@@ -8,10 +8,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Drawer.Infrastructure.Data.Migrations.DrawIdentity
+namespace Drawer.Infrastructure.Data.Migrations
 {
-    [DbContext(typeof(DrawerIdentityDbContext))]
-    partial class DrawerIdentityDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(DrawerDbContext))]
+    partial class DrawerDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -46,7 +46,7 @@ namespace Drawer.Infrastructure.Data.Migrations.DrawIdentity
 
                     b.HasKey("Id");
 
-                    b.ToTable("__Identity__RefreshTokens");
+                    b.ToTable("RefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("Drawer.Domain.Models.Authentication.User", b =>
@@ -114,7 +114,180 @@ namespace Drawer.Infrastructure.Data.Migrations.DrawIdentity
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.ToTable("__Identity__AspNetUsers", (string)null);
+                    b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("Drawer.Domain.Models.Locations.Position", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("CompanyId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Positions", (string)null);
+                });
+
+            modelBuilder.Entity("Drawer.Domain.Models.Locations.WorkPlace", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WorkPlaces", (string)null);
+                });
+
+            modelBuilder.Entity("Drawer.Domain.Models.Locations.WorkPlaceZone", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long?>("ZoneTypeId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ZoneTypeId");
+
+                    b.ToTable("WorkPlaceZones", (string)null);
+                });
+
+            modelBuilder.Entity("Drawer.Domain.Models.Locations.WorkPlaceZoneType", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WorkPlaceZoneTypes", (string)null);
+                });
+
+            modelBuilder.Entity("Drawer.Domain.Models.Organization.Company", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CompanyId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("OwnerId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Companies", (string)null);
+                });
+
+            modelBuilder.Entity("Drawer.Domain.Models.Organization.CompanyMember", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("CompanyId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CompanyMembers", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -140,7 +313,7 @@ namespace Drawer.Infrastructure.Data.Migrations.DrawIdentity
                         .IsUnique()
                         .HasDatabaseName("RoleNameIndex");
 
-                    b.ToTable("__Identity__AspNetRoles", (string)null);
+                    b.ToTable("AspNetRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -165,7 +338,7 @@ namespace Drawer.Infrastructure.Data.Migrations.DrawIdentity
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("__Identity__AspNetRoleClaims", (string)null);
+                    b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -190,7 +363,7 @@ namespace Drawer.Infrastructure.Data.Migrations.DrawIdentity
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("__Identity__AspNetUserClaims", (string)null);
+                    b.ToTable("AspNetUserClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -212,7 +385,7 @@ namespace Drawer.Infrastructure.Data.Migrations.DrawIdentity
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("__Identity__AspNetUserLogins", (string)null);
+                    b.ToTable("AspNetUserLogins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -227,7 +400,7 @@ namespace Drawer.Infrastructure.Data.Migrations.DrawIdentity
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("__Identity__AspNetUserRoles", (string)null);
+                    b.ToTable("AspNetUserRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -246,7 +419,16 @@ namespace Drawer.Infrastructure.Data.Migrations.DrawIdentity
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("__Identity__AspNetUserTokens", (string)null);
+                    b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("Drawer.Domain.Models.Locations.WorkPlaceZone", b =>
+                {
+                    b.HasOne("Drawer.Domain.Models.Locations.WorkPlaceZoneType", "ZoneType")
+                        .WithMany()
+                        .HasForeignKey("ZoneTypeId");
+
+                    b.Navigation("ZoneType");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

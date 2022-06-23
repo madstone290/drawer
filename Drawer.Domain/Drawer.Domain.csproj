@@ -7,17 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Models\Locations\**" />
-    <EmbeddedResource Remove="Models\Locations\**" />
-    <None Remove="Models\Locations\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="6.0.6" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Exceptions\" />
   </ItemGroup>
 
 </Project>

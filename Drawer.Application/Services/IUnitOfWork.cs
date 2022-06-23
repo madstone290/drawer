@@ -6,15 +6,8 @@ using System.Threading.Tasks;
 
 namespace Drawer.Application.Services
 {
-    public interface IRepository<TEntity>
-        where TEntity : class
+    public interface IUnitOfWork
     {
-        Task AddAsync(TEntity entity);
-
-        void Update(TEntity entity);
-
-        void Remove(TEntity entity);
-
         Task SaveChangesAsync();
     }
 }
