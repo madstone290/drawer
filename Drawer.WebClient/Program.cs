@@ -2,13 +2,27 @@ using Drawer.WebClient;
 using Drawer.WebClient.Api;
 using Drawer.WebClient.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using MudBlazor;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddMudServices();
+builder.Services.AddMudServices(options =>
+{
+    options.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopCenter;
+    options.SnackbarConfiguration.PreventDuplicates = false;
+    options.SnackbarConfiguration.NewestOnTop = false;
+    options.SnackbarConfiguration.ShowCloseIcon = true;
+    options.SnackbarConfiguration.MaxDisplayedSnackbars = 10; 
+    options.SnackbarConfiguration.VisibleStateDuration = 5000;
+    options.SnackbarConfiguration.ShowTransitionDuration = 0;
+    options.SnackbarConfiguration.HideTransitionDuration = 1000;
+    
+    options.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
+});
+
 
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -55,3 +69,4 @@ app.UseEndpoints(endpoints =>
 app.MapFallbackToPage("/_Host");
 
 app.Run();
+
