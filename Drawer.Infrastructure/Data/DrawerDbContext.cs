@@ -3,6 +3,7 @@ using Drawer.Domain.Models.Authentication;
 using Drawer.Domain.Models.Locations;
 using Drawer.Domain.Models.Organization;
 using Drawer.Infrastructure.Services.Organization;
+using Drawer.Infrastructure.Services.UserInformation;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
@@ -18,10 +19,14 @@ namespace Drawer.Infrastructure.Data
     public class DrawerDbContext : IdentityDbContext<User>
     {
         private readonly ICompanyIdProvider _companyIdProvider;
+        private readonly IUserIdProvider _userIdProvider;
 
-        public DrawerDbContext(DbContextOptions options, ICompanyIdProvider companyIdProvider) : base(options)
+        public DrawerDbContext(DbContextOptions options,
+            ICompanyIdProvider companyIdProvider,
+            IUserIdProvider userIdProvider) : base(options)
         {
             _companyIdProvider = companyIdProvider;
+            _userIdProvider = userIdProvider;
         }
 
         public DbSet<RefreshToken> RefreshTokens { get; set; } = default!;
@@ -38,8 +43,6 @@ namespace Drawer.Infrastructure.Data
         {
             base.OnConfiguring(optionsBuilder);
         }
-
-  
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -95,13 +98,15 @@ namespace Drawer.Infrastructure.Data
             foreach (var entry in addedEntries)
             {
                 entry.Entity.Created = now;
-                entry.Entity.CreatedBy = "test";
+                entry.Entity.CreatedBy = _userIdProvider.GetUserId() 
+                    ?? throw new Exception("유효하지 않는 사용자Id입니다");
             }
 
             foreach (var entry in modifiedEntries)
             {
                 entry.Entity.LastModified = now;
-                entry.Entity.LastModifiedBy = "test";
+                entry.Entity.LastModifiedBy = _userIdProvider.GetUserId() 
+                    ?? throw new Exception("유효하지 않는 사용자Id입니다");
             }
         }
 

@@ -20,17 +20,17 @@ namespace Drawer.IntergrationTest
                           ?? throw new Exception("DrawerIdentityDbContext is null");
             dbContext.Database.Migrate();
 
-            dbContext.Users.RemoveRange(dbContext.Users.ToArray());
-            dbContext.UserRoles.RemoveRange(dbContext.UserRoles.ToArray());
-            dbContext.UserClaims.RemoveRange(dbContext.UserClaims.ToArray());
-            dbContext.UserLogins.RemoveRange(dbContext.UserLogins.ToArray());
-            dbContext.UserTokens.RemoveRange(dbContext.UserTokens.ToArray());
-            dbContext.Roles.RemoveRange(dbContext.Roles.ToArray());
-            dbContext.RoleClaims.RemoveRange(dbContext.RoleClaims.ToArray());
-            dbContext.RefreshTokens.RemoveRange(dbContext.RefreshTokens.ToArray());
+            dbContext.Users.Truncate();
+            dbContext.UserRoles.Truncate();
+            dbContext.UserClaims.Truncate();
+            dbContext.UserLogins.Truncate();
+            dbContext.UserTokens.Truncate();
+            dbContext.Roles.Truncate();
+            dbContext.RoleClaims.Truncate();
+            dbContext.RefreshTokens.Truncate();
 
-            dbContext.CompanyMembers.RemoveRange(dbContext.CompanyMembers.ToArray());
-            dbContext.Companies.RemoveRange(dbContext.Companies.ToArray());
+            dbContext.CompanyMembers.Truncate();
+            dbContext.Companies.Truncate();
 
             dbContext.SaveChanges();
 

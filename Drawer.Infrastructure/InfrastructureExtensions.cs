@@ -10,6 +10,7 @@ using Drawer.Infrastructure.Repos.Locations;
 using Drawer.Infrastructure.Repos.Organization;
 using Drawer.Infrastructure.Services.Authentication;
 using Drawer.Infrastructure.Services.Organization;
+using Drawer.Infrastructure.Services.UserInformation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -103,6 +104,7 @@ namespace Drawer.Infrastructure
             services.AddScoped<ITokenGenerator, TokenGenerator>();
 
             services.AddScoped<ICompanyIdProvider, CompanyIdProvider>();
+            services.AddScoped<IUserIdProvider, UserIdProvider>();
 
             services.AddScoped<IOrganizationUnitOfWork, OrganizationUnitOfWork>();
             services.AddScoped<ICompanyRepository, CompanyRepository>();
