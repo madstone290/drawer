@@ -7,6 +7,7 @@ using Drawer.Infrastructure.Data;
 using Drawer.Infrastructure.Repos.Authentication;
 using Drawer.Infrastructure.Repos.Organization;
 using Drawer.Infrastructure.Services.Authentication;
+using Drawer.Infrastructure.Services.Organization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -98,6 +99,8 @@ namespace Drawer.Infrastructure
 
             services.AddSingleton(jwtSettings);
             services.AddScoped<ITokenGenerator, TokenGenerator>();
+
+            services.AddScoped<ICompanyIdProvider, CompanyIdProvider>();
 
             services.AddScoped<IOrganizationUnitOfWork, OrganizationUnitOfWork>();
             services.AddScoped<ICompanyRepository, CompanyRepository>();

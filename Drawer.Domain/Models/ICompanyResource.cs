@@ -7,14 +7,11 @@ using System.Threading.Tasks;
 namespace Drawer.Domain.Models
 {
     /// <summary>
-    /// 회사에 포함되는 엔티티.
+    /// 회사 자원.
     /// 회사에 속한 구성원들만 접근가능하다.
     /// </summary>
-    public abstract class CompanyEntity<TId> : AuditableEntity<TId>, ICompanyResource
+    public interface ICompanyResource
     {
-        /// <summary>
-        /// 조직 ID
-        /// </summary>
-        public string CompanyId { get; set; } = default!;
+        string CompanyId { get; set; }
     }
 }

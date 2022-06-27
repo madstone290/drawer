@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Drawer.Domain.Models.Organization
 {
-    public class Company : CompanyEntity<string>
+    public class Company : AuditableEntity<string>
     {
         /// <summary>
         /// 회사명
@@ -33,7 +33,6 @@ namespace Drawer.Domain.Models.Organization
         {
             OwnerId = ownerId;
             Id = Guid.NewGuid().ToString();
-            CompanyId = Guid.NewGuid().ToString();
             SetName(name);
         }
 

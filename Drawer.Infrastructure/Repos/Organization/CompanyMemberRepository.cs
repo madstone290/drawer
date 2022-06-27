@@ -24,7 +24,8 @@ namespace Drawer.Infrastructure.Repos.Organization
 
         public async Task<CompanyMember?> FindByUserIdAsync(string userId)
         {
-            return await _dbContext.CompanyMembers.FirstOrDefaultAsync(x => x.UserId == userId);
+            return await _dbContext.CompanyMembers
+                .FirstOrDefaultAsync(x => x.UserId == userId);
          
         }
     }

@@ -10,7 +10,7 @@ namespace Drawer.Domain.Models.Locations
     /// <summary>
     /// 사업장 내 구역
     /// </summary>
-    public class WorkPlaceZone : Entity
+    public class WorkPlaceZone : CompanyEntity<long>
     {
         /// <summary>
         /// 구역명
