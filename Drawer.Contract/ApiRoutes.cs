@@ -32,8 +32,8 @@ namespace Drawer.Contract
         public static class User
         {
             private const string Controller = "/User";
-
-            public const string Index = Base + Controller;
+            private const string Index = Base + Controller;
+            
             public const string GetUser = Index;
             public const string UpdateUser = Index;
             public const string UpdatePassword = Index + "/Password";
@@ -46,10 +46,11 @@ namespace Drawer.Contract
         public static class Company
         {
             private const string Controller = "/Company";
+            private const string Index = Base + Controller;
 
-            public const string GetCompany = Controller;
-            public const string CreateCompany = Controller;
-            public const string GetCompanyMembers = Controller + "/Members";
+            public const string GetCompany = Index;
+            public const string CreateCompany = Index;
+            public const string GetCompanyMembers = Index + "/Members";
 
         }
 
