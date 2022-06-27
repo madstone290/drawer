@@ -11,8 +11,6 @@ namespace Drawer.Application.Services
     {
         Task AddAsync(TEntity entity);
 
-        void Update(TEntity entity);
-
         void Remove(TEntity entity);
 
         Task SaveChangesAsync();

@@ -48,7 +48,7 @@ namespace Drawer.Infrastructure.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RefreshTokens");
+                    b.ToTable("RefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("Drawer.Domain.Models.Authentication.User", b =>
@@ -153,7 +153,7 @@ namespace Drawer.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Positions");
+                    b.ToTable("Positions", (string)null);
                 });
 
             modelBuilder.Entity("Drawer.Domain.Models.Locations.WorkPlace", b =>
@@ -193,7 +193,7 @@ namespace Drawer.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("WorkPlaces");
+                    b.ToTable("WorkPlaces", (string)null);
                 });
 
             modelBuilder.Entity("Drawer.Domain.Models.Locations.WorkPlaceZone", b =>
@@ -235,7 +235,7 @@ namespace Drawer.Infrastructure.Data.Migrations
 
                     b.HasIndex("ZoneTypeId");
 
-                    b.ToTable("WorkPlaceZones");
+                    b.ToTable("WorkPlaceZones", (string)null);
                 });
 
             modelBuilder.Entity("Drawer.Domain.Models.Locations.WorkPlaceZoneType", b =>
@@ -272,7 +272,7 @@ namespace Drawer.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("WorkPlaceZoneTypes");
+                    b.ToTable("WorkPlaceZoneTypes", (string)null);
                 });
 
             modelBuilder.Entity("Drawer.Domain.Models.Organization.Company", b =>
@@ -312,7 +312,7 @@ namespace Drawer.Infrastructure.Data.Migrations
                     b.HasIndex("Id", "OwnerId")
                         .IsUnique();
 
-                    b.ToTable("Companies");
+                    b.ToTable("Companies", (string)null);
                 });
 
             modelBuilder.Entity("Drawer.Domain.Models.Organization.CompanyMember", b =>
@@ -349,7 +349,7 @@ namespace Drawer.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CompanyMembers");
+                    b.ToTable("CompanyMembers", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

@@ -6,13 +6,8 @@ using System.Threading.Tasks;
 
 namespace Drawer.Domain.Models.Authentication
 {
-    public class RefreshToken 
+    public class RefreshToken : Entity<string>
     {
-        /// <summary>
-        /// Id
-        /// </summary>
-        public string Id { get; init; } = default!;
-
         /// <summary>
         /// 사용자Id
         /// </summary>

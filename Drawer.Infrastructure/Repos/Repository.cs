@@ -29,10 +29,6 @@ namespace Drawer.Infrastructure.Repos
         {
             await _dbContext.SaveChangesAsync();
         }
-
-        public void Update(TEntity entity)
-        {
-            _dbContext.Update(entity);
-        }
+     
     }
 }

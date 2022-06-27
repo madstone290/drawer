@@ -10,7 +10,7 @@ namespace Drawer.Domain.Models
     /// 감사기능이 포함된 엔티티
     /// </summary>
     /// <typeparam name="TId"></typeparam>
-    public class AuditableEntity<TId> : Entity<TId>, IAuditable
+    public class AuditableEntity<TId> : Entity<TId>, IAuditable, ISoftDelete
     {
         public DateTime Created { get; set; }
 
@@ -19,5 +19,7 @@ namespace Drawer.Domain.Models
         public DateTime? LastModified { get; set; }
 
         public string? LastModifiedBy { get; set; }
+
+        public bool IsDeleted { get; set; }
     }
 }
