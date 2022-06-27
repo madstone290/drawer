@@ -22,7 +22,7 @@ namespace Drawer.Domain.Models.Locations
         /// </summary>
         public string? Description { get; private set; } 
 
-        public WorkPlace(string name)
+        public WorkPlace(string companyId, string name) : base(companyId)
         {
             SetName(name);
         }

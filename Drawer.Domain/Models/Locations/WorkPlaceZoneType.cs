@@ -13,6 +13,10 @@ namespace Drawer.Domain.Models.Locations
     /// </summary>
     public class WorkPlaceZoneType : CompanyEntity<long>
     {
+        public WorkPlaceZoneType(string companyId) : base(companyId)
+        {
+        }
+
         /// <summary>
         /// 유형명
         /// </summary>

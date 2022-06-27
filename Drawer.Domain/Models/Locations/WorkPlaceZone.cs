@@ -22,6 +22,14 @@ namespace Drawer.Domain.Models.Locations
         /// </summary>
         public WorkPlaceZoneType? ZoneType { get; set; }
 
+        public WorkPlaceZone(string companyId, string name) : base(companyId)
+        {
+            Name = name;
+        }
+
+
+
+
         /// <summary>
         /// 구역명을 변경한다.
         /// </summary>

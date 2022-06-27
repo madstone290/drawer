@@ -1,10 +1,12 @@
 ﻿using Drawer.Application.Services.Authentication;
 using Drawer.Application.Services.Authentication.Repos;
+using Drawer.Application.Services.Locations.Repos;
 using Drawer.Application.Services.Organization;
 using Drawer.Application.Services.Organization.Repos;
 using Drawer.Domain.Models.Authentication;
 using Drawer.Infrastructure.Data;
 using Drawer.Infrastructure.Repos.Authentication;
+using Drawer.Infrastructure.Repos.Locations;
 using Drawer.Infrastructure.Repos.Organization;
 using Drawer.Infrastructure.Services.Authentication;
 using Drawer.Infrastructure.Services.Organization;
@@ -32,7 +34,7 @@ namespace Drawer.Infrastructure
             var connectionString = configuration["DrawerIdentityDb:ConnectionString"];
             services.AddDbContext<DrawerDbContext>(options =>
             {
-                options.UseNpgsql(connectionString);
+                options.UseNpgsql(connectionString).EnableSensitiveDataLogging();
             });
 
             // AspNetCore Identity 기본설정
@@ -105,6 +107,9 @@ namespace Drawer.Infrastructure
             services.AddScoped<IOrganizationUnitOfWork, OrganizationUnitOfWork>();
             services.AddScoped<ICompanyRepository, CompanyRepository>();
             services.AddScoped<ICompanyMemberRepository, CompanyMemberRepository>();
+
+            services.AddScoped<IWorkPlaceRepository, WorkPlaceRepository>();
+
 
         }
     }

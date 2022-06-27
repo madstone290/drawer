@@ -16,5 +16,10 @@ namespace Drawer.Domain.Models
         /// 조직 ID
         /// </summary>
         public string CompanyId { get; set; } = default!;
+
+        protected CompanyEntity(string companyId)
+        {
+            CompanyId = companyId;
+        }
     }
 }

@@ -5,6 +5,7 @@ using Drawer.Domain.Models.Organization;
 using Drawer.Infrastructure.Services.Organization;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +34,12 @@ namespace Drawer.Infrastructure.Data
         public DbSet<WorkPlaceZoneType> WorkPlaceZoneTypes { get; set; } = default!;
         public DbSet<Position> Positions { get; set; } = default!;
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            base.OnConfiguring(optionsBuilder);
+        }
 
+  
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -41,20 +47,7 @@ namespace Drawer.Infrastructure.Data
 
             builder.ApplyConfigurationsFromAssembly(typeof(DrawerDbContext).Assembly);
 
-            // 글로벌 쿼리필터 설정
-            var allTypes = typeof(ICompanyResource).Assembly.GetTypes();
-            var companyEntities = allTypes
-                .Where(type => typeof(ICompanyResource).IsAssignableFrom(type) 
-                        && type.IsClass && !type.IsAbstract);
-
-            foreach (var companyEntity in companyEntities)
-            {
-                var companyId = _companyIdProvider.GetCompanyId() ?? string.Empty;
-                var lambda = GenerateCompanyIdQueryFilterLambdaExpression(companyEntity, companyId);
-                builder.Entity(companyEntity)
-                    .HasQueryFilter(lambda);
-            }
-
+            ApplyGlobalFilters<ICompanyResource>(builder, x => x.CompanyId == _companyIdProvider.GetCompanyId());
         }
 
         public override int SaveChanges()
@@ -106,59 +99,30 @@ namespace Drawer.Infrastructure.Data
             }
         }
 
-
-        private LambdaExpression GenerateSoftDeleteQueryFilterLambdaExpression(Type type)
-        {
-            //// we should generate:  e => e.IsDeleted == false
-            //// or: e => !e.IsDeleted
-
-            //// e =>
-            //var parameter = Expression.Parameter(type, "e");
-
-            //// false
-            //var falseConstant = Expression.Constant(false);
-
-            //// e.IsDeleted
-            //var propertyAccess = Expression.PropertyOrField(parameter, nameof(ICanBeSoftDeleted.IsDeleted));
-
-            //// e.IsDeleted == false
-            //var equalExpression = Expression.Equal(propertyAccess, falseConstant);
-
-            //// e => e.IsDeleted == false
-            //var lambda = Expression.Lambda(equalExpression, parameter);
-
-            //return lambda;
-            return null;
-        }
-
         /// <summary>
-        /// 회사ID쿼리필터 람다표현식을 생성한다.
+        /// 인터페이스에 대한 글로벌 필터를 적용한다 
         /// </summary>
-        /// <param name="type"></param>
-        /// <param name="companyId"></param>
-        /// <returns></returns>
-        private LambdaExpression GenerateCompanyIdQueryFilterLambdaExpression(Type type, string companyId)
+        /// <typeparam name="TInterface"></typeparam>
+        /// <param name="modelBuilder"></param>
+        /// <param name="expression"></param>
+        static void ApplyGlobalFilters<TInterface>(ModelBuilder modelBuilder, Expression<Func<TInterface, bool>> expression)
         {
-            // we should generate:  e => e.CompanyId == companyId
-   
-            // e =>
-            var parameter = Expression.Parameter(type, "e");
+            var entities = modelBuilder.Model
+                .GetEntityTypes()
+                .Where(e => e.ClrType.GetInterface(typeof(TInterface).Name) != null)
+                .Select(e => e.ClrType);
 
-            // companyId
-            var companyIdConstant = Expression.Constant(companyId);
+            foreach (var entity in entities)
+            {
+                var newParam = Expression.Parameter(entity);
+                var newbody = ReplacingExpressionVisitor.Replace(expression.Parameters.Single(), newParam, expression.Body);
+                var expressions = Expression.Lambda(newbody, newParam);
 
-            // e.CompanyId
-            var propertyAccess = Expression.PropertyOrField(parameter, nameof(ICompanyResource.CompanyId));
-
-            // e.CompanyId == companyId
-            var equalExpression = Expression.Equal(propertyAccess, companyIdConstant);
-
-            // e => e.CompanyId == companyId
-            var lambda = Expression.Lambda(equalExpression, parameter);
-
-            return lambda;
+                modelBuilder.Entity(entity).HasQueryFilter(expressions);
+            }
         }
 
 
+       
     }
 }
