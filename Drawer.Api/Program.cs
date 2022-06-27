@@ -1,6 +1,7 @@
 using Drawer.Api.ActionFilters;
 using Drawer.Application;
 using Drawer.Infrastructure;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +15,33 @@ builder.Services.AddInfrastructureDependency(builder.Configuration);
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    string securityName = "Bearer";
+    options.AddSecurityDefinition(securityName, new Microsoft.OpenApi.Models.OpenApiSecurityScheme()
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Bearer {token} 형식으로 입력하세요",
+    });
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement()
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = securityName
+                }
+            },
+            new string[] {}
+        }
+    });
+});
 
 
 builder.Services.AddScoped<DefaultExceptionFilter>();
