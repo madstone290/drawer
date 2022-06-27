@@ -15,12 +15,12 @@ namespace Drawer.Application.Services.Organization.Commands
     /// <summary>
     /// 회사를 생성한다
     /// </summary>
-    /// <param name="Email">회사를 생성할 사용자의 Email</param>
+    /// <param name="UserId">회사를 생성할 사용자의 Email</param>
     /// <param name="Name"></param>
     /// <param name="PhoneNumber"></param>
-    public record CreateCompanyCommand(string Email, string Name, string? PhoneNumber) : ICommand<CreateCompanyResult>;
+    public record CreateCompanyCommand(string UserId, string Name, string? PhoneNumber) : ICommand<CreateCompanyResult>;
 
-    public record CreateCompanyResult(string Id, string BuilderId, string Name, string? PhoneNumber);
+    public record CreateCompanyResult(string Id, string OwnerId, string Name, string? PhoneNumber);
 
     public class CreateCompanyCommandHandler : ICommandHandler<CreateCompanyCommand, CreateCompanyResult>
     {
@@ -36,15 +36,17 @@ namespace Drawer.Application.Services.Organization.Commands
         public async Task<CreateCompanyResult> Handle(CreateCompanyCommand request, CancellationToken cancellationToken)
         {
             // 회사를 생성하고 회사와 사용자간의 참조를 생성한다.
+            var user = await _userManager.FindByIdAsync(request.UserId)
+                ?? throw new InvalidUserIdException();
 
-            var user = await _userManager.FindByEmailAsync(request.Email)
-                ?? throw new InvalidEmailException();
+            if (await _organizationUnitOfWork.CompanyRepository.ExistByOwnerId(user.Id))
+                throw new CompanyAlreadyExistException();
 
             var company = new Company(user.Id, request.Name);
             company.SetPhoneNumber(request.PhoneNumber);
             await _organizationUnitOfWork.CompanyRepository.AddAsync(company);
 
-            var companyMember = new CompanyMember(company.Id, user.Id, user.Email, user.DisplayName);
+            var companyMember = new CompanyMember(company.Id, user.Id);
             await _organizationUnitOfWork.CompanyMemberRepository.AddAsync(companyMember);
 
             await _organizationUnitOfWork.SaveChangesAsync();

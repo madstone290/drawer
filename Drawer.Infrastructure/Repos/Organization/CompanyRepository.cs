@@ -1,6 +1,7 @@
 ﻿using Drawer.Application.Services.Organization.Repos;
 using Drawer.Domain.Models.Organization;
 using Drawer.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,15 @@ namespace Drawer.Infrastructure.Repos.Organization
     {
         public CompanyRepository(DrawerDbContext dbContext) : base(dbContext)
         {
+        }
+
+        public async Task<Company?> FindByIdAsync(string id)
+        {
+            return await _dbContext.Companies.FindAsync(id);
+        }
+        public async Task<bool> ExistByOwnerId(string ownerId)
+        {
+            return await _dbContext.Companies.AnyAsync(x => x.OwnerId == ownerId);
         }
     }
 }

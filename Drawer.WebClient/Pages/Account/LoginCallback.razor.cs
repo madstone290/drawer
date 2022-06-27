@@ -1,4 +1,4 @@
-﻿using Drawer.Contract.Constants;
+﻿using Drawer.Shared;
 using Drawer.WebClient.Authentication;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -24,7 +24,7 @@ namespace Drawer.WebClient.Pages.Account
         {
             // 로그인 쿠키에 포함된 액세스 토큰을 저장소에 보관한다.
             var state = await StateProvider.GetAuthenticationStateAsync();
-            var accessTokenClaim = state.User.Claims.FirstOrDefault(x => x.Type == TokenClaimTypes.AccessToken);
+            var accessTokenClaim = state.User.Claims.FirstOrDefault(x => x.Type == DrawerClaimTypes.AccessToken);
             if (accessTokenClaim != null)
             {
                 await TokenStorage.SaveAccessTokenAsync(accessTokenClaim.Value);

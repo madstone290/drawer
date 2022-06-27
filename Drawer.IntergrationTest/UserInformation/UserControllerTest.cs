@@ -26,6 +26,7 @@ namespace Drawer.IntergrationTest.UserInformation
             _client = apiInstance.Client;
             _outputHelper = outputHelper;
         }
+
         [Fact]
         public async Task GetUser_WithoutToken_Returns_Unauthorized()
         {

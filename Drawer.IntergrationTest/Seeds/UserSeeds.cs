@@ -17,6 +17,15 @@ namespace Drawer.IntergrationTest.Seeds
             Master, 
             Admin, 
             SecurityUser, 
+            User1,
+            User2,
+            User3,
+            User4,
+            User5,
+            User6,
+            User7,
+            User8,
+            User9,
             RefreshUser1,
             RefreshUser2,
             LoginUser1,
@@ -29,6 +38,16 @@ namespace Drawer.IntergrationTest.Seeds
         public static RegisterRequest Master => new("master@master.com", "master12345", "master");
         public static RegisterRequest Admin => new("admin@admin.com", "admin12345", "admin");
         public static RegisterRequest SecurityUser => new("SecurityUser@manager.com", "manager12345", "manager");
+        public static RegisterRequest User1 => new("User1@manager.com", "manager12345", "user1");
+        public static RegisterRequest User2 => new("User2@manager.com", "manager12345", "user2");
+        public static RegisterRequest User3 => new("User3@manager.com", "manager12345", "user3");
+        public static RegisterRequest User4 => new("User4@manager.com", "manager12345", "user4");
+        public static RegisterRequest User5 => new("User5@manager.com", "manager12345", "user5");
+        public static RegisterRequest User6 => new("User6@manager.com", "manager12345", "user6");
+        public static RegisterRequest User7 => new("User7@manager.com", "manager12345", "user7");
+        public static RegisterRequest User8 => new("User8@manager.com", "manager12345", "user8");
+        public static RegisterRequest User9 => new("User9@manager.com", "manager12345", "user9");
+
         public static RegisterRequest RefreshUser1 => new("RefreshUser1@manager.com", "manager12345", "manager");
         public static RegisterRequest RefreshUser2 => new("RefreshUser2@manager.com", "manager12345", "manager");
         public static RegisterRequest LoginUser1 => new("login@manager.com", "manager12345", "manager");

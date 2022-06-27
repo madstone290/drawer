@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Drawer.Domain\Drawer.Domain.csproj" />
+    <ProjectReference Include="..\Drawer.Shared\Drawer.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

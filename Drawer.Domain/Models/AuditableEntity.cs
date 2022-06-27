@@ -10,14 +10,14 @@ namespace Drawer.Domain.Models
     /// 감사기능이 포함된 엔티티
     /// </summary>
     /// <typeparam name="TId"></typeparam>
-    public class AuditableEntity<TId> : Entity<TId>
+    public class AuditableEntity<TId> : Entity<TId>, IAuditable
     {
-        public DateTime Created { get; protected set; }
+        public DateTime Created { get; set; }
 
-        public string CreatedBy { get; protected set; } = default!;
+        public string CreatedBy { get; set; } = default!;
 
-        public DateTime? LastModified { get; protected set; }
+        public DateTime? LastModified { get; set; }
 
-        public string? LastModifiedBy { get; protected set; }
+        public string? LastModifiedBy { get; set; }
     }
 }

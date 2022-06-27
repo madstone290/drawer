@@ -1,7 +1,7 @@
 ﻿using Drawer.Contract;
 using Drawer.Contract.Authentication;
 using Drawer.Contract.Common;
-using Drawer.Contract.Constants;
+using Drawer.Shared;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -48,8 +48,8 @@ namespace Drawer.WebClient.Authentication
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Email, email),
-                new Claim(TokenClaimTypes.AccessToken, loginResponse!.AccessToken),
-                new Claim(TokenClaimTypes.RefreshToken, loginResponse!.RefreshToken)
+                new Claim(DrawerClaimTypes.AccessToken, loginResponse!.AccessToken),
+                new Claim(DrawerClaimTypes.RefreshToken, loginResponse!.RefreshToken)
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -83,7 +83,7 @@ namespace Drawer.WebClient.Authentication
                 return UserAuthenticationState.Unauthenticated();
 
             var emailClaim = state.User.Claims.First(x => x.Type == ClaimTypes.Email);
-            var refreshTokenClaim = state.User.Claims.First(x => x.Type == TokenClaimTypes.RefreshToken);
+            var refreshTokenClaim = state.User.Claims.First(x => x.Type == DrawerClaimTypes.RefreshToken);
             return UserAuthenticationState.Authenticated(emailClaim.Value, refreshTokenClaim.Value);
         }
 

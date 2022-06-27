@@ -10,6 +10,9 @@ namespace Drawer.Contract
     {
         private const string Base = "/Api";
 
+        /// <summary>
+        /// 계정
+        /// </summary>
         public static class Account
         {
             private const string Controller = "/Account";
@@ -23,6 +26,9 @@ namespace Drawer.Contract
             public const string SecurityTest = Index + "/SecurityTest";
         }
 
+        /// <summary>
+        /// 사용자 본인
+        /// </summary>
         public static class User
         {
             private const string Controller = "/User";
@@ -33,5 +39,19 @@ namespace Drawer.Contract
             public const string UpdatePassword = Index + "/Password";
 
         }
+
+        /// <summary>
+        /// 사용자의 회사
+        /// </summary>
+        public static class Company
+        {
+            private const string Controller = "/Company";
+
+            public const string GetCompany = Controller;
+            public const string CreateCompany = Controller;
+            public const string GetCompanyMembers = Controller + "/Members";
+
+        }
+
     }
 }

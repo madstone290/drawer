@@ -9,5 +9,8 @@ namespace Drawer.Application.Services.Organization.Repos
 {
     public interface ICompanyRepository : IRepository<Company>
     {
+        Task<Company?> FindByIdAsync(string id);
+
+        Task<bool> ExistByOwnerId(string ownerId);
     }
 }

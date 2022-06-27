@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Drawer.Contract\Drawer.Contract.csproj" />
+    <ProjectReference Include="..\Drawer.Shared\Drawer.Shared.csproj" />
   </ItemGroup>
 
 </Project>

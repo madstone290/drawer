@@ -27,6 +27,11 @@ namespace Drawer.IntergrationTest
             dbContext.UserTokens.RemoveRange(dbContext.UserTokens.ToArray());
             dbContext.Roles.RemoveRange(dbContext.Roles.ToArray());
             dbContext.RoleClaims.RemoveRange(dbContext.RoleClaims.ToArray());
+            dbContext.RefreshTokens.RemoveRange(dbContext.RefreshTokens.ToArray());
+
+            dbContext.CompanyMembers.RemoveRange(dbContext.CompanyMembers.ToArray());
+            dbContext.Companies.RemoveRange(dbContext.Companies.ToArray());
+
             dbContext.SaveChanges();
 
             var userManager = scope.ServiceProvider.GetService<UserManager<User>>();

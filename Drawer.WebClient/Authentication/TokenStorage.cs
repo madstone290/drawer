@@ -1,11 +1,11 @@
-﻿using Drawer.Contract.Constants;
+﻿using Drawer.Shared;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace Drawer.WebClient.Authentication
 {
     public class TokenStorage : ITokenStorage
     {
-        private const string AccessTokenKey = TokenClaimTypes.AccessToken;
+        private const string AccessTokenKey = DrawerClaimTypes.AccessToken;
 
         private readonly ProtectedLocalStorage _localStorage;
 

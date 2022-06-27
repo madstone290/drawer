@@ -21,6 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{5222AFEE-7
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drawer.IntergrationTest", "Drawer.IntergrationTest\Drawer.IntergrationTest.csproj", "{829BE432-9419-4EE0-84DD-C1E5F66690C8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drawer.Shared", "Drawer.Shared\Drawer.Shared.csproj", "{0B056CBD-5AFC-458B-9D4B-C5374D6C026F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,10 @@ Global
 		{829BE432-9419-4EE0-84DD-C1E5F66690C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{829BE432-9419-4EE0-84DD-C1E5F66690C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{829BE432-9419-4EE0-84DD-C1E5F66690C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B056CBD-5AFC-458B-9D4B-C5374D6C026F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B056CBD-5AFC-458B-9D4B-C5374D6C026F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B056CBD-5AFC-458B-9D4B-C5374D6C026F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B056CBD-5AFC-458B-9D4B-C5374D6C026F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,6 +73,7 @@ Global
 		{2494E51C-9D24-454B-A342-6512A620E636} = {904F15E6-A125-4CAC-9747-733F3D2E4D6D}
 		{88A9AAB4-644E-4B30-B940-8AEA5ECA6C9E} = {904F15E6-A125-4CAC-9747-733F3D2E4D6D}
 		{829BE432-9419-4EE0-84DD-C1E5F66690C8} = {5222AFEE-7817-49FD-BA75-5476801EE06F}
+		{0B056CBD-5AFC-458B-9D4B-C5374D6C026F} = {904F15E6-A125-4CAC-9747-733F3D2E4D6D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7E036C6B-7CC0-4730-BFB2-9335AB6AD597}

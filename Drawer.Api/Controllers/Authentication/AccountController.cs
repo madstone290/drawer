@@ -21,6 +21,7 @@ namespace Drawer.Api.Controllers.Authentication
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [Route(ApiRoutes.Account.Register)]
         [ProducesResponseType(typeof(RegisterResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> RegisterAsync([FromBody] RegisterRequest request)
@@ -31,6 +32,7 @@ namespace Drawer.Api.Controllers.Authentication
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [Route(ApiRoutes.Account.ConfirmEmail)]
         public async Task<IActionResult> ConfirmEmailAsync([FromBody] ConfirmEmailRequest request)
         {
@@ -41,6 +43,7 @@ namespace Drawer.Api.Controllers.Authentication
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [Route(ApiRoutes.Account.ConfirmEmail, Name = nameof(VerifyEmailAsync))]
         [ProducesResponseType(StatusCodes.Status302Found)]
         public async Task<IActionResult> VerifyEmailAsync([FromQuery] string email, [FromQuery] string token, [FromQuery] string redirectUri)
@@ -51,6 +54,7 @@ namespace Drawer.Api.Controllers.Authentication
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [Route(ApiRoutes.Account.Login)]
         [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> LoginAsync([FromBody] LoginRequest request)
@@ -61,6 +65,7 @@ namespace Drawer.Api.Controllers.Authentication
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [Route(ApiRoutes.Account.Refresh)]
         [ProducesResponseType(typeof(RefreshResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> RefreshAsync([FromBody] RefreshRequest model)
@@ -76,12 +81,10 @@ namespace Drawer.Api.Controllers.Authentication
         /// <returns></returns>
         [HttpPost]
         [Route(ApiRoutes.Account.SecurityTest)]
-        [Authorize]
         public IActionResult SecurityTest()
         {
             return Ok("You are authorized");
         }
-
 
     }
 }

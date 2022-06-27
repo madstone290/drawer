@@ -13,18 +13,10 @@ namespace Drawer.Domain.Models.Organization
     {
         public string UserId { get; private set; }
 
-        public string UserEmail { get; private set; }
-
-        public string UserName { get; private set; }
-
-        public string Test { get; set; }
-
-        public CompanyMember(string companyId, string userId, string userEmail, string userName)
+        public CompanyMember(string companyId, string userId)
         {
             CompanyId = companyId;
             UserId = userId;
-            UserEmail = userEmail;
-            UserName = userName;
         }
     }
 }
