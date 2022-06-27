@@ -1,10 +1,6 @@
 using Drawer.Api.ActionFilters;
 using Drawer.Application;
 using Drawer.Infrastructure;
-using Drawer.Infrastructure.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 

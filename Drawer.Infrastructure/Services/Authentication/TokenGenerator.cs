@@ -10,7 +10,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drawer.Infrastructure.Authentication
+namespace Drawer.Infrastructure.Services.Authentication
 {
     public class TokenGenerator : ITokenGenerator
     {

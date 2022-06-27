@@ -8,9 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drawer.Infrastructure.Authentication.Repos
+namespace Drawer.Infrastructure.Repos.Authentication
 {
-    public class RefreshTokenRepository : AuthenticationRepository<RefreshToken>, IRefreshTokenRepository
+    public class RefreshTokenRepository : Repository<RefreshToken>, IRefreshTokenRepository
     {
         public RefreshTokenRepository(DrawerDbContext dbContext) : base(dbContext)
         {
