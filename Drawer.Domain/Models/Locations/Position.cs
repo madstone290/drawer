@@ -10,7 +10,7 @@ namespace Drawer.Domain.Models.Locations
     /// <summary>
     /// 구역 내 위치
     /// </summary>
-    public class Position : CompanyEntity<long>
+    public class Position : CompanyResourceEntity<long>
     {
         /// <summary>
         /// 위치명

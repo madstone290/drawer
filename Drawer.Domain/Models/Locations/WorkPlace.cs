@@ -10,7 +10,7 @@ namespace Drawer.Domain.Models.Locations
     /// <summary>
     /// 사업장
     /// </summary>
-    public class WorkPlace : CompanyEntity<long>
+    public class WorkPlace : CompanyResourceEntity<long>
     {
         /// <summary>
         /// 사업장명

@@ -10,14 +10,14 @@ namespace Drawer.Domain.Models
     /// 회사에 포함되는 엔티티.
     /// 회사에 속한 구성원들만 접근가능하다.
     /// </summary>
-    public abstract class CompanyEntity<TId> : AuditableEntity<TId>, ICompanyResource
+    public abstract class CompanyResourceEntity<TId> : AuditableEntity<TId>, ICompanyResource
     {
         /// <summary>
         /// 조직 ID
         /// </summary>
         public string CompanyId { get; set; } = default!;
 
-        protected CompanyEntity(string companyId)
+        protected CompanyResourceEntity(string companyId)
         {
             CompanyId = companyId;
         }

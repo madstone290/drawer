@@ -18,9 +18,11 @@ namespace Drawer.Domain.Models
     /// 엔티티
     /// </summary>
     /// <typeparam name="TId">Id타입</typeparam>
-    public class Entity<TId>
+    public class Entity<TId> : ISoftDelete
     {
         public TId Id { get; protected set; } = default!;
+
+        public bool IsDeleted { get; set; }
     }
 
 }

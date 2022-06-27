@@ -47,55 +47,76 @@ namespace Drawer.Infrastructure.Data
 
             builder.ApplyConfigurationsFromAssembly(typeof(DrawerDbContext).Assembly);
 
-            ApplyGlobalFilters<ICompanyResource>(builder, x => x.CompanyId == _companyIdProvider.GetCompanyId());
+            ApplyGlobalFilters<ICompanyResource>(builder, e => e.CompanyId == _companyIdProvider.GetCompanyId());
+            ApplyGlobalFilters<ISoftDelete>(builder, e => e.IsDeleted == false);
         }
 
         public override int SaveChanges()
         {
-            AuditTrail();
+            ApplySoftDelete();
+            ApplyAuditTrail();
             return base.SaveChanges();
         }
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
-            AuditTrail();
+            ApplySoftDelete();
+            ApplyAuditTrail();
             return base.SaveChanges(acceptAllChangesOnSuccess);
         }
 
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
-            AuditTrail();
+            ApplySoftDelete();
+            ApplyAuditTrail();
             return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            AuditTrail();
+            ApplySoftDelete();
+            ApplyAuditTrail();
             return base.SaveChangesAsync(cancellationToken);
         }
 
-        void AuditTrail()
+        /// <summary>
+        /// 감사 추적을 적용한다.
+        /// </summary>
+        void ApplyAuditTrail()
         {
-            var addedAuditedEntities = ChangeTracker.Entries<IAuditable>()
-                .Where(p => p.State == EntityState.Added)
-                .Select(p => p.Entity);
+            var addedEntries = ChangeTracker.Entries<IAuditable>()
+                .Where(p => p.State == EntityState.Added);
 
-            var modifiedAuditedEntities = ChangeTracker.Entries<IAuditable>()
-              .Where(p => p.State == EntityState.Modified)
-              .Select(p => p.Entity);
+            var modifiedEntries = ChangeTracker.Entries<IAuditable>()
+              .Where(p => p.State == EntityState.Modified);
 
 
             var now = DateTime.UtcNow;
-            foreach (var added in addedAuditedEntities)
+            foreach (var entry in addedEntries)
             {
-                added.Created = now;
-                added.CreatedBy = "test";
+                entry.Entity.Created = now;
+                entry.Entity.CreatedBy = "test";
             }
 
-            foreach (var modified in modifiedAuditedEntities)
+            foreach (var entry in modifiedEntries)
             {
-                modified.LastModified = now;
-                modified.LastModifiedBy = "test";
+                entry.Entity.LastModified = now;
+                entry.Entity.LastModifiedBy = "test";
+            }
+        }
+
+        /// <summary>
+        /// 소프트 삭제를 적용한다.
+        /// </summary>
+        void ApplySoftDelete()
+        {
+            var deleteEntries = ChangeTracker.Entries<ISoftDelete>()
+              .Where(p => p.State == EntityState.Deleted);
+          
+            foreach (var entry in deleteEntries)
+            {
+                entry.State = EntityState.Modified;
+                entry.Entity.IsDeleted = true;
             }
         }
 
