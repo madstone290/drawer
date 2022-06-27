@@ -14,46 +14,23 @@ using System.Threading.Tasks;
 
 namespace Drawer.Application.Services.Authentication.Commands
 {
-    public class LoginCommand : ICommand<LoginResult>
+    public record LoginCommand(string Email, string Password) : ICommand<LoginResult>
     {
-        public string Email { get; }
-        public string Password { get; }
-        public TimeSpan RefreshTokenLifetime { get; } = TimeSpan.FromDays(7);
-
-        public LoginCommand(string email, string password)
-        {
-            Email = email;
-            Password = password;
-        }
-
-        public LoginCommand(string email, string password, TimeSpan refreshTokenLifetime) : this(email, password)
-        {
-            RefreshTokenLifetime = refreshTokenLifetime;
-        }
+        public TimeSpan RefreshTokenLifetime { get; set; } = TimeSpan.FromDays(7);
     }
 
-    public class LoginResult
-    {
-        public string AccessToken { get; }
-        public string RefreshToken { get; }
-
-        public LoginResult(string accessToken, string refreshToken)
-        {
-            AccessToken = accessToken;
-            RefreshToken = refreshToken;
-        }
-    }
+    public record LoginResult(string AccessToken, string RefreshToken);
 
     public class LoginCommandHandler : ICommandHandler<LoginCommand, LoginResult>
     {
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly ITokenGenerator _tokenGenerator;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly ICompanyMemberRepository _companyMemberRepository;
 
-        public LoginCommandHandler(UserManager<User> userManager,
+        public LoginCommandHandler(UserManager<IdentityUser> userManager,
             ITokenGenerator tokenGenerator,
-            IRefreshTokenRepository refreshTokenRepository, 
+            IRefreshTokenRepository refreshTokenRepository,
             ICompanyMemberRepository companyMemberRepository)
         {
             _userManager = userManager;
@@ -76,12 +53,12 @@ namespace Drawer.Application.Services.Authentication.Commands
                 throw new UnconfirmedEmailException();
 
             var claims = await _userManager.GetClaimsAsync(user);
-            claims.Add(new Claim(ClaimTypes.Email, user.Email)); 
+            claims.Add(new Claim(ClaimTypes.Email, user.Email));
             claims.Add(new Claim(DrawerClaimTypes.UserId, user.Id));
             var member = await _companyMemberRepository.FindByUserIdAsync(user.Id);
-            if(member != null)
+            if (member != null)
                 claims.Add(new Claim(DrawerClaimTypes.CompanyId, member.CompanyId));
-            
+
             var accessToken = _tokenGenerator.GenenateAccessToken(claims);
             var refreshToken = _tokenGenerator.GenerateRefreshToken();
 

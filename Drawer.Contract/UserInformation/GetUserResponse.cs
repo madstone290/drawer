@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace Drawer.Contract.UserInformation
 {
-    public record GetUserResponse(string Id, string Email, string DisplayName);
+    public record GetUserResponse(string UserId, string Email, string DisplayName);
 }

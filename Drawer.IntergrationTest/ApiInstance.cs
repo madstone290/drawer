@@ -42,7 +42,7 @@ namespace Drawer.IntergrationTest
                         });
 
                         var scope = services.BuildServiceProvider().CreateScope();
-                        SeedManager.Initialize(scope);
+                        SeedManager.InitializeAsync(scope).GetAwaiter().GetResult();
                     });
                 });
 

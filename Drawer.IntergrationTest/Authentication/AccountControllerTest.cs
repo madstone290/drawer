@@ -47,9 +47,9 @@ namespace Drawer.IntergrationTest.Authentication
         }
 
         [Theory]
-        [InlineData("register_bad_email1@email.com", "password1", "user1")]
-        [InlineData("register_bad_email2@email.com", "password2", "user2")]
-        [InlineData("register_bad_email3@email.com", "password3", "user3")]
+        [InlineData("register_bad_email1@gmail.com", "password1", "user1")]
+        [InlineData("register_bad_email2@gmail.com", "password2", "user2")]
+        [InlineData("register_bad_email3@gmail.com", "password3", "user3")]
         public async Task Register_With_DuplicateEmail_Returns_BadRequest(string email,string password, string displayName)
         {
             // Arrange

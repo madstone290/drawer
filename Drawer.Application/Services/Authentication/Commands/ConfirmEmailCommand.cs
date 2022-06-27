@@ -36,10 +36,10 @@ namespace Drawer.Application.Services.Authentication.Commands
 
     public class ConfirmEmailCommandHandler : ICommandHandler<ConfirmEmailCommand>
     {
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly IEmailSender _emailSender;
 
-        public ConfirmEmailCommandHandler(UserManager<User> userManager, IEmailSender emailSender)
+        public ConfirmEmailCommandHandler(UserManager<IdentityUser> userManager, IEmailSender emailSender)
         {
             _userManager = userManager;
             _emailSender = emailSender; 

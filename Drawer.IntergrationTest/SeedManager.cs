@@ -1,4 +1,6 @@
-﻿using Drawer.Domain.Models.Authentication;
+﻿using Drawer.Application.Services.Authentication.Repos;
+using Drawer.Domain.Models.Authentication;
+using Drawer.Domain.Models.UserInformation;
 using Drawer.Infrastructure.Data;
 using Drawer.IntergrationTest.Seeds;
 using Microsoft.AspNetCore.Identity;
@@ -14,7 +16,7 @@ namespace Drawer.IntergrationTest
 {
     public static class SeedManager
     {
-        public static void Initialize(IServiceScope scope)
+        public static async Task InitializeAsync(IServiceScope scope)
         {
             var dbContext = scope.ServiceProvider.GetService<DrawerDbContext>()
                           ?? throw new Exception("DrawerIdentityDbContext is null");
@@ -34,21 +36,32 @@ namespace Drawer.IntergrationTest
 
             dbContext.SaveChanges();
 
-            var userManager = scope.ServiceProvider.GetService<UserManager<User>>();
+            var authenticationUnitOfWork = scope.ServiceProvider.GetService<IAuthenticationUnitOfWork>()
+                ?? default!;
 
-            foreach(var userRequest in new UserSeeds().Users)
+            foreach (var userRequest in new UserSeeds().Users)
             {
-                var user = new User(userRequest.Email, userRequest.DisplayName)
+                var user = new IdentityUser()
                 {
+                    Email = userRequest.Email,
+                    UserName = userRequest.Email,
                     EmailConfirmed = true
                 };
 
-                var creatResult = userManager!.CreateAsync(user, userRequest.Password).GetAwaiter().GetResult();
+                var creatResult = authenticationUnitOfWork.UserManager
+                    .CreateAsync(user, userRequest.Password).GetAwaiter().GetResult();
+
                 if (!creatResult.Succeeded)
                     throw new Exception(string.Join(", ", creatResult.Errors.Select(x => x.Description)));
+
+                var userInfo = new UserInfo(user.Id, user.Email, userRequest.DisplayName);
+                await authenticationUnitOfWork.UserInfoRepository.AddAsync(userInfo);
             }
-          
+
+            await authenticationUnitOfWork.SaveChangesAsync();
+
 
         }
+      
     }
 }

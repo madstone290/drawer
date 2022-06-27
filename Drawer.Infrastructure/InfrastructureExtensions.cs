@@ -3,11 +3,13 @@ using Drawer.Application.Services.Authentication.Repos;
 using Drawer.Application.Services.Locations.Repos;
 using Drawer.Application.Services.Organization;
 using Drawer.Application.Services.Organization.Repos;
+using Drawer.Application.Services.UserInformation.Repos;
 using Drawer.Domain.Models.Authentication;
 using Drawer.Infrastructure.Data;
 using Drawer.Infrastructure.Repos.Authentication;
 using Drawer.Infrastructure.Repos.Locations;
 using Drawer.Infrastructure.Repos.Organization;
+using Drawer.Infrastructure.Repos.UserInformation;
 using Drawer.Infrastructure.Services.Authentication;
 using Drawer.Infrastructure.Services.Organization;
 using Drawer.Infrastructure.Services.UserInformation;
@@ -39,7 +41,7 @@ namespace Drawer.Infrastructure
             });
 
             // AspNetCore Identity 기본설정
-            services.AddIdentity<User, IdentityRole>(options =>
+            services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {
                 options.Password.RequiredLength = 8;
                 options.Password.RequireDigit = false;
@@ -105,6 +107,10 @@ namespace Drawer.Infrastructure
 
             services.AddScoped<ICompanyIdProvider, CompanyIdProvider>();
             services.AddScoped<IUserIdProvider, UserIdProvider>();
+
+            services.AddScoped<IAuthenticationUnitOfWork, AuthenticationUnitOfWork>();
+
+            services.AddScoped<IUserInfoRepository, UserInfoRepository>();
 
             services.AddScoped<IOrganizationUnitOfWork, OrganizationUnitOfWork>();
             services.AddScoped<ICompanyRepository, CompanyRepository>();

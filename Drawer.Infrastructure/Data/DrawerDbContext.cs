@@ -2,6 +2,7 @@
 using Drawer.Domain.Models.Authentication;
 using Drawer.Domain.Models.Locations;
 using Drawer.Domain.Models.Organization;
+using Drawer.Domain.Models.UserInformation;
 using Drawer.Infrastructure.Services.Organization;
 using Drawer.Infrastructure.Services.UserInformation;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -16,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace Drawer.Infrastructure.Data
 {
-    public class DrawerDbContext : IdentityDbContext<User>
+    public class DrawerDbContext : IdentityDbContext
     {
         private readonly ICompanyIdProvider _companyIdProvider;
         private readonly IUserIdProvider _userIdProvider;
@@ -30,6 +31,8 @@ namespace Drawer.Infrastructure.Data
         }
 
         public DbSet<RefreshToken> RefreshTokens { get; set; } = default!;
+
+        public DbSet<UserInfo> UserInfos { get; set; } = default!;
 
         public DbSet<Company> Companies { get; set; } = default!;
         public DbSet<CompanyMember> CompanyMembers { get; set; } = default!;

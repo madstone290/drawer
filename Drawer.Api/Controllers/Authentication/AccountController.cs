@@ -1,5 +1,4 @@
 ﻿using Drawer.Api.Controllers;
-using Drawer.Application.Authentication;
 using Drawer.Application.Services.Authentication.Commands;
 using Drawer.Contract;
 using Drawer.Contract.Authentication;
@@ -26,9 +25,9 @@ namespace Drawer.Api.Controllers.Authentication
         [ProducesResponseType(typeof(RegisterResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> RegisterAsync([FromBody] RegisterRequest request)
         {
-            var command = AuthenticationCommands.Register(request.Email, request.Password, request.DisplayName);
+            var command = new RegisterCommand(request.Email, request.Password, request.DisplayName);
             var result = await _mediator.Send(command);
-            return Ok(new RegisterResponse(result.Id, result.Email, result.DisplayName));
+            return Ok(new RegisterResponse(result.UserId, result.Email, result.DisplayName));
         }
 
         [HttpPost]
@@ -37,7 +36,7 @@ namespace Drawer.Api.Controllers.Authentication
         public async Task<IActionResult> ConfirmEmailAsync([FromBody] ConfirmEmailRequest request)
         {
             var returnUri = Url.RouteUrl(nameof(VerifyEmailAsync), new { request.RedirectUri }, HttpContext.Request.Scheme)!;
-            var command = AuthenticationCommands.ConfirmEmail(request.Email, returnUri);
+            var command = new ConfirmEmailCommand(request.Email, returnUri);
             var result = await _mediator.Send(command);
             return Ok();
         }
@@ -48,7 +47,7 @@ namespace Drawer.Api.Controllers.Authentication
         [ProducesResponseType(StatusCodes.Status302Found)]
         public async Task<IActionResult> VerifyEmailAsync([FromQuery] string email, [FromQuery] string token, [FromQuery] string redirectUri)
         {
-            var command = AuthenticationCommands.VerifyEmail(email, token);
+            var command = new VerifyEmailCommand(email, token);
             var result = await _mediator.Send(command);
             return Redirect(redirectUri);
         }
@@ -59,7 +58,7 @@ namespace Drawer.Api.Controllers.Authentication
         [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> LoginAsync([FromBody] LoginRequest request)
         {
-            var command = AuthenticationCommands.Login(request.Email, request.Password);
+            var command = new LoginCommand(request.Email, request.Password);
             var result = await _mediator.Send(command);
             return Ok(new LoginResponse(result.AccessToken, result.RefreshToken));
         }
@@ -70,7 +69,7 @@ namespace Drawer.Api.Controllers.Authentication
         [ProducesResponseType(typeof(RefreshResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> RefreshAsync([FromBody] RefreshRequest model)
         {
-            var command = AuthenticationCommands.Refresh(model.Email, model.RefreshToken);
+            var command = new RefreshCommand(model.Email, model.RefreshToken);
             var result = await _mediator.Send(command);
             return Ok(new RefreshResponse(result.AccessToken));
         }

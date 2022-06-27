@@ -24,10 +24,10 @@ namespace Drawer.Application.Services.Organization.Commands
 
     public class CreateCompanyCommandHandler : ICommandHandler<CreateCompanyCommand, CreateCompanyResult>
     {
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly IOrganizationUnitOfWork _organizationUnitOfWork;
 
-        public CreateCompanyCommandHandler(UserManager<User> userManager, IOrganizationUnitOfWork organizationUnitOfWork)
+        public CreateCompanyCommandHandler(UserManager<IdentityUser> userManager, IOrganizationUnitOfWork organizationUnitOfWork)
         {
             _userManager = userManager;
             _organizationUnitOfWork = organizationUnitOfWork;

@@ -11,21 +11,21 @@ using System.Threading.Tasks;
 
 namespace Drawer.Application.Services.UserInformation.Commands
 {
-    public record UpdatePasswordCommand(string Email, string Password, string NewPassword): ICommand;
+    public record UpdatePasswordCommand(string UserId, string Password, string NewPassword): ICommand;
 
     public class UpdatePasswordCommandHandler : ICommandHandler<UpdatePasswordCommand>
     {
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public UpdatePasswordCommandHandler(UserManager<User> userManager)
+        public UpdatePasswordCommandHandler(UserManager<IdentityUser> userManager)
         {
             _userManager = userManager;
         }
 
         public async Task<Unit> Handle(UpdatePasswordCommand request, CancellationToken cancellationToken)
         {
-            var user = await _userManager.FindByEmailAsync(request.Email)
-                ?? throw new InvalidEmailException();
+            var user = await _userManager.FindByIdAsync(request.UserId)
+                ?? throw new InvalidUserIdException();
 
             var result = await _userManager.ChangePasswordAsync(user, request.Password, request.NewPassword);
             if (!result.Succeeded)

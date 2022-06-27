@@ -1,6 +1,9 @@
 ﻿using Drawer.Application.Services.UserInformation;
+using Drawer.Application.Services.UserInformation.Commands;
+using Drawer.Application.Services.UserInformation.Queries;
 using Drawer.Contract;
 using Drawer.Contract.UserInformation;
+using Drawer.Shared;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,12 +33,12 @@ namespace Drawer.Api.Controllers.UserInformation
         [ProducesResponseType(typeof(GetUserResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetUser()
         {
-            var email = HttpContext.User.Claims.First(x=> x.Type == ClaimTypes.Email).Value;
-            var query = UserInformationQueries.GetUser(email);
+            var userId = HttpContext.User.Claims.First(x=> x.Type == DrawerClaimTypes.UserId).Value;
+            var query = new GetUserInfoQuery(userId);
             var result = await _mediator.Send(query);
             if (result == null)
                 return NoContent();
-            return Ok(new GetUserResponse(result.Id, result.Email, result.DisplayName));
+            return Ok(new GetUserResponse(result.UserId, result.Email, result.DisplayName));
         }
 
         /// <summary>
@@ -48,8 +51,8 @@ namespace Drawer.Api.Controllers.UserInformation
         [ProducesResponseType(typeof(UpdateUserResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest request)
         {
-            var email = HttpContext.User.Claims.First(x => x.Type == ClaimTypes.Email).Value;
-            var command = UserInformationCommands.UpdateUser(email, request.DisplayName);
+            var userId = HttpContext.User.Claims.First(x => x.Type == DrawerClaimTypes.UserId).Value;
+            var command = new UpdateUserInfoCommand(userId, request.DisplayName);
             var result = await _mediator.Send(command);
             return Ok(new UpdateUserResponse(result.DisplayName));
         }
@@ -63,8 +66,8 @@ namespace Drawer.Api.Controllers.UserInformation
         [Route(ApiRoutes.User.UpdatePassword)]
         public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordRequest request)
         {
-            var email = HttpContext.User.Claims.First(x => x.Type == ClaimTypes.Email).Value;
-            var command = UserInformationCommands.UpdatePassword(email, request.CurrentPassword, request.NewPassword);
+            var userId = HttpContext.User.Claims.First(x => x.Type == DrawerClaimTypes.UserId).Value;
+            var command = new UpdatePasswordCommand(userId, request.CurrentPassword, request.NewPassword);
             var result = await _mediator.Send(command);
             return Ok();
         }

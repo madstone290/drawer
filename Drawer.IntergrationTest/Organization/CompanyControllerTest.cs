@@ -76,7 +76,7 @@ namespace Drawer.IntergrationTest.Organization
             createCompanyResponse.Should().NotBeNull();
             createCompanyResponse!.Name.Should().Be(creatCompanyRequest.Name);
             createCompanyResponse!.PhoneNumber.Should().Be(creatCompanyRequest.PhoneNumber);
-            createCompanyResponse!.OwnerId.Should().Be(getUserResponse!.Id);
+            createCompanyResponse!.OwnerId.Should().Be(getUserResponse!.UserId);
 
             createCompanyResponseMessage2.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
             var createCompanyResponse2 = await createCompanyResponseMessage2.Content.ReadFromJsonAsync<ErrorResponse>();
@@ -111,7 +111,7 @@ namespace Drawer.IntergrationTest.Organization
             createCompanyResponse.Should().NotBeNull();
             createCompanyResponse!.Name.Should().Be(creatCompanyRequest.Name);
             createCompanyResponse!.PhoneNumber.Should().Be(creatCompanyRequest.PhoneNumber);
-            createCompanyResponse!.OwnerId.Should().Be(getUserResponse!.Id);
+            createCompanyResponse!.OwnerId.Should().Be(getUserResponse!.UserId);
         }
 
         [Theory]
@@ -189,7 +189,7 @@ namespace Drawer.IntergrationTest.Organization
             getCompanyMemberResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
             var getCompanyMemberResponse = await getCompanyMemberResponseMessage.Content.ReadFromJsonAsync<GetCompanyMembersResponse>();
             getCompanyMemberResponse!.Should().NotBeNull();
-            getCompanyMemberResponse!.Members.Should().Contain(m => m.UserId == getUserResponse!.Id);
+            getCompanyMemberResponse!.Members.Should().Contain(m => m.UserId == getUserResponse!.UserId);
         }
       
     }

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Drawer.Domain.Models.Authentication
 {
+    /// <summary>
+    /// JWT 리프레시 토큰
+    /// </summary>
     public class RefreshToken : Entity<string>
     {
         /// <summary>

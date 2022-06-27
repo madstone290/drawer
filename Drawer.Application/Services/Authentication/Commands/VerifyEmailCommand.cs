@@ -28,9 +28,9 @@ namespace Drawer.Application.Services.Authentication.Commands
 
     public class VerifyEmailCommandHandler : ICommandHandler<VerifyEmailCommand>
     {
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public VerifyEmailCommandHandler(UserManager<User> userManager)
+        public VerifyEmailCommandHandler(UserManager<IdentityUser> userManager)
         {
             _userManager = userManager;
         }

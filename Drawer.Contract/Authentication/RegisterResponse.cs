@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace Drawer.Contract.Authentication
 {
-    public record RegisterResponse(string Id, string Email, string DisplayName);
+    public record RegisterResponse(string UserId, string Email, string DisplayName);
 }

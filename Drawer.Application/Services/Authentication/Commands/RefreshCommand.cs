@@ -25,12 +25,12 @@ namespace Drawer.Application.Services.Authentication.Commands
 
     public class RefreshCommandHandler : ICommandHandler<RefreshCommand, RefreshResult>
     {
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly ITokenGenerator _tokenGenerator;
 
 
-        public RefreshCommandHandler(UserManager<User> userManager, 
+        public RefreshCommandHandler(UserManager<IdentityUser> userManager, 
             ITokenGenerator tokenGenerator, 
             IRefreshTokenRepository refreshTokenRepository)
         {

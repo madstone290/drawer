@@ -1,6 +1,9 @@
 ﻿using Drawer.Application.Config;
 using Drawer.Application.Exceptions;
+using Drawer.Application.Services.Authentication.Repos;
+using Drawer.Application.Services.UserInformation.Repos;
 using Drawer.Domain.Models.Authentication;
+using Drawer.Domain.Models.UserInformation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -11,61 +14,39 @@ using System.Threading.Tasks;
 
 namespace Drawer.Application.Services.Authentication.Commands
 {
-    public class RegisterCommand : ICommand<RegisterResult>
-    {
-        public string Email { get; }
+    public record RegisterCommand(string Email, string Password, string DisplayName) : ICommand<RegisterResult>;
 
-        public string Password { get; }
-
-        public string DisplayName { get; }
-
-        public RegisterCommand(string email, string password, string displayName)
-        {
-            Email = email;
-            Password = password;
-            DisplayName = displayName;
-        }
-    }
-
-    public class RegisterResult
-    {
-        public string Id { get; }
-
-        public string Email { get; }
-
-        public string DisplayName { get; }
-
-        public RegisterResult(string id, string email, string displayName)
-        {
-            Id = id;
-            Email = email;
-            DisplayName = displayName;
-        }
-    }
+    public record RegisterResult(string UserId, string Email, string DisplayName);
 
     public class RegisterCommandHandler : ICommandHandler<RegisterCommand, RegisterResult>
     {
-        private readonly UserManager<User> _userManager;
+        private readonly IAuthenticationUnitOfWork _authenticationUnitOfWork;
 
-        public RegisterCommandHandler(UserManager<User> userManager)
+        public RegisterCommandHandler(IAuthenticationUnitOfWork authenticationUnitOfWork)
         {
-            _userManager = userManager;
+            _authenticationUnitOfWork = authenticationUnitOfWork;
         }
 
         public async Task<RegisterResult> Handle(RegisterCommand command, CancellationToken cancellationToken)
         {
-            User user = await _userManager.FindByEmailAsync(command.Email);
+            var user = await _authenticationUnitOfWork.UserManager.FindByEmailAsync(command.Email);
             if (user != null)
                 throw new DuplicateEmailException();
 
-            user = new User(command.Email, command.DisplayName);
-            var createResult = await _userManager.CreateAsync(user, command.Password);
-            if (!createResult.Succeeded)
+            user = new IdentityUser()
             {
+                UserName = command.Email,
+                Email = command.Email,
+            };
+            var createResult = await _authenticationUnitOfWork.UserManager.CreateAsync(user, command.Password);
+            if (!createResult.Succeeded)
                 throw new IdentityErrorException(createResult.Errors);
-            }
 
-            return new RegisterResult(user.Id, user.Email, user.DisplayName);
+            var userInfo = new UserInfo(user.Id, user.Email, command.DisplayName);
+            await _authenticationUnitOfWork.UserInfoRepository.AddAsync(userInfo);
+           
+            await _authenticationUnitOfWork.SaveChangesAsync();
+            return new RegisterResult(userInfo.UserId, userInfo.Email, userInfo.DisplayName);
         }
     }
 }
