@@ -51,8 +51,22 @@ namespace Drawer.Contract
             public const string GetCompany = Index;
             public const string CreateCompany = Index;
             public const string GetCompanyMembers = Index + "/Members";
+        }
+
+        public static class WorkPlaces
+        {
+            private const string Controller = "/WorkPlaces";
+            private const string Index = Base + Controller;
+
+            public const string CreateWorkPlace = Index;
+            public const string UpdateWorkPlace = Index + "/{id}";
+            public const string DeleteWorkPlace = Index + "/{id}";
+            public const string GetWorkPlace = Index + "/{id}";
+            public const string GetWorkPlaces = Index;
+
 
         }
+
 
     }
 }

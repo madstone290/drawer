@@ -42,14 +42,15 @@ namespace Drawer.IntergrationTest
                         });
 
                         var scope = services.BuildServiceProvider().CreateScope();
-                        SeedManager.InitializeAsync(scope).GetAwaiter().GetResult();
+                        SeedManager.ClearDatabase(scope).GetAwaiter().GetResult();
+                        SeedManager.UsingScopeAsync(scope).GetAwaiter().GetResult();
                     });
                 });
 
             Client = factory.CreateClient();
             Client.BaseAddress = new Uri(Client.BaseAddress!.AbsoluteUri + "api/");
 
-
+            SeedManager.UsingApiAsync(Client).GetAwaiter().GetResult();
         }
 
         public void Dispose()

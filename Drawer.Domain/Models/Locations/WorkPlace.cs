@@ -22,7 +22,7 @@ namespace Drawer.Domain.Models.Locations
         /// </summary>
         public string? Description { get; private set; } 
 
-        public WorkPlace(string companyId, string name) : base(companyId)
+        public WorkPlace(string name)
         {
             SetName(name);
         }
@@ -43,7 +43,7 @@ namespace Drawer.Domain.Models.Locations
         /// 사업장 설명을 변경한다.
         /// </summary>
         /// <param name="description"></param>
-        public void SetDescription(string description)
+        public void SetDescription(string? description)
         {
             Description = description?.Trim();
         }

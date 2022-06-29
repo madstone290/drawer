@@ -31,4 +31,17 @@ namespace Drawer.Infrastructure.Repos
         }
      
     }
+
+    public class Repository<TEntity, TId> : Repository<TEntity>, IRepository<TEntity, TId>
+       where TEntity : Entity<TId>
+    {
+        public Repository(DrawerDbContext dbContext) : base(dbContext)
+        {
+        }
+
+        public async Task<TEntity?> FindByIdAsync(TId id)
+        {
+            return await _dbContext.FindAsync<TEntity>(id);
+        }
+    }
 }

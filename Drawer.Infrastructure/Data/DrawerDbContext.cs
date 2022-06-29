@@ -59,30 +59,49 @@ namespace Drawer.Infrastructure.Data
 
         public override int SaveChanges()
         {
-            ApplySoftDelete();
-            ApplyAuditTrail();
             return base.SaveChanges();
         }
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
+            ApplyCompanyIdToCompanyResource();
             ApplySoftDelete();
             ApplyAuditTrail();
             return base.SaveChanges(acceptAllChangesOnSuccess);
         }
 
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
+            ApplyCompanyIdToCompanyResource();
             ApplySoftDelete();
             ApplyAuditTrail();
             return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         }
 
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        /// <summary>
+        /// 회사자원에 식별자를 적용한다.
+        /// </summary>
+        void ApplyCompanyIdToCompanyResource()
         {
-            ApplySoftDelete();
-            ApplyAuditTrail();
-            return base.SaveChangesAsync(cancellationToken);
+            var addedEntries = ChangeTracker.Entries<ICompanyResource>()
+                .Where(p => p.State == EntityState.Added);
+
+            if (!addedEntries.Any())
+                return;
+
+            var companyId = _companyIdProvider.GetCompanyId();
+            if (companyId == null)
+                throw new Exception("회사 리소스 식별을 위한 회사Id를 찾을 수 없습니다");
+            foreach (var entry in addedEntries)
+            {
+                entry.Entity.CompanyId = companyId;
+            }
         }
 
         /// <summary>
@@ -101,14 +120,14 @@ namespace Drawer.Infrastructure.Data
             foreach (var entry in addedEntries)
             {
                 entry.Entity.Created = now;
-                entry.Entity.CreatedBy = _userIdProvider.GetUserId() 
+                entry.Entity.CreatedBy = _userIdProvider.GetUserId()
                     ?? throw new Exception("유효하지 않는 사용자Id입니다");
             }
 
             foreach (var entry in modifiedEntries)
             {
                 entry.Entity.LastModified = now;
-                entry.Entity.LastModifiedBy = _userIdProvider.GetUserId() 
+                entry.Entity.LastModifiedBy = _userIdProvider.GetUserId()
                     ?? throw new Exception("유효하지 않는 사용자Id입니다");
             }
         }
@@ -120,7 +139,7 @@ namespace Drawer.Infrastructure.Data
         {
             var deleteEntries = ChangeTracker.Entries<ISoftDelete>()
               .Where(p => p.State == EntityState.Deleted);
-          
+
             foreach (var entry in deleteEntries)
             {
                 entry.State = EntityState.Modified;
@@ -152,6 +171,6 @@ namespace Drawer.Infrastructure.Data
         }
 
 
-       
+
     }
 }

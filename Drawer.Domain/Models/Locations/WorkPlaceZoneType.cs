@@ -13,15 +13,15 @@ namespace Drawer.Domain.Models.Locations
     /// </summary>
     public class WorkPlaceZoneType : CompanyResourceEntity<long>
     {
-        public WorkPlaceZoneType(string companyId) : base(companyId)
-        {
-        }
-
         /// <summary>
         /// 유형명
         /// </summary>
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; } = null!;
 
+        public WorkPlaceZoneType(string name)
+        {
+            SetName(name);
+        }
 
         /// <summary>
         /// 구역 유형명을 변경한다.

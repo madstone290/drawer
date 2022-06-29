@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Drawer.Domain.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,5 +15,11 @@ namespace Drawer.Application.Services
         void Remove(TEntity entity);
 
         Task SaveChangesAsync();
+    }
+
+    public interface IRepository<TEntity, TId> : IRepository<TEntity> 
+        where TEntity : Entity<TId>
+    {
+        Task<TEntity?> FindByIdAsync(TId id);
     }
 }

@@ -17,7 +17,7 @@ namespace Drawer.Domain.Models.Locations
         /// </summary>
         public string Name { get; private set; } = default!;
 
-        public Position(string companyId, string name) : base(companyId)
+        public Position(string name) 
         {
             SetName(name);
         }

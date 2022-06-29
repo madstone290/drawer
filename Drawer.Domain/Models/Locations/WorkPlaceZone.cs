@@ -22,12 +22,10 @@ namespace Drawer.Domain.Models.Locations
         /// </summary>
         public WorkPlaceZoneType? ZoneType { get; set; }
 
-        public WorkPlaceZone(string companyId, string name) : base(companyId)
+        public WorkPlaceZone(string name)
         {
-            Name = name;
+            SetName(name);
         }
-
-
 
 
         /// <summary>

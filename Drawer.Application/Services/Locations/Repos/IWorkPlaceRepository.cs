@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace Drawer.Application.Services.Locations.Repos
 {
-    public interface IWorkPlaceRepository : IRepository<WorkPlace>
+    public interface IWorkPlaceRepository : IRepository<WorkPlace, long>
     {
-        Task<WorkPlace> FilterTest(string value);
+        Task<IList<WorkPlace>> FindAll(); 
     }
 }
