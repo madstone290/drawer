@@ -1,5 +1,6 @@
 ﻿using Drawer.Domain.Models;
 using Drawer.Domain.Models.Authentication;
+using Drawer.Domain.Models.Items;
 using Drawer.Domain.Models.Locations;
 using Drawer.Domain.Models.Organization;
 using Drawer.Domain.Models.UserInformation;
@@ -41,6 +42,8 @@ namespace Drawer.Infrastructure.Data
         public DbSet<Zone> Zones { get; set; } = default!;
         public DbSet<ZoneType> ZoneTypes { get; set; } = default!;
         public DbSet<Position> Positions { get; set; } = default!;
+
+        public DbSet<Item> Items { get; set; } = default!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

@@ -16,7 +16,7 @@ namespace Drawer.Domain.Models.Locations
         /// <summary>
         /// 유형명
         /// </summary>
-        public string Name { get; set; } = null!;
+        public string Name { get; private set; } = null!;
 
         public ZoneType(string name)
         {

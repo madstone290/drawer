@@ -101,5 +101,18 @@ namespace Drawer.Contract
             public const string GetList = Index;
         }
 
+
+        public static class Items
+        {
+            private const string Controller = "/Items";
+            private const string Index = Base + Controller;
+
+            public const string Create = Index;
+            public const string Update = Index + "/{id}";
+            public const string Delete = Index + "/{id}";
+            public const string Get = Index + "/{id}";
+            public const string GetList = Index;
+        }
+
     }
 }

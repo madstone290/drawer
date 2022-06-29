@@ -15,12 +15,12 @@ namespace Drawer.Domain.Models.Locations
         /// <summary>
         /// 구역명
         /// </summary>
-        public string Name { get; set; } = default!;
+        public string Name { get; private set; } = default!;
 
         /// <summary>
         /// 구역 유형
         /// </summary>
-        public ZoneType? ZoneType { get; set; }
+        public ZoneType? ZoneType { get; private set; }
 
         public long? ZoneTypeId { get; private set; }
 

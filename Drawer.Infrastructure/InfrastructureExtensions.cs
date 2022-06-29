@@ -1,5 +1,6 @@
 ﻿using Drawer.Application.Services.Authentication;
 using Drawer.Application.Services.Authentication.Repos;
+using Drawer.Application.Services.Items.Repos;
 using Drawer.Application.Services.Locations.Repos;
 using Drawer.Application.Services.Organization;
 using Drawer.Application.Services.Organization.Repos;
@@ -7,6 +8,7 @@ using Drawer.Application.Services.UserInformation.Repos;
 using Drawer.Domain.Models.Authentication;
 using Drawer.Infrastructure.Data;
 using Drawer.Infrastructure.Repos.Authentication;
+using Drawer.Infrastructure.Repos.Items;
 using Drawer.Infrastructure.Repos.Locations;
 using Drawer.Infrastructure.Repos.Organization;
 using Drawer.Infrastructure.Repos.UserInformation;
@@ -121,6 +123,7 @@ namespace Drawer.Infrastructure
             services.AddScoped<IZoneRepository, ZoneRepository>();
             services.AddScoped<IZoneTypeRepository, ZoneTypeRepository>();
 
+            services.AddScoped<IItemRepository, ItemRepository>();
 
         }
     }
