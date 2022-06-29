@@ -17,7 +17,7 @@ namespace Drawer.WebClient.Pages.User.Presenters
 
         public async Task LoadUserAsync()
         {
-            var requstMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.User.GetUser);
+            var requstMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.User.Get);
             var apiResponse = await LoadAsync(new ApiRequestMessage<GetUserResponse>(requstMessage));
             if (apiResponse.IsSuccessful)
             {
@@ -28,7 +28,7 @@ namespace Drawer.WebClient.Pages.User.Presenters
 
         public async Task SaveUserAsync()
         {
-            var requstMessage = new HttpRequestMessage(HttpMethod.Put, ApiRoutes.User.UpdateUser);
+            var requstMessage = new HttpRequestMessage(HttpMethod.Put, ApiRoutes.User.Update);
             requstMessage.Content = JsonContent.Create(new UpdateUserRequest(View.Model.DisplayName!));
             await SaveAsync(new ApiRequestMessage<Unit>(requstMessage));
         }

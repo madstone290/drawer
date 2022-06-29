@@ -21,7 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{5222AFEE-7
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drawer.IntergrationTest", "Drawer.IntergrationTest\Drawer.IntergrationTest.csproj", "{829BE432-9419-4EE0-84DD-C1E5F66690C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drawer.Shared", "Drawer.Shared\Drawer.Shared.csproj", "{0B056CBD-5AFC-458B-9D4B-C5374D6C026F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drawer.Shared", "Drawer.Shared\Drawer.Shared.csproj", "{0B056CBD-5AFC-458B-9D4B-C5374D6C026F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

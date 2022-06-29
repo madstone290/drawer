@@ -24,7 +24,7 @@ namespace Drawer.Api.Controllers.Organization
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route(ApiRoutes.Company.CreateCompany)]
+        [Route(ApiRoutes.Company.Create)]
         [ProducesResponseType(typeof(CreateCompanyResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateCompany([FromBody] CreateCompanyRequest request)
         {
@@ -35,7 +35,7 @@ namespace Drawer.Api.Controllers.Organization
         }
 
         [HttpGet]
-        [Route(ApiRoutes.Company.GetCompany)]
+        [Route(ApiRoutes.Company.Get)]
         [ProducesResponseType(typeof(GetCompanyResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetCompany()
         {
@@ -51,7 +51,7 @@ namespace Drawer.Api.Controllers.Organization
         }
 
         [HttpGet]
-        [Route(ApiRoutes.Company.GetCompanyMembers)]
+        [Route(ApiRoutes.Company.GetMembers)]
         [ProducesResponseType(typeof(GetCompanyMembersResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetCompanyMembers()
         {

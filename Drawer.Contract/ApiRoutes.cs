@@ -34,8 +34,8 @@ namespace Drawer.Contract
             private const string Controller = "/User";
             private const string Index = Base + Controller;
             
-            public const string GetUser = Index;
-            public const string UpdateUser = Index;
+            public const string Get = Index;
+            public const string Update = Index;
             public const string UpdatePassword = Index + "/Password";
 
         }
@@ -48,9 +48,9 @@ namespace Drawer.Contract
             private const string Controller = "/Company";
             private const string Index = Base + Controller;
 
-            public const string GetCompany = Index;
-            public const string CreateCompany = Index;
-            public const string GetCompanyMembers = Index + "/Members";
+            public const string Create = Index;
+            public const string Get = Index;
+            public const string GetMembers = Index + "/Members";
         }
 
         public static class WorkPlaces
@@ -58,15 +58,48 @@ namespace Drawer.Contract
             private const string Controller = "/WorkPlaces";
             private const string Index = Base + Controller;
 
-            public const string CreateWorkPlace = Index;
-            public const string UpdateWorkPlace = Index + "/{id}";
-            public const string DeleteWorkPlace = Index + "/{id}";
-            public const string GetWorkPlace = Index + "/{id}";
-            public const string GetWorkPlaces = Index;
-
-
+            public const string Create = Index;
+            public const string Update = Index + "/{id}";
+            public const string Delete = Index + "/{id}";
+            public const string Get = Index + "/{id}";
+            public const string GetList = Index;
         }
 
+        public static class Positions
+        {
+            private const string Controller = "/Positions";
+            private const string Index = Base + Controller;
+
+            public const string Create = Index;
+            public const string Update = Index + "/{id}";
+            public const string Delete = Index + "/{id}";
+            public const string Get = Index + "/{id}";
+            public const string GetList = Index;
+        }
+
+        public static class Zones
+        {
+            private const string Controller = "/Zones";
+            private const string Index = Base + Controller;
+
+            public const string Create = Index;
+            public const string Update = Index + "/{id}";
+            public const string Delete = Index + "/{id}";
+            public const string Get = Index + "/{id}";
+            public const string GetList = Index;
+        }
+
+        public static class ZoneTypes
+        {
+            private const string Controller = "/ZoneTypes";
+            private const string Index = Base + Controller;
+
+            public const string Create = Index;
+            public const string Update = Index + "/{id}";
+            public const string Delete = Index + "/{id}";
+            public const string Get = Index + "/{id}";
+            public const string GetList = Index;
+        }
 
     }
 }

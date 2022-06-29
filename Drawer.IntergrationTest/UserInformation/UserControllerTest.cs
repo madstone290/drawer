@@ -33,7 +33,7 @@ namespace Drawer.IntergrationTest.UserInformation
             // Arrange
             
             // Act
-            var responseMessage = await _client.GetAsync(ApiRoutes.User.GetUser);
+            var responseMessage = await _client.GetAsync(ApiRoutes.User.Get);
 
             // Assert
             responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.Unauthorized);
@@ -48,7 +48,7 @@ namespace Drawer.IntergrationTest.UserInformation
             var loginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, loginRequest);
             var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
 
-            var getUserRequestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.User.GetUser);
+            var getUserRequestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.User.Get);
             getUserRequestMessage.SetBearerToken(loginResponse!.AccessToken);
 
             // Act
@@ -73,7 +73,7 @@ namespace Drawer.IntergrationTest.UserInformation
             var loginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, loginRequest);
             var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
 
-            var updateUserRequestMessage = new HttpRequestMessage(HttpMethod.Put, ApiRoutes.User.UpdateUser);
+            var updateUserRequestMessage = new HttpRequestMessage(HttpMethod.Put, ApiRoutes.User.Update);
             updateUserRequestMessage.Content = JsonContent.Create(new UpdateUserRequest(displayName));
             updateUserRequestMessage.SetBearerToken(loginResponse!.AccessToken);
 

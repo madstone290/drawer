@@ -36,7 +36,7 @@ namespace Drawer.IntergrationTest.Organization
             // Arrange
 
             // Act
-            var responseMessage = await _client.GetAsync(ApiRoutes.Company.GetCompany);
+            var responseMessage = await _client.GetAsync(ApiRoutes.Company.Get);
 
             // Assert
             responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.Unauthorized);
@@ -51,13 +51,13 @@ namespace Drawer.IntergrationTest.Organization
             var loginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, loginRequest);
             var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
 
-            var getUserRequestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.User.GetUser);
+            var getUserRequestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.User.Get);
             getUserRequestMessage.SetBearerToken(loginResponse!.AccessToken);
             var getUserResponseMessage = await _client.SendAsync(getUserRequestMessage);
             var getUserResponse = await getUserResponseMessage.Content!.ReadFromJsonAsync<GetUserResponse>();
 
             var creatCompanyRequest = new CreateCompanyRequest(name, phoneNumber);
-            var createCompanyRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.CreateCompany);
+            var createCompanyRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.Create);
             createCompanyRequestMessage.Content = JsonContent.Create(creatCompanyRequest);
             createCompanyRequestMessage.SetBearerToken(loginResponse!.AccessToken);
 
@@ -65,7 +65,7 @@ namespace Drawer.IntergrationTest.Organization
             var createCompanyResponseMessage = await _client.SendAsync(createCompanyRequestMessage);
 
             var creatCompanyRequest2 = new CreateCompanyRequest(name2, phoneNumber2);
-            var createCompanyRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.CreateCompany);
+            var createCompanyRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.Create);
             createCompanyRequestMessage2.Content = JsonContent.Create(creatCompanyRequest2);
             createCompanyRequestMessage2.SetBearerToken(loginResponse!.AccessToken);
             var createCompanyResponseMessage2 = await _client.SendAsync(createCompanyRequestMessage2);
@@ -93,13 +93,13 @@ namespace Drawer.IntergrationTest.Organization
             var loginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, loginRequest);
             var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
 
-            var getUserRequestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.User.GetUser);
+            var getUserRequestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.User.Get);
             getUserRequestMessage.SetBearerToken(loginResponse!.AccessToken);
             var getUserResponseMessage = await _client.SendAsync(getUserRequestMessage);
             var getUserResponse = await getUserResponseMessage.Content!.ReadFromJsonAsync<GetUserResponse>();
 
             var creatCompanyRequest = new CreateCompanyRequest(name, phoneNumber);
-            var createCompanyRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.CreateCompany);
+            var createCompanyRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.Create);
             createCompanyRequestMessage.Content = JsonContent.Create(creatCompanyRequest);
             createCompanyRequestMessage.SetBearerToken(loginResponse!.AccessToken);
             // Act
@@ -124,7 +124,7 @@ namespace Drawer.IntergrationTest.Organization
             var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
 
             var creatCompanyRequest = new CreateCompanyRequest(name, phoneNumber);
-            var createCompanyRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.CreateCompany);
+            var createCompanyRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.Create);
             createCompanyRequestMessage.Content = JsonContent.Create(creatCompanyRequest);
             createCompanyRequestMessage.SetBearerToken(loginResponse!.AccessToken);
 
@@ -139,7 +139,7 @@ namespace Drawer.IntergrationTest.Organization
             loginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, loginRequest);
             loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
 
-            var getCompanyRequestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.Company.GetCompany);
+            var getCompanyRequestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.Company.Get);
             getCompanyRequestMessage.SetBearerToken(loginResponse!.AccessToken);
             var getCompanyResponseMessage = await _client.SendAsync(getCompanyRequestMessage);
 
@@ -161,13 +161,13 @@ namespace Drawer.IntergrationTest.Organization
             var loginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, loginRequest);
             var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
 
-            var getUserRequestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.User.GetUser);
+            var getUserRequestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.User.Get);
             getUserRequestMessage.SetBearerToken(loginResponse!.AccessToken);
             var getUserResponseMessage = await _client.SendAsync(getUserRequestMessage);
             var getUserResponse = await getUserResponseMessage.Content!.ReadFromJsonAsync<GetUserResponse>();
 
             var createCompanyRequest = new CreateCompanyRequest(name, phoneNumber);
-            var createCompanyRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.CreateCompany);
+            var createCompanyRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.Create);
             createCompanyRequestMessage.Content = JsonContent.Create(createCompanyRequest);
             createCompanyRequestMessage.SetBearerToken(loginResponse!.AccessToken);
 
@@ -181,7 +181,7 @@ namespace Drawer.IntergrationTest.Organization
             loginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, loginRequest);
             loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
 
-            var getCompanyMemberRequestMessage= new HttpRequestMessage(HttpMethod.Get, ApiRoutes.Company.GetCompanyMembers);
+            var getCompanyMemberRequestMessage= new HttpRequestMessage(HttpMethod.Get, ApiRoutes.Company.GetMembers);
             getCompanyMemberRequestMessage.SetBearerToken(loginResponse!.AccessToken);
             var getCompanyMemberResponseMessage = await _client.SendAsync(getCompanyMemberRequestMessage);
 

@@ -32,7 +32,7 @@ namespace Drawer.IntergrationTest.Locations
         {
             // Arrange
             var request = new CreateWorkPlaceRequest(name, description);
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.WorkPlaces.CreateWorkPlace);
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.WorkPlaces.Create);
             requestMessage.Content = JsonContent.Create(request);
 
             // Act
@@ -54,14 +54,14 @@ namespace Drawer.IntergrationTest.Locations
         {
             // Arrange
             var createRequest = new CreateWorkPlaceRequest(name, description);
-            var createRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.WorkPlaces.CreateWorkPlace);
+            var createRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.WorkPlaces.Create);
             createRequestMessage.Content = JsonContent.Create(createRequest);
             var createResponseMessage = await _client.SendAsyncWithMasterAuthentication(createRequestMessage);
             var createResponse = await createResponseMessage.Content.ReadFromJsonAsync<CreateWorkPlaceResponse>() ?? null!;
 
             // Act
             var getRequestMessage = new HttpRequestMessage(HttpMethod.Get,
-                ApiRoutes.WorkPlaces.GetWorkPlace.Replace("{id}", createResponse.Id.ToString()));
+                ApiRoutes.WorkPlaces.Get.Replace("{id}", createResponse.Id.ToString()));
             var getResponseMessage = await _client.SendAsyncWithMasterAuthentication(getRequestMessage);
 
             // Assert
@@ -81,17 +81,17 @@ namespace Drawer.IntergrationTest.Locations
         {
             // Arrange
             var createRequest1 = new CreateWorkPlaceRequest(name1, description1);
-            var createRequestMessage1 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.WorkPlaces.CreateWorkPlace);
+            var createRequestMessage1 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.WorkPlaces.Create);
             createRequestMessage1.Content = JsonContent.Create(createRequest1);
             var createResponseMessage1 = await _client.SendAsyncWithMasterAuthentication(createRequestMessage1);
 
             var createRequest2 = new CreateWorkPlaceRequest(name2, description2);
-            var createRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.WorkPlaces.CreateWorkPlace);
+            var createRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.WorkPlaces.Create);
             createRequestMessage2.Content = JsonContent.Create(createRequest2);
             var createResponseMessage2 = await _client.SendAsyncWithMasterAuthentication(createRequestMessage2);
 
             // Act
-            var getWorkPlacesRequestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.WorkPlaces.GetWorkPlaces);
+            var getWorkPlacesRequestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.WorkPlaces.GetList);
             var getWorkPlacesResponseMessage = await _client.SendAsyncWithMasterAuthentication(getWorkPlacesRequestMessage);
 
             // Assert
@@ -109,7 +109,7 @@ namespace Drawer.IntergrationTest.Locations
         {
             // Arrange
             var createRequest = new CreateWorkPlaceRequest(name, description);
-            var createRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.WorkPlaces.CreateWorkPlace);
+            var createRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.WorkPlaces.Create);
             createRequestMessage.Content = JsonContent.Create(createRequest);
             var createResponseMessage = await _client.SendAsyncWithMasterAuthentication(createRequestMessage);
             var createResponse = await createResponseMessage.Content.ReadFromJsonAsync<CreateWorkPlaceResponse>() ?? null!;
@@ -117,7 +117,7 @@ namespace Drawer.IntergrationTest.Locations
             // Act
             var updateRequest = new CreateWorkPlaceRequest(name2, description2);
             var updateRequestMessage = new HttpRequestMessage(HttpMethod.Put,
-                ApiRoutes.WorkPlaces.UpdateWorkPlace.Replace("{id}", createResponse.Id.ToString()));
+                ApiRoutes.WorkPlaces.Update.Replace("{id}", createResponse.Id.ToString()));
             updateRequestMessage.Content = JsonContent.Create(updateRequest);
             var updateResponseMessage = await _client.SendAsyncWithMasterAuthentication(updateRequestMessage);
 
@@ -125,7 +125,7 @@ namespace Drawer.IntergrationTest.Locations
             updateResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
 
             var getRequestMessage = new HttpRequestMessage(HttpMethod.Get, 
-                ApiRoutes.WorkPlaces.GetWorkPlace.Replace("{id}", createResponse.Id.ToString()));
+                ApiRoutes.WorkPlaces.Get.Replace("{id}", createResponse.Id.ToString()));
             var getResponseMessage = await _client.SendAsyncWithMasterAuthentication(getRequestMessage);
             getResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
             var getResponse = await getResponseMessage.Content.ReadFromJsonAsync<GetWorkPlaceResponse>() ?? null!;
@@ -141,21 +141,21 @@ namespace Drawer.IntergrationTest.Locations
         {
             // Arrange
             var createRequest = new CreateWorkPlaceRequest(name, description);
-            var createRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.WorkPlaces.CreateWorkPlace);
+            var createRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.WorkPlaces.Create);
             createRequestMessage.Content = JsonContent.Create(createRequest);
             var createResponseMessage = await _client.SendAsyncWithMasterAuthentication(createRequestMessage);
             var createResponse = await createResponseMessage.Content.ReadFromJsonAsync<CreateWorkPlaceResponse>() ?? null!;
 
             // Act
             var deleteRequestMessage = new HttpRequestMessage(HttpMethod.Delete,
-                ApiRoutes.WorkPlaces.DeleteWorkPlace.Replace("{id}", createResponse.Id.ToString()));
+                ApiRoutes.WorkPlaces.Delete.Replace("{id}", createResponse.Id.ToString()));
             var deleteResponseMessage = await _client.SendAsyncWithMasterAuthentication(deleteRequestMessage);
 
             // Assert
             deleteResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
 
             var getRequestMessage = new HttpRequestMessage(HttpMethod.Get,
-                ApiRoutes.WorkPlaces.GetWorkPlace.Replace("{id}", createResponse.Id.ToString()));
+                ApiRoutes.WorkPlaces.Get.Replace("{id}", createResponse.Id.ToString()));
             var getResponseMessage = await _client.SendAsyncWithMasterAuthentication(getRequestMessage);
             getResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.NoContent);
         }

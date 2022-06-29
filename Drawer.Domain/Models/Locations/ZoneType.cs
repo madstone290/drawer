@@ -11,14 +11,14 @@ namespace Drawer.Domain.Models.Locations
     /// 구역 유형.
     /// 구역 유형별로 재고를 제공한다.
     /// </summary>
-    public class WorkPlaceZoneType : CompanyResourceEntity<long>
+    public class ZoneType : CompanyResourceEntity<long>
     {
         /// <summary>
         /// 유형명
         /// </summary>
         public string Name { get; set; } = null!;
 
-        public WorkPlaceZoneType(string name)
+        public ZoneType(string name)
         {
             SetName(name);
         }

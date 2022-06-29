@@ -3,6 +3,7 @@ using System;
 using Drawer.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Drawer.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(DrawerDbContext))]
-    partial class DrawerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220629031425_RenameLocations")]
+    partial class RenameLocations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -83,12 +85,7 @@ namespace Drawer.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long>("ZoneId")
-                        .HasColumnType("bigint");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("ZoneId");
 
                     b.ToTable("Positions");
                 });
@@ -519,17 +516,6 @@ namespace Drawer.Infrastructure.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Drawer.Domain.Models.Locations.Position", b =>
-                {
-                    b.HasOne("Drawer.Domain.Models.Locations.Zone", "Zone")
-                        .WithMany()
-                        .HasForeignKey("ZoneId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Zone");
                 });
 
             modelBuilder.Entity("Drawer.Domain.Models.Locations.Zone", b =>

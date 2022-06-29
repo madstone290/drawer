@@ -17,8 +17,20 @@ namespace Drawer.Domain.Models.Locations
         /// </summary>
         public string Name { get; private set; } = default!;
 
-        public Position(string name) 
+        /// <summary>
+        /// 구역
+        /// </summary>
+        public Zone Zone { get; private set; } = null!;
+
+        public long ZoneId { get; private set; }
+
+        private Position() { }
+        public Position(Zone zone, string name) 
         {
+            if (zone == null)
+                throw new EntityNullException<Zone>(nameof(zone));
+            Zone = zone;
+            ZoneId = zone.Id;
             SetName(name);
         }
 

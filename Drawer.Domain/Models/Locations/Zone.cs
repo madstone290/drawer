@@ -10,7 +10,7 @@ namespace Drawer.Domain.Models.Locations
     /// <summary>
     /// 사업장 내 구역
     /// </summary>
-    public class WorkPlaceZone : CompanyResourceEntity<long>
+    public class Zone : CompanyResourceEntity<long>
     {
         /// <summary>
         /// 구역명
@@ -20,9 +20,11 @@ namespace Drawer.Domain.Models.Locations
         /// <summary>
         /// 구역 유형
         /// </summary>
-        public WorkPlaceZoneType? ZoneType { get; set; }
+        public ZoneType? ZoneType { get; set; }
 
-        public WorkPlaceZone(string name)
+        public long? ZoneTypeId { get; private set; }
+
+        public Zone(string name)
         {
             SetName(name);
         }
@@ -44,9 +46,10 @@ namespace Drawer.Domain.Models.Locations
         /// 구역 유형을 변경한다.
         /// </summary>
         /// <param name="zoneType"></param>
-        public void SetZoneType(WorkPlaceZoneType zoneType)
+        public void SetZoneType(ZoneType? zoneType)
         {
             ZoneType = zoneType;
+            ZoneTypeId = zoneType?.Id;
         }
 
     }

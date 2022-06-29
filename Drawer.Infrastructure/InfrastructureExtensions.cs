@@ -116,7 +116,10 @@ namespace Drawer.Infrastructure
             services.AddScoped<ICompanyRepository, CompanyRepository>();
             services.AddScoped<ICompanyMemberRepository, CompanyMemberRepository>();
 
+            services.AddScoped<IPositionRepository, PositionRepository>();
             services.AddScoped<IWorkPlaceRepository, WorkPlaceRepository>();
+            services.AddScoped<IZoneRepository, ZoneRepository>();
+            services.AddScoped<IZoneTypeRepository, ZoneTypeRepository>();
 
 
         }

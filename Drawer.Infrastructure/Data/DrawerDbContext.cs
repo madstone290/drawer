@@ -38,8 +38,8 @@ namespace Drawer.Infrastructure.Data
         public DbSet<CompanyMember> CompanyMembers { get; set; } = default!;
 
         public DbSet<WorkPlace> WorkPlaces { get; set; } = default!;
-        public DbSet<WorkPlaceZone> WorkPlaceZones { get; set; } = default!;
-        public DbSet<WorkPlaceZoneType> WorkPlaceZoneTypes { get; set; } = default!;
+        public DbSet<Zone> Zones { get; set; } = default!;
+        public DbSet<ZoneType> ZoneTypes { get; set; } = default!;
         public DbSet<Position> Positions { get; set; } = default!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

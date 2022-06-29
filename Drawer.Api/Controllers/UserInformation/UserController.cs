@@ -29,7 +29,7 @@ namespace Drawer.Api.Controllers.UserInformation
         /// <param name="email"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route(ApiRoutes.User.GetUser)]
+        [Route(ApiRoutes.User.Get)]
         [ProducesResponseType(typeof(GetUserResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetUser()
         {
@@ -47,7 +47,7 @@ namespace Drawer.Api.Controllers.UserInformation
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPut]
-        [Route(ApiRoutes.User.UpdateUser)]
+        [Route(ApiRoutes.User.Update)]
         [ProducesResponseType(typeof(UpdateUserResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest request)
         {

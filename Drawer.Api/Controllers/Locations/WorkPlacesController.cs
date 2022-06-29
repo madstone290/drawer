@@ -18,7 +18,7 @@ namespace Drawer.Api.Controllers.Locations
         }
 
         [HttpGet]
-        [Route(ApiRoutes.WorkPlaces.GetWorkPlaces)]
+        [Route(ApiRoutes.WorkPlaces.GetList)]
         [ProducesResponseType(typeof(GetWorkPlacesResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetWorkPlaces()
         {
@@ -33,7 +33,7 @@ namespace Drawer.Api.Controllers.Locations
 
 
         [HttpGet]
-        [Route(ApiRoutes.WorkPlaces.GetWorkPlace)]
+        [Route(ApiRoutes.WorkPlaces.Get)]
         [ProducesResponseType(typeof(GetWorkPlaceResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetWorkPlace([FromRoute] long id)
         {
@@ -46,7 +46,7 @@ namespace Drawer.Api.Controllers.Locations
         }
 
         [HttpPost]
-        [Route(ApiRoutes.WorkPlaces.CreateWorkPlace)]
+        [Route(ApiRoutes.WorkPlaces.Create)]
         [ProducesResponseType(typeof(CreateWorkPlaceResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateWorkPlace([FromBody] CreateWorkPlaceRequest request)
         {
@@ -56,7 +56,7 @@ namespace Drawer.Api.Controllers.Locations
         }
 
         [HttpPut]
-        [Route(ApiRoutes.WorkPlaces.UpdateWorkPlace)]
+        [Route(ApiRoutes.WorkPlaces.Update)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateWorkPlace([FromRoute] long id, [FromBody] UpdateWorkPlaceRequest request)
         {
@@ -66,7 +66,7 @@ namespace Drawer.Api.Controllers.Locations
         }
 
         [HttpDelete]
-        [Route(ApiRoutes.WorkPlaces.DeleteWorkPlace)]
+        [Route(ApiRoutes.WorkPlaces.Delete)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> DeleteWorkPlace([FromRoute] long id)
         {

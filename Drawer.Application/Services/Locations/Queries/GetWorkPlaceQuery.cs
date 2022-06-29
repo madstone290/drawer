@@ -9,9 +9,8 @@ using System.Threading.Tasks;
 namespace Drawer.Application.Services.Locations.Queries
 {
     /// <summary>
-    /// 하나의 작업장 조회한다.
+    /// 하나의 작업장을 조회한다.
     /// </summary>
-    /// <param name="Id">작업장 Id</param>
     public record GetWorkPlaceQuery(long Id) : IQuery<GetWorkPlaceResult?>;
 
     public record GetWorkPlaceResult(long Id, string Name, string? Description);

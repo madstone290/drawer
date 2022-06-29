@@ -23,7 +23,7 @@ namespace Drawer.IntergrationTest
         {
             var dbContext = scope.ServiceProvider.GetService<DrawerDbContext>()
                           ?? throw new Exception("DrawerIdentityDbContext is null");
-            dbContext.Database.Migrate();
+            //dbContext.Database.Migrate();
 
             dbContext.Users.Truncate();
             dbContext.UserRoles.Truncate();
@@ -36,6 +36,11 @@ namespace Drawer.IntergrationTest
 
             dbContext.CompanyMembers.Truncate();
             dbContext.Companies.Truncate();
+
+            dbContext.Positions.Truncate();
+            dbContext.Zones.Truncate();
+            dbContext.ZoneTypes.Truncate();
+            dbContext.WorkPlaces.Truncate();
 
             await dbContext.SaveChangesAsync();
         }
@@ -80,7 +85,7 @@ namespace Drawer.IntergrationTest
         public static async Task UsingApiAsync(HttpClient client)
         {
             // 회사 시드 등록
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.CreateCompany);
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.Create);
             requestMessage.Content = JsonContent.Create(CompanySeeds.MasterCompany);
             await client.SendAsyncWithMasterAuthentication(requestMessage);
         }
