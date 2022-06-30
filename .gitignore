@@ -6,6 +6,9 @@
 # 보안 파일. 모든 보안 파일은 아래형식중 하나를 지켜야 한다.
 *[Ss]ecrets/
 
+# 로그 파일
+[Ll]ogs/
+
 # User-specific files
 *.rsuser
 *.suo

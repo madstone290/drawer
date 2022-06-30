@@ -1,13 +1,18 @@
 using Drawer.Api.ActionFilters;
+using Drawer.Api.Logging;
 using Drawer.Application;
 using Drawer.Infrastructure;
 using Microsoft.OpenApi.Models;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddJsonFile("Secrets/drawer_identity_db_secret.json");
 builder.Configuration.AddJsonFile("Secrets/email_secret.json");
 builder.Configuration.AddJsonFile("Secrets/jwt_settings_secret.json");
+builder.Configuration.AddJsonFile("Secrets/serilog_secret.json");
+
+builder.AddSerilog();
 
 builder.Services.AddApplicationDependency();
 builder.Services.AddInfrastructureDependency(builder.Configuration);
@@ -56,6 +61,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 
