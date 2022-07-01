@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace Drawer.Contract.Authentication
 {
-    public record LoginResponse(string AccessToken, string RefreshToken);
+    public record LoginResponse(bool IsCompanyMember, bool IsCompanyOwner, string AccessToken, string RefreshToken);
 }

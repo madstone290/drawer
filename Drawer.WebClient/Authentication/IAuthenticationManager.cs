@@ -1,4 +1,6 @@
-﻿namespace Drawer.WebClient.Authentication
+﻿using System.Security.Claims;
+
+namespace Drawer.WebClient.Authentication
 {
     /// <summary>
     /// 인증 기능을 제공한다.
@@ -29,6 +31,13 @@
         /// <param name="permission"></param>
         /// <returns></returns>
         Task<bool> AuthorizeAsync(string permission);
-        
+
+        /// <summary>
+        /// 로그인 상태를 갱신한다.
+        /// </summary>
+        /// <param name="isCompanyMemeber">회사 구성원 여부</param>
+        /// <param name="isCompanyOwner">회사 소유주 여부</param>
+        /// <returns></returns>
+        Task<AuthenticationResult> RefreshAsync(bool isCompanyMemeber, bool isCompanyOwner);
     }
 }

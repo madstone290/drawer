@@ -7,5 +7,6 @@
         public const string ServerErrorOccurs = "서버 오류 발생";
 
         public const string PasswordDoesNotMatch = "비밀번호가 일치하지 않습니다";
+
     }
 }

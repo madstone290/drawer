@@ -16,6 +16,7 @@
             public const string Register = "/Account/Register";
             public const string RegisterHandler = "/Account/RegisterHandler";
             public const string RegisterCompleted= "/Account/RegisterCompleted";
+            public const string Refresh = "/Account/Refresh";
         }
 
         public static class User
@@ -26,6 +27,11 @@
         public static class Statistics
         {
             public const string Dashboard = "/Statistics/Dashboard";
+        }
+
+        public static class Organization
+        {
+            public const string Company = "/Organization/Company";
         }
 
         

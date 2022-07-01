@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Drawer.Application.Services.Authentication;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,8 @@ namespace Drawer.Application
         public static void AddApplicationDependency(this IServiceCollection services)
         {
             services.AddMediatR(typeof(ApplicationExtensions).Assembly);
+
+            services.AddScoped<IUserClaimService, UserClaimService>();
         }
     }
 }

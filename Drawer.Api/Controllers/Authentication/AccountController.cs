@@ -60,7 +60,7 @@ namespace Drawer.Api.Controllers.Authentication
         {
             var command = new LoginCommand(request.Email, request.Password);
             var result = await _mediator.Send(command);
-            return Ok(new LoginResponse(result.AccessToken, result.RefreshToken));
+            return Ok(new LoginResponse(result.IsCompanyMemeber, result.IsCompanyOwner, result.AccessToken, result.RefreshToken));
         }
 
         [HttpPost]

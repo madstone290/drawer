@@ -46,7 +46,7 @@ namespace Drawer.Application.Services.Organization.Commands
             company.SetPhoneNumber(request.PhoneNumber);
             await _organizationUnitOfWork.CompanyRepository.AddAsync(company);
 
-            var companyMember = new CompanyMember(company.Id, user.Id);
+            var companyMember = new CompanyMember(company.Id, user.Id, true);
             await _organizationUnitOfWork.CompanyMemberRepository.AddAsync(companyMember);
 
             await _organizationUnitOfWork.SaveChangesAsync();

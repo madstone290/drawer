@@ -12,7 +12,7 @@ namespace Drawer.Application.Exceptions
     /// </summary>
     public class InvalidUserIdException : AppException
     {
-        public InvalidUserIdException() : base(Messages.InvalidEmail)
+        public InvalidUserIdException() : base(Messages.InvalidUserId)
         {
         }
     }

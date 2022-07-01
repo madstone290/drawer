@@ -44,12 +44,14 @@ namespace Drawer.WebClient.Authentication
             }
 
             // 쿠키인증을 진행한다.
-            var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
+            var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>() ?? default!;
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Email, email),
-                new Claim(DrawerClaimTypes.AccessToken, loginResponse!.AccessToken),
-                new Claim(DrawerClaimTypes.RefreshToken, loginResponse!.RefreshToken)
+                new Claim(DrawerClaimTypes.IsCompanyMember, loginResponse.IsCompanyMember.ToString()),
+                new Claim(DrawerClaimTypes.IsCompanyOwner, loginResponse.IsCompanyOwner.ToString()),
+                new Claim(DrawerClaimTypes.AccessToken, loginResponse.AccessToken),
+                new Claim(DrawerClaimTypes.RefreshToken, loginResponse.RefreshToken)
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -81,7 +83,7 @@ namespace Drawer.WebClient.Authentication
 
             if (!state.User.Identity.IsAuthenticated)
                 return UserAuthenticationState.Unauthenticated();
-
+            
             var emailClaim = state.User.Claims.First(x => x.Type == ClaimTypes.Email);
             var refreshTokenClaim = state.User.Claims.First(x => x.Type == DrawerClaimTypes.RefreshToken);
             return UserAuthenticationState.Authenticated(emailClaim.Value, refreshTokenClaim.Value);
@@ -92,5 +94,33 @@ namespace Drawer.WebClient.Authentication
             var state = await _stateProvider.GetAuthenticationStateAsync();
             return state.User.Claims.Any(x => x.Type == permission);
         }
+
+        public async Task<AuthenticationResult> RefreshAsync(bool isCompanyMember, bool isCompanyOwner)
+        {
+            var claims = _httpContext.User.Claims.ToList();
+            
+            var isCompanyMemberClaim = claims.First(x => x.Type == DrawerClaimTypes.IsCompanyMember);
+            claims.Remove(isCompanyMemberClaim);
+            isCompanyMemberClaim = new Claim(DrawerClaimTypes.IsCompanyMember, isCompanyMember.ToString());
+            claims.Add(isCompanyMemberClaim);
+
+            var isCompanyOwnerClaim = claims.First(x => x.Type == DrawerClaimTypes.IsCompanyOwner);
+            claims.Remove(isCompanyOwnerClaim);
+            isCompanyOwnerClaim = new Claim(DrawerClaimTypes.IsCompanyOwner, isCompanyOwner.ToString());
+            claims.Add(isCompanyOwnerClaim);
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var authProperties = new AuthenticationProperties();
+
+            await _httpContext.SignOutAsync();
+
+            await _httpContext.SignInAsync(
+             CookieAuthenticationDefaults.AuthenticationScheme,
+             new ClaimsPrincipal(claimsIdentity),
+             authProperties);
+
+            return AuthenticationResult.Success();
+        }
+
     }
 }

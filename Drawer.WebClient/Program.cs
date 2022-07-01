@@ -1,6 +1,8 @@
+using Drawer.Shared;
 using Drawer.WebClient;
 using Drawer.WebClient.Api;
 using Drawer.WebClient.Authentication;
+using Drawer.WebClient.Pages.Organization.Presenters;
 using Drawer.WebClient.Pages.User.Presenters;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using MudBlazor;
@@ -20,7 +22,7 @@ builder.Services.AddMudServices(options =>
     options.SnackbarConfiguration.VisibleStateDuration = 5000;
     options.SnackbarConfiguration.ShowTransitionDuration = 0;
     options.SnackbarConfiguration.HideTransitionDuration = 1000;
-    
+
     options.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
 });
 
@@ -31,6 +33,14 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     {
         options.Cookie.Name = "Drawer.Blazor.Cookie";
     });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(Policies.CompanyOwner, policy =>
+        policy.RequireClaim(DrawerClaimTypes.IsCompanyOwner, "true", "True"));
+    options.AddPolicy(Policies.CompanyMember, policy =>
+        policy.RequireClaim(DrawerClaimTypes.IsCompanyMember, "true", "True"));
+});
 
 // Drawer.Api 클라이언트
 builder.Services.AddSingleton<HttpClient>((sp) => new HttpClient()
@@ -46,6 +56,8 @@ builder.Services.AddScoped<ApiClient>();
 
 builder.Services.AddScoped<ProfilePresenter>();
 builder.Services.AddScoped<SecurityPresenter>();
+
+builder.Services.AddScoped<EditCompanyPresenter>();
 
 
 

@@ -19,24 +19,24 @@ namespace Drawer.Application.Services.Authentication.Commands
         public TimeSpan RefreshTokenLifetime { get; set; } = TimeSpan.FromDays(7);
     }
 
-    public record LoginResult(string AccessToken, string RefreshToken);
+    public record LoginResult(bool IsCompanyMemeber, bool IsCompanyOwner, string AccessToken, string RefreshToken);
 
     public class LoginCommandHandler : ICommandHandler<LoginCommand, LoginResult>
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ITokenGenerator _tokenGenerator;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
-        private readonly ICompanyMemberRepository _companyMemberRepository;
+        private readonly IUserClaimService _userClaimService;
 
         public LoginCommandHandler(UserManager<IdentityUser> userManager,
             ITokenGenerator tokenGenerator,
             IRefreshTokenRepository refreshTokenRepository,
-            ICompanyMemberRepository companyMemberRepository)
+            IUserClaimService userClaimService)
         {
             _userManager = userManager;
             _tokenGenerator = tokenGenerator;
             _refreshTokenRepository = refreshTokenRepository;
-            _companyMemberRepository = companyMemberRepository;
+            _userClaimService = userClaimService;
         }
 
         public async Task<LoginResult> Handle(LoginCommand command, CancellationToken cancellationToken)
@@ -52,13 +52,11 @@ namespace Drawer.Application.Services.Authentication.Commands
             if (!user.EmailConfirmed)
                 throw new UnconfirmedEmailException();
 
-            var claims = await _userManager.GetClaimsAsync(user);
-            claims.Add(new Claim(ClaimTypes.Email, user.Email));
-            claims.Add(new Claim(DrawerClaimTypes.UserId, user.Id));
-            var member = await _companyMemberRepository.FindByUserIdAsync(user.Id);
-            if (member != null)
-                claims.Add(new Claim(DrawerClaimTypes.CompanyId, member.CompanyId));
+            var claims = await _userClaimService.GetClaimsAsync(user);
 
+            var isCompanyMember = claims.Any(x => x.Type == DrawerClaimTypes.CompanyId);
+            var isCompanyOwner = claims.Any(x => x.Type == DrawerClaimTypes.IsCompanyOwner && 
+                Convert.ToBoolean(x.Value) == true);
             var accessToken = _tokenGenerator.GenenateAccessToken(claims);
             var refreshToken = _tokenGenerator.GenerateRefreshToken();
 
@@ -66,7 +64,7 @@ namespace Drawer.Application.Services.Authentication.Commands
             await _refreshTokenRepository.AddAsync(refreshTokenEntity);
             await _refreshTokenRepository.SaveChangesAsync();
 
-            return new LoginResult(accessToken, refreshToken);
+            return new LoginResult(isCompanyMember, isCompanyOwner, accessToken, refreshToken);
         }
     }
 }

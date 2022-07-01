@@ -15,10 +15,13 @@ namespace Drawer.Domain.Models.Organization
 
         public string UserId { get; private set; }
 
-        public CompanyMember(string companyId, string userId)
+        public bool IsOwner { get; private set; }
+
+        public CompanyMember(string companyId, string userId, bool isOwner)
         {
             CompanyId = companyId;
             UserId = userId;
+            IsOwner = isOwner;
         }
     }
 }
