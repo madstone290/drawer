@@ -2,19 +2,9 @@
 @using Authentication
 @attribute [Route(Paths.Organization.Company)]
 
-<ContentTitle Text="회사"/>
-
 <AuthorizeView Policy="@Policies.CompanyMember">
     <Authorized>
-        <AuthorizeView Policy="@Policies.CompanyOwner" Context="CompanyOwnerPoicy">
-            <Authorized>
-                <CompanyOwner />
-            </Authorized>
-
-            <NotAuthorized>
-                <CompanyMember />
-            </NotAuthorized>
-        </AuthorizeView>
+        <CompanyDetail />
     </Authorized>
 
     <NotAuthorized>

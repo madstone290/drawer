@@ -49,6 +49,7 @@ namespace Drawer.Contract
             private const string Index = Base + Controller;
 
             public const string Create = Index;
+            public const string Update = Index;
             public const string Get = Index;
             public const string GetMembers = Index + "/Members";
         }

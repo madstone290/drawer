@@ -52,6 +52,7 @@ namespace Drawer.WebClient.Pages.Organization.Components
         protected override Task OnInitializedAsync()
         {
             Presenter.View = this;
+
             return base.OnInitializedAsync();
         }
 
@@ -65,12 +66,22 @@ namespace Drawer.WebClient.Pages.Organization.Components
             await Form.Validate();
             if (IsFormValid)
             {
-                var apiResponse = await Presenter.CreateCompanyAsync();
-                if (apiResponse.IsSuccessful)
+                if(ActionMode == ActionMode.Add)
                 {
-                    // 회사정보를 반환한다.
-                    Dialog.Close(apiResponse.Data);
+                    var apiResponse = await Presenter.CreateCompanyAsync();
+                    if (apiResponse.IsSuccessful)
+                    {
+                        Dialog.Close(Model);
+                    }
+                }else if(ActionMode == ActionMode.Update)
+                {
+                    var apiResponse = await Presenter.UpdateCompanyAsync();
+                    if (apiResponse.IsSuccessful)
+                    {
+                        Dialog.Close(Model);
+                    }
                 }
+                
             }
         }
         

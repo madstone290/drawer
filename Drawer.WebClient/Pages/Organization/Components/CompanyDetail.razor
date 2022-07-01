@@ -1,0 +1,31 @@
+﻿<ContentTitle Text="회사 정보" />
+<MudToolBar Class="px-0">
+    <MudButton DisableElevation
+               Variant="Variant.Filled" 
+               Color="Color.Primary" 
+               OnClick="(() => Edit_ClickAsync())" 
+               StartIcon="@Icons.Material.Filled.Edit" 
+               IconColor="Color.Surface">수정</MudButton>
+</MudToolBar>
+
+
+<MudGrid>
+    <MudItem xs="12" sm="12" md="12">
+        <MudTextField @bind-Value="Model.Id"
+                      For="@(() => Model.Id)"
+                      Label="Id"
+                      Disabled />
+    </MudItem>
+    <MudItem xs="12" sm="4" md="3">
+        <MudTextField @bind-Value="Model.Name"
+                      For="@(() => Model.Name)"
+                      Label="이름"
+                      Disabled />
+    </MudItem>
+    <MudItem xs="12" sm="4" md="3">
+        <MudTextField @bind-Value="Model.PhoneNumber"
+                      For="@(() => Model.PhoneNumber)"
+                      Label="연락처"
+                      Disabled />
+    </MudItem>
+</MudGrid>

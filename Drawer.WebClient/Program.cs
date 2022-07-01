@@ -4,6 +4,7 @@ using Drawer.WebClient.Api;
 using Drawer.WebClient.Authentication;
 using Drawer.WebClient.Pages.Organization.Presenters;
 using Drawer.WebClient.Pages.User.Presenters;
+using Drawer.WebClient.Presenters;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using MudBlazor;
 using MudBlazor.Services;
@@ -54,10 +55,12 @@ builder.Services.AddScoped<ITokenManager, TokenManager>();
 builder.Services.AddScoped<IAuthenticationManager, AuthenticationManager>();
 builder.Services.AddScoped<ApiClient>();
 
-builder.Services.AddScoped<ProfilePresenter>();
-builder.Services.AddScoped<SecurityPresenter>();
-
-builder.Services.AddScoped<EditCompanyPresenter>();
+builder.Services.Scan(selector =>
+    selector.FromAssemblyOf<IPresenter>()
+        .AddClasses(classes => classes.AssignableTo<IPresenter>())
+        .AsSelf()
+        .WithScopedLifetime()
+);
 
 
 

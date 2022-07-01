@@ -18,11 +18,6 @@ namespace Drawer.Api.Controllers.Organization
             _mediator = mediator;
         }
 
-        /// <summary>
-        /// 사용자의 정보를 수정한다.
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
         [HttpPost]
         [Route(ApiRoutes.Company.Create)]
         [ProducesResponseType(typeof(CreateCompanyResponse), StatusCodes.Status200OK)]
@@ -32,6 +27,18 @@ namespace Drawer.Api.Controllers.Organization
             var command = new CreateCompanyCommand(userId, request.Name, request.PhoneNumber);
             var result = await _mediator.Send(command);
             return Ok(new CreateCompanyResponse(result.Id, result.OwnerId, result.Name, result.PhoneNumber));
+        }
+
+        // TODO 회사구성원 혹은 소유자만 권한 적용
+        [HttpPut]
+        [Route(ApiRoutes.Company.Update)]
+        [ProducesResponseType(typeof(CreateCompanyResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateCompany([FromBody] UpdateCompanyRequest request)
+        {
+            var companyId = HttpContext.User.Claims.First(x => x.Type == DrawerClaimTypes.CompanyId).Value;
+            var command = new UpdateCompanyCommand(companyId, request.Name, request.PhoneNumber);
+            await _mediator.Send(command);
+            return Ok();
         }
 
         [HttpGet]

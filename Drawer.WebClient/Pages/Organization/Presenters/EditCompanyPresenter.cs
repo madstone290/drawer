@@ -26,6 +26,14 @@ namespace Drawer.WebClient.Pages.Organization.Presenters
             return await SaveAsync(new ApiRequestMessage<CreateCompanyResponse>(requstMessage));
         }
 
+        public async Task<ApiResponseMessage<Unit>> UpdateCompanyAsync()
+        {
+            var requstMessage = new HttpRequestMessage(HttpMethod.Put, ApiRoutes.Company.Update);
+            requstMessage.Content = JsonContent.Create(new UpdateCompanyRequest(View.Model.Name, View.Model.PhoneNumber));
 
+            ShowSuccessMessage = true;
+
+            return await SaveAsync(new ApiRequestMessage<Unit>(requstMessage));
+        }
     }
 }

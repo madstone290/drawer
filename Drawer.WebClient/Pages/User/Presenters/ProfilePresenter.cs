@@ -19,7 +19,7 @@ namespace Drawer.WebClient.Pages.User.Presenters
         {
             var requstMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.User.Get);
             var apiResponse = await LoadAsync(new ApiRequestMessage<GetUserResponse>(requstMessage));
-            if (apiResponse.IsSuccessful)
+            if (apiResponse.IsSuccessful && apiResponse.Data != null)
             {
                 View.Model.Email = apiResponse.Data.Email;
                 View.Model.DisplayName = apiResponse.Data.DisplayName;

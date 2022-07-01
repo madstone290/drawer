@@ -6,7 +6,7 @@ namespace Drawer.WebClient.Presenters
     /// <summary>
     /// 스낵바 출력기능을 제공하는 프레젠터
     /// </summary>
-    public class SnackbarPresenter
+    public class SnackbarPresenter : IPresenter
     {
         private readonly ISnackbar _snackbar;
 
