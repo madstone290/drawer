@@ -18,9 +18,9 @@ namespace Drawer.Domain.Models.Locations
         public string Name { get; private set; } = default!;
 
         /// <summary>
-        /// 사업장 설명
+        /// 비고
         /// </summary>
-        public string? Description { get; private set; } 
+        public string? Note { get; private set; } 
 
         public WorkPlace(string name)
         {
@@ -35,17 +35,17 @@ namespace Drawer.Domain.Models.Locations
         public void SetName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new EmptyNameException("사업장명이 비었습니다");
+                throw new EmptyNameException("장소 이름이 비었습니다");
             Name = name.Trim();
         }
 
         /// <summary>
-        /// 사업장 설명을 변경한다.
+        /// 비고를 변경한다.
         /// </summary>
-        /// <param name="description"></param>
-        public void SetDescription(string? description)
+        /// <param name="note"></param>
+        public void SetNote(string? note)
         {
-            Description = description?.Trim();
+            Note = note?.Trim();
         }
 
     }

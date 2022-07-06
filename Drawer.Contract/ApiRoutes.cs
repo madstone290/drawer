@@ -66,18 +66,6 @@ namespace Drawer.Contract
             public const string GetList = Index;
         }
 
-        public static class Positions
-        {
-            private const string Controller = "/Positions";
-            private const string Index = Base + Controller;
-
-            public const string Create = Index;
-            public const string Update = Index + "/{id}";
-            public const string Delete = Index + "/{id}";
-            public const string Get = Index + "/{id}";
-            public const string GetList = Index;
-        }
-
         public static class Zones
         {
             private const string Controller = "/Zones";
@@ -90,9 +78,9 @@ namespace Drawer.Contract
             public const string GetList = Index;
         }
 
-        public static class ZoneTypes
+        public static class Spots
         {
-            private const string Controller = "/ZoneTypes";
+            private const string Controller = "/Spots";
             private const string Index = Base + Controller;
 
             public const string Create = Index;
@@ -101,7 +89,6 @@ namespace Drawer.Contract
             public const string Get = Index + "/{id}";
             public const string GetList = Index;
         }
-
 
         public static class Items
         {

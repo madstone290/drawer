@@ -13,19 +13,17 @@ namespace Drawer.Application.Services.Locations.Commands
     /// <summary>
     /// 구역을 수정한다.
     /// </summary>
-    public record UpdateZoneCommand(long Id, string Name, long? ZoneTypeId) : ICommand<UpdateZoneResult>;
+    public record UpdateZoneCommand(long Id, string Name, string? Note) : ICommand<UpdateZoneResult>;
 
     public record UpdateZoneResult;
 
     public class UpdateZoneCommandHandler : ICommandHandler<UpdateZoneCommand, UpdateZoneResult>
     {
         private readonly IZoneRepository _zoneRepository;
-        private readonly IZoneTypeRepository _zoneTypeRepository;
 
-        public UpdateZoneCommandHandler(IZoneRepository zoneRepository, IZoneTypeRepository zoneTypeRepository)
+        public UpdateZoneCommandHandler(IZoneRepository zoneRepository)
         {
             _zoneRepository = zoneRepository;
-            _zoneTypeRepository = zoneTypeRepository;
         }
 
         public async Task<UpdateZoneResult> Handle(UpdateZoneCommand command, CancellationToken cancellationToken)
@@ -34,17 +32,9 @@ namespace Drawer.Application.Services.Locations.Commands
             if (zone == null)
                 throw new EntityNotFoundException<Zone>(command.Id);
 
-            if (command.ZoneTypeId == null)
-            {
-                zone.SetZoneType(null);
-            }
-            else
-            {
-                var zoneType = await _zoneTypeRepository.FindByIdAsync(command.ZoneTypeId.Value);
-                zone.SetZoneType(zoneType);
-            }
-
             zone.SetName(command.Name);
+            zone.SetNote(command.Note);
+
             await _zoneRepository.SaveChangesAsync();
             return new UpdateZoneResult();
         }

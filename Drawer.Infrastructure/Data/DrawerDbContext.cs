@@ -40,8 +40,7 @@ namespace Drawer.Infrastructure.Data
 
         public DbSet<WorkPlace> WorkPlaces { get; set; } = default!;
         public DbSet<Zone> Zones { get; set; } = default!;
-        public DbSet<ZoneType> ZoneTypes { get; set; } = default!;
-        public DbSet<Position> Positions { get; set; } = default!;
+        public DbSet<Spot> Spots { get; set; } = default!;
 
         public DbSet<Item> Items { get; set; } = default!;
 

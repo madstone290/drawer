@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace Drawer.Application.Services.Locations.Repos
 {
-    public interface IPositionRepository : IRepository<Position, long>
+    public interface ISpotRepository : IRepository<Spot, long>
     {
-        Task<IList<Position>> FindAll(); 
+        Task<IList<Spot>> FindAll(); 
     }
 }

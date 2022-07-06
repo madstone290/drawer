@@ -26,7 +26,7 @@ namespace Drawer.Api.Controllers.Locations
             var result = await _mediator.Send(query);
             return Ok(
                 new GetWorkPlacesResponse(
-                    result.WorkPlaces.Select(x => new GetWorkPlacesResponse.WorkPlace(x.Id, x.Name, x.Description)).ToList()
+                    result.WorkPlaces.Select(x => new GetWorkPlacesResponse.WorkPlace(x.Id, x.Name, x.Note)).ToList()
                 )
             );
         }
@@ -42,7 +42,7 @@ namespace Drawer.Api.Controllers.Locations
             if (result == null)
                 return NoContent();
             else
-                return Ok(new GetWorkPlaceResponse(result.Id, result.Name, result.Description));
+                return Ok(new GetWorkPlaceResponse(result.Id, result.Name, result.Note));
         }
 
         [HttpPost]
@@ -50,9 +50,9 @@ namespace Drawer.Api.Controllers.Locations
         [ProducesResponseType(typeof(CreateWorkPlaceResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateWorkPlace([FromBody] CreateWorkPlaceRequest request)
         {
-            var command = new CreateWorkPlaceCommand(request.Name, request.Description);
+            var command = new CreateWorkPlaceCommand(request.Name, request.Note);
             var result = await _mediator.Send(command);
-            return Ok(new CreateWorkPlaceResponse(result.Id, result.Name, result.Description));
+            return Ok(new CreateWorkPlaceResponse(result.Id));
         }
 
         [HttpPut]
@@ -60,7 +60,7 @@ namespace Drawer.Api.Controllers.Locations
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateWorkPlace([FromRoute] long id, [FromBody] UpdateWorkPlaceRequest request)
         {
-            var command = new UpdateWorkPlaceCommand(id, request.Name, request.Description);
+            var command = new UpdateWorkPlaceCommand(id, request.Name, request.Note);
             await _mediator.Send(command);
             return Ok();
         }

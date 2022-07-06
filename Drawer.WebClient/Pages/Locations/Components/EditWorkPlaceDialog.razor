@@ -20,16 +20,16 @@
                                   Disabled />
                     </MudItem>
                 }
-                <MudItem xs="12" sm="4" md="3">
+                <MudItem xs="12" sm="6">
                     <MudTextField @bind-Value="Model.Name"
                                   For="@(() => Model.Name)"
                                   Label="이름" 
                                   AutoFocus="true" />
                 </MudItem>
-                <MudItem xs="12" sm="4" md="3">
-                    <MudTextField @bind-Value="Model.Description"
-                                  For="@(() => Model.Description)"
-                                  Label="설명" />
+                <MudItem xs="12" sm="12">
+                    <MudTextField @bind-Value="Model.Note"
+                                  For="@(() => Model.Note)"
+                                  Label="비고" />
                 </MudItem>
             </MudGrid>
         </MudForm>

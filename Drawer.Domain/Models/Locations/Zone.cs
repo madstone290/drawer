@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Drawer.Domain.Models.Locations
 {
     /// <summary>
-    /// 사업장 내 구역
+    /// 장소 내 구역
     /// </summary>
     public class Zone : CompanyResourceEntity<long>
     {
@@ -18,14 +18,24 @@ namespace Drawer.Domain.Models.Locations
         public string Name { get; private set; } = default!;
 
         /// <summary>
-        /// 구역 유형
+        /// 구역이 포함된 장소
         /// </summary>
-        public ZoneType? ZoneType { get; private set; }
+        public WorkPlace WorkPlace { get; private set; } = null!;
 
-        public long? ZoneTypeId { get; private set; }
+        public long WorkPlaceId { get; private set; }
 
-        public Zone(string name)
+        /// <summary>
+        /// 비고
+        /// </summary>
+        public string? Note { get; private set; }
+
+        private Zone() { }
+        public Zone(WorkPlace workPlace, string name)
         {
+            if (workPlace == null)
+                throw new EntityNullException<WorkPlace>(nameof(workPlace));
+            WorkPlace = workPlace;
+            WorkPlaceId = workPlace.Id;
             SetName(name);
         }
 
@@ -38,19 +48,17 @@ namespace Drawer.Domain.Models.Locations
         public void SetName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new EmptyNameException("구역명이 비었습니다");
+                throw new EmptyNameException("구역 이름이 비었습니다");
             Name = name.Trim();
         }
-
+        
         /// <summary>
-        /// 구역 유형을 변경한다.
+        /// 비고를 변경한다.
         /// </summary>
-        /// <param name="zoneType"></param>
-        public void SetZoneType(ZoneType? zoneType)
+        /// <param name="note"></param>
+        public void SetNote(string? note)
         {
-            ZoneType = zoneType;
-            ZoneTypeId = zoneType?.Id;
+            Note = note?.Trim();
         }
-
     }
 }

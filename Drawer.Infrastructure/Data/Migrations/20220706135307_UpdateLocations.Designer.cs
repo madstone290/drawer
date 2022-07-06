@@ -3,6 +3,7 @@ using System;
 using Drawer.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Drawer.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(DrawerDbContext))]
-    partial class DrawerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220706135307_UpdateLocations")]
+    partial class UpdateLocations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -527,7 +529,7 @@ namespace Drawer.Infrastructure.Data.Migrations
                     b.HasOne("Drawer.Domain.Models.Locations.Zone", "Zone")
                         .WithMany()
                         .HasForeignKey("ZoneId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Zone");
@@ -538,7 +540,7 @@ namespace Drawer.Infrastructure.Data.Migrations
                     b.HasOne("Drawer.Domain.Models.Locations.WorkPlace", "WorkPlace")
                         .WithMany()
                         .HasForeignKey("WorkPlaceId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("WorkPlace");

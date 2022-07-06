@@ -15,7 +15,7 @@ namespace Drawer.Application.Services.Locations.Queries
 
     public record GetZonesResult(IList<GetZonesResult.Zone> Zones)
     {
-        public record Zone(long Id, string Name, long? ZoneTypeId);
+        public record Zone(long Id, long WorkPlaceId, string Name, string? Note);
     }
 
     public class GetZonesQueryHandler : IQueryHandler<GetZonesQuery, GetZonesResult>
@@ -32,8 +32,8 @@ namespace Drawer.Application.Services.Locations.Queries
             var zones = await _zoneRepository.FindAll();
 
             return new GetZonesResult(
-                zones.Select(x => 
-                    new GetZonesResult.Zone(x.Id, x.Name, x.ZoneTypeId)
+                zones.Select(x =>
+                    new GetZonesResult.Zone(x.Id, x.WorkPlaceId, x.Name, x.Note)
                 ).ToList());
         }
     }

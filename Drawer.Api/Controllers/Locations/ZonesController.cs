@@ -25,7 +25,7 @@ namespace Drawer.Api.Controllers.Locations
             var result = await _mediator.Send(query);
             return Ok(
                 new GetZonesResponse(
-                    result.Zones.Select(x => new GetZonesResponse.Zone(x.Id, x.Name, x.ZoneTypeId)).ToList()
+                    result.Zones.Select(x => new GetZonesResponse.Zone(x.Id, x.WorkPlaceId, x.Name, x.Note)).ToList()
                 )
             );
         }
@@ -41,7 +41,7 @@ namespace Drawer.Api.Controllers.Locations
             if (result == null)
                 return NoContent();
             else
-                return Ok(new GetZoneResponse(result.Id, result.Name, result.ZoneTypeId));
+                return Ok(new GetZoneResponse(result.Id, result.WorkPlaceId, result.Name, result.Note));
         }
 
         [HttpPost]
@@ -49,9 +49,9 @@ namespace Drawer.Api.Controllers.Locations
         [ProducesResponseType(typeof(CreateZoneResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateZone([FromBody] CreateZoneRequest request)
         {
-            var command = new CreateZoneCommand(request.Name, request.ZoneTypeId);
+            var command = new CreateZoneCommand(request.WorkPlaceId, request.Name, request.Note);
             var result = await _mediator.Send(command);
-            return Ok(new CreateZoneResponse(result.Id, result.Name, request.ZoneTypeId));
+            return Ok(new CreateZoneResponse(result.Id));
         }
 
         [HttpPut]
@@ -59,7 +59,7 @@ namespace Drawer.Api.Controllers.Locations
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateZone([FromRoute] long id, [FromBody] UpdateZoneRequest request)
         {
-            var command = new UpdateZoneCommand(id, request.Name, request.ZoneTypeId);
+            var command = new UpdateZoneCommand(id, request.Name, request.Note);
             await _mediator.Send(command);
             return Ok();
         }

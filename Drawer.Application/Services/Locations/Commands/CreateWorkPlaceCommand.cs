@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 namespace Drawer.Application.Services.Locations.Commands
 {
     /// <summary>
-    /// 작업장을 생성한다.
+    /// 장소를 생성한다.
     /// </summary>
-    public record CreateWorkPlaceCommand(string Name, string? Description) : ICommand<CreateWorkPlaceResult>;
+    public record CreateWorkPlaceCommand(string Name, string? Note) : ICommand<CreateWorkPlaceResult>;
 
-    public record CreateWorkPlaceResult(long Id, string Name, string? Description);
+    public record CreateWorkPlaceResult(long Id);
 
     public class CreateWorkPlaceCommandHandler : ICommandHandler<CreateWorkPlaceCommand, CreateWorkPlaceResult>
     {
@@ -28,11 +28,11 @@ namespace Drawer.Application.Services.Locations.Commands
         public async Task<CreateWorkPlaceResult> Handle(CreateWorkPlaceCommand command, CancellationToken cancellationToken)
         {
             var workPlace = new WorkPlace(command.Name);
-            workPlace.SetDescription(command.Description);
+            workPlace.SetNote(command.Note);
             await _workPlaceRepository.AddAsync(workPlace);
             await _workPlaceRepository.SaveChangesAsync();
 
-            return new CreateWorkPlaceResult(workPlace.Id, workPlace.Name, workPlace.Description);
+            return new CreateWorkPlaceResult(workPlace.Id);
         }
     }
 }

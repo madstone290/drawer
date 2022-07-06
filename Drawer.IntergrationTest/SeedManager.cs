@@ -37,9 +37,8 @@ namespace Drawer.IntergrationTest
             dbContext.CompanyMembers.Truncate();
             dbContext.Companies.Truncate();
 
-            dbContext.Positions.Truncate();
+            dbContext.Spots.Truncate();
             dbContext.Zones.Truncate();
-            dbContext.ZoneTypes.Truncate();
             dbContext.WorkPlaces.Truncate();
 
             await dbContext.SaveChangesAsync();

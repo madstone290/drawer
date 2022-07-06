@@ -34,7 +34,7 @@ namespace Drawer.WebClient.Pages.Locations.Presenters
                     {
                         Id = item.Id,
                         Name= item.Name,
-                        Description = item.Description ?? string.Empty
+                        Note = item.Note ?? string.Empty
                     };
                     View.WorkPlaceList.Add(workPlaceModel);
                 }
@@ -61,7 +61,7 @@ namespace Drawer.WebClient.Pages.Locations.Presenters
                 {
                     Id = resultData.Id,
                     Name = resultData.Name,
-                    Description = resultData.Description ?? string.Empty
+                    Note = resultData.Note ?? string.Empty
                 };
                 View.WorkPlaceList.Add(workPlace);
                 RefreshTotalRowCount();
@@ -75,6 +75,7 @@ namespace Drawer.WebClient.Pages.Locations.Presenters
                 _snackbar.Add("작업장을 먼저 선택하세요", Severity.Normal);
                 return;
             }
+            var selectedItem = View.SelectedWorkPlace;
 
             var dialogOptions = new DialogOptions()
             {
@@ -85,9 +86,9 @@ namespace Drawer.WebClient.Pages.Locations.Presenters
                 { nameof(EditWorkPlaceDialog.ActionMode), ActionMode.Update },
                 { nameof(EditWorkPlaceDialog.Model), new WorkPlaceModel()
                     {
-                        Id = View.SelectedWorkPlace.Id,
-                        Name = View.SelectedWorkPlace.Name,
-                        Description = View.SelectedWorkPlace.Description,
+                        Id = selectedItem.Id,
+                        Name = selectedItem.Name,
+                        Note = selectedItem.Note,
                     }
                 }
             };
@@ -96,8 +97,8 @@ namespace Drawer.WebClient.Pages.Locations.Presenters
             if (!result.Cancelled)
             {
                 var workPlace = (WorkPlaceModel)result.Data;
-                View.SelectedWorkPlace.Name = workPlace.Name;
-                View.SelectedWorkPlace.Description = workPlace.Description;
+                selectedItem.Name = workPlace.Name;
+                selectedItem.Note = workPlace.Note;
             }
         }
 

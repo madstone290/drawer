@@ -11,12 +11,9 @@ using System.Threading.Tasks;
 namespace Drawer.Application.Services.Locations.Commands
 {
     /// <summary>
-    /// 작업장을 수정한다.
+    /// 장소를 수정한다.
     /// </summary>
-    /// <param name="Id"></param>
-    /// <param name="Name"></param>
-    /// <param name="Description"></param>
-    public record UpdateWorkPlaceCommand(long Id, string Name, string? Description) : ICommand<UpdateWorkPlaceResult>;
+    public record UpdateWorkPlaceCommand(long Id, string Name, string? Note) : ICommand<UpdateWorkPlaceResult>;
 
     public record UpdateWorkPlaceResult;
 
@@ -36,7 +33,7 @@ namespace Drawer.Application.Services.Locations.Commands
                 throw new EntityNotFoundException<WorkPlace>(command.Id);
 
             workPlace.SetName(command.Name);
-            workPlace.SetDescription(command.Description);
+            workPlace.SetNote(command.Note);
             await _workPlaceRepository.SaveChangesAsync();
 
             return new UpdateWorkPlaceResult();

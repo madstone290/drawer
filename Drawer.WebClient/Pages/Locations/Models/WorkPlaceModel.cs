@@ -6,7 +6,7 @@ namespace Drawer.WebClient.Pages.Locations.Models
     {
         public long Id { get; set; }
         public string Name { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
+        public string Note { get; set; } = string.Empty;
     }
 
     public class WorkPlaceModelValidator : AbstractValidator<WorkPlaceModel>

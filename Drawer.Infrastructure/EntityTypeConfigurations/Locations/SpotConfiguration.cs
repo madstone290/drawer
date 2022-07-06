@@ -9,13 +9,14 @@ using System.Threading.Tasks;
 
 namespace Drawer.Infrastructure.EntityTypeConfigurations.Locations
 {
-    public class PositionConfiguration : IEntityTypeConfiguration<Position>
+    public class SpotConfiguration : IEntityTypeConfiguration<Spot>
     {
-        public void Configure(EntityTypeBuilder<Position> builder)
+        public void Configure(EntityTypeBuilder<Spot> builder)
         {
             builder.HasOne(x => x.Zone)
                 .WithMany()
-                .HasForeignKey(x => x.ZoneId);
+                .HasForeignKey(x => x.ZoneId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

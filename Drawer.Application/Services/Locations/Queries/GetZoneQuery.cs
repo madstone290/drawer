@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 namespace Drawer.Application.Services.Locations.Queries
 {
     /// <summary>
-    /// 하나의 구역를 조회한다.
+    /// 구역을 조회한다.
     /// </summary>
     public record GetZoneQuery(long Id) : IQuery<GetZoneResult?>;
 
-    public record GetZoneResult(long Id, string Name, long? ZoneTypeId);
+    public record GetZoneResult(long Id, long WorkPlaceId, string Name, string? Note);
 
     public class GetZoneQueryHandler : IQueryHandler<GetZoneQuery, GetZoneResult?>
     {
@@ -30,7 +30,7 @@ namespace Drawer.Application.Services.Locations.Queries
 
             return zone == null 
                 ? null 
-                : new GetZoneResult(zone.Id, zone.Name, zone.ZoneTypeId);
+                : new GetZoneResult(zone.Id, zone.WorkPlaceId, zone.Name, zone.Note);
         }
     }
 }

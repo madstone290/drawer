@@ -44,7 +44,7 @@ namespace Drawer.WebClient.Pages.Locations
             if (model == null)
                 return false;
 
-            return model.Description.Contains(searchText)
+            return model.Note.Contains(searchText)
             || model.Name.Contains(searchText);
         }
 

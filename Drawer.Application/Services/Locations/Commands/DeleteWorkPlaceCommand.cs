@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 namespace Drawer.Application.Services.Locations.Commands
 {
     /// <summary>
-    /// 작업장을 삭제한다.
+    /// 장소를 삭제한다.
     /// </summary>
-    /// <param name="Id">작업장 Id</param>
+    /// <param name="Id">장소Id</param>
     public record DeleteWorkPlaceCommand(long Id) : ICommand<DeleteWorkPlaceResult>;
 
     public record DeleteWorkPlaceResult;

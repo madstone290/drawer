@@ -10,15 +10,15 @@ using System.Threading.Tasks;
 
 namespace Drawer.Infrastructure.Repos.Locations
 {
-    public class ZoneTypeRepository : Repository<ZoneType, long>, IZoneTypeRepository
+    public class SpotRepository : Repository<Spot, long>, ISpotRepository
     {
-        public ZoneTypeRepository(DrawerDbContext dbContext) : base(dbContext)
+        public SpotRepository(DrawerDbContext dbContext) : base(dbContext)
         {
         }
 
-        public async Task<IList<ZoneType>> FindAll()
+        public async Task<IList<Spot>> FindAll()
         {
-            return await _dbContext.ZoneTypes.ToListAsync();
+            return await _dbContext.Spots.ToListAsync();
         }
 
     }

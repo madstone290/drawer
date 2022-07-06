@@ -60,7 +60,7 @@
                 <MudTableSortLabel SortBy="@(new Func<WorkPlaceModel, object>(x => x.Name))">이름</MudTableSortLabel>
             </MudTh>
             <MudTh>
-                <MudTableSortLabel SortBy="@(new Func<WorkPlaceModel, object>(x => x.Description))">설명</MudTableSortLabel>
+                <MudTableSortLabel SortBy="@(new Func<WorkPlaceModel, object>(x => x.Note))">비고</MudTableSortLabel>
             </MudTh>
         </MudTHeadRow>
     </HeaderContent>
@@ -70,8 +70,8 @@
         <MudTd DataLabel="이름">
             <MudHighlighter Text="@context.Name" HighlightedText="@searchText" />
         </MudTd>
-        <MudTd DataLabel="설명">
-            <MudHighlighter Text="@context.Description" HighlightedText="@searchText" />
+        <MudTd DataLabel="비고">
+            <MudHighlighter Text="@context.Note" HighlightedText="@searchText" />
         </MudTd>
     </RowTemplate>
 

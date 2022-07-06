@@ -13,9 +13,10 @@ namespace Drawer.Infrastructure.EntityTypeConfigurations.Locations
     {
         public void Configure(EntityTypeBuilder<Zone> builder)
         {
-            builder.HasOne(x => x.ZoneType)
-                .WithMany()
-                .HasForeignKey(x => x.ZoneTypeId);
+            builder.HasOne(x => x.WorkPlace)
+              .WithMany()
+              .HasForeignKey(x => x.WorkPlaceId)
+              .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

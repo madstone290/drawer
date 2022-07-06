@@ -23,7 +23,7 @@ namespace Drawer.WebClient.Pages.Locations.Presenters
         public async Task<bool> AddWorkPlaceAsync()
         {
             var requstMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.WorkPlaces.Create);
-            requstMessage.Content = JsonContent.Create(new CreateWorkPlaceRequest(View.Model.Name, View.Model.Description));
+            requstMessage.Content = JsonContent.Create(new CreateWorkPlaceRequest(View.Model.Name, View.Model.Note));
 
             var apiResponse = await SaveAsync(new ApiRequestMessage<CreateWorkPlaceResponse>(requstMessage));
             if(apiResponse.IsSuccessful && apiResponse.Data != null)
@@ -42,9 +42,9 @@ namespace Drawer.WebClient.Pages.Locations.Presenters
         {
             var requstMessage = new HttpRequestMessage(HttpMethod.Put, 
                 ApiRoutes.WorkPlaces.Update.Replace("{id}", View.Model.Id.ToString()));
-            requstMessage.Content = JsonContent.Create(new UpdateWorkPlaceRequest(View.Model.Name, View.Model.Description));
+            requstMessage.Content = JsonContent.Create(new UpdateWorkPlaceRequest(View.Model.Name, View.Model.Note));
 
-            var apiResponse = await SaveAsync(new ApiRequestMessage<CreateWorkPlaceResponse>(requstMessage));
+            var apiResponse = await SaveAsync(new ApiRequestMessage(requstMessage));
             if (apiResponse.IsSuccessful)
             {
                 return true;

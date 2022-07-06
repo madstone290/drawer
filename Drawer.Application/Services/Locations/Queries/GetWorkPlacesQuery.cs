@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 namespace Drawer.Application.Services.Locations.Queries
 {
     /// <summary>
-    /// 작업장 목록을 조회한다.
+    /// 장소 목록을 조회한다.
     /// </summary>
     public record GetWorkPlacesQuery : IQuery<GetWorkPlacesResult>;
 
     public record GetWorkPlacesResult(IList<GetWorkPlacesResult.WorkPlace> WorkPlaces)
     {
-        public record WorkPlace(long Id, string Name, string? Description);
+        public record WorkPlace(long Id, string Name, string? Note);
     }
 
     public class GetWorkPlacesQueryHandler : IQueryHandler<GetWorkPlacesQuery, GetWorkPlacesResult>
@@ -33,7 +33,7 @@ namespace Drawer.Application.Services.Locations.Queries
 
             return new GetWorkPlacesResult(
                 workPlaces.Select(x => 
-                    new GetWorkPlacesResult.WorkPlace(x.Id, x.Name, x.Description)
+                    new GetWorkPlacesResult.WorkPlace(x.Id, x.Name, x.Note)
                 ).ToList());
         }
     }
