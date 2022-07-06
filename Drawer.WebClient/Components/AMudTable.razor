@@ -1,0 +1,140 @@
+﻿@typeparam T where T : class
+@inherits MudBlazor.MudTable<T> 
+
+@{
+    if (!Visible)
+        return;
+
+    /* 기본 스타일 설정 */
+    <style>
+        .selected-row {
+            background-color: skyblue
+        }
+    </style>
+
+    /*
+    * 파라미터 기본값 적용
+    * flex와 테이블 컨테이너 높이를 조절하여 컨텐츠 영역에서 남은 공간을 모두채운다.
+    * */
+
+    if (Parameters != null)
+    {
+        base.Class = Parameters.Class;
+        base.Height = Parameters.Height;
+        base.Breakpoint = Parameters.Breakpoint;
+        base.Dense = Parameters.Dense;
+        base.Bordered = Parameters.Bordered;
+        base.FixedHeader = Parameters.FixedHeader;
+        base.FixedFooter = Parameters.FixedFooter;
+        base.ReadOnly = Parameters.ReadOnly;
+        base.HorizontalScrollbar = Parameters.HorizontalScrollbar;
+        base.LoadingProgressColor = Parameters.LoadingProgressColor;
+        base.CustomHeader = Parameters.CustomHeader;
+        base.CustomFooter = Parameters.CustomFooter;
+
+        if (Parameters.OnRowClick.HasValue)
+        {
+            base.OnRowClick = Parameters.OnRowClick.Value;
+        }
+        else
+        {
+            // RowClassFunc 호출을 위해 필요하다.
+            base.OnRowClick = new EventCallback<TableRowClickEventArgs<T>>(this, Row_Click);
+        }
+
+        if (Parameters.RowClassFunc != null)
+        {
+            base.RowClassFunc = Parameters.RowClassFunc;
+        }
+        else
+        {
+            base.RowClassFunc = GetRowClass;
+        }
+    }
+
+    base.Class = string.Join(" ", base.Class, AdditionalClass);
+    
+    base.BuildRenderTree(__builder);
+}
+
+@code {
+    public class RazorParameters
+    {
+        public string Class { get; set; } = "amud-flex-fill";
+        public string Height { get; set; } = "100%";
+        public Breakpoint Breakpoint { get; set; } = Breakpoint.None;
+        public bool Dense { get; set; } = true;
+        public bool Bordered { get; set; } = true;
+        public bool FixedHeader { get; set; } = true;
+        public bool FixedFooter { get; set; } = true;
+        public bool ReadOnly { get; set; } = true;
+        public bool HorizontalScrollbar { get; set; } = true;
+        public Color LoadingProgressColor { get; set; } = Color.Info;
+        public bool CustomFooter { get; set; } = true;
+        public bool CustomHeader { get; set; } = true;
+        public EventCallback<TableRowClickEventArgs<T>>? OnRowClick { get; set; } = null;
+        public Func<T, int, string>? RowClassFunc { get; set; } = null;
+    }
+
+    [Parameter]
+    public RazorParameters Parameters { get; set; } = new RazorParameters();
+    [Parameter]
+    public bool Visible { get; set; } = true;
+    [Parameter]
+    public string AdditionalClass { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 현재 선택된 아이템.
+    /// SelectedItem속성은 마지막 클릭 로우를 제공하고 선택 취소된 아이템을 판단하지 못한다.
+    /// </summary>
+    public T? FocusedItem => lastClickedRowNumber == -1 ? null : SelectedItem;
+
+    [Parameter]
+    public EventCallback<T?> FocusedItemChanged { get; set; }
+
+    void Row_Click(TableRowClickEventArgs<T> model)
+    {
+    }
+
+    int lastClickedRowNumber = -1;
+    private string GetRowClass(T model, int rowNumber)
+    {
+        if (MultiSelection)
+        {
+            if (SelectedItems.Any(x => x.Equals(model)))
+            {
+                return "selected-row";
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+        else
+        {
+            // deselect row
+            if (lastClickedRowNumber == rowNumber)
+            {
+                lastClickedRowNumber = -1;
+                return string.Empty;
+            }
+            // select row
+            else if (SelectedItem != null && SelectedItem.Equals(model))
+            {
+                lastClickedRowNumber = rowNumber;
+                return "selected-row";
+            }
+            // not-selected
+            else
+            {
+                return string.Empty;
+            }
+
+        }
+
+
+
+
+    }
+
+}

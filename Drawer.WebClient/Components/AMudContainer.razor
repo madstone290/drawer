@@ -1,0 +1,22 @@
+﻿@inherits MudBlazor.MudContainer
+@{
+    if (Parameters != null)
+    {
+        base.Class = Parameters.Class;
+        base.MaxWidth = Parameters.MaxWidth;
+    }
+    base.BuildRenderTree(__builder);
+}
+
+@code {
+    public class RazorParameters
+    {
+        public string Class { get; set; } = "amud-container";
+        public MaxWidth MaxWidth { get; set; } = MaxWidth.False;
+    }
+
+    [Parameter]
+    public RazorParameters Parameters { get; set; } = new RazorParameters();
+
+}
+

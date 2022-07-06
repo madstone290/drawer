@@ -1,0 +1,19 @@
+﻿@attribute [Route(Paths.Locations.Zones)]
+
+<AMudToolBar>
+     <MudSwitch @bind-Checked="@bordered" Color="Color.Secondary">셀 테두리</MudSwitch>
+    <MudSwitch @bind-Checked="@multiSelection" Color="Color.Secondary">복수 선택</MudSwitch>
+</AMudToolBar>
+<div class="amud-flex-fill" style="background-color:blue">
+    <div style="height:1000px">
+
+    </div>
+</div>
+<AMudToolBar>
+     <MudSwitch @bind-Checked="@bordered" Color="Color.Secondary">셀 테두리</MudSwitch>
+    <MudSwitch @bind-Checked="@multiSelection" Color="Color.Secondary">복수 선택</MudSwitch>
+</AMudToolBar>
+@code {
+    private bool bordered = false;
+    private bool multiSelection = false;
+}

@@ -1,0 +1,23 @@
+﻿@inherits MudBlazor.MudToolBar
+@{
+    if (!Visible)
+        return;
+    
+    if (Parameters != null)
+    {
+        base.Class = Parameters.Class;
+    }
+    base.BuildRenderTree(__builder);
+}
+
+@code {
+    public class RazorParameters
+    {
+        public string Class { get; set; } = "ma-0 pa-0 amud-flex-stay";
+    }
+
+    [Parameter]
+    public bool Visible { get; set; } = true;
+    [Parameter]
+    public RazorParameters Parameters { get; set; } = new RazorParameters();
+}

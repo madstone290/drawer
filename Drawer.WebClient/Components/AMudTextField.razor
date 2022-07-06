@@ -1,0 +1,27 @@
+﻿@typeparam T
+@inherits MudBlazor.MudTextField<T>
+
+@{
+    if (!Visible)
+        return;
+
+    if(Parameters != null)
+    {
+        base.Disabled = !Parameters.Enabled;
+        base.Class = Parameters.Class;
+    }
+    base.BuildRenderTree(__builder);
+}
+
+@code {
+    public class RazorParameters
+    {
+        public bool Enabled { get; set; } = true;
+        public string Class { get; set; } = "ma-0 pa-0";
+    }
+
+    [Parameter]
+    public bool Visible { get; set; } = true;
+    [Parameter]
+    public RazorParameters Parameters { get; set; } = new RazorParameters();
+}

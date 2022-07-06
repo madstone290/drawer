@@ -34,7 +34,11 @@
             public const string Company = "/Organization/Company";
         }
 
-        
+        public static class Locations
+        {
+            public const string WorkPlaces = "/Locations/WorkPlaces";
+            public const string Zones = "/Locations/Zones";
+        }
         
     }
 }

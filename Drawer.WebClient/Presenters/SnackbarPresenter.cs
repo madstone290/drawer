@@ -8,9 +8,9 @@ namespace Drawer.WebClient.Presenters
     /// </summary>
     public class SnackbarPresenter : IPresenter
     {
-        private readonly ISnackbar _snackbar;
+        protected readonly ISnackbar _snackbar;
 
-        private readonly ApiClient _apiClient;
+        protected readonly ApiClient _apiClient;
 
         /// <summary>
         /// 에러 알림 노출 여부
@@ -69,6 +69,23 @@ namespace Drawer.WebClient.Presenters
             else if (apiResponse.IsSuccessful && ShowSuccessMessage)
             {
                 _snackbar.Add(SuccessMessage, Severity.Success);
+            }
+            return apiResponse;
+        }
+
+        /// <summary>
+        /// 데이터를 삭제한다.
+        /// 실패할 경우 오류메시지를 출력한다.
+        /// </summary>
+        /// <typeparam name="TResponse"></typeparam>
+        /// <param name="apiRequest"></param>
+        /// <returns></returns>
+        protected async Task<ApiResponseMessage<TResponse>> DeleteAsync<TResponse>(ApiRequestMessage<TResponse> apiRequest)
+        {
+            var apiResponse = await _apiClient.SendAsync(apiRequest);
+            if (!apiResponse.IsSuccessful && ShowErrorMessage)
+            {
+                _snackbar.Add(apiResponse.ErrorMessage, Severity.Error);
             }
             return apiResponse;
         }
