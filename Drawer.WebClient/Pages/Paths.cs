@@ -38,6 +38,7 @@
         {
             public const string WorkPlaces = "/Locations/WorkPlaces";
             public const string Zones = "/Locations/Zones";
+            public const string Spots = "/Locations/Spots";
         }
         
     }

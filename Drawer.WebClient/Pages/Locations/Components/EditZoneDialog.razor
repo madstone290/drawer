@@ -1,0 +1,60 @@
+﻿@using Drawer.WebClient.Utils
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Add" Class="mr-3 mb-n1" />
+            @TitleText
+        </MudText>
+    </TitleContent>
+
+    <DialogContent>
+        <MudForm @ref="Form" @bind-IsValid="IsFormValid"
+                 Model="Model" ValidationDelay="0" Validation="@Validator.ValidateValue()">
+            <MudGrid>
+                @if (ActionMode == ActionMode.View || ActionMode == ActionMode.Update)
+                {
+                    <MudItem xs="12" sm="12" md="12">
+                        <MudTextField @bind-Value="Model.Id"
+                                  For="@(() => Model.Id)"
+                                  Label="Id"
+                                  Disabled />
+                    </MudItem>
+                }
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="Model.Name"
+                                  For="@(() => Model.Name)"
+                                  Label="이름"
+                                  AutoFocus="true" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+
+                    <MudAutocomplete T="long" 
+                                     Label="장소"
+                                     @bind-Value="Model.WorkPlaceId"
+                                     For="@(()=> Model.WorkPlaceId)"
+                                     ResetValueOnEmptyText="true"
+                                     Clearable="true"
+                                     SearchFunc="@FilterWorkPlaceIds"
+                                     Variant="Variant.Text"
+                                     ToStringFunc="@DisplayWorkPlaceName" />
+                </MudItem>
+                <MudItem xs="12" sm="12">
+                    <MudTextField @bind-Value="Model.Note"
+                                  For="@(() => Model.Note)"
+                                  Label="비고" />
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton DisableElevation
+                   Variant="Variant.Filled"
+                   Color="Color.Secondary"
+                   OnClick="@Cancel_Click">취소</MudButton>
+        <MudButton DisableElevation
+                   Disabled="@(!IsFormValid)"
+                   OnClick="@Save_Click"
+                   Variant="Variant.Filled" Color="Color.Primary">저장</MudButton>
+    </DialogActions>
+</MudDialog>

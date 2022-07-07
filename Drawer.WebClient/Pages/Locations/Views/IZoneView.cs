@@ -2,11 +2,11 @@
 
 namespace Drawer.WebClient.Pages.Locations.Views
 {
-    public interface IWorkPlacesView
+    public interface IZonesView
     {
-        WorkPlaceModel? SelectedWorkPlace { get; }
+        ZoneTableModel? SelectedZone { get; }
 
-        IList<WorkPlaceModel> WorkPlaceList { get; }
+        IList<ZoneTableModel> ZoneList { get; }
 
         int TotalRowCount { get; set; }
 

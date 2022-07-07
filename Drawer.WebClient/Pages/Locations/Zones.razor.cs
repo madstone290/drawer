@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Components;
 
 namespace Drawer.WebClient.Pages.Locations
 {
-    public partial class WorkPlaces : IWorkPlacesView
+    public partial class Zones : IZonesView
     {
-        private AMudTable<WorkPlaceModel> table = null!;
+        private AMudTable<ZoneTableModel> table = null!;
 
         private bool canCreate = false;
         private bool canRead = false;
@@ -17,12 +17,12 @@ namespace Drawer.WebClient.Pages.Locations
 
         private string searchText = string.Empty;
 
-        public IList<WorkPlaceModel> WorkPlaceList { get; private set; } = new List<WorkPlaceModel>();
+        public IList<ZoneTableModel> ZoneList { get; private set; } = new List<ZoneTableModel>();
 
         [Inject]
-        public WorkPlacesPresenter Presenter { get; set; } = null!;
+        public ZonesPresenter Presenter { get; set; } = null!;
 
-        public WorkPlaceModel? SelectedWorkPlace => table.FocusedItem;
+        public ZoneTableModel? SelectedZone => table.FocusedItem;
 
         public int TotalRowCount { get; set; }
         public bool IsTableLoading { get; set; }
@@ -35,10 +35,10 @@ namespace Drawer.WebClient.Pages.Locations
             canDelete = true;
 
             Presenter.View = this;
-            await Presenter.LoadWorkPlacesAsync();
+            await Presenter.LoadZonesAsync();
         }
 
-        private bool FilterWorkPlaces(WorkPlaceModel model)
+        private bool FilterZones(ZoneTableModel model)
         {
             if (string.IsNullOrWhiteSpace(searchText))
                 return true;
@@ -51,7 +51,7 @@ namespace Drawer.WebClient.Pages.Locations
 
         private async Task Load_Click()
         {
-            await Presenter.LoadWorkPlacesAsync();
+            await Presenter.LoadZonesAsync();
         }
 
         private async Task Add_Click()

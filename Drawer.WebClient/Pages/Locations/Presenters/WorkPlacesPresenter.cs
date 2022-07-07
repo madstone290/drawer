@@ -24,6 +24,7 @@ namespace Drawer.WebClient.Pages.Locations.Presenters
 
         public async Task LoadWorkPlacesAsync()
         {
+            View.IsTableLoading = true;
             var response = await _apiClient.GetWorkPlaces();
             CheckFail(response);
 
@@ -42,6 +43,7 @@ namespace Drawer.WebClient.Pages.Locations.Presenters
                 }
                 RefreshTotalRowCount();
             }
+            View.IsTableLoading = false;
         }
 
         public async Task ShowAddDialog()
