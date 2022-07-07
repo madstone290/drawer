@@ -55,8 +55,9 @@ namespace Drawer.Infrastructure.Data
 
             builder.ApplyConfigurationsFromAssembly(typeof(DrawerDbContext).Assembly);
 
-            ApplyGlobalFilters<ICompanyResource>(builder, e => e.CompanyId == _companyIdProvider.GetCompanyId());
-            ApplyGlobalFilters<ISoftDelete>(builder, e => e.IsDeleted == false);
+
+            builder.AddQueryFilterToAllEntitiesAssignableFrom<ICompanyResource>(e => e.CompanyId == _companyIdProvider.GetCompanyId());
+            builder.AddQueryFilterToAllEntitiesAssignableFrom<ISoftDelete>(e => e.IsDeleted == false);
         }
 
         public override int SaveChanges()
