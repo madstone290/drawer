@@ -5,5 +5,7 @@ namespace Drawer.WebClient.Pages.Locations.Views
     public interface IEditWorkPlaceView
     {
         WorkPlaceModel Model { get; }
+
+        void CloseView();
     }
 }

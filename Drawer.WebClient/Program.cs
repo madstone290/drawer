@@ -1,9 +1,6 @@
 using Drawer.Shared;
-using Drawer.WebClient;
 using Drawer.WebClient.Api;
 using Drawer.WebClient.Authentication;
-using Drawer.WebClient.Pages.Organization.Presenters;
-using Drawer.WebClient.Pages.User.Presenters;
 using Drawer.WebClient.Presenters;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using MudBlazor;
@@ -19,7 +16,7 @@ builder.Services.AddMudServices(options =>
     options.SnackbarConfiguration.PreventDuplicates = false;
     options.SnackbarConfiguration.NewestOnTop = false;
     options.SnackbarConfiguration.ShowCloseIcon = true;
-    options.SnackbarConfiguration.MaxDisplayedSnackbars = 10; 
+    options.SnackbarConfiguration.MaxDisplayedSnackbars = 10;
     options.SnackbarConfiguration.VisibleStateDuration = 5000;
     options.SnackbarConfiguration.ShowTransitionDuration = 0;
     options.SnackbarConfiguration.HideTransitionDuration = 1000;
@@ -53,15 +50,19 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ITokenStorage, TokenStorage>();
 builder.Services.AddScoped<ITokenManager, TokenManager>();
 builder.Services.AddScoped<IAuthenticationManager, AuthenticationManager>();
-builder.Services.AddScoped<ApiClient>();
 
 builder.Services.Scan(selector =>
+{
+    selector.FromAssemblyOf<ApiClient>()
+        .AddClasses(classes => classes.AssignableTo<ApiClient>())
+        .AsSelf()
+        .WithScopedLifetime();
+
     selector.FromAssemblyOf<IPresenter>()
         .AddClasses(classes => classes.AssignableTo<IPresenter>())
         .AsSelf()
-        .WithScopedLifetime()
-);
-
+        .WithScopedLifetime();
+});
 
 
 var app = builder.Build();

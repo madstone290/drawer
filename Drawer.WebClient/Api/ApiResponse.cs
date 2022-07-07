@@ -1,6 +1,6 @@
 ﻿namespace Drawer.WebClient.Api
 {
-    public class ApiResponseMessage<TData> 
+    public class ApiResponse<TData> 
     {
         /// <summary>
         /// 요청 성공여부
@@ -32,7 +32,7 @@
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static ApiResponseMessage<TData> Success(TData? data) =>
+        public static ApiResponse<TData> Success(TData? data) =>
             new() { Data = data, IsSuccessful = true };
 
         /// <summary>
@@ -40,7 +40,7 @@
         /// </summary>
         /// <param name="errorCode"></param>
         /// <returns></returns>
-        public static ApiResponseMessage<TData> Fail(string errorMessage, string? errorCode = null) => 
+        public static ApiResponse<TData> Fail(string errorMessage, string? errorCode = null) => 
             new() { ErrorCode = errorCode, ErrorMessage = errorMessage, IsSuccessful = false };
 
         /// <summary>
@@ -48,12 +48,12 @@
         /// </summary>
         /// <param name="error"></param>
         /// <returns></returns>
-        public static ApiResponseMessage<TData> Unauthorized(string error) => 
+        public static ApiResponse<TData> Unauthorized(string error) => 
             new() { ErrorMessage = error, IsSuccessful = false, IsUnauthorized = true };
 
     }
 
-    public class ApiResponseMessage : ApiResponseMessage<Unit>
+    public class ApiResponse : ApiResponse<Unit>
     {
     }
 

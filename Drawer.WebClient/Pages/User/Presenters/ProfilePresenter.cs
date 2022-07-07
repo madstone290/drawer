@@ -1,6 +1,7 @@
 ﻿using Drawer.Contract;
 using Drawer.Contract.UserInformation;
 using Drawer.WebClient.Api;
+using Drawer.WebClient.Api.UserInformation;
 using Drawer.WebClient.Pages.User.Views;
 using Drawer.WebClient.Presenters;
 using MudBlazor;
@@ -9,28 +10,30 @@ namespace Drawer.WebClient.Pages.User.Presenters
 {
     public class ProfilePresenter : SnackbarPresenter 
     {
-        public ProfilePresenter(ApiClient apiClient, ISnackbar snackbar) : base(apiClient, snackbar)
+        private readonly UserApiClient _apiClient;
+        public ProfilePresenter(UserApiClient apiClient, ISnackbar snackbar) : base( snackbar)
         {
+            _apiClient = apiClient;
         }
 
         public IProfileView View { get; set; } = null!;
 
         public async Task LoadUserAsync()
         {
-            var requstMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.User.Get);
-            var apiResponse = await LoadAsync(new ApiRequestMessage<GetUserResponse>(requstMessage));
-            if (apiResponse.IsSuccessful && apiResponse.Data != null)
+            var response = await _apiClient.GetUser();
+            CheckFail(response);
+
+            if (response.IsSuccessful && response.Data != null)
             {
-                View.Model.Email = apiResponse.Data.Email;
-                View.Model.DisplayName = apiResponse.Data.DisplayName;
+                View.Model.Email = response.Data.Email;
+                View.Model.DisplayName = response.Data.DisplayName;
             }
         }
 
         public async Task SaveUserAsync()
         {
-            var requstMessage = new HttpRequestMessage(HttpMethod.Put, ApiRoutes.User.Update);
-            requstMessage.Content = JsonContent.Create(new UpdateUserRequest(View.Model.DisplayName!));
-            await SaveAsync(new ApiRequestMessage<Unit>(requstMessage));
+            var response = await _apiClient.SaveUser(View.Model.DisplayName!);
+            CheckSuccessFail(response);
         }
     }
 }

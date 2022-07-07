@@ -1,6 +1,7 @@
 ﻿using Drawer.Contract;
 using Drawer.Contract.Organization;
 using Drawer.WebClient.Api;
+using Drawer.WebClient.Api.Organization;
 using Drawer.WebClient.Pages.Organization.Views;
 using Drawer.WebClient.Presenters;
 using MudBlazor;
@@ -9,31 +10,38 @@ namespace Drawer.WebClient.Pages.Organization.Presenters
 {
     public class EditCompanyPresenter : SnackbarPresenter
     {
+        private readonly CompanyApiClient _apiClient;
+
         public IEditCompanyView View { get; set; } = null!;
 
-        public EditCompanyPresenter(ApiClient apiClient, ISnackbar snackbar) : base(apiClient, snackbar)
+        public EditCompanyPresenter(CompanyApiClient apiClient, ISnackbar snackbar) : base(snackbar)
         {
-        }
-        
-        public async Task<ApiResponseMessage<CreateCompanyResponse>> CreateCompanyAsync()
-        {
-            var requstMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.Create);
-            requstMessage.Content = JsonContent.Create(new CreateCompanyRequest(View.Model.Name, View.Model.PhoneNumber));
-            
-            // RazorPage로 리디렉트하기 때문에 메시지가 제대로 표시되지 않는다.
-            ShowSuccessMessage = false;
-
-            return await SaveAsync(new ApiRequestMessage<CreateCompanyResponse>(requstMessage));
+            _apiClient = apiClient;
         }
 
-        public async Task<ApiResponseMessage<Unit>> UpdateCompanyAsync()
+        public async Task<ApiResponse<CreateCompanyResponse>> CreateCompanyAsync()
         {
-            var requstMessage = new HttpRequestMessage(HttpMethod.Put, ApiRoutes.Company.Update);
-            requstMessage.Content = JsonContent.Create(new UpdateCompanyRequest(View.Model.Name, View.Model.PhoneNumber));
+            var response = await _apiClient.CreateCompany(View.Model.Name, View.Model.PhoneNumber);
+            // RazorPage로 리디렉트하기 때문에 성공출력은 하지 않는다.
+            CheckFail(response);
 
-            ShowSuccessMessage = true;
+            if(response.IsSuccessful)
+            {
+                View.CloseView();
+            }
+            return response;
+        }
 
-            return await SaveAsync(new ApiRequestMessage<Unit>(requstMessage));
+        public async Task<ApiResponse<Unit>> UpdateCompanyAsync()
+        {
+            var response = await _apiClient.UpdateCompany(View.Model.Name, View.Model.PhoneNumber);
+            CheckSuccessFail(response);
+
+            if (response.IsSuccessful)
+            {
+                View.CloseView();
+            }
+            return response;
         }
     }
 }

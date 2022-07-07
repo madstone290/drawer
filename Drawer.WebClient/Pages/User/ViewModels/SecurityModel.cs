@@ -4,11 +4,11 @@ namespace Drawer.WebClient.Pages.User.ViewModels
 {
     public class SecurityModel
     {
-        public string? Password { get; set; }
+        public string Password { get; set; } = string.Empty;
 
-        public string? NewPassword { get; set; }
+        public string NewPassword { get; set; } = string.Empty;
 
-        public string? ConfirmNewPassword { get; set; }
+        public string ConfirmNewPassword { get; set; } = string.Empty;
     }
 
     public class SecurityModelValidator : AbstractValidator<SecurityModel>

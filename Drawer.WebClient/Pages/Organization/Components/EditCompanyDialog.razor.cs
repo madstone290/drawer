@@ -48,6 +48,10 @@ namespace Drawer.WebClient.Pages.Organization.Components
         [Inject]
         public EditCompanyPresenter Presenter { get; set; } = null!;
 
+        public void CloseView()
+        {
+            Dialog.Close(Model);
+        }
 
         protected override Task OnInitializedAsync()
         {
@@ -68,18 +72,11 @@ namespace Drawer.WebClient.Pages.Organization.Components
             {
                 if(ActionMode == ActionMode.Add)
                 {
-                    var apiResponse = await Presenter.CreateCompanyAsync();
-                    if (apiResponse.IsSuccessful)
-                    {
-                        Dialog.Close(Model);
-                    }
-                }else if(ActionMode == ActionMode.Update)
+                    await Presenter.CreateCompanyAsync();
+                }
+                else if(ActionMode == ActionMode.Update)
                 {
-                    var apiResponse = await Presenter.UpdateCompanyAsync();
-                    if (apiResponse.IsSuccessful)
-                    {
-                        Dialog.Close(Model);
-                    }
+                     await Presenter.UpdateCompanyAsync();
                 }
                 
             }

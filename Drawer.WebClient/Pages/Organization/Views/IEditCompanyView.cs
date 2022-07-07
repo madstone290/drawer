@@ -6,5 +6,7 @@ namespace Drawer.WebClient.Pages.Organization.Views
     {
         EditCompanyModel Model { get; set; }
 
+        void CloseView();
+
     }
 }

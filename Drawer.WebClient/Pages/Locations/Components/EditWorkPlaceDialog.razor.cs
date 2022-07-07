@@ -12,7 +12,7 @@ namespace Drawer.WebClient.Pages.Locations.Components
         public MudDialogInstance Dialog { get; private set; } = null!;
         public MudForm Form { get; private set; } = null!;
         public bool IsFormValid { get; private set; }
-        public WorkPlaceModelValidator Validator { get; private set; } = new ();
+        public WorkPlaceModelValidator Validator { get; private set; } = new();
 
         public string TitleIcon
         {
@@ -20,13 +20,13 @@ namespace Drawer.WebClient.Pages.Locations.Components
             {
                 if (ActionMode == ActionMode.Add)
                     return Icons.Material.Filled.Add;
-                else if(ActionMode == ActionMode.Update)
+                else if (ActionMode == ActionMode.Update)
                     return Icons.Material.Filled.Update;
                 else
                     return Icons.Material.Filled.ViewAgenda;
             }
         }
-        
+
         public string TitleText
         {
             get
@@ -40,12 +40,17 @@ namespace Drawer.WebClient.Pages.Locations.Components
             }
         }
 
-        [Parameter] 
-        public WorkPlaceModel Model { get; set; } = new ();
-        [Parameter] 
+        [Parameter]
+        public WorkPlaceModel Model { get; set; } = new();
+        [Parameter]
         public ActionMode ActionMode { get; set; }
         [Inject]
         public EditWorkPlacePresenter Presenter { get; set; } = null!;
+
+        public void CloseView()
+        {
+            Dialog.Close(Model);
+        }
 
         protected override Task OnInitializedAsync()
         {
@@ -64,24 +69,18 @@ namespace Drawer.WebClient.Pages.Locations.Components
             await Form.Validate();
             if (IsFormValid)
             {
-                if(ActionMode == ActionMode.Add)
+                if (ActionMode == ActionMode.Add)
                 {
-                    var isSuccessful = await Presenter.AddWorkPlaceAsync();
-                    if (isSuccessful)
-                    {
-                        Dialog.Close(Model);
-                    }
-                }else if(ActionMode == ActionMode.Update)
-                {
-                    var isSuccessful = await Presenter.UpdateWorkPlaceAsync();
-                    if (isSuccessful)
-                    {
-                        Dialog.Close(Model);
-                    }
+                    await Presenter.AddWorkPlaceAsync();
+
                 }
-                
+                else if (ActionMode == ActionMode.Update)
+                {
+                    await Presenter.UpdateWorkPlaceAsync();
+                }
+
             }
         }
-        
+
     }
 }

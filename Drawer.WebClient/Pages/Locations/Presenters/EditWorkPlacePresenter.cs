@@ -1,6 +1,5 @@
-﻿using Drawer.Contract;
-using Drawer.Contract.Locations;
-using Drawer.WebClient.Api;
+﻿using Drawer.WebClient.Api;
+using Drawer.WebClient.Api.Locations;
 using Drawer.WebClient.Pages.Locations.Views;
 using Drawer.WebClient.Presenters;
 using MudBlazor;
@@ -9,47 +8,43 @@ namespace Drawer.WebClient.Pages.Locations.Presenters
 {
     public class EditWorkPlacePresenter : SnackbarPresenter
     {
-      
+        private readonly WorkPlaceApiClient _apiClient;
+
         public IEditWorkPlaceView View { get; set; } = null!;
 
-        public EditWorkPlacePresenter(ApiClient apiClient, ISnackbar snackbar) : base(apiClient, snackbar)
+        public EditWorkPlacePresenter(WorkPlaceApiClient apiClient, ISnackbar snackbar) : base(snackbar)
         {
+            _apiClient = apiClient;
         }
 
         /// <summary>
-        /// 작업장을 추가하고 성공여부 반환한다.
+        /// 작업장을 추가한다.
         /// </summary>
         /// <returns></returns>
-        public async Task<bool> AddWorkPlaceAsync()
+        public async Task AddWorkPlaceAsync()
         {
-            var requstMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.WorkPlaces.Create);
-            requstMessage.Content = JsonContent.Create(new CreateWorkPlaceRequest(View.Model.Name, View.Model.Note));
+            var response = await _apiClient.AddWorkPlace(View.Model.Name, View.Model.Note);
+            CheckSuccessFail(response);
 
-            var apiResponse = await SaveAsync(new ApiRequestMessage<CreateWorkPlaceResponse>(requstMessage));
-            if(apiResponse.IsSuccessful && apiResponse.Data != null)
-            {
-                View.Model.Id = apiResponse.Data.Id;
-                return true;
-            }
-            return false;
+            if (response.IsSuccessful && response.Data != null)
+                View.Model.Id = response.Data.Id;
+
+            if (response.IsSuccessful)
+                View.CloseView();
         }
 
         /// <summary>
-        /// 작업장을 수정하고 성공여부를 반환한다.
+        /// 작업장을 수정한다.
         /// </summary>
         /// <returns></returns>
-        public async Task<bool> UpdateWorkPlaceAsync()
+        public async Task UpdateWorkPlaceAsync()
         {
-            var requstMessage = new HttpRequestMessage(HttpMethod.Put, 
-                ApiRoutes.WorkPlaces.Update.Replace("{id}", View.Model.Id.ToString()));
-            requstMessage.Content = JsonContent.Create(new UpdateWorkPlaceRequest(View.Model.Name, View.Model.Note));
+            var model = View.Model;
+            var response = await _apiClient.UpdateWorkPlace(model.Id, model.Name, model.Note);
+            CheckSuccessFail(response);
 
-            var apiResponse = await SaveAsync(new ApiRequestMessage(requstMessage));
-            if (apiResponse.IsSuccessful)
-            {
-                return true;
-            }
-            return false;
+            if (response.IsSuccessful)
+                View.CloseView();
         }
     }
 }

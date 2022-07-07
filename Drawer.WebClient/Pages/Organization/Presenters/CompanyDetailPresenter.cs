@@ -1,6 +1,4 @@
-﻿using Drawer.Contract;
-using Drawer.Contract.Organization;
-using Drawer.WebClient.Api;
+﻿using Drawer.WebClient.Api.Organization;
 using Drawer.WebClient.Pages.Organization.Components;
 using Drawer.WebClient.Pages.Organization.Models;
 using Drawer.WebClient.Pages.Organization.Views;
@@ -11,20 +9,23 @@ namespace Drawer.WebClient.Pages.Organization.Presenters
 {
     public class CompanyDetailPresenter : SnackbarPresenter
     {
-        private readonly IDialogService _dialogService;
+        private readonly CompanyApiClient _apiClient;
 
+        private readonly IDialogService _dialogService;
+      
         public ICompanyDetailView View { get; set; } = null!;
 
-        public CompanyDetailPresenter(ApiClient apiClient, ISnackbar snackbar, IDialogService dialogService)
-            : base(apiClient, snackbar)
+        public CompanyDetailPresenter(ISnackbar snackbar, CompanyApiClient apiClient, IDialogService dialogService) : base(snackbar)
         {
+            _apiClient = apiClient;
             _dialogService = dialogService;
         }
 
         public async Task GetCompanyDetailAsync()
         {
-            var requstMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.Company.Get);
-            var response = await LoadAsync(new ApiRequestMessage<GetCompanyResponse>(requstMessage));
+            var response = await _apiClient.GetCompany();
+            CheckFail(response);
+
             if(response.IsSuccessful && response.Data != null)
             {
                 View.Model.Id = response.Data.Id;

@@ -1,6 +1,4 @@
-﻿using Drawer.Contract;
-using Drawer.Contract.Locations;
-using Drawer.WebClient.Api;
+﻿using Drawer.WebClient.Api.Locations;
 using Drawer.WebClient.Pages.Locations.Components;
 using Drawer.WebClient.Pages.Locations.Models;
 using Drawer.WebClient.Pages.Locations.Views;
@@ -12,19 +10,23 @@ namespace Drawer.WebClient.Pages.Locations.Presenters
 {
     public class WorkPlacesPresenter : SnackbarPresenter
     {
+        private readonly WorkPlaceApiClient _apiClient;
+
         private readonly IDialogService _dialogService;
 
         public IWorkPlacesView View { get; set; } = null!;
 
-        public WorkPlacesPresenter(ApiClient apiClient, ISnackbar snackbar, IDialogService dialogService) : base(apiClient, snackbar)
+        public WorkPlacesPresenter(WorkPlaceApiClient apiClient, IDialogService dialogService, ISnackbar snackbar) : base(snackbar)
         {
+            _apiClient = apiClient;
             _dialogService = dialogService;
         }
 
         public async Task LoadWorkPlacesAsync()
         {
-            var requstMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.WorkPlaces.GetList);
-            var response = await LoadAsync(new ApiRequestMessage<GetWorkPlacesResponse>(requstMessage));
+            var response = await _apiClient.GetWorkPlaces();
+            CheckFail(response);
+
             if (response.IsSuccessful && response.Data != null)
             {
                 View.WorkPlaceList.Clear();
@@ -124,10 +126,10 @@ namespace Drawer.WebClient.Pages.Locations.Presenters
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                var requstMessage = new HttpRequestMessage(HttpMethod.Delete, 
-                    ApiRoutes.WorkPlaces.Delete.Replace("{id}", $"{selectedItem.Id}"));
-                var apiResponse = await DeleteAsync(new ApiRequestMessage(requstMessage));
-                if (apiResponse.IsSuccessful)
+                var response = await _apiClient.DeleteWorkPlace(selectedItem.Id);
+                CheckSuccessFail(response);
+
+                if (response.IsSuccessful)
                 {
                     View.WorkPlaceList.Remove(selectedItem);
                     RefreshTotalRowCount();
