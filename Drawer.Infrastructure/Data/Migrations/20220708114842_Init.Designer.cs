@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Drawer.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(DrawerDbContext))]
-    [Migration("20220701025502_UpdateCompanyMember")]
-    partial class UpdateCompanyMember
+    [Migration("20220708114842_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -82,7 +82,7 @@ namespace Drawer.Infrastructure.Data.Migrations
                     b.ToTable("Items");
                 });
 
-            modelBuilder.Entity("Drawer.Domain.Models.Locations.Position", b =>
+            modelBuilder.Entity("Drawer.Domain.Models.Locations.Spot", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -114,6 +114,9 @@ namespace Drawer.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Note")
+                        .HasColumnType("text");
+
                     b.Property<long>("ZoneId")
                         .HasColumnType("bigint");
 
@@ -121,7 +124,7 @@ namespace Drawer.Infrastructure.Data.Migrations
 
                     b.HasIndex("ZoneId");
 
-                    b.ToTable("Positions");
+                    b.ToTable("Spots");
                 });
 
             modelBuilder.Entity("Drawer.Domain.Models.Locations.WorkPlace", b =>
@@ -143,9 +146,6 @@ namespace Drawer.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -157,6 +157,9 @@ namespace Drawer.Infrastructure.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Note")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -196,51 +199,17 @@ namespace Drawer.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long?>("ZoneTypeId")
+                    b.Property<string>("Note")
+                        .HasColumnType("text");
+
+                    b.Property<long>("WorkPlaceId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ZoneTypeId");
+                    b.HasIndex("WorkPlaceId");
 
                     b.ToTable("Zones");
-                });
-
-            modelBuilder.Entity("Drawer.Domain.Models.Locations.ZoneType", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("CompanyId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ZoneTypes");
                 });
 
             modelBuilder.Entity("Drawer.Domain.Models.Organization.Company", b =>
@@ -555,12 +524,12 @@ namespace Drawer.Infrastructure.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Drawer.Domain.Models.Locations.Position", b =>
+            modelBuilder.Entity("Drawer.Domain.Models.Locations.Spot", b =>
                 {
                     b.HasOne("Drawer.Domain.Models.Locations.Zone", "Zone")
                         .WithMany()
                         .HasForeignKey("ZoneId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Zone");
@@ -568,11 +537,13 @@ namespace Drawer.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Drawer.Domain.Models.Locations.Zone", b =>
                 {
-                    b.HasOne("Drawer.Domain.Models.Locations.ZoneType", "ZoneType")
+                    b.HasOne("Drawer.Domain.Models.Locations.WorkPlace", "WorkPlace")
                         .WithMany()
-                        .HasForeignKey("ZoneTypeId");
+                        .HasForeignKey("WorkPlaceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.Navigation("ZoneType");
+                    b.Navigation("WorkPlace");
                 });
 
             modelBuilder.Entity("Drawer.Domain.Models.UserInformation.UserInfo", b =>

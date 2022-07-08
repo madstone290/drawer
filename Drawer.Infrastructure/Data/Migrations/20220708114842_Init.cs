@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Drawer.Infrastructure.Data.Migrations
 {
-    public partial class InitDb : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -76,6 +76,7 @@ namespace Drawer.Infrastructure.Data.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     CompanyId = table.Column<string>(type: "text", nullable: false),
                     UserId = table.Column<string>(type: "text", nullable: false),
+                    IsOwner = table.Column<bool>(type: "boolean", nullable: false),
                     Created = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),
                     LastModified = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -111,7 +112,7 @@ namespace Drawer.Infrastructure.Data.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: true),
+                    Note = table.Column<string>(type: "text", nullable: true),
                     Created = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),
                     LastModified = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -122,25 +123,6 @@ namespace Drawer.Infrastructure.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_WorkPlaces", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ZoneTypes",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Created = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    CreatedBy = table.Column<string>(type: "text", nullable: false),
-                    LastModified = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    LastModifiedBy = table.Column<string>(type: "text", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    CompanyId = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ZoneTypes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -299,7 +281,8 @@ namespace Drawer.Infrastructure.Data.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    ZoneTypeId = table.Column<long>(type: "bigint", nullable: true),
+                    WorkPlaceId = table.Column<long>(type: "bigint", nullable: false),
+                    Note = table.Column<string>(type: "text", nullable: true),
                     Created = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),
                     LastModified = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -311,20 +294,22 @@ namespace Drawer.Infrastructure.Data.Migrations
                 {
                     table.PrimaryKey("PK_Zones", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Zones_ZoneTypes_ZoneTypeId",
-                        column: x => x.ZoneTypeId,
-                        principalTable: "ZoneTypes",
-                        principalColumn: "Id");
+                        name: "FK_Zones_WorkPlaces_WorkPlaceId",
+                        column: x => x.WorkPlaceId,
+                        principalTable: "WorkPlaces",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Positions",
+                name: "Spots",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
                     ZoneId = table.Column<long>(type: "bigint", nullable: false),
+                    Note = table.Column<string>(type: "text", nullable: true),
                     Created = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),
                     LastModified = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -334,13 +319,13 @@ namespace Drawer.Infrastructure.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Positions", x => x.Id);
+                    table.PrimaryKey("PK_Spots", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Positions_Zones_ZoneId",
+                        name: "FK_Spots_Zones_ZoneId",
                         column: x => x.ZoneId,
                         principalTable: "Zones",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -387,14 +372,14 @@ namespace Drawer.Infrastructure.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Positions_ZoneId",
-                table: "Positions",
-                column: "ZoneId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_RefreshTokens_UserId",
                 table: "RefreshTokens",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Spots_ZoneId",
+                table: "Spots",
+                column: "ZoneId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserInfos_UserId",
@@ -402,9 +387,9 @@ namespace Drawer.Infrastructure.Data.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Zones_ZoneTypeId",
+                name: "IX_Zones_WorkPlaceId",
                 table: "Zones",
-                column: "ZoneTypeId");
+                column: "WorkPlaceId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -434,16 +419,13 @@ namespace Drawer.Infrastructure.Data.Migrations
                 name: "Items");
 
             migrationBuilder.DropTable(
-                name: "Positions");
-
-            migrationBuilder.DropTable(
                 name: "RefreshTokens");
 
             migrationBuilder.DropTable(
-                name: "UserInfos");
+                name: "Spots");
 
             migrationBuilder.DropTable(
-                name: "WorkPlaces");
+                name: "UserInfos");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -455,7 +437,7 @@ namespace Drawer.Infrastructure.Data.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "ZoneTypes");
+                name: "WorkPlaces");
         }
     }
 }
