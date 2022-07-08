@@ -25,14 +25,14 @@
         /// <summary>
         /// 페이로드 데이터
         /// </summary>
-        public TData? Data { get; set; }
+        public TData Data { get; set; } = default!;
 
         /// <summary>
         /// 성공 응답을 받았다.
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static ApiResponse<TData> Success(TData? data) =>
+        public static ApiResponse<TData> Success(TData data) =>
             new() { Data = data, IsSuccessful = true };
 
         /// <summary>

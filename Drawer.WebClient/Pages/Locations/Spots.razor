@@ -1,9 +1,9 @@
 ﻿@using Drawer.WebClient.Pages.Locations.Models
 @using Drawer.WebClient.Pages.Locations.Presenters
-@attribute [Route(Paths.Locations.Zones)]
+@attribute [Route(Paths.Locations.Spots)]
 
 
-<ContentTitle Text="구역" />
+<ContentTitle Text="자리" />
 <AMudToolBar>
     <AMudButton Disabled="@(!canRead)"
                 Color="Color.Secondary"
@@ -50,22 +50,25 @@
 <AMudTable @ref="table"
            AdditionalClass="mt-2"
            Loading="@IsTableLoading"
-           T="@ZoneTableModel"
-           Items="@ZoneList"
-           Filter="@(new Func<ZoneTableModel,bool>(FilterZones))">
+           T="@SpotTableModel"
+           Items="@SpotList"
+           Filter="@(new Func<SpotTableModel,bool>(FilterSpots))">
     <HeaderContent>
         <MudTHeadRow>
             <MudTh>
-                <MudTableSortLabel SortBy="@(new Func<ZoneTableModel, object>(x=> x.Id))">Id</MudTableSortLabel>
+                <MudTableSortLabel SortBy="@(new Func<SpotTableModel, object>(x=> x.Id))">Id</MudTableSortLabel>
             </MudTh>
             <MudTh>
-                <MudTableSortLabel SortBy="@(new Func<ZoneTableModel, object>(x => x.Name))">이름</MudTableSortLabel>
+                <MudTableSortLabel SortBy="@(new Func<SpotTableModel, object>(x => x.Name))">이름</MudTableSortLabel>
             </MudTh>
             <MudTh>
-                <MudTableSortLabel SortBy="@(new Func<ZoneTableModel, object>(x => x.Note))">비고</MudTableSortLabel>
+                <MudTableSortLabel SortBy="@(new Func<SpotTableModel, object>(x => x.Note))">비고</MudTableSortLabel>
             </MudTh>
             <MudTh>
-                <MudTableSortLabel SortBy="@(new Func<ZoneTableModel, object>(x => x.WorkPlaceName))">장소</MudTableSortLabel>
+                <MudTableSortLabel SortBy="@(new Func<SpotTableModel, object>(x => x.WorkPlaceName))">장소</MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="@(new Func<SpotTableModel, object>(x => x.ZoneName))">구역</MudTableSortLabel>
             </MudTh>
         </MudTHeadRow>
     </HeaderContent>
@@ -80,6 +83,9 @@
         </MudTd>
         <MudTd DataLabel="장소">
             <MudHighlighter Text="@context.WorkPlaceName" HighlightedText="@searchText" />
+        </MudTd>
+        <MudTd DataLabel="구역">
+            <MudHighlighter Text="@context.ZoneName" HighlightedText="@searchText" />
         </MudTd>
     </RowTemplate>
 

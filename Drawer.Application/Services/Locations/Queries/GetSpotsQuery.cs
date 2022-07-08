@@ -15,7 +15,7 @@ namespace Drawer.Application.Services.Locations.Queries
 
     public record GetSpotsResult(IList<GetSpotsResult.Spot> Spots)
     {
-        public record Spot(long Id, string Name, string? Note);
+        public record Spot(long Id, long ZoneId, string Name, string? Note);
     }
 
     public class GetPositionsQueryHandler : IQueryHandler<GetSpotsQuery, GetSpotsResult>
@@ -33,7 +33,7 @@ namespace Drawer.Application.Services.Locations.Queries
 
             return new GetSpotsResult(
                 positions.Select(x => 
-                    new GetSpotsResult.Spot(x.Id, x.Name, x.Note)
+                    new GetSpotsResult.Spot(x.Id, x.ZoneId, x.Name, x.Note)
                 ).ToList());
         }
     }

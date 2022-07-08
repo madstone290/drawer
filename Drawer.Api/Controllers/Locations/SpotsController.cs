@@ -26,7 +26,7 @@ namespace Drawer.Api.Controllers.Locations
             var result = await _mediator.Send(query);
             return Ok(
                 new GetSpotsResponse(
-                    result.Spots.Select(x => new GetSpotsResponse.Spot(x.Id, x.Name, x.Note)).ToList()
+                    result.Spots.Select(x => new GetSpotsResponse.Spot(x.Id, x.ZoneId, x.Name, x.Note)).ToList()
                 )
             );
         }
@@ -42,7 +42,7 @@ namespace Drawer.Api.Controllers.Locations
             if (result == null)
                 return NoContent();
             else
-                return Ok(new GetSpotResponse(result.Id, result.Name, result.Note));
+                return Ok(new GetSpotResponse(result.Id, result.ZoneId, result.Name, result.Note));
         }
 
         [HttpPost]

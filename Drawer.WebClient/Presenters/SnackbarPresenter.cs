@@ -22,18 +22,19 @@ namespace Drawer.WebClient.Presenters
         /// <summary>
         /// Api 응답이 실패한 경우 메시지를 출력한다.
         /// </summary>
-        protected void CheckFail<T>(ApiResponse<T> response)
+        protected bool CheckFail<T>(ApiResponse<T> response)
         {
             if (!response.IsSuccessful)
             {
                 _snackbar.Add(response.ErrorMessage, Severity.Error);
             }
+            return response.IsSuccessful;
         }
 
         /// <summary>
         /// Api 응답이 성공하거나 실패한 경우 메시지를 출력한다.
         /// </summary>
-        protected void CheckSuccessFail<T>(ApiResponse<T> response, string? successMessage = null)
+        protected bool CheckSuccessFail<T>(ApiResponse<T> response, string? successMessage = null)
         {
             if (response.IsSuccessful)
             {
@@ -44,6 +45,7 @@ namespace Drawer.WebClient.Presenters
             {
                 _snackbar.Add(response.ErrorMessage, Severity.Error);
             }
+            return response.IsSuccessful;
         }
 
     }

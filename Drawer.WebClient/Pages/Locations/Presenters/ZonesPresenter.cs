@@ -52,7 +52,6 @@ namespace Drawer.WebClient.Pages.Locations.Presenters
                         Note = item.Note ?? string.Empty,
                         WorkPlaceId = item.WorkPlaceId,
                         WorkPlaceName = workPlaceList.FirstOrDefault(x=> x.Id == item.WorkPlaceId)?.Name ?? string.Empty,
-                        WorkPlaceNote = workPlaceList.FirstOrDefault(x=> x.Id==item.WorkPlaceId)?.Note ?? string.Empty,
                     };
                     View.ZoneList.Add(workPlaceModel);
                 }
@@ -83,7 +82,6 @@ namespace Drawer.WebClient.Pages.Locations.Presenters
                     Name = item.Name,
                     Note = item.Note ?? string.Empty,
                     WorkPlaceName = workPlaceList.FirstOrDefault(x => x.Id == item.WorkPlaceId)?.Name ?? string.Empty,
-                    WorkPlaceNote = workPlaceList.FirstOrDefault(x => x.Id == item.WorkPlaceId)?.Note ?? string.Empty,
                 };
                 View.ZoneList.Add(zoneModel);
                 RefreshTotalRowCount();

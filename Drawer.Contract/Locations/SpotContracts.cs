@@ -18,10 +18,10 @@ namespace Drawer.Contract.Locations
 
     public record UpdateSpotRequest(string Name, string? Note);
 
-    public record GetSpotResponse(long Id, string Name, string? Note);
+    public record GetSpotResponse(long Id, long ZoneId, string Name, string? Note);
 
     public record GetSpotsResponse(IList<Spot> Spots)
     {
-        public record Spot(long Id, string Name, string? Note);
+        public record Spot(long Id, long ZoneId, string Name, string? Note);
     }
 }

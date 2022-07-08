@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Components;
 
 namespace Drawer.WebClient.Pages.Locations
 {
-    public partial class Zones : IZonesView
+    public partial class Spots : ISpotsView
     {
-        private AMudTable<ZoneTableModel> table = null!;
+        private AMudTable<SpotTableModel> table = null!;
 
         private bool canCreate = false;
         private bool canRead = false;
@@ -17,12 +17,12 @@ namespace Drawer.WebClient.Pages.Locations
 
         private string searchText = string.Empty;
 
-        public IList<ZoneTableModel> ZoneList { get; private set; } = new List<ZoneTableModel>();
+        public IList<SpotTableModel> SpotList { get; private set; } = new List<SpotTableModel>();
 
         [Inject]
-        public ZonesPresenter Presenter { get; set; } = null!;
+        public SpotsPresenter Presenter { get; set; } = null!;
 
-        public ZoneTableModel? SelectedZone => table.FocusedItem;
+        public SpotTableModel? SelectedSpot => table.FocusedItem;
 
         public int TotalRowCount { get; set; }
         public bool IsTableLoading { get; set; }
@@ -35,10 +35,10 @@ namespace Drawer.WebClient.Pages.Locations
             canDelete = true;
 
             Presenter.View = this;
-            await Presenter.LoadZonesAsync();
+            await Presenter.LoadSpotsAsync();
         }
 
-        private bool FilterZones(ZoneTableModel model)
+        private bool FilterSpots(SpotTableModel model)
         {
             if (string.IsNullOrWhiteSpace(searchText))
                 return true;
@@ -46,13 +46,14 @@ namespace Drawer.WebClient.Pages.Locations
                 return false;
 
             return model.Note.Contains(searchText, StringComparison.OrdinalIgnoreCase) || 
-                model.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase) || 
-                model.WorkPlaceName.Contains(searchText, StringComparison.OrdinalIgnoreCase);
+                model.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+                model.WorkPlaceName.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+                model.ZoneName.Contains(searchText, StringComparison.OrdinalIgnoreCase);
         }
 
         private async Task Load_Click()
         {
-            await Presenter.LoadZonesAsync();
+            await Presenter.LoadSpotsAsync();
         }
 
         private async Task Add_Click()

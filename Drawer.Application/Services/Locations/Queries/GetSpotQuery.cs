@@ -13,7 +13,7 @@ namespace Drawer.Application.Services.Locations.Queries
     /// </summary>
     public record GetSpotQuery(long Id) : IQuery<GetSpotResult?>;
 
-    public record GetSpotResult(long Id, string Name, string? Note);
+    public record GetSpotResult(long Id, long ZoneId, string Name, string? Note);
 
     public class GetPositionQueryHandler : IQueryHandler<GetSpotQuery, GetSpotResult?>
     {
@@ -30,7 +30,7 @@ namespace Drawer.Application.Services.Locations.Queries
 
             return spot == null 
                 ? null 
-                : new GetSpotResult(spot.Id, spot.Name, spot.Note);
+                : new GetSpotResult(spot.Id, spot.ZoneId, spot.Name, spot.Note);
         }
     }
 }

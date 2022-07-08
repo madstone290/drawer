@@ -5,6 +5,19 @@
         base.Class = Parameters.Class;
         base.MaxWidth = Parameters.MaxWidth;
     }
+    base.Class = string.Join(" ", base.Class, AdditionalClass);
+
+    switch (FlexDirection)
+    {
+        case FlexDirection.Row:
+            base.Class = string.Join(" ", base.Class, "amud-flex-row");
+            break;
+        case FlexDirection.Column:
+        default:
+            base.Class = string.Join(" ", base.Class, "amud-flex-column");
+            break;
+    }
+
     base.BuildRenderTree(__builder);
 }
 
@@ -17,6 +30,10 @@
 
     [Parameter]
     public RazorParameters Parameters { get; set; } = new RazorParameters();
+    [Parameter]
+    public string AdditionalClass { get; set; } = string.Empty;
+    [Parameter]
+    public FlexDirection FlexDirection { get; set; } = FlexDirection.Column;
 
 }
 

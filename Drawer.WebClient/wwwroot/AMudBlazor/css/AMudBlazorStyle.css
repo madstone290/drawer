@@ -17,10 +17,18 @@ html, body {
 
 .amud-container {
     height: 100%;
-    display: flex;
-    flex-direction: column;
     padding-top: 4px;
     padding-bottom: 4px;
+}
+
+.amud-flex-row {
+    display: flex;
+    flex-direction: row;
+}
+
+.amud-flex-column {
+    display: flex;
+    flex-direction: column;
 }
 
 .amud-flex-fill {
