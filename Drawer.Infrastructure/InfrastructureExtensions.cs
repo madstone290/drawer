@@ -34,7 +34,7 @@ namespace Drawer.Infrastructure
     {
         public static void AddInfrastructureDependency(this IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = configuration["DrawerIdentityDb:ConnectionString"];
+            var connectionString = configuration["DrawerDb:ConnectionString"];
             services.AddDbContext<DrawerDbContext>(options =>
             {
                 options.UseNpgsql(connectionString).EnableSensitiveDataLogging();

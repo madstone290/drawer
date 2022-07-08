@@ -34,7 +34,7 @@ namespace Drawer.IntergrationTest
 
                         var jsonString = File.ReadAllText("Secrets/drawer_identity_db_secret.json");
                         var jObj = JObject.Parse(jsonString);
-                        var connectionString = jObj["DrawerIdentityDb"]["ConnectionString"].ToString();
+                        var connectionString = jObj["DrawerTestDb"]["ConnectionString"].ToString();
 
                         services.AddDbContext<DrawerDbContext>(options =>
                         {

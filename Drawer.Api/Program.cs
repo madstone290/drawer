@@ -8,7 +8,15 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddJsonFile("Secrets/drawer_identity_db_secret.json");
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddJsonFile("Secrets/drawer_development_db_secret.json");
+}
+else
+{
+    builder.Configuration.AddJsonFile("Secrets/drawer_production_db_secret.json");
+}
+
 builder.Configuration.AddJsonFile("Secrets/email_secret.json");
 builder.Configuration.AddJsonFile("Secrets/jwt_settings_secret.json");
 builder.Configuration.AddJsonFile("Secrets/serilog_secret.json");
