@@ -9,6 +9,9 @@
 # 로그 파일
 [Ll]ogs/
 
+# .config 폴더
+.config/
+
 # User-specific files
 *.rsuser
 *.suo

@@ -8,12 +8,12 @@ namespace Drawer.WebClient.Utils
     {
         public bool IsSuccessful { get; }
 
-        public T? Data { get; }
+        public T Data { get; } = default!;
 
         public JsonResult(bool isSucessful, T? data)
         {
             IsSuccessful = isSucessful;
-            Data = data;
+            Data = data ?? default!;
         }
     }
 
@@ -31,7 +31,7 @@ namespace Drawer.WebClient.Utils
         public static async Task<JsonResult<T>> ReadNullableJsonAsync<T>(this HttpContent content, JsonSerializerOptions? options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (typeof(T) == typeof(Unit))
-                return new JsonResult<T>(true, default);
+                return new JsonResult<T>(true, default!);
 
             bool isSuccessful;
             T? data;

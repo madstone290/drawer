@@ -1,3 +1,4 @@
+using Drawer.Contract;
 using Drawer.Contract.Authentication;
 using Drawer.Contract.Common;
 using Drawer.WebClient.Utils;
@@ -26,7 +27,7 @@ namespace Drawer.WebClient.Pages.Account
         /// <returns></returns>
         public async Task<IActionResult> OnGetAsync(string displayName, string email, string password)
         {
-			var registerResponseMessage = await _httpClient.PostAsJsonAsync(Paths.Account.Register, 
+			var registerResponseMessage = await _httpClient.PostAsJsonAsync(ApiRoutes.Account.Register, 
 				new RegisterRequest(email, password, displayName));
 
 			if (!registerResponseMessage.IsSuccessStatusCode)
