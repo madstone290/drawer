@@ -3,6 +3,7 @@ using Drawer.Api.Logging;
 using Drawer.Api.Swagger;
 using Drawer.Application;
 using Drawer.Infrastructure;
+using Microsoft.AspNetCore.HttpOverrides;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,6 +38,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
 
 app.UseSerilogRequestLogging();
 
