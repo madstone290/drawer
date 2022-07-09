@@ -12,11 +12,16 @@ namespace Drawer.Api.Controllers.Authentication
     {
         private readonly IMediator _mediator;
         private readonly ILogger<AccountController> _logger;
+        private readonly IWebHostEnvironment _environment;
+        private readonly IConfiguration _configuration;
 
-        public AccountController(IMediator mediator, ILogger<AccountController> logger)
+        public AccountController(IMediator mediator, ILogger<AccountController> logger, 
+            IWebHostEnvironment environment, IConfiguration configuration)
         {
             _mediator = mediator;
             _logger = logger;
+            _environment = environment;
+            _configuration = configuration;
         }
 
         [HttpPost]
@@ -30,17 +35,41 @@ namespace Drawer.Api.Controllers.Authentication
             return Ok(new RegisterResponse(result.UserId, result.Email, result.DisplayName));
         }
 
+        /// <summary>
+        /// 가입 확인 이메일을 전송한다.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
         [Route(ApiRoutes.Account.ConfirmEmail)]
         public async Task<IActionResult> ConfirmEmailAsync([FromBody] ConfirmEmailRequest request)
         {
-            var returnUri = Url.RouteUrl(nameof(VerifyEmailAsync), new { request.RedirectUri }, HttpContext.Request.Scheme)!;
+            // 개발환경에서는 호스팅 Uri를 사용한다.
+            // 운영환경에서는 Api서버의 도메인을 이용한다.
+            var returnUri = string.Empty;
+            if (_environment.IsDevelopment())
+            {
+                returnUri = Url.RouteUrl(nameof(VerifyEmailAsync), new { request.RedirectUri }, HttpContext.Request.Scheme)!;
+            }
+            else
+            {
+                returnUri = _configuration["DrawerApiDomain"] +
+                    ApiRoutes.Account.ConfirmEmail + $"?RedirectUri={Uri.EscapeDataString(request.RedirectUri)}";
+            }
+
             var command = new ConfirmEmailCommand(request.Email, returnUri);
             var result = await _mediator.Send(command);
             return Ok();
         }
 
+        /// <summary>
+        /// 가입확인 이메일 링크를 클릭한다.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="token"></param>
+        /// <param name="redirectUri"></param>
+        /// <returns></returns>
         [HttpGet]
         [AllowAnonymous]
         [Route(ApiRoutes.Account.ConfirmEmail, Name = nameof(VerifyEmailAsync))]

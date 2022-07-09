@@ -44,7 +44,7 @@ builder.Services.AddAuthorization(options =>
 // Drawer.Api 클라이언트
 builder.Services.AddSingleton<HttpClient>((sp) => new HttpClient()
 {
-    BaseAddress = new Uri("http://localhost:8000")
+    BaseAddress = new Uri(builder.Configuration["DrawerApiUri"])
 });
 
 builder.Services.AddHttpContextAccessor();
