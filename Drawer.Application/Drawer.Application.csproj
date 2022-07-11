@@ -1,24 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Services\Authentication\Queries\**" />
-    <EmbeddedResource Remove="Services\Authentication\Queries\**" />
-    <None Remove="Services\Authentication\Queries\**" />
-  </ItemGroup>
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<DebugSymbols>False</DebugSymbols>
+		<DebugType>None</DebugType>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Drawer.Domain\Drawer.Domain.csproj" />
-    <ProjectReference Include="..\Drawer.Shared\Drawer.Shared.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Remove="Services\Authentication\Queries\**" />
+		<EmbeddedResource Remove="Services\Authentication\Queries\**" />
+		<None Remove="Services\Authentication\Queries\**" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Drawer.Domain\Drawer.Domain.csproj" />
+		<ProjectReference Include="..\Drawer.Shared\Drawer.Shared.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
+	</ItemGroup>
 
 </Project>
