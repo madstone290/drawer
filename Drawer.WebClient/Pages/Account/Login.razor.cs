@@ -1,4 +1,5 @@
-﻿using Drawer.WebClient.Pages.Account.Models;
+﻿using Drawer.WebClient.Authentication;
+using Drawer.WebClient.Pages.Account.Models;
 using Drawer.WebClient.Shared;
 using Drawer.WebClient.Utils;
 using FluentValidation;
@@ -29,18 +30,17 @@ namespace Drawer.WebClient.Pages.Account
         public LoginModelValidator Validator { get; set; } = new LoginModelValidator();
         public MudForm Form { get; private set; } = null!;
 
-        [Inject] NavigationManager NavigationManager { get; set; } = null!;
-        [Inject] AuthenticationStateProvider AuthenticationStateProvider { get; set; } = null!;
+        [Inject] IAuthenticationManager AuthenticationStateProvider { get; set; } = null!;
         [Inject] ProtectedLocalStorage LocalStorage { get; set; } = null!;
         
 
         protected override async Task OnInitializedAsync()
         {
             // 로그인 상태인 경우 홈으로 리디렉트
-            var state = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-            if (state.User.Identity?.IsAuthenticated == true)
-            {
-                NavigationManager.NavigateTo(Paths.Base);
+            var state = await AuthenticationStateProvider.GetUserStateAsync();
+            if (state.IsAuthenticated)
+            { 
+                NavManager.NavigateTo(Paths.Base);
             }
 
             // 로그인 옵션 불러오기
@@ -62,7 +62,7 @@ namespace Drawer.WebClient.Pages.Account
                     .AddQueryParam("password", Model.Password!)
                     .AddQueryParam("redirectUri", RedirectUri);
 
-                NavigationManager.NavigateTo(navigationUri, true);
+                NavManager.NavigateTo(navigationUri, true);
             }
         }
 
