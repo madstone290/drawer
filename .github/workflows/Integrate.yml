@@ -37,6 +37,7 @@ jobs:
     
     - name: Create secrets
       run: |
+        pwd
         mkdir -p ${{ env.TEST_SECRET_DIR }}
         echo '${{ secrets.TEST_DB_SECRET }}' > ${{ env.TEST_SECRET_DIR }}/${{ env.TEST_DB_SECRET_FILE }}
         
