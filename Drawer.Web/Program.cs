@@ -1,4 +1,5 @@
 using Drawer.Shared;
+using Drawer.Web;
 using Drawer.Web.Api;
 using Drawer.Web.Authentication;
 using Drawer.Web.Presenters;
@@ -8,6 +9,8 @@ using MudBlazor;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration.HandleArgs(args);
 
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
@@ -90,6 +93,7 @@ app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>
 {
+    endpoints.MapControllers();
     endpoints.MapBlazorHub();
 });
 app.MapFallbackToPage("/_Host");

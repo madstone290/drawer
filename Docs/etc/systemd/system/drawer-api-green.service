@@ -1,0 +1,17 @@
+[Unit]
+Description=Drawer api green
+
+[Service]
+WorkingDirectory=/home/ubuntu/drawer/api/green
+ExecStart=/usr/bin/dotnet Drawer.Api.dll DeploymentColor=green
+Restart=always
+RestartSec=10
+KillSignal=SIGINT
+SyslogIdentifier=drawer-api-green
+User=www-data
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=ASPNETCORE_URLS=http://localhost:12100
+Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
+
+[Install]
+WantedBy=multi-user.target

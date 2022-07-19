@@ -1,3 +1,4 @@
+using Drawer.Api;
 using Drawer.Api.ActionFilters;
 using Drawer.Api.Logging;
 using Drawer.Api.Swagger;
@@ -7,6 +8,8 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration.HandleArgs(args);
 
 if (builder.Environment.IsDevelopment())
 {

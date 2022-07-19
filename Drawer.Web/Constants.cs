@@ -1,4 +1,4 @@
-﻿namespace Drawer.Web
+﻿ namespace Drawer.Web
 {
     public static class Constants
     {
