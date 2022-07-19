@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Newtonsoft.Json.Linq;
+using Serilog;
 using System;
 using System.IO;
 using System.Net.Http;
@@ -27,9 +28,12 @@ namespace Drawer.IntergrationTest
             var factory = new WebApplicationFactory<Program>()
                 .WithWebHostBuilder(webHostBuilder =>
                 {
-
                     webHostBuilder.ConfigureTestServices(services =>
                     {
+                        Log.Logger = new LoggerConfiguration()
+                            .MinimumLevel.Fatal()
+                            .CreateLogger();
+
                         services.RemoveAll(typeof(DbContextOptions<DrawerDbContext>));
 
                         var jsonString = File.ReadAllText("Secrets/drawer_test_db_secret.json");
