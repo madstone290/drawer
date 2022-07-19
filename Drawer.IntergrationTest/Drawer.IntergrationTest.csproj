@@ -8,11 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Secrets\drawer_identity_db_secret.json" />
+    <None Remove="Secrets\drawer_test_db_secret.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Secrets\drawer_identity_db_secret.json">
+    <Content Include="Secrets\drawer_test_db_secret.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>

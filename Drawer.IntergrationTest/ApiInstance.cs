@@ -32,7 +32,7 @@ namespace Drawer.IntergrationTest
                     {
                         services.RemoveAll(typeof(DbContextOptions<DrawerDbContext>));
 
-                        var jsonString = File.ReadAllText("Secrets/drawer_identity_db_secret.json");
+                        var jsonString = File.ReadAllText("Secrets/drawer_test_db_secret.json");
                         var jObj = JObject.Parse(jsonString);
                         var connectionString = jObj["DrawerTestDb"]["ConnectionString"].ToString();
 
