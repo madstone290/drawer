@@ -6,8 +6,11 @@ env:
   
   # Secrets
   API_SECRET_DIR: Drawer.Api/Secrets
-  PRODUCTION_DB_FILE: drawer_production_db_secret.json
-  DEVELOPMENT_DB_FILE: drawer_development_db_secret.json
+  PRODUCTION_DB_SECRET_FILE: drawer_production_db_secret.json
+  DEVELOPMENT_DB_SECRET_FILE: drawer_development_db_secret.json
+  EMAIL_SECRET_FILE: drawer_development_db_secret.json
+  JWT_SETTINGS_SECRET_FILE: drawer_development_db_secret.json
+  SERILOG_SECRET_FILE: drawer_development_db_secret.json
   
   TEST_SECRET_DIR: Drawer.IntergrationTest/Secrets
   TEST_DB_SECRET_FILE: drawer_test_db_secret.json
@@ -42,8 +45,12 @@ jobs:
     - name: Create secrets
       run: |
         mkdir -p ${{ env.API_SECRET_DIR }}
-        echo '${{ secrets.PRODUCTION_DB_SECRET }}' > ${{ env.API_SECRET_DIR }}/${{ env.PRODUCTION_DB_FILE }}
-        echo '${{ secrets.DEVELOPMENT_DB_SECRET }}' > ${{ env.API_SECRET_DIR }}/${{ env.DEVELOPMENT_DB_FILE }}
+        echo '${{ secrets.PRODUCTION_DB_SECRET }}' > ${{ env.API_SECRET_DIR }}/${{ env.PRODUCTION_DB_SECRET_FILE }}
+        echo '${{ secrets.DEVELOPMENT_DB_SECRET }}' > ${{ env.API_SECRET_DIR }}/${{ env.DEVELOPMENT_DB_SECRET_FILE }}
+        echo '${{ secrets.EMAIL_SECRET }}' > ${{ env.API_SECRET_DIR }}/${{ env.EMAIL_SECRET_FILE }}
+        echo '${{ secrets.JWT_SETTINGS_SECRET }}' > ${{ env.API_SECRET_DIR }}/${{ env.JWT_SETTINGS_SECRET_FILE }}
+        echo '${{ secrets.SERILOG_SECRET }}' > ${{ env.API_SECRET_DIR }}/${{ env.SERILOG_SECRET_FILE }}
+        
         mkdir -p ${{ env.TEST_SECRET_DIR }}
         echo '${{ secrets.TEST_DB_SECRET }}' > ${{ env.TEST_SECRET_DIR }}/${{ env.TEST_DB_SECRET_FILE }}
         
