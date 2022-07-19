@@ -1,0 +1,99 @@
+name: DeployApi
+
+env:
+  # dotnet
+  DOTNET_VERSION: 6.0.x
+  
+  # Secrets
+  API_SECRET_DIR: Drawer.Api/Secrets
+  PRODUCTION_DB_SECRET_FILE: drawer_production_db_secret.json
+  DEVELOPMENT_DB_SECRET_FILE: drawer_development_db_secret.json
+  EMAIL_SECRET_FILE: email_secret.json
+  JWT_SETTINGS_SECRET_FILE: jwt_settings_secret.json
+  SERILOG_SECRET_FILE: serilog_secret.json
+  
+  TEST_SECRET_DIR: Drawer.IntergrationTest/Secrets
+  TEST_DB_SECRET_FILE: drawer_test_db_secret.json
+
+  # deploy
+  PROJ_DIR: Drawer.Web # deploy project directory
+  
+  SOURCE_DIR: publish # publish directory
+  TARGET_DIR: drawer/web/publish # deploy directory in the remote machine
+
+  # slack
+  SLACK_AUTHOR: '' # hide author_name with empty string
+  
+on:
+  push:
+    tags:
+      - web-v*
+  
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    - name: Create secrets
+      run: |
+        mkdir -p ${{ env.API_SECRET_DIR }}
+        echo '${{ secrets.PRODUCTION_DB_SECRET }}' > ${{ env.API_SECRET_DIR }}/${{ env.PRODUCTION_DB_SECRET_FILE }}
+        echo '${{ secrets.DEVELOPMENT_DB_SECRET }}' > ${{ env.API_SECRET_DIR }}/${{ env.DEVELOPMENT_DB_SECRET_FILE }}
+        echo '${{ secrets.EMAIL_SECRET }}' > ${{ env.API_SECRET_DIR }}/${{ env.EMAIL_SECRET_FILE }}
+        echo '${{ secrets.JWT_SETTINGS_SECRET }}' > ${{ env.API_SECRET_DIR }}/${{ env.JWT_SETTINGS_SECRET_FILE }}
+        echo '${{ secrets.SERILOG_SECRET }}' > ${{ env.API_SECRET_DIR }}/${{ env.SERILOG_SECRET_FILE }}
+        
+        mkdir -p ${{ env.TEST_SECRET_DIR }}
+        echo '${{ secrets.TEST_DB_SECRET }}' > ${{ env.TEST_SECRET_DIR }}/${{ env.TEST_DB_SECRET_FILE }}
+        
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+
+    # Test takes too long
+    # Skip test when deploy
+#    - name: Test
+#        run: dotnet test --no-build --verbosity quiet --configuration Release
+
+    - name: Publish Local
+      run: dotnet publish ${{ env.PROJ_DIR }} -c Release -o ${{ env.SOURCE_DIR }}
+      
+    - name: Publish Remote
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        port: ${{ secrets.SSH_PORT }}
+        key: ${{ secrets.SSH_KEY }}
+        source: "${{ env.SOURCE_DIR }}/*"
+        target: ${{ env.TARGET_DIR }}
+        rm: true
+        strip_components: 1 # remove 1 level path of source directory
+        
+    - name: Deploy
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        port: ${{ secrets.SSH_PORT }}
+        script: bash ${{ env.SCRIPT_PATH }}
+
+    
+    - name: Report
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        author_name: ${{ env.SLACK_AUTHOR }}
+        fields: eventName,message,commit,author,ref,workflow,job,took,pullRequest
+      env: 
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} 
+      if: always() 
