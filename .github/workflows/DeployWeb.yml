@@ -21,7 +21,7 @@ env:
   SOURCE_DIR: publish # publish directory
   TARGET_DIR: drawer/web/publish # deploy directory in the remote machine
 
-  SCRIPT_PATH: drawer/switchDeploy-web.sh # script file to deploy and switch web server
+  DEPLOY_SCRIPT: bash drawer/switchDeploy.sh web-const.sh
 
   # slack
   SLACK_AUTHOR: '' # hide author_name with empty string
@@ -87,7 +87,7 @@ jobs:
         username: ${{ secrets.SSH_USERNAME }}
         key: ${{ secrets.SSH_KEY }}
         port: ${{ secrets.SSH_PORT }}
-        script: bash ${{ env.SCRIPT_PATH }}
+        script: ${{ env.DEPLOY_SCRIPT }}
 
     
     - name: Report
