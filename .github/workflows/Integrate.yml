@@ -37,6 +37,9 @@ jobs:
     - name: Build
       run: dotnet build --no-restore --configuration Release
     
+    - name: Create secrets
+      run: echo '${{ secrets.TEST_DB_SECRET }}' > Secrets/drawer_test_db_secret.json
+    
     - name: Test
       run: dotnet test --no-build --verbosity normal --configuration Release
     
