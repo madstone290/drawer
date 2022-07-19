@@ -3,6 +3,10 @@ name: Integrate
 env:
   # dotnet
   DOTNET_VERSION: 6.0.x
+  
+  # Secrets
+  TEST_SECRET_DIR: Secrets
+  TEST_DB_SECRET_FILE: drawer_test_db_secret.json
 
   # slack
   SLACK_AUTHOR: '' # hide author_name with empty string
@@ -32,7 +36,9 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION }}
     
     - name: Create secrets
-      run: echo '${{ secrets.TEST_DB_SECRET }}' > Secrets/drawer_test_db_secret.json
+      run: |
+        mkdir -p ${{ env.TEST_SECRET_DIR }}
+        echo '${{ secrets.TEST_DB_SECRET }}' > ${{ env.TEST_SECRET_DIR }}/${{ env.TEST_DB_SECRET_FILE }}
         
     - name: Restore dependencies
       run: dotnet restore
