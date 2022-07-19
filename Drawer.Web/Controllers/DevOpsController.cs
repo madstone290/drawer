@@ -8,6 +8,8 @@ namespace Drawer.Web.Controllers
     {
         private readonly IConfiguration _configuration;
 
+        private const string VERSION = "1.0.0";
+
         public DevOpsController(IConfiguration configuration)
         {
             _configuration = configuration;
@@ -24,7 +26,7 @@ namespace Drawer.Web.Controllers
         [Route("DeploymentVersion")]
         public string GetVersion()
         {
-            return _configuration.GetValue<string>("DeploymentVersion") ?? "n/a";
+            return VERSION;
         }
     }
 }
