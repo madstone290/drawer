@@ -31,6 +31,7 @@ namespace Drawer.IntergrationTest
                     webHostBuilder.ConfigureTestServices(services =>
                     {
                         Log.Logger = new LoggerConfiguration()
+                            .Filter.ByIncludingOnly(_ => false) 
                             .MinimumLevel.Fatal()
                             .CreateLogger();
 
