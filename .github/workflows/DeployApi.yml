@@ -21,7 +21,8 @@ env:
   SOURCE_DIR: publish # publish directory
   TARGET_DIR: drawer/api/publish # deploy directory in the remote machine
 
-  SCRIPT_PATH: drawer/switchDeploy-api.sh # script file to deploy and switch api server
+  DEPLOY_SCRIPT: bash switchDeploy.sh api-const.sh
+  
   # slack
   SLACK_AUTHOR: '' # hide author_name with empty string
   
@@ -86,9 +87,8 @@ jobs:
         username: ${{ secrets.SSH_USERNAME }}
         key: ${{ secrets.SSH_KEY }}
         port: ${{ secrets.SSH_PORT }}
-        script: bash ${{ env.SCRIPT_PATH }}
+        script: ${{ env.DEPLOY_SCRIPT }}
 
-    
     - name: Report
       uses: 8398a7/action-slack@v3
       with:
