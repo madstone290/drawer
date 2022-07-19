@@ -21,6 +21,7 @@ env:
   SOURCE_DIR: publish # publish directory
   TARGET_DIR: drawer/api/publish # deploy directory in the remote machine
 
+  SCRIPT_PATH: drawer/switchDeploy-api.sh # script file to deploy and switch api server
   # slack
   SLACK_AUTHOR: '' # hide author_name with empty string
   
