@@ -8,7 +8,7 @@ namespace Drawer.Web.Controllers
     {
         private readonly IConfiguration _configuration;
 
-        private const string VERSION = "1.0.0";
+        private const string VERSION = "1.0.1";
 
         public DevOpsController(IConfiguration configuration)
         {

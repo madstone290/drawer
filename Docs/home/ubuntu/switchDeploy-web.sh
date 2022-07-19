@@ -1,20 +1,20 @@
 #!/bin/bash
 
-PUBLISH_DIR=/home/ubuntu/workflow/web/publish
-BLUE_DEPLOY_DIR=/home/ubuntu/workflow/web/blue
-GREEN_DEPLOY_DIR=/home/ubuntu/workflow/web/green
+PUBLISH_DIR=/home/ubuntu/drawer/web/publish
+BLUE_DEPLOY_DIR=/home/ubuntu/drawer/web/blue
+GREEN_DEPLOY_DIR=/home/ubuntu/drawer/web/green
 
-BLUE_CONF=/etc/nginx/sites-available/workflow-web-blue.conf
-GREEN_CONF=/etc/nginx/sites-available/workflow-web-green.conf
-UPSTREAM_CONF=/etc/nginx/sites-enabled/workflow-web-upstream.conf
+BLUE_CONF=/etc/nginx/sites-available/drawer-web-blue.conf
+GREEN_CONF=/etc/nginx/sites-available/drawer-web-green.conf
+UPSTREAM_CONF=/etc/nginx/sites-enabled/drawer-web-upstream.conf
 
 BLUE_BASE_URL=localhost:11000
 GREEN_BASE_URL=localhost:12000
-BLUE_COLOR_URL=http://$BLUE_BASE_URL/DeploymentColor
-GREEN_COLOR_URL=http://$GREEN_BASE_URL/DeploymentColor
+BLUE_COLOR_URL=http://$BLUE_BASE_URL/DevOps/DeploymentColor
+GREEN_COLOR_URL=http://$GREEN_BASE_URL/DevOps/DeploymentColor
 
-BLUE_SERVICE=workflow-web-blue.service
-GREEN_SERVICE=workflow-web-green.service
+BLUE_SERVICE=drawer-web-blue.service
+GREEN_SERVICE=drawer-web-green.service
 
 UPSTREAM_COLOR_ROUTE=UpstreamColor
 
@@ -64,7 +64,7 @@ deployBlueOrGreen(){
 	# remove old files
 	if [[ "$(ls -A $deploy_dir)" ]]
 	then 
-		rm $deploy_dir/*
+		rm -r $deploy_dir/*
 	fi
 	echo >&2 ">> Move files from $PUBLISH_DIR to $deploy_dir"	
 	mv $PUBLISH_DIR/* $deploy_dir

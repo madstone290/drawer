@@ -10,13 +10,11 @@ UPSTREAM_CONF=/etc/nginx/sites-enabled/drawer-api-upstream.conf
 
 BLUE_BASE_URL=localhost:11100
 GREEN_BASE_URL=localhost:12100
-BLUE_COLOR_URL=http://$BLUE_BASE_URL/DeploymentColor
-GREEN_COLOR_URL=http://$GREEN_BASE_URL/DeploymentColor
+BLUE_COLOR_URL=http://$BLUE_BASE_URL/DevOps/DeploymentColor
+GREEN_COLOR_URL=http://$GREEN_BASE_URL/DevOps/DeploymentColor
 
 BLUE_SERVICE=drawer-api-blue.service
 GREEN_SERVICE=drawer-api-green.service
-
-
 
 BLUE_COLOR=blue
 GREEN_COLOR=green
@@ -64,7 +62,7 @@ deployBlueOrGreen(){
 	# remove old files
 	if [[ "$(ls -A $deploy_dir)" ]]
 	then 
-		rm $deploy_dir/*
+		rm -r $deploy_dir/*
 	fi
 	echo >&2 ">> Move files from $PUBLISH_DIR to $deploy_dir"	
 	mv $PUBLISH_DIR/* $deploy_dir

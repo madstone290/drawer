@@ -7,6 +7,8 @@ namespace Drawer.Api.Controllers
     public class DevOpsController : ControllerBase
     {
         private readonly IConfiguration _configuration;
+        private const string VERSION = "1.0.1";
+
 
         public DevOpsController(IConfiguration configuration)
         {
@@ -24,7 +26,7 @@ namespace Drawer.Api.Controllers
         [Route("DeploymentVersion")]
         public string GetVersion()
         {
-            return _configuration.GetValue<string>("DeploymentVersion") ?? "n/a";
+            return VERSION;
         }
     }
 }
