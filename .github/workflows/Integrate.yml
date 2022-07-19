@@ -5,7 +5,7 @@ env:
   DOTNET_VERSION: 6.0.x
   
   # Secrets
-  TEST_SECRET_DIR: Secrets
+  TEST_SECRET_DIR: Drawer.IntergrationTest/Secrets
   TEST_DB_SECRET_FILE: drawer_test_db_secret.json
 
   # slack
@@ -37,7 +37,6 @@ jobs:
     
     - name: Create secrets
       run: |
-        pwd
         mkdir -p ${{ env.TEST_SECRET_DIR }}
         echo '${{ secrets.TEST_DB_SECRET }}' > ${{ env.TEST_SECRET_DIR }}/${{ env.TEST_DB_SECRET_FILE }}
         
