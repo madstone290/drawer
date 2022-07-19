@@ -1,3 +1,5 @@
+# Disable intergration workflow due to slow performance
+
 name: Integrate
 
 env:
