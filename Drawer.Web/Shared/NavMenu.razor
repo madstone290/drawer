@@ -1,0 +1,25 @@
+﻿@using Drawer.Web.Authentication
+@using Drawer.Web.Pages
+
+<MudNavMenu>
+    <MudNavLink Href="/" Match="NavLinkMatch.All">Home</MudNavLink>
+    <MudNavGroup Title="조직" Expanded="true" Icon="@Icons.Material.Filled.Build">
+        <MudNavLink Href="@Paths.Organization.Company" Match="NavLinkMatch.Prefix">회사</MudNavLink>
+    </MudNavGroup>
+    <MudNavGroup Title="위치" Expanded="true" Icon="@Icons.Material.Filled.LocationCity">
+        <MudNavLink Href="@Paths.Locations.WorkPlaces" Match="NavLinkMatch.Prefix">장소</MudNavLink>
+        <MudNavLink Href="@Paths.Locations.Zones" Match="NavLinkMatch.Prefix">구역</MudNavLink>
+        <MudNavLink Href="@Paths.Locations.Spots" Match="NavLinkMatch.Prefix">자리</MudNavLink>
+    </MudNavGroup>
+    <MudNavGroup Title="통계" Expanded="true" Icon="@Icons.Material.Filled.Dashboard">
+        <MudNavLink Href="@Paths.Statistics.Dashboard" Match="NavLinkMatch.Prefix">대시보드</MudNavLink>
+    </MudNavGroup>
+    <MudNavGroup Title="사용자" Expanded="true" Icon="@Icons.Material.Filled.Settings">
+        <MudNavLink Href="@Paths.User.Settings" Match="NavLinkMatch.Prefix">설정</MudNavLink>
+    </MudNavGroup>
+</MudNavMenu>
+
+
+@code {
+
+}

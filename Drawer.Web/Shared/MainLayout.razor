@@ -1,0 +1,71 @@
+﻿@using Drawer.Web.Authentication
+@using Drawer.Web.Pages
+@using Drawer.Web.Utils
+@inherits LayoutComponentBase
+
+<MudThemeProvider />
+<MudDialogProvider FullWidth="true"
+                   CloseButton="true"
+                   MaxWidth="MaxWidth.Medium"
+                   NoHeader="false"
+                   Position="DialogPosition.Center"
+                   CloseOnEscapeKey="true" 
+                   DisableBackdropClick="true" />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" OnClick="@((e) => DrawerToggle())" />
+        <MudText Typo="Typo.h5" Class="ml-3">@ApplicationName</MudText>
+
+        <MudSpacer />
+
+        <MudButton Color="Color.Inherit" Size="Size.Large" Variant="Variant.Text"
+                   Href="@(Paths.Account.Logout)" Class="@(CssUtil.Visibility(_isAuthenticated))">
+            로그아웃
+        </MudButton>
+        <MudButton Color="Color.Inherit" Size="Size.Large" Variant="Variant.Text"
+                   Href="@(Paths.Account.Register)" Class="@(CssUtil.Visibility(!_isAuthenticated))">
+            가입하기
+        </MudButton>
+        <MudButton Color="Color.Inherit" Size="Size.Large" Variant="Variant.Text"
+                   Href="@(Paths.Account.Login)" Class="@(CssUtil.Visibility(!_isAuthenticated))">
+            로그인
+        </MudButton>
+    </MudAppBar>
+
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="1">
+        <NavMenu />
+    </MudDrawer>
+
+    <AMudMainContent>
+        <AMudContainer>
+            @Body
+        </AMudContainer>
+    </AMudMainContent>
+
+</MudLayout>
+
+@code {
+    bool _drawerOpen = true;
+
+    bool _isAuthenticated = false;
+
+    string ApplicationName = "드로워";
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    [Inject] IAuthenticationManager AuthenticationManager { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var stste = await AuthenticationManager.GetUserStateAsync();
+        _isAuthenticated = stste.IsAuthenticated;
+    }
+
+
+
+}

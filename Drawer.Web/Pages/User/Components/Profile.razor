@@ -1,0 +1,36 @@
+﻿@using Drawer.Web.Utils
+
+<MudGrid>
+    <MudItem xs="12" sm="8" md="9">
+        <MudForm @ref="@Form" @bind-IsValid="@FormIsValid" Model="@Model" Validation="@Validator.ValidateValue()">
+            <MudCard Elevation="25">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText>기본정보</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudGrid>
+                        <MudItem xs="12" md="6">
+                            <MudTextField @bind-Value="@Model.Email" 
+                                          Label="이메일" 
+                                          For="@(() => Model.Email)" 
+                                          Variant="Variant.Outlined" 
+                                          InputType="InputType.Email" 
+                                          Disabled=true />
+                        </MudItem>
+                        <MudItem xs="12" md="6">
+                            <MudTextField @bind-Value="@Model.DisplayName" 
+                                          For="@(() => Model.DisplayName)" 
+                                          Label="이름" 
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+                <MudCardActions Class="pb-4 pl-4">
+                    <MudButton Variant="Variant.Filled" Disabled="@(!FormIsValid)" Color="Color.Primary" Class="ml-auto" OnClick="SaveClickAsync">저장</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudForm>
+    </MudItem>
+</MudGrid>

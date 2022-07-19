@@ -1,0 +1,12 @@
+﻿@using Drawer.Web.Pages.User.Components
+@attribute [Route(Paths.User.Settings)]
+
+<ContentTitle Text="계정 설정"/>
+<MudTabs Elevation="25" Color="Color.Transparent" Rounded="true" PanelClass="mt-6">
+    <MudTabPanel Text="프로필">
+        <Profile />
+    </MudTabPanel>
+    <MudTabPanel Text="보안">
+        <Security />
+    </MudTabPanel>
+</MudTabs>

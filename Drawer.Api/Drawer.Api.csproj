@@ -5,7 +5,7 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Product>$(AssemblyName)</Product>
-		<AssemblyName>DrawerApi</AssemblyName>
+		<AssemblyName>Drawer.Api</AssemblyName>
 	</PropertyGroup>
 
 	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
