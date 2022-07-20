@@ -21,7 +21,7 @@ env:
   SOURCE_DIR: publish # publish directory
   TARGET_DIR: drawer/web/publish # deploy directory in the remote machine
 
-  DEPLOY_SCRIPT: bash drawer/switchDeploy.sh web-const.sh
+  DEPLOY_SCRIPT: bash drawer/switchDeploy.sh web-config.sh
 
   # slack
   SLACK_AUTHOR: '' # hide author_name with empty string
