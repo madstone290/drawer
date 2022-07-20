@@ -1,7 +1,7 @@
 #!/bin/bash
-PUBLISH_DIR=/home/ubuntu/drawer/web/publish # publish directory
-BLUE_DIR=/home/ubuntu/drawer/web/blue # blue deployment directory
-GREEN_DIR=/home/ubuntu/drawer/web/green # green deployment directory
+PUBLISH_DIR=drawer/web/publish # publish directory
+BLUE_DIR=drawer/web/blue # blue deployment directory
+GREEN_DIR=drawer/web/green # green deployment directory
 
 BLUE_NGINX_CONF=/etc/nginx/sites-available/drawer-web-blue.conf # blue nginx confi
 GREEN_NGINX_CONF=/etc/nginx/sites-available/drawer-web-green.conf # green nginx config

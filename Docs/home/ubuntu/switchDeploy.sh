@@ -16,9 +16,17 @@ DEPLOY_COLOR_ROUTE= # route of deployment color
 BLUE_SERVICE= # blue service name
 GREEN_SERVICE= # green service name
 
+if ! [[ -f $1 ]]
+then
+	echo >&2 "> $1 does not exist. Exit with 1."
+	exit 1
+fi
+
 source $1 # first arg as shell file
 
 # CONST NO OVERRIDE
+HOME=/home/ubuntu/
+
 BLUE_COLOR_URL=http://$BLUE_URL/$DEPLOY_COLOR_ROUTE
 GREEN_COLOR_URL=http://$GREEN_URL/$DEPLOY_COLOR_ROUTE
 
@@ -31,6 +39,22 @@ GREEN=green
 TRUE=true
 FALSE=false
 
+# VALIDATE CONST
+if [[ $PUBLISH_DIR != $HOME* ]]
+then
+	PUBLISH_DIR=$HOME$PUBLISH_DIR
+fi
+
+if [[ $BLUE_DIR != $HOME* ]]
+then
+	BLUE_DIR=$HOME$BLUE_DIR
+fi
+
+if [[ $GREEN_DIR != $HOME* ]]
+then
+	GREEN_DIR=$HOME$GREEN_DIR
+fi
+
 # VARIABLES
 current_color=
 current_service=
@@ -40,8 +64,6 @@ deploy_url=
 deploy_color_url=
 deploy_service=
 deploy_nginx_conf=
-
-
 
 
 getCurrentColor(){
@@ -93,6 +115,7 @@ loadDeployEnvironment(){
 	echo >&2 ">> current_color: $current_color"
 	echo >&2 ">> deploy_color: $deploy_color"
 	echo >&2 ">> current_service: $current_service"
+	echo >&2 ">> publish_dir: $PUBLISH_DIR"
 	echo >&2 ">> deploy_dir: $deploy_dir"
 	echo >&2 ">> deploy_url: $deploy_url"
 	echo >&2 ">> deploy_color_url: $deploy_color_url"
@@ -108,13 +131,29 @@ deploy(){
 		return
 	fi
 
-	# remove old files
-	if [[ "$(ls -A $deploy_dir)" ]]
+	# validate path
+	if [[ $deploy_dir != $HOME* ]]
 	then 
+		echo >&2 ">> $deploy_dir is invalid"
+		echo $FALSE
+		return
+	fi
+
+	if [[ "$(ls -A $deploy_dir)" ]]
+	then
+		echo >&2 "rm -r $deploy_dir/*"
 		rm -r $deploy_dir/*
 	fi
 
-	echo >&2 ">> Move files from $PUBLISH_DIR to $deploy_dir"	
+	# validate path
+	if [[ $PUBLISH_DIR != $HOME* ]]
+	then 
+		echo >&2 ">> $PUBLISH_DIR is invalid"
+		echo $FALSE
+		return
+	fi
+
+	echo >&2 "mv $PUBLISH_DIR/* $deploy_dir"
 	mv $PUBLISH_DIR/* $deploy_dir
 
 	echo >&2 ">> Enable service $deploy_service"	

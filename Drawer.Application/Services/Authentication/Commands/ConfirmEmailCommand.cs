@@ -56,7 +56,7 @@ namespace Drawer.Application.Services.Authentication.Commands
                 .AddQueryParam("token", Uri.EscapeDataString(token))
                 .AddQueryParam("email", user.Email);
 
-            string mailText = $"<a href=\"{linkUri}\">{Messages.ClickLinkToVerify}</a>";
+            string mailText = $"<a href=\"{linkUri}\">{Messages.ConfirmationEmailText}</a>";
 
             await _emailSender.SendEmailAsync(request.Email, Messages.ConfirmEmailSubject, mailText, true);
             return Unit.Value;
