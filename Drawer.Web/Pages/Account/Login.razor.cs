@@ -1,11 +1,10 @@
-﻿using Drawer.Web.Authentication;
+﻿using Blazored.LocalStorage;
+using Drawer.Web.Authentication;
 using Drawer.Web.Pages.Account.Models;
 using Drawer.Web.Shared;
 using Drawer.Web.Utils;
 using FluentValidation;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using MudBlazor;
 
 namespace Drawer.Web.Pages.Account
@@ -31,7 +30,7 @@ namespace Drawer.Web.Pages.Account
         public MudForm Form { get; private set; } = null!;
 
         [Inject] IAuthenticationManager AuthenticationStateProvider { get; set; } = null!;
-        [Inject] ProtectedLocalStorage LocalStorage { get; set; } = null!;
+        [Inject] ILocalStorageService LocalStorageService { get; set; } = null!;
         
 
         protected override async Task OnInitializedAsync()
@@ -74,11 +73,11 @@ namespace Drawer.Web.Pages.Account
         {
             if (Model.RememberEmail)
             {
-                await LocalStorage.SetAsync(Constants.LocalStorageKeys.Email, Model.Email!);
+                await LocalStorageService.SetItemAsync(Constants.LocalStorageKeys.Email, Model.Email!);
             }
             else
             {
-                await LocalStorage.DeleteAsync(Constants.LocalStorageKeys.Email);
+                await LocalStorageService.RemoveItemAsync(Constants.LocalStorageKeys.Email);
             }
         }
 
@@ -88,10 +87,11 @@ namespace Drawer.Web.Pages.Account
         /// <returns></returns>
         async Task LoadOptionsAsync()
         {
-            var emailStorageResult = await LocalStorage.GetAsync<string>(Constants.LocalStorageKeys.Email);
-            if (emailStorageResult.Success)
+            if(await LocalStorageService.ContainKeyAsync(Constants.LocalStorageKeys.Email))
             {
-                Model.Email = emailStorageResult.Value;
+                var email = await LocalStorageService.GetItemAsync<string>(Constants.LocalStorageKeys.Email);
+
+                Model.Email = email;
                 Model.RememberEmail = true;
             }
         }

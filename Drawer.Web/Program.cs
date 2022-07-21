@@ -1,3 +1,4 @@
+using Blazored.LocalStorage;
 using Drawer.Shared;
 using Drawer.Web;
 using Drawer.Web.Api;
@@ -11,6 +12,8 @@ using MudBlazor.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.HandleArgs(args);
+
+builder.Services.AddBlazoredLocalStorage();
 
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();

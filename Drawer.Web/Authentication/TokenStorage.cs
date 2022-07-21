@@ -1,5 +1,5 @@
-﻿using Drawer.Shared;
-using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+﻿using Blazored.LocalStorage;
+using Drawer.Shared;
 
 namespace Drawer.Web.Authentication
 {
@@ -7,30 +7,29 @@ namespace Drawer.Web.Authentication
     {
         private const string AccessTokenKey = DrawerClaimTypes.AccessToken;
 
-        private readonly ProtectedLocalStorage _localStorage;
+        private readonly ILocalStorageService _localStorageService;
 
-        public TokenStorage(ProtectedLocalStorage localStorage)
+        public TokenStorage(ILocalStorageService localStorageService)
         {
-            _localStorage = localStorage;
+            _localStorageService = localStorageService;
         }
 
         public async Task SaveAccessTokenAsync(string accessToken)
         {
-            await _localStorage.SetAsync(AccessTokenKey, accessToken);
+            await _localStorageService.SetItemAsync(AccessTokenKey, accessToken);
         }
 
         public async Task<string?> GetAccessTokenAsync()
         {
-            var result = await _localStorage.GetAsync<string>(AccessTokenKey);
-            if (result.Success)
-                return result.Value;
+            if (await _localStorageService.ContainKeyAsync(AccessTokenKey))
+                return await _localStorageService.GetItemAsync<string>(AccessTokenKey);
             else
                 return null;
         }
 
         public async Task ClearAccessTokenAsync()
         {
-            await _localStorage.DeleteAsync(AccessTokenKey);
+            await _localStorageService.RemoveItemAsync(AccessTokenKey);
         }
 
 
