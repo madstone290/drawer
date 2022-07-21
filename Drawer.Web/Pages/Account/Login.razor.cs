@@ -1,5 +1,6 @@
 ﻿using Blazored.LocalStorage;
 using Drawer.Web.Authentication;
+using Drawer.Web.Frontend;
 using Drawer.Web.Pages.Account.Models;
 using Drawer.Web.Shared;
 using Drawer.Web.Utils;
@@ -30,7 +31,7 @@ namespace Drawer.Web.Pages.Account
         public MudForm Form { get; private set; } = null!;
 
         [Inject] IAuthenticationManager AuthenticationStateProvider { get; set; } = null!;
-        [Inject] ILocalStorageService LocalStorageService { get; set; } = null!;
+        [Inject] ILocalStorage LocalStorage { get; set; } = null!;
         
 
         protected override async Task OnInitializedAsync()
@@ -73,11 +74,11 @@ namespace Drawer.Web.Pages.Account
         {
             if (Model.RememberEmail)
             {
-                await LocalStorageService.SetItemAsync(Constants.LocalStorageKeys.Email, Model.Email!);
+                await LocalStorage.SetItemAsync(Constants.LocalStorageKeys.Email, Model.Email!);
             }
             else
             {
-                await LocalStorageService.RemoveItemAsync(Constants.LocalStorageKeys.Email);
+                await LocalStorage.RemoveItemAsync(Constants.LocalStorageKeys.Email);
             }
         }
 
@@ -87,9 +88,9 @@ namespace Drawer.Web.Pages.Account
         /// <returns></returns>
         async Task LoadOptionsAsync()
         {
-            if(await LocalStorageService.ContainKeyAsync(Constants.LocalStorageKeys.Email))
+            if(await LocalStorage.ContainKeyAsync(Constants.LocalStorageKeys.Email))
             {
-                var email = await LocalStorageService.GetItemAsync<string>(Constants.LocalStorageKeys.Email);
+                var email = await LocalStorage.GetItemAsync(Constants.LocalStorageKeys.Email);
 
                 Model.Email = email;
                 Model.RememberEmail = true;

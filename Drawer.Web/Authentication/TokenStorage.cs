@@ -1,5 +1,6 @@
 ﻿using Blazored.LocalStorage;
 using Drawer.Shared;
+using Drawer.Web.Frontend;
 
 namespace Drawer.Web.Authentication
 {
@@ -7,29 +8,29 @@ namespace Drawer.Web.Authentication
     {
         private const string AccessTokenKey = DrawerClaimTypes.AccessToken;
 
-        private readonly ILocalStorageService _localStorageService;
+        private readonly ILocalStorage _localStorage;
 
-        public TokenStorage(ILocalStorageService localStorageService)
+        public TokenStorage(ILocalStorage localStorage)
         {
-            _localStorageService = localStorageService;
+            _localStorage = localStorage;
         }
 
         public async Task SaveAccessTokenAsync(string accessToken)
         {
-            await _localStorageService.SetItemAsync(AccessTokenKey, accessToken);
+            await _localStorage.SetItemAsync(AccessTokenKey, accessToken);
         }
 
         public async Task<string?> GetAccessTokenAsync()
         {
-            if (await _localStorageService.ContainKeyAsync(AccessTokenKey))
-                return await _localStorageService.GetItemAsync<string>(AccessTokenKey);
+            if (await _localStorage.ContainKeyAsync(AccessTokenKey))
+                return await _localStorage.GetItemAsync(AccessTokenKey);
             else
                 return null;
         }
 
         public async Task ClearAccessTokenAsync()
         {
-            await _localStorageService.RemoveItemAsync(AccessTokenKey);
+            await _localStorage.RemoveItemAsync(AccessTokenKey);
         }
 
 

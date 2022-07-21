@@ -3,6 +3,8 @@ using Drawer.Shared;
 using Drawer.Web;
 using Drawer.Web.Api;
 using Drawer.Web.Authentication;
+using Drawer.Web.Encryption;
+using Drawer.Web.Frontend;
 using Drawer.Web.Presenters;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -64,6 +66,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ITokenStorage, TokenStorage>();
 builder.Services.AddScoped<ITokenManager, TokenManager>();
 builder.Services.AddScoped<IAuthenticationManager, AuthenticationManager>();
+builder.Services.AddScoped<ILocalStorage, EncryptionLocalStorage>();
+builder.Services.AddScoped<IEncryptionService, EncryptionService>();
 
 builder.Services.Scan(selector =>
 {
