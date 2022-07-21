@@ -58,7 +58,7 @@ namespace Drawer.Application.Services.Authentication.Commands
 
             string mailText = $"<a href=\"{linkUri}\">{Messages.ConfirmationEmailText}</a>";
 
-            await _emailSender.SendEmailAsync(request.Email, Messages.ConfirmEmailSubject, mailText, true);
+            await _emailSender.SendEmailAsync(request.Email, Messages.ConfirmationEmailSubject, mailText, true);
             return Unit.Value;
         }
     }
