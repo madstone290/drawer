@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Reflection;
 
 namespace Drawer.Web.Controllers
 {
@@ -23,10 +24,10 @@ namespace Drawer.Web.Controllers
         }
 
         [HttpGet]
-        [Route("DeploymentVersion")]
+        [Route("Version")]
         public string GetVersion()
         {
-            return VERSION;
+            return Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? string.Empty;
         }
     }
 }
