@@ -156,9 +156,10 @@ deploy(){
 	echo >&2 "mv $PUBLISH_DIR/* $deploy_dir"
 	mv $PUBLISH_DIR/* $deploy_dir
 
-	echo >&2 ">> Enable service $deploy_service"	
-	sudo systemctl enable --now $deploy_service
-
+	echo >&2 ">> sudo systemctl enable $deploy_service"
+	sudo systemctl enable $deploy_service
+	echo >&2 ">> sudo systemctl start $deploy_service"
+	sudo systemctl start $deploy_service
 	echo $TRUE
 }
 
@@ -196,8 +197,11 @@ switch(){
 }
 
 disableOldService(){
-	echo >&2 ">> sudo systemctl disable --now $current_service"
-	sudo systemctl disable --now $current_service
+	echo >&2 ">> sudo systemctl stop $current_service"
+	sudo systemctl stop $current_service
+	
+	echo >&2 ">> sudo systemctl disable $current_service"
+	sudo systemctl disable $current_service
 }
 
 delay(){
