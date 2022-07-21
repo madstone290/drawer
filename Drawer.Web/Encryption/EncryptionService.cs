@@ -5,16 +5,23 @@ namespace Drawer.Web.Encryption
 {
     public class EncryptionService : IEncryptionService
     {
-        static string aes_key = "AXe8YwuIn1zxt3FPWTZFlAa14EHdPAdN9FaZ9RQWihc=";
-        static string aes_iv = "bsxnWolsAyO7kCfWuyrnqg==";
+        /// <summary>
+        /// 16바이트 키. 128, 192, 256비트 중 하나의 길이만 가능하다.
+        /// </summary>
+        static readonly string aes_key = "super_secret_123"; 
+        
+        /// <summary>
+        /// 16바이트 IV
+        /// </summary>
+        static readonly string aes_iv = "super_secret_456";
 
         private readonly Aes aes;
 
         public EncryptionService()
         {
             aes = Aes.Create();
-            aes.Key = Convert.FromBase64String(aes_key);
-            aes.IV = Convert.FromBase64String(aes_iv);
+            aes.Key = Encoding.UTF8.GetBytes(aes_key);
+            aes.IV = Encoding.UTF8.GetBytes(aes_iv);
             aes.Mode = CipherMode.CBC;
             aes.Padding = PaddingMode.PKCS7;
         }
