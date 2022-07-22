@@ -41,6 +41,12 @@
             public const string Zones = "/Locations/Zones";
             public const string Spots = "/Locations/Spots";
         }
+
+        public static class Items
+        {
+            public const string Item = "/Item";
+        }
         
     }
 }
+

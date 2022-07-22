@@ -33,7 +33,7 @@ namespace Drawer.Contract
         {
             private const string Controller = "/User";
             private const string Index = Base + Controller;
-            
+
             public const string Get = Index;
             public const string Update = Index;
             public const string UpdatePassword = Index + "/Password";
@@ -92,14 +92,11 @@ namespace Drawer.Contract
 
         public static class Items
         {
-            private const string Controller = "/Items";
-            private const string Index = Base + Controller;
-
-            public const string Create = Index;
-            public const string Update = Index + "/{id}";
-            public const string Delete = Index + "/{id}";
-            public const string Get = Index + "/{id}";
-            public const string GetList = Index;
+            public const string Create =    "/Api/Items";
+            public const string Update =    "/Api/Items/{id}";
+            public const string Delete =    "/Api/Items/{id}";
+            public const string Get =       "/Api/Items/{id}";
+            public const string GetList =   "/Api/Items";
         }
 
     }

@@ -1,0 +1,110 @@
+﻿@using Drawer.Web.Authentication
+@using Drawer.Web.Pages.Items.Models
+@attribute [Route(Paths.Items.Item)]
+
+
+<ContentTitle Text="아이템" />
+<AuthorizeView Context="AuthorizeView" Policy="@Policies.CompanyMember">
+    <NotAuthorized>
+        <NeedCompany />
+    </NotAuthorized>
+    <Authorized>
+        <AMudToolBar>
+            <AMudButton Disabled="@(!canRead)"
+                        Color="Color.Secondary"
+                        StartIcon="@Icons.Material.Filled.Refresh"
+                        OnClick=@(() => Load_Click())>
+                조회
+            </AMudButton>
+            <AMudButton Disabled="@(!canCreate)"
+                        Color="Color.Primary"
+                        StartIcon="@Icons.Material.Filled.Add"
+                        OnClick=@(() => Add_Click())>
+                추가
+            </AMudButton>
+            <AMudButton Disabled="@(!canUpdate)"
+                        Color="Color.Primary"
+                        StartIcon="@Icons.Material.Filled.Update"
+                        OnClick=@(() => Update_Click())>
+                수정
+            </AMudButton>
+            <AMudButton Disabled="@(!canDelete)"
+                        Color="Color.Warning"
+                        StartIcon="@Icons.Material.Filled.Delete"
+                        OnClick=@(() => Delete_Click())>
+                삭제
+            </AMudButton>
+            <AMudButton Disabled="@(!canCreate)"
+                        Color="Color.Info"
+                        StartIcon="@Icons.Material.Filled.Upload"
+                        OnClick=@(() => Upload_Click())>
+                업로드
+            </AMudButton>
+            <AMudButton Disabled="@(!canRead)"
+                        Color="Color.Info"
+                        StartIcon="@Icons.Material.Filled.Download"
+                        OnClick=@(() => Download_Click())>
+                다운로드
+            </AMudButton>
+            <MudSpacer />
+
+            <AMudSearchField @bind-Value="@searchText">
+            </AMudSearchField>
+        </AMudToolBar>
+
+        <AMudTable @ref="table"
+                   AdditionalClass="mt-2"
+                   Loading="@IsTableLoading"
+                   T="@ItemTableModel"
+                   Items="@ItemList"
+                   Filter="@(new Func<ItemTableModel, bool>(Filter))">
+            <HeaderContent>
+                <MudTHeadRow>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="@(new Func<ItemTableModel, object>(x=> x.Id))">Id</MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="@(new Func<ItemTableModel, object>(x => x.Name))">이름</MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="@(new Func<ItemTableModel, object>(x => x.Code))">코드</MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="@(new Func<ItemTableModel, object>(x => x.Number))">번호</MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="@(new Func<ItemTableModel, object>(x => x.Sku))">Sku</MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="@(new Func<ItemTableModel, object>(x => x.QuantityUnit))">계량 단위</MudTableSortLabel>
+                    </MudTh>
+                </MudTHeadRow>
+            </HeaderContent>
+
+            <RowTemplate>
+                <MudTd DataLabel="Id">@context.Id</MudTd>
+                <MudTd DataLabel="이름">
+                    <MudHighlighter Text="@context.Name" HighlightedText="@searchText" />
+                </MudTd>
+                <MudTd DataLabel="코드">
+                    <MudHighlighter Text="@context.Code" HighlightedText="@searchText" />
+                </MudTd>
+                <MudTd DataLabel="번호">
+                    <MudHighlighter Text="@context.Number" HighlightedText="@searchText" />
+                </MudTd>
+                <MudTd DataLabel="Sku">
+                    <MudHighlighter Text="@context.Sku" HighlightedText="@searchText" />
+                </MudTd>
+                <MudTd DataLabel="계량 단위">
+                    <MudHighlighter Text="@context.QuantityUnit" HighlightedText="@searchText" />
+                </MudTd>
+            </RowTemplate>
+
+            <FooterContent>
+                <MudTFootRow>
+                    <MudTd colSpan="100">총 @(TotalRowCount)개의 행</MudTd>
+                </MudTFootRow>
+            </FooterContent>
+        </AMudTable>
+    </Authorized>
+</AuthorizeView>
