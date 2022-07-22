@@ -1,0 +1,23 @@
+﻿@using Drawer.Web.Pages
+@using Drawer.Web.Utils
+
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudAlert Severity="Severity.Info">
+            가입된 회사가 없습니다. 기능을 사용하기 위해선 회사에 가입해야 합니다.
+        </MudAlert>
+    </MudItem>
+    <MudItem xs="6" sm="3">
+        <AMudButton Href="@Paths.Organization.Company"
+                    Color="@Color.Primary"
+                    Size="@Size.Large">
+            회사 페이지 이동
+        </AMudButton>
+    </MudItem>
+</MudGrid>
+
+@code {
+    [Parameter]
+    public string Message { get; set; } = string.Empty;
+}
