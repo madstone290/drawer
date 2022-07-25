@@ -1,0 +1,29 @@
+﻿@typeparam T
+<td class="mud-table-cell">
+    <MudInput T="T" InputType="InputType.Text" @bind-Value="@Value"></MudInput>
+    <MudText Color="Color.Error">@Error</MudText>
+</td>
+
+@code {
+    private T? _value;
+
+    [Parameter]
+    public T? Value 
+    {
+        get => _value;
+        set
+        {
+            if (EqualityComparer<T>.Default.Equals(_value, value))
+                return;
+            _value = value;
+            ValueChanged.InvokeAsync(value);
+        }
+    }
+    
+    [Parameter]
+    public EventCallback<T?> ValueChanged{ get; set; }
+
+    [Parameter]
+    public string? Error { get; set; }
+
+}
