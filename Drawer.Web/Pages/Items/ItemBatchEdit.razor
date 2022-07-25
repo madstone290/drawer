@@ -1,0 +1,63 @@
+﻿@using Drawer.Web.Authentication
+@using Drawer.Web.Pages.Items.Models
+@using Drawer.Web.Utils
+@attribute [Route("bp")]
+
+
+<ContentTitle Text="아이템" />
+<AuthorizeView Context="AuthorizeView" Policy="@Policies.CompanyMember">
+    <NotAuthorized>
+        <NeedCompany />
+    </NotAuthorized>
+    <Authorized>
+        <AMudToolBar>
+            <MudSpacer />
+            <AMudButton Color="Color.Secondary"
+                        StartIcon="@Icons.Material.Filled.Clear"
+                        OnClick=@(() => Clear_Click())>
+                초기화
+            </AMudButton>
+            <AMudButton Parameters="new AMudButton.RazorParameters(){ Enabled = IsSavingEnabled }"
+                        Color="Color.Primary"
+                        StartIcon="@Icons.Material.Filled.Save"
+                        OnClick=@(() => Save_Click())>
+                저장
+            </AMudButton>
+        </AMudToolBar>
+
+        <AMudTable T="@ItemModel"
+                   Items="@ItemList">
+            <HeaderContent>
+                <MudTHeadRow>
+                    <MudTh>이름</MudTh>
+                    <MudTh>코드</MudTh>
+                    <MudTh>번호</MudTh>
+                    <MudTh>SKu</MudTh>
+                    <MudTh>계량 단위</MudTh>
+                </MudTHeadRow>
+            </HeaderContent>
+
+            <RowTemplate>
+                <AMudEditableCell @bind-Value="@context.Name" Error="@Validate(context, x => x.Name)" />
+                <AMudEditableCell @bind-Value="@context.Code" Error="@Validate(context, x => x.Code)" />
+                <AMudEditableCell @bind-Value="@context.Number" Error="@Validate(context, x => x.Number)" />
+                <AMudEditableCell @bind-Value="@context.Sku" Error="@Validate(context, x => x.Sku)" />
+                <AMudEditableCell @bind-Value="@context.QuantityUnit" Error="@Validate(context, x => x.QuantityUnit)" />
+            </RowTemplate>
+
+            <FooterContent>
+                <MudTFootRow>
+                    <MudTd colspan="100">
+                        <AMudButton FullWidth="true"
+                                   Color="Color.Tertiary"
+                                   StartIcon="@Icons.Material.Filled.Add"
+                                   OnClick="NewRow_Click">행 추가</AMudButton>
+                    </MudTd>
+                </MudTFootRow>
+                <MudTFootRow>
+                    <MudTd colSpan="100">총 @(TotalRowCount)개의 행</MudTd>
+                </MudTFootRow>
+            </FooterContent>
+        </AMudTable>
+    </Authorized>
+</AuthorizeView>

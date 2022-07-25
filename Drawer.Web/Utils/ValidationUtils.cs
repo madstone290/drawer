@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using System.Linq.Expressions;
 
 namespace Drawer.Web.Utils
 {
@@ -22,6 +23,22 @@ namespace Drawer.Web.Utils
                     return Array.Empty<string>();
                 return result.Errors.Select(e => e.ErrorMessage);
             };
+        }
+
+        public static string ValidateProperty<TModel>(this AbstractValidator<TModel> validator, TModel instance, Expression<Func<TModel, object>> expression)
+        {
+            var property = string.Empty;
+            if (expression.Body is MemberExpression m)
+                property = m.Member.Name;
+            else if (expression.Body is UnaryExpression u && u.Operand is MemberExpression mm)
+                property = mm.Member.Name;
+            var value = expression.Compile().Invoke(instance);
+            
+            var context = ValidationContext<TModel>.CreateWithOptions(instance, options => options.IncludeProperties(property));
+            var result = validator.Validate(context);
+            if (result.IsValid)
+                return string.Empty;
+            return result.Errors.First().ErrorMessage;
         }
     }
 }
