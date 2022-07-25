@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace Drawer.Web.Pages.Items
 {
-    public partial class ItemPage : IItemView
+    public partial class ItemTable : IItemView
     {
         private AMudTable<ItemTableModel> table = null!;
 
