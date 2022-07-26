@@ -1,5 +1,5 @@
 ﻿@typeparam T
-@inherits MudTable<T> 
+@inherits MudTable<T>
 
 @{
     if (!Visible)
@@ -11,15 +11,15 @@
             background-color: skyblue
         }
     </style>
-    
+
+    Class = string.Join(" ", Class, FlexSpace.Class);
+
     base.BuildRenderTree(__builder);
 }
 
 @code {
     public AidTable()
     {
-        // flex와 테이블 컨테이너 높이를 조절하여 컨텐츠 영역에서 남은 공간을 모두채운다.
-        Class = "aid-flex-fill";
         Height = "100%";
         Breakpoint = Breakpoint.None;
         Dense = true;
@@ -34,17 +34,13 @@
         // RowClassFunc 호출을 위해 필요하다.
         OnRowClick = new EventCallback<TableRowClickEventArgs<T>>(this, Row_Click);
         RowClassFunc = GetRowClass;
-
-        if(!string.IsNullOrWhiteSpace(AdditionalClass))
-            Class = string.Join(" ", Class, AdditionalClass);
-  
     }
 
     [Parameter]
     public bool Visible { get; set; } = true;
 
     [Parameter]
-    public string AdditionalClass { get; set; } = string.Empty;
+    public FlexSpace FlexSpace { get; set; } = FlexSpace.ColumnFill;
 
     /// <summary>
     /// 현재 선택된 아이템.
@@ -92,12 +88,7 @@
             {
                 return string.Empty;
             }
-
         }
-
-
-
-
     }
 
 }

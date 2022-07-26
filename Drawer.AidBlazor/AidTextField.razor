@@ -11,16 +11,10 @@
 @code {
     public AidTextField()
     {
-        Class = "ma-0 pa-0";
-        if (!Disabled)
-            Disabled = !Enabled;
     }
 
     [Parameter]
     public bool Visible { get; set; } = true;
-
-    [Parameter]
-    public bool Enabled { get; set; } = true;
 
 
 }

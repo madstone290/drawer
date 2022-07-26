@@ -1,5 +1,6 @@
-﻿@inherits MudButton
-
+﻿@using MudBlazor.Services
+@inherits MudButton
+@implements IAsyncDisposable
 @{
     if (!Visible)
         return;
@@ -13,18 +14,61 @@
     {
         Variant = Variant.Filled;
         IconColor = Color.Surface;
+        Size = Size.Medium;
         DisableElevation = true;
-        Class = "mr-1";
-
-        if (!Disabled)
-            Disabled = !Enabled;
     }
 
     [Parameter]
     public bool Visible { get; set; } = true;
 
     [Parameter]
-    public bool Enabled { get; set; } = true;
-   
+    public bool AutoResize { get; set; } = true;
+
+    [Parameter]
+    public Func<Breakpoint, Size> SizeFunc { get; set; } = new Func<Breakpoint, Size>((bp) =>
+    {
+        switch (bp)
+        {
+            case Breakpoint.Xs:
+                return Size.Small;
+            default:
+                return Size.Medium;
+        }
+    });
+
+    /// <summary>
+    /// BreakpointListener 구독 ID. 구독해지에 사용한다.
+    /// </summary>
+    private Guid? _subscriptionId;
+
+    [Inject]
+    public IBreakpointService BreakpointListener { get; set; } = null!;
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && AutoResize)
+        {
+            var subscriptionResult = await BreakpointListener.Subscribe((breakpoint) =>
+            {
+                Size = SizeFunc.Invoke(breakpoint);
+                InvokeAsync(StateHasChanged);
+            }, new ResizeOptions
+                {
+                    ReportRate = 250,
+                    NotifyOnBreakpointOnly = true,
+                });
+
+            _subscriptionId = subscriptionResult.SubscriptionId;
+            StateHasChanged();
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_subscriptionId.HasValue)
+            await BreakpointListener.Unsubscribe(_subscriptionId.Value);
+    }
 }
 

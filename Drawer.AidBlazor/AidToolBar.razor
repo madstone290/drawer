@@ -1,18 +1,25 @@
 ﻿@inherits MudToolBar
+
 @{
     if (!Visible)
         return;
     
+    Class = string.Join(" ", Class, FlexSpace.Class);
+
     base.BuildRenderTree(__builder);
 }
 
 @code {
     public AidToolBar()
     {
-        Class = "ma-0 pa-0 aid-flex-stay";
+        DisableGutters = true;
+        Class = "aid-toolbar";
     }
 
     [Parameter]
     public bool Visible { get; set; } = true;
+
+    [Parameter]
+    public FlexSpace FlexSpace { get; set; } = FlexSpace.Stay;
 
 }

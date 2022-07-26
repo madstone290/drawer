@@ -48,12 +48,11 @@
             </AidButton>
             <MudSpacer />
 
-            <AidSearchField @bind-Value="@searchText">
-            </AidSearchField>
+            <AidSearchInput @bind-Value="@searchText">
+            </AidSearchInput>
         </AidToolBar>
 
         <AidTable @ref="table"
-                   AdditionalClass="mt-2"
                    Loading="@IsTableLoading"
                    T="@SpotTableModel"
                    Items="@SpotList"

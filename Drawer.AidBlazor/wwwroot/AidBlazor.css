@@ -6,8 +6,8 @@
 }
 
 html, body {
-    width:100%;
-    height:100%;
+    width: 100%;
+    height: 100%;
 }
 
 .aid-main-content {
@@ -19,35 +19,49 @@ html, body {
     height: 100%;
     padding-top: 4px;
     padding-bottom: 4px;
-}
-
-.aid-flex-row {
-    display: flex;
-    flex-direction: row;
-}
-
-.aid-flex-column {
     display: flex;
     flex-direction: column;
 }
+    .aid-container > * {
+        margin: 2px 0px 2px 0px;
+    }
 
-.aid-flex-fill {
+
+/* 플렉스 컨테이너에서 컬럼방향으로 남은 영역을 모두 채운다 */
+.aid-flex-column-fill {
     width: 100%;
     flex: 1 1 auto;
     overflow: auto;
 }
 
+/* 플렉스 컨테이너에서 로우방향으로 남은 영역을 모두 채운다 */
+.aid-flex-row-fill {
+    height: 100%;
+    flex: 1 1 auto;
+    overflow: auto;
+}
+
+/* 플렉스 컨테이너에서 자기 영역을 유지한다 */
 .aid-flex-stay {
     flex: 0 0 auto;
 }
 
+/* 툴바 */
+.aid-toolbar.mud-toolbar {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    height: auto;
+    position: relative;
+    align-items: center;
+}
+    /* 툴바 아이템 */
+    .mud-toolbar.aid-toolbar > * {
+        margin: 2px 3px 2px 3px;
+    }
+
 /***** MudBlazor에서 사용하는 클래스 *****/
 
-/* 수정 */
-.mud-toolbar {
-    /* MudToolBar 높이 고정 */
-    height: 48px !important;
-}
 
 /* 수정 */
 .mud-table-dense * .mud-table-row .mud-table-cell {
@@ -73,15 +87,16 @@ html, body {
 /* 추가 */
 .mud-table-foot > .mud-table-row:first-child > .mud-table-cell {
     /* footer top에 경계선 추가 */
-    border-top: 1px solid var(--mud-palette-table-lines); 
+    border-top: 1px solid var(--mud-palette-table-lines);
 }
 
 /* 수정 */
 .mud-table-cell {
     font-size: 1rem;
+    /* 셀 너비 줄이지 않고 그대로 사용 */
+    white-space: nowrap;
     /* 셀 높이 변경*/
     line-height: 1.4 !important;
-
     border-bottom: 1px solid var(--mud-palette-table-lines) !important;
 }
 
@@ -90,6 +105,3 @@ html, body {
     /* 컬럼 높이 변경*/
     line-height: 1.5 !important;
 }
-
-
-

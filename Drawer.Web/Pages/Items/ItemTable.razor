@@ -9,7 +9,7 @@
         <NeedCompany />
     </NotAuthorized>
     <Authorized>
-        <AidToolBar>
+        <AidToolBar FlexSpace="FlexSpace.Stay">
             <AidButton Disabled="@(!canRead)"
                         Color="Color.Secondary"
                         StartIcon="@Icons.Material.Filled.Refresh"
@@ -48,12 +48,12 @@
             </AidButton>
             <MudSpacer />
 
-            <AidSearchField @bind-Value="@searchText">
-            </AidSearchField>
+            <AidSearchInput @bind-Value="@searchText">
+            </AidSearchInput>
         </AidToolBar>
         
         <AidTable @ref="table"
-                   AdditionalClass="mt-2"
+                    FlexSpace="FlexSpace.ColumnFill"
                    Loading="@IsTableLoading"
                    T="@ItemTableModel"
                    Items="@ItemList"

@@ -49,13 +49,12 @@
             </AidButton>
             <MudSpacer />
 
-            <AidSearchField @bind-Value="@searchText">
-            </AidSearchField>
+            <AidSearchInput @bind-Value="@searchText">
+            </AidSearchInput>
         </AidToolBar>
 
         <AidTable @ref="table"
                    Loading="@IsTableLoading"
-                   AdditionalClass="mt-2"
                    T="@WorkPlaceModel"
                    Items="@WorkPlaceList"
                    Filter="@(new Func<WorkPlaceModel,bool>(FilterWorkPlaces))">

@@ -1,6 +1,6 @@
 ﻿@using MudBlazor
 @typeparam T
-@inherits MudTextField<T>
+@inherits MudInput<T>
 
 @{
     if (!Visible)
@@ -10,7 +10,7 @@
 }
 
 @code {
-    public AidSearchField()
+    public AidSearchInput()
     {
         Placeholder = "검색";
         Adornment = Adornment.Start;

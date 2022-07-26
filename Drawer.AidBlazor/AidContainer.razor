@@ -1,5 +1,8 @@
 ﻿@inherits MudContainer
 @{
+    if (!string.IsNullOrWhiteSpace(AdditionalClass))
+        Class = string.Join(" ", Class, AdditionalClass);
+
     base.BuildRenderTree(__builder);
 }
 
@@ -9,27 +12,10 @@
     {
         Class = "aid-container";
         MaxWidth = MaxWidth.False;
-
-        if(!string.IsNullOrWhiteSpace(AdditionalClass))
-            Class = string.Join(" ", Class, AdditionalClass);
-        
-        switch (FlexDirection)
-        {
-            case FlexDirection.Row:
-                Class = string.Join(" ", Class, "aid-flex-row");
-                break;
-            case FlexDirection.Column:
-            default:
-                Class = string.Join(" ", Class, "aid-flex-column");
-                break;
-        }
     }
 
     [Parameter]
     public string AdditionalClass { get; set; } = string.Empty;
-
-    [Parameter]
-    public FlexDirection FlexDirection { get; set; } = FlexDirection.Column;
 
 }
 
