@@ -5,35 +5,28 @@
 @{
     if (!Visible)
         return;
-
-    if (Parameters != null)
-    {
-        base.Disabled = !Parameters.Enabled;
-        base.Placeholder = Parameters.Placeholder;
-        base.Adornment = Parameters.Adornment;
-        base.AdornmentIcon = Parameters.AdornmentIcon;
-        base.IconSize = Parameters.IconSize;
-        base.Immediate = Parameters.Immediate;
-        base.Class = Parameters.Class;
-    }
+ 
     base.BuildRenderTree(__builder);
 }
 
 @code {
-    public class RazorParameters
+    public AidSearchField()
     {
-        public bool Enabled { get; set; } = true;
-        public string Placeholder { get; set; } = "검색";
-        public Adornment Adornment { get; set; } = Adornment.Start;
-        public string AdornmentIcon { get; set; } = Icons.Material.Filled.Search;
-        public Size IconSize { get; set; } = Size.Medium;
-        public bool Immediate { get; set; } = true;
-        public string Class { get; set; } = "ma-0 pa-0";
+        Placeholder = "검색";
+        Adornment = Adornment.Start;
+        AdornmentIcon = Icons.Material.Filled.Search;
+        IconSize = Size.Medium;
+        Immediate = true;
+        Class = "ma-0 pa-0";
+
+        if (!Disabled)
+            Disabled = !Enabled;
     }
-    
-    [Parameter]
-    public RazorParameters Parameters { get; set; } = new RazorParameters();
+
     [Parameter]
     public bool Visible { get; set; } = true;
+
+    [Parameter]
+    public bool Enabled { get; set; } = true;
 }
 

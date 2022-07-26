@@ -1,37 +1,33 @@
 ﻿@inherits MudContainer
 @{
-    if (Parameters != null)
-    {
-        base.Class = Parameters.Class;
-        base.MaxWidth = Parameters.MaxWidth;
-    }
-    base.Class = string.Join(" ", base.Class, AdditionalClass);
-
-    switch (FlexDirection)
-    {
-        case FlexDirection.Row:
-            base.Class = string.Join(" ", base.Class, "aid-flex-row");
-            break;
-        case FlexDirection.Column:
-        default:
-            base.Class = string.Join(" ", base.Class, "aid-flex-column");
-            break;
-    }
-
     base.BuildRenderTree(__builder);
 }
 
 @code {
-    public class RazorParameters
+
+    public AidContainer()
     {
-        public string Class { get; set; } = "aid-container";
-        public MaxWidth MaxWidth { get; set; } = MaxWidth.False;
+        Class = "aid-container";
+        MaxWidth = MaxWidth.False;
+
+        if(!string.IsNullOrWhiteSpace(AdditionalClass))
+            Class = string.Join(" ", Class, AdditionalClass);
+        
+        switch (FlexDirection)
+        {
+            case FlexDirection.Row:
+                Class = string.Join(" ", Class, "aid-flex-row");
+                break;
+            case FlexDirection.Column:
+            default:
+                Class = string.Join(" ", Class, "aid-flex-column");
+                break;
+        }
     }
 
     [Parameter]
-    public RazorParameters Parameters { get; set; } = new RazorParameters();
-    [Parameter]
     public string AdditionalClass { get; set; } = string.Empty;
+
     [Parameter]
     public FlexDirection FlexDirection { get; set; } = FlexDirection.Column;
 

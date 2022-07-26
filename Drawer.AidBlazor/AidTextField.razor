@@ -5,23 +5,22 @@
     if (!Visible)
         return;
 
-    if(Parameters != null)
-    {
-        base.Disabled = !Parameters.Enabled;
-        base.Class = Parameters.Class;
-    }
     base.BuildRenderTree(__builder);
 }
 
 @code {
-    public class RazorParameters
+    public AidTextField()
     {
-        public bool Enabled { get; set; } = true;
-        public string Class { get; set; } = "ma-0 pa-0";
+        Class = "ma-0 pa-0";
+        if (!Disabled)
+            Disabled = !Enabled;
     }
 
     [Parameter]
     public bool Visible { get; set; } = true;
+
     [Parameter]
-    public RazorParameters Parameters { get; set; } = new RazorParameters();
+    public bool Enabled { get; set; } = true;
+
+
 }

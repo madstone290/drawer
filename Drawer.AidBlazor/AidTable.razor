@@ -11,75 +11,38 @@
             background-color: skyblue
         }
     </style>
-
-    /*
-    * 파라미터 기본값 적용
-    * flex와 테이블 컨테이너 높이를 조절하여 컨텐츠 영역에서 남은 공간을 모두채운다.
-    * */
-
-    if (Parameters != null)
-    {
-        base.Class = Parameters.Class;
-        base.Height = Parameters.Height;
-        base.Breakpoint = Parameters.Breakpoint;
-        base.Dense = Parameters.Dense;
-        base.Bordered = Parameters.Bordered;
-        base.FixedHeader = Parameters.FixedHeader;
-        base.FixedFooter = Parameters.FixedFooter;
-        base.ReadOnly = Parameters.ReadOnly;
-        base.HorizontalScrollbar = Parameters.HorizontalScrollbar;
-        base.LoadingProgressColor = Parameters.LoadingProgressColor;
-        base.CustomHeader = Parameters.CustomHeader;
-        base.CustomFooter = Parameters.CustomFooter;
-
-        if (Parameters.OnRowClick.HasValue)
-        {
-            base.OnRowClick = Parameters.OnRowClick.Value;
-        }
-        else
-        {
-            // RowClassFunc 호출을 위해 필요하다.
-            base.OnRowClick = new EventCallback<TableRowClickEventArgs<T>>(this, Row_Click);
-        }
-
-        if (Parameters.RowClassFunc != null)
-        {
-            base.RowClassFunc = Parameters.RowClassFunc;
-        }
-        else
-        {
-            base.RowClassFunc = GetRowClass;
-        }
-    }
-
-    base.Class = string.Join(" ", base.Class, AdditionalClass);
     
     base.BuildRenderTree(__builder);
 }
 
 @code {
-    public class RazorParameters
+    public AidTable()
     {
-        public string Class { get; set; } = "aid-flex-fill";
-        public string Height { get; set; } = "100%";
-        public Breakpoint Breakpoint { get; set; } = Breakpoint.None;
-        public bool Dense { get; set; } = true;
-        public bool Bordered { get; set; } = true;
-        public bool FixedHeader { get; set; } = true;
-        public bool FixedFooter { get; set; } = true;
-        public bool ReadOnly { get; set; } = true;
-        public bool HorizontalScrollbar { get; set; } = true;
-        public Color LoadingProgressColor { get; set; } = Color.Info;
-        public bool CustomFooter { get; set; } = true;
-        public bool CustomHeader { get; set; } = true;
-        public EventCallback<TableRowClickEventArgs<T>>? OnRowClick { get; set; } = null;
-        public Func<T, int, string>? RowClassFunc { get; set; } = null;
+        // flex와 테이블 컨테이너 높이를 조절하여 컨텐츠 영역에서 남은 공간을 모두채운다.
+        Class = "aid-flex-fill";
+        Height = "100%";
+        Breakpoint = Breakpoint.None;
+        Dense = true;
+        Bordered = true;
+        FixedHeader = true;
+        FixedFooter = true;
+        ReadOnly = true;
+        HorizontalScrollbar = true;
+        LoadingProgressColor = Color.Info;
+        CustomFooter = true;
+        CustomHeader = true;
+        // RowClassFunc 호출을 위해 필요하다.
+        OnRowClick = new EventCallback<TableRowClickEventArgs<T>>(this, Row_Click);
+        RowClassFunc = GetRowClass;
+
+        if(!string.IsNullOrWhiteSpace(AdditionalClass))
+            Class = string.Join(" ", Class, AdditionalClass);
+  
     }
 
     [Parameter]
-    public RazorParameters Parameters { get; set; } = new RazorParameters();
-    [Parameter]
     public bool Visible { get; set; } = true;
+
     [Parameter]
     public string AdditionalClass { get; set; } = string.Empty;
 

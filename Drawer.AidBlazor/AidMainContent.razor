@@ -1,19 +1,11 @@
 ﻿@inherits MudMainContent
 @{
-    if(Parameters != null)
-    {
-        base.Class = Parameters.Class;
-    }
     base.BuildRenderTree(__builder);
 }
 
 @code {
-    public class RazorParameters
+    public AidMainContent()
     {
-        public string Class { get; set; } = "aid-main-content";
+        Class = "aid-main-content";
     }
-
-    [Parameter]
-    public RazorParameters Parameters { get; set; } = new RazorParameters();
-
 }

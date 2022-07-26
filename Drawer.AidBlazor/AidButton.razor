@@ -3,31 +3,28 @@
 @{
     if (!Visible)
         return;
-        
-    if (Parameters != null)
-    {
-        base.DisableElevation = true;
-        base.Variant = Parameters.Variant;
-        base.IconColor = Parameters.IconColor;
-        base.Class = Parameters.Class;
-        base.Disabled = !Parameters.Enabled;
-    }
+
     base.BuildRenderTree(__builder);
 }
 
 @code {
-    public class RazorParameters
+
+    public AidButton()
     {
-        public bool Enabled { get; set; } = true;
-        public bool DisableElevation { get; set; } = true;
-        public Variant Variant { get; set; } = Variant.Filled;
-        public Color IconColor { get; set; } = Color.Surface;
-        public string Class { get; set; } = "mr-1";
+        Variant = Variant.Filled;
+        IconColor = Color.Surface;
+        DisableElevation = true;
+        Class = "mr-1";
+
+        if (!Disabled)
+            Disabled = !Enabled;
     }
 
     [Parameter]
     public bool Visible { get; set; } = true;
+
     [Parameter]
-    public RazorParameters Parameters { get; set; } = new RazorParameters();
+    public bool Enabled { get; set; } = true;
+   
 }
 
