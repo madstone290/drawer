@@ -9,50 +9,50 @@
         <NeedCompany />
     </NotAuthorized>
     <Authorized>
-        <AMudToolBar>
-            <AMudButton Disabled="@(!canRead)"
+        <AidToolBar>
+            <AidButton Disabled="@(!canRead)"
                         Color="Color.Secondary"
                         StartIcon="@Icons.Material.Filled.Refresh"
                         OnClick=@(() => Load_Click())>
                 조회
-            </AMudButton>
-            <AMudButton Disabled="@(!canCreate)"
+            </AidButton>
+            <AidButton Disabled="@(!canCreate)"
                         Color="Color.Primary"
                         StartIcon="@Icons.Material.Filled.Add"
                         OnClick=@(() => Add_Click())>
                 추가
-            </AMudButton>
-            <AMudButton Disabled="@(!canUpdate)"
+            </AidButton>
+            <AidButton Disabled="@(!canUpdate)"
                         Color="Color.Primary"
                         StartIcon="@Icons.Material.Filled.Update"
                         OnClick=@(() => Update_Click())>
                 수정
-            </AMudButton>
-            <AMudButton Disabled="@(!canDelete)"
+            </AidButton>
+            <AidButton Disabled="@(!canDelete)"
                         Color="Color.Warning"
                         StartIcon="@Icons.Material.Filled.Delete"
                         OnClick=@(() => Delete_Click())>
                 삭제
-            </AMudButton>
-            <AMudButton Disabled="@(!canCreate)"
+            </AidButton>
+            <AidButton Disabled="@(!canCreate)"
                         Color="Color.Info"
                         StartIcon="@Icons.Material.Filled.Upload"
                         OnClick=@(() => Upload_Click())>
                 업로드
-            </AMudButton>
-            <AMudButton Disabled="@(!canRead)"
+            </AidButton>
+            <AidButton Disabled="@(!canRead)"
                         Color="Color.Info"
                         StartIcon="@Icons.Material.Filled.Download"
                         OnClick=@(() => Download_Click())>
                 다운로드
-            </AMudButton>
+            </AidButton>
             <MudSpacer />
 
-            <AMudSearchField @bind-Value="@searchText">
-            </AMudSearchField>
-        </AMudToolBar>
+            <AidSearchField @bind-Value="@searchText">
+            </AidSearchField>
+        </AidToolBar>
 
-        <AMudTable @ref="table"
+        <AidTable @ref="table"
                    AdditionalClass="mt-2"
                    Loading="@IsTableLoading"
                    T="@SpotTableModel"
@@ -99,6 +99,6 @@
                     <MudTd colSpan="100">총 @(TotalRowCount)개의 행</MudTd>
                 </MudTFootRow>
             </FooterContent>
-        </AMudTable>
+        </AidTable>
     </Authorized>
 </AuthorizeView>

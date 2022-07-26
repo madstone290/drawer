@@ -1,4 +1,4 @@
-﻿using Drawer.Web.Components;
+﻿using Drawer.AidBlazor;
 using Drawer.Web.Pages.Locations.Models;
 using Drawer.Web.Pages.Locations.Presenters;
 using Drawer.Web.Pages.Locations.Views;
@@ -8,7 +8,7 @@ namespace Drawer.Web.Pages.Locations
 {
     public partial class WorkPlaces : IWorkPlacesView
     {
-        private AMudTable<WorkPlaceModel> table = null!;
+        private AidTable<WorkPlaceModel> table = null!;
 
         private bool canCreate = false;
         private bool canRead = false;

@@ -1,13 +1,10 @@
-﻿@typeparam T
-@inherits MudBlazor.MudTextField<T>
-
+﻿@inherits MudToolBar
 @{
     if (!Visible)
         return;
-
-    if(Parameters != null)
+    
+    if (Parameters != null)
     {
-        base.Disabled = !Parameters.Enabled;
         base.Class = Parameters.Class;
     }
     base.BuildRenderTree(__builder);
@@ -16,8 +13,7 @@
 @code {
     public class RazorParameters
     {
-        public bool Enabled { get; set; } = true;
-        public string Class { get; set; } = "ma-0 pa-0";
+        public string Class { get; set; } = "ma-0 pa-0 aid-flex-stay";
     }
 
     [Parameter]

@@ -1,5 +1,5 @@
-﻿@typeparam T where T : class
-@inherits MudBlazor.MudTable<T> 
+﻿@typeparam T
+@inherits MudTable<T> 
 
 @{
     if (!Visible)
@@ -60,7 +60,7 @@
 @code {
     public class RazorParameters
     {
-        public string Class { get; set; } = "amud-flex-fill";
+        public string Class { get; set; } = "aid-flex-fill";
         public string Height { get; set; } = "100%";
         public Breakpoint Breakpoint { get; set; } = Breakpoint.None;
         public bool Dense { get; set; } = true;
@@ -87,7 +87,7 @@
     /// 현재 선택된 아이템.
     /// SelectedItem속성은 마지막 클릭 로우를 제공하고 선택 취소된 아이템을 판단하지 못한다.
     /// </summary>
-    public T? FocusedItem => lastClickedRowNumber == -1 ? null : SelectedItem;
+    public T? FocusedItem => lastClickedRowNumber == -1 ? default : SelectedItem;
 
     [Parameter]
     public EventCallback<T?> FocusedItemChanged { get; set; }

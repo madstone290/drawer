@@ -1,4 +1,4 @@
-﻿@inherits MudBlazor.MudContainer
+﻿@inherits MudContainer
 @{
     if (Parameters != null)
     {
@@ -10,11 +10,11 @@
     switch (FlexDirection)
     {
         case FlexDirection.Row:
-            base.Class = string.Join(" ", base.Class, "amud-flex-row");
+            base.Class = string.Join(" ", base.Class, "aid-flex-row");
             break;
         case FlexDirection.Column:
         default:
-            base.Class = string.Join(" ", base.Class, "amud-flex-column");
+            base.Class = string.Join(" ", base.Class, "aid-flex-column");
             break;
     }
 
@@ -24,7 +24,7 @@
 @code {
     public class RazorParameters
     {
-        public string Class { get; set; } = "amud-container";
+        public string Class { get; set; } = "aid-container";
         public MaxWidth MaxWidth { get; set; } = MaxWidth.False;
     }
 

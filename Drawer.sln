@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drawer.Shared", "Drawer.Sha
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drawer.Web", "Drawer.Web\Drawer.Web.csproj", "{3B01E1CA-AD10-43AC-BEF8-41CFDABD3AAB}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drawer.AidBlazor", "Drawer.AidBlazor\Drawer.AidBlazor.csproj", "{82BEC7D9-47ED-41BE-B796-B4D7166B8697}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,6 +63,10 @@ Global
 		{3B01E1CA-AD10-43AC-BEF8-41CFDABD3AAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B01E1CA-AD10-43AC-BEF8-41CFDABD3AAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B01E1CA-AD10-43AC-BEF8-41CFDABD3AAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82BEC7D9-47ED-41BE-B796-B4D7166B8697}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82BEC7D9-47ED-41BE-B796-B4D7166B8697}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82BEC7D9-47ED-41BE-B796-B4D7166B8697}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82BEC7D9-47ED-41BE-B796-B4D7166B8697}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -74,6 +80,7 @@ Global
 		{829BE432-9419-4EE0-84DD-C1E5F66690C8} = {5222AFEE-7817-49FD-BA75-5476801EE06F}
 		{0B056CBD-5AFC-458B-9D4B-C5374D6C026F} = {904F15E6-A125-4CAC-9747-733F3D2E4D6D}
 		{3B01E1CA-AD10-43AC-BEF8-41CFDABD3AAB} = {904F15E6-A125-4CAC-9747-733F3D2E4D6D}
+		{82BEC7D9-47ED-41BE-B796-B4D7166B8697} = {904F15E6-A125-4CAC-9747-733F3D2E4D6D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7E036C6B-7CC0-4730-BFB2-9335AB6AD597}

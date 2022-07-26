@@ -1,5 +1,4 @@
-﻿using Drawer.Web.Components;
-using Drawer.Web.Pages.Items.Models;
+﻿using Drawer.Web.Pages.Items.Models;
 using Drawer.Web.Pages.Items.Presenters;
 using Drawer.Web.Pages.Items.Views;
 using Drawer.Web.Utils;

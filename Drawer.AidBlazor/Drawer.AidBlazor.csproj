@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<SupportedPlatform Include="browser" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.7" />
+		<PackageReference Include="MudBlazor" Version="6.0.12" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Resource Include="AidButton.razor" />
+	  <Resource Include="AidContainer.razor" />
+	  <Resource Include="AidEditableCell.razor" />
+	  <Resource Include="AidMainContent.razor" />
+	  <Resource Include="AidTable.razor" />
+	  <Resource Include="AidTextField.razor" />
+	  <Resource Include="AidToolBar.razor" />
+	  <Resource Include="wwwroot\AidBlazor\AidBlazor.css">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="_Imports.razor" />
+	</ItemGroup>
+
+</Project>

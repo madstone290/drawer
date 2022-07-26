@@ -1,4 +1,4 @@
-﻿using Drawer.Web.Components;
+﻿using Drawer.AidBlazor;
 using Drawer.Web.Pages.Locations.Models;
 using Drawer.Web.Pages.Locations.Presenters;
 using Drawer.Web.Pages.Locations.Views;
@@ -8,7 +8,7 @@ namespace Drawer.Web.Pages.Locations
 {
     public partial class Zones : IZonesView
     {
-        private AMudTable<ZoneTableModel> table = null!;
+        private AidTable<ZoneTableModel> table = null!;
 
         private bool canCreate = false;
         private bool canRead = false;

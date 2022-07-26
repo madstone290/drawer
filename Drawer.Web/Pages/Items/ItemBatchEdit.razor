@@ -10,22 +10,22 @@
         <NeedCompany />
     </NotAuthorized>
     <Authorized>
-        <AMudToolBar>
+        <AidToolBar>
             <MudSpacer />
-            <AMudButton Color="Color.Secondary"
+            <AidButton Color="Color.Secondary"
                         StartIcon="@Icons.Material.Filled.Clear"
                         OnClick=@(() => Clear_Click())>
                 초기화
-            </AMudButton>
-            <AMudButton Parameters="new AMudButton.RazorParameters(){ Enabled = IsSavingEnabled }"
+            </AidButton>
+            <AidButton Parameters="new AidButton.RazorParameters(){ Enabled = IsSavingEnabled }"
                         Color="Color.Primary"
                         StartIcon="@Icons.Material.Filled.Save"
                         OnClick=@(() => Save_Click())>
                 저장
-            </AMudButton>
-        </AMudToolBar>
+            </AidButton>
+        </AidToolBar>
 
-        <AMudTable T="@ItemModel"
+        <AidTable T="@ItemModel"
                    Items="@ItemList">
             <HeaderContent>
                 <MudTHeadRow>
@@ -38,26 +38,26 @@
             </HeaderContent>
 
             <RowTemplate>
-                <AMudEditableCell @bind-Value="@context.Name" Error="@Validate(context, x => x.Name)" />
-                <AMudEditableCell @bind-Value="@context.Code" Error="@Validate(context, x => x.Code)" />
-                <AMudEditableCell @bind-Value="@context.Number" Error="@Validate(context, x => x.Number)" />
-                <AMudEditableCell @bind-Value="@context.Sku" Error="@Validate(context, x => x.Sku)" />
-                <AMudEditableCell @bind-Value="@context.QuantityUnit" Error="@Validate(context, x => x.QuantityUnit)" />
+                <AidEditableCell @bind-Value="@context.Name" Error="@Validate(context, x => x.Name)" />
+                <AidEditableCell @bind-Value="@context.Code" Error="@Validate(context, x => x.Code)" />
+                <AidEditableCell @bind-Value="@context.Number" Error="@Validate(context, x => x.Number)" />
+                <AidEditableCell @bind-Value="@context.Sku" Error="@Validate(context, x => x.Sku)" />
+                <AidEditableCell @bind-Value="@context.QuantityUnit" Error="@Validate(context, x => x.QuantityUnit)" />
             </RowTemplate>
 
             <FooterContent>
                 <MudTFootRow>
                     <MudTd colspan="100">
-                        <AMudButton FullWidth="true"
+                        <AidButton FullWidth="true"
                                    Color="Color.Tertiary"
                                    StartIcon="@Icons.Material.Filled.Add"
-                                   OnClick="NewRow_Click">행 추가</AMudButton>
+                                   OnClick="NewRow_Click">행 추가</AidButton>
                     </MudTd>
                 </MudTFootRow>
                 <MudTFootRow>
                     <MudTd colSpan="100">총 @(TotalRowCount)개의 행</MudTd>
                 </MudTFootRow>
             </FooterContent>
-        </AMudTable>
+        </AidTable>
     </Authorized>
 </AuthorizeView>

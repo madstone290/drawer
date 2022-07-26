@@ -1,8 +1,9 @@
-﻿@inherits MudBlazor.MudButton
+﻿@inherits MudButton
+
 @{
     if (!Visible)
         return;
-
+        
     if (Parameters != null)
     {
         base.DisableElevation = true;

@@ -1,4 +1,4 @@
-﻿using Drawer.Web.Components;
+﻿using Drawer.AidBlazor;
 using Drawer.Web.Pages.Items.Models;
 using Drawer.Web.Pages.Items.Presenters;
 using Drawer.Web.Pages.Items.Views;
@@ -8,7 +8,7 @@ namespace Drawer.Web.Pages.Items
 {
     public partial class ItemTable : IItemView
     {
-        private AMudTable<ItemTableModel> table = null!;
+        private AidTable<ItemTableModel> table = null!;
 
         private bool canCreate = false;
         private bool canRead = false;

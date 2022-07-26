@@ -1,4 +1,4 @@
-﻿namespace Drawer.Web.Components
+﻿namespace Drawer.AidBlazor
 {
     public enum FlexDirection
     {
