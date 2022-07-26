@@ -36,7 +36,7 @@ namespace Drawer.Web.Pages.Items.Presenters
                 CheckSuccessFail(response);
             }
 
-            View.IsSavingEnabled = false;
+            View.Close();
         }
     }
 }

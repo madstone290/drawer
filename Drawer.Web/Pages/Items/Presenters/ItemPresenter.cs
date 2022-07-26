@@ -76,7 +76,7 @@ namespace Drawer.Web.Pages.Items.Presenters
                 View.ItemList.Add(item);
                 RefreshTotalRowCount();
             }
-        }
+        } 
 
         public async Task ShowUpdateDialog()
         {
@@ -147,6 +147,24 @@ namespace Drawer.Web.Pages.Items.Presenters
                     View.ItemList.Remove(selectedItem);
                     RefreshTotalRowCount();
                 }
+            }
+        }
+
+        public async Task ShowBatchEditDialog()
+        {
+            var dialogOptions = new DialogOptions()
+            {
+                FullScreen = true
+            };
+            var dialogParameters = new DialogParameters
+            {
+                { nameof(ItemBatchEdit.ActionMode), ActionMode.Add },
+            };
+            var dialog = _dialogService.Show<ItemBatchEdit>(null, options: dialogOptions, parameters: dialogParameters);
+            var result = await dialog.Result;
+            if (!result.Cancelled)
+            {
+                await LoadItemListAsync();
             }
         }
 

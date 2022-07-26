@@ -77,6 +77,11 @@ namespace Drawer.Web.Pages.Items
             await Presenter.ShowDeleteDialog();
         }
 
+        private async Task BatchAdd_Click()
+        {
+            await Presenter.ShowBatchEditDialog();
+        }
+
         private void Upload_Click()
         {
             Presenter.UploadExcel();

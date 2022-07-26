@@ -34,6 +34,12 @@
                         OnClick=@(() => Delete_Click())>
                 삭제
             </AidButton>
+             <AidButton Disabled="@(!canCreate)"
+                        Color="Color.Info"
+                        StartIcon="@Icons.Material.Filled.Queue"
+                        OnClick=@(() => BatchAdd_Click())>
+                일괄 추가
+            </AidButton>
             <AidButton Disabled="@(!canCreate)"
                         Color="Color.Info"
                         StartIcon="@Icons.Material.Filled.Upload"

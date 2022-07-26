@@ -12,5 +12,7 @@ namespace Drawer.Web.Pages.Items.Views
         /// 저장가능 상태를 변경한다
         /// </summary>
         bool IsSavingEnabled { get; set; }
+
+        void Close();
     }
 }

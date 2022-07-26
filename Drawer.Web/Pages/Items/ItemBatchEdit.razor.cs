@@ -3,6 +3,7 @@ using Drawer.Web.Pages.Items.Presenters;
 using Drawer.Web.Pages.Items.Views;
 using Drawer.Web.Utils;
 using Microsoft.AspNetCore.Components;
+using MudBlazor;
 using System.Linq.Expressions;
 
 namespace Drawer.Web.Pages.Items
@@ -10,9 +11,15 @@ namespace Drawer.Web.Pages.Items
     public partial class ItemBatchEdit : IItemBatchEditView
     {
         private readonly ItemModelValidator validator = new();
+        
+        [CascadingParameter]
+        public MudDialogInstance Dialog { get; private set; } = null!;
 
         [Inject]
         public ItemBatchEditPresenter Presenter { get; set; } = null!;
+
+        [Parameter]
+        public ActionMode ActionMode { get; set; }
 
         [Parameter]
         public IList<ItemModel> ItemList { get; set; } = new List<ItemModel>();
@@ -34,10 +41,9 @@ namespace Drawer.Web.Pages.Items
             return validator.ValidateProperty(item, expression);
         }
 
-        private void Clear_Click()
+        private void Cancel_Click()
         {
-            ItemList.Clear();
-            IsSavingEnabled = true;
+            Dialog.Cancel();
         }
 
         private async Task Save_Click()
@@ -45,10 +51,14 @@ namespace Drawer.Web.Pages.Items
             await Presenter.AddItemsAsync();
         }
 
-
         void NewRow_Click()
         {
             ItemList.Add(new ItemModel());
+        }
+
+        public void Close()
+        {
+            Dialog.Close();
         }
     }
 }

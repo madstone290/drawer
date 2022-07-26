@@ -1,32 +1,19 @@
 ﻿@using Drawer.Web.Authentication
 @using Drawer.Web.Pages.Items.Models
 @using Drawer.Web.Utils
-@attribute [Route("bp")]
 
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Queue" />
+            아이템 일괄 추가
+        </MudText>
+    </TitleContent>
 
-<ContentTitle Text="아이템" />
-<AuthorizeView Context="AuthorizeView" Policy="@Policies.CompanyMember">
-    <NotAuthorized>
-        <NeedCompany />
-    </NotAuthorized>
-    <Authorized>
-        <AidToolBar>
-            <MudSpacer />
-            <AidButton Color="Color.Secondary"
-                        StartIcon="@Icons.Material.Filled.Clear"
-                        OnClick=@(() => Clear_Click())>
-                초기화
-            </AidButton>
-            <AidButton Parameters="new AidButton.RazorParameters(){ Enabled = IsSavingEnabled }"
-                        Color="Color.Primary"
-                        StartIcon="@Icons.Material.Filled.Save"
-                        OnClick=@(() => Save_Click())>
-                저장
-            </AidButton>
-        </AidToolBar>
-
+    <DialogContent>
         <AidTable T="@ItemModel"
-                   Items="@ItemList">
+                    Height="80vh"
+                  Items="@ItemList">
             <HeaderContent>
                 <MudTHeadRow>
                     <MudTh>이름</MudTh>
@@ -59,5 +46,21 @@
                 </MudTFootRow>
             </FooterContent>
         </AidTable>
-    </Authorized>
-</AuthorizeView>
+    </DialogContent>
+
+    <DialogActions>
+        <AidButton Color="Color.Secondary"
+                   StartIcon="@Icons.Material.Filled.Clear"
+                   OnClick=@(() => Cancel_Click())>
+            취소
+        </AidButton>
+        <AidButton Disabled="!IsSavingEnabled"
+                   Color="Color.Primary"
+                   StartIcon="@Icons.Material.Filled.Save"
+                   OnClick=@(() => Save_Click())>
+            저장
+        </AidButton>
+    </DialogActions>
+</MudDialog>
+
+
