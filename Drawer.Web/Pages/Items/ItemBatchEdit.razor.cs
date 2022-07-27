@@ -1,4 +1,5 @@
-﻿using Drawer.Web.Api.Items;
+﻿using Drawer.Contract.Items;
+using Drawer.Web.Api.Items;
 using Drawer.Web.Pages.Items.Models;
 using Drawer.Web.Services;
 using Drawer.Web.Shared.Dialogs;
@@ -82,14 +83,16 @@ namespace Drawer.Web.Pages.Items
                 return;
             }
 
-            foreach (var item in ItemList)
-            {
-                // validate
-                var response = await ApiClient.AddItem(item.Name, item.Code, item.Number, item.Sku, item.QuantityUnit);
-                Snackbar.CheckSuccessFail(response);
-            }
+            var content = new BatchCreateItemRequest(ItemList.Select(item =>
+                new BatchCreateItemRequest.Item(item.Name, item.Code, item.Number, item.Sku, item.QuantityUnit)).ToList());
 
-            NavManager.NavigateTo(Paths.Items.Home);
+            var response = await ApiClient.BatchAddItem(content);
+
+            if (Snackbar.CheckSuccessFail(response))
+            {
+                NavManager.NavigateTo(Paths.Items.Home);
+
+            }
         }
 
     }

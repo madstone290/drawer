@@ -34,6 +34,9 @@ namespace Drawer.Api.Swagger
                     }
                 });
 
+                // Type의 FullName을 이용해서 스키마를 식별한다.
+                options.CustomSchemaIds(type=> type.ToString());
+
             });
 
 

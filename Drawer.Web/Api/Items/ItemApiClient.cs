@@ -11,6 +11,16 @@ namespace Drawer.Web.Api.Items
 
         }
 
+        public async Task<ApiResponse<BatchCreateItemResponse>> BatchAddItem(BatchCreateItemRequest content)
+        {
+            var request = new ApiRequest<BatchCreateItemResponse>(
+                HttpMethod.Post,
+                ApiRoutes.Items.BatchCreate,
+                content);
+
+            return await SendAsync(request);
+        }
+
         public async Task<ApiResponse<CreateItemResponse>> AddItem(string name, string? code, string? number,
             string? sku, string? measurementUnit)
         {
