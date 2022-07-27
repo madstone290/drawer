@@ -10,7 +10,6 @@ namespace Drawer.Web.Pages.Items.Models
         public string Number { get; set; } = string.Empty;
         public string Sku { get; set; } = string.Empty;
         public string QuantityUnit { get; set; } = string.Empty;
-        public double Price { get; set; }
     }
 
     public class ItemModelValidator : AbstractValidator<ItemModel>
@@ -19,7 +18,8 @@ namespace Drawer.Web.Pages.Items.Models
         {
             RuleFor(x => x.Name)
                  .NotEmpty()
-                 .Length(1, 100);
+                 .WithMessage("이름은 필수입니다");
+                 
         }
     }
 }

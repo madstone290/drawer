@@ -16,7 +16,7 @@
             _value = value;
             ValueChanged.InvokeAsync(value);
 
-            Error = Validate?.Invoke();
+            Error = Validate?.Invoke(value);
         }
     }
 
@@ -24,7 +24,7 @@
     public EventCallback<T?> ValueChanged { get; set; }
 
     [Parameter]
-    public Func<string>? Validate { get; set; }
+    public Func<T?, string>? Validate { get; set; }
 
     public string? Error { get; set; }
 

@@ -37,7 +37,7 @@
                        OnClick=@(() => NewRow_Click())>
                 행 추가
             </AidButton>
-                <AidButton Color="Color.Primary"
+            <AidButton Color="Color.Primary"
                        StartIcon="@Icons.Material.Filled.Save"
                        OnClick=@(() => Save_Click())>
                 저장
@@ -50,32 +50,33 @@
             <Columns>
                 <Column T="ItemModel" Field="Name" Title="이름">
                     <EditTemplate>
-                        <AidEditableCell @bind-Value="context.Item.Name" Validate="() => Validate(context.Item, x => x.Name)" />
+                        <AidEditableCell @bind-Value="context.Item.Name"
+                                         Validate="(v) => Validate(context.Item, x => x.Name)" />
                     </EditTemplate>
                 </Column>
 
                 <Column T="ItemModel" Field="Code" Title="코드">
                     <EditTemplate>
                         <AidEditableCell @bind-Value="context.Item.Code"
-                                         Validate="() => Validate(context.Item, x => x.Code)" />
+                                         Validate="(v) => Validate(context.Item, x => x.Code)" />
                     </EditTemplate>
                 </Column>
                 <Column T="ItemModel" Field="Number" Title="번호">
                     <EditTemplate>
                         <AidEditableCell @bind-Value="context.Item.Number"
-                                         Validate="() => Validate(context.Item, x => x.Number)" />
+                                         Validate="(v) => Validate(context.Item, x => x.Number)" />
                     </EditTemplate>
                 </Column>
                 <Column T="ItemModel" Field="Sku" Title="Sku">
                     <EditTemplate>
                         <AidEditableCell @bind-Value="context.Item.Sku"
-                                         Validate="() => Validate(context.Item, x => x.Sku)" />
+                                         Validate="(v) => Validate(context.Item, x => x.Sku)" />
                     </EditTemplate>
                 </Column>
                 <Column T="ItemModel" Field="QuantityUnit" Title="단위">
                     <EditTemplate>
                         <AidEditableCell @bind-Value="context.Item.QuantityUnit"
-                                         Validate="() => Validate(context.Item, x => x.QuantityUnit)" />
+                                         Validate="(v) => Validate(context.Item, x => x.QuantityUnit)" />
                     </EditTemplate>
                 </Column>
             </Columns>
