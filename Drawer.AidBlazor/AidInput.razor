@@ -1,0 +1,25 @@
+﻿@typeparam T
+@inherits MudInput<T>
+@{
+    if (!Visible)
+        return;
+
+    if (Class == null || !Class.Contains(AID_INPUT))
+        Class = string.Join(" ", Class, AID_INPUT);
+
+    base.BuildRenderTree(__builder);
+}
+
+@code {
+    /// <summary>
+    /// AidInput CSS 클래스명
+    /// </summary>
+    private const string AID_INPUT = "aid-input";
+
+    public AidInput()
+    {
+    }
+
+    [Parameter] public bool Visible { get; set; } = true;
+
+}

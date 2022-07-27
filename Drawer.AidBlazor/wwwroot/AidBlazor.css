@@ -60,6 +60,11 @@ html, body {
         margin: 2px 3px 2px 3px;
     }
 
+
+
+.aid-input {
+    width: 100%
+}
 /***** MudBlazor에서 사용하는 클래스 *****/
 
 

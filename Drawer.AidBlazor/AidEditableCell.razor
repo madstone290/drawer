@@ -1,8 +1,6 @@
 ﻿@typeparam T
-<td class="mud-table-cell">
-    <MudInput T="T" InputType="InputType.Text" @bind-Value="@Value"></MudInput>
-    <MudText Color="Color.Error">@Error</MudText>
-</td>
+<AidInput T="T" InputType="InputType.Text" @bind-Value="@Value"></AidInput>
+<MudText Color="Color.Error">@Error</MudText>
 
 @code {
     private T? _value;
@@ -24,7 +22,7 @@
 
     [Parameter]
     public EventCallback<T?> ValueChanged { get; set; }
-    
+
     [Parameter]
     public Func<string>? Validate { get; set; }
 
