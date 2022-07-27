@@ -97,6 +97,8 @@ namespace Drawer.Contract
             public const string Delete =    "/Api/Items/{id}";
             public const string Get =       "/Api/Items/{id}";
             public const string GetList =   "/Api/Items";
+
+            public const string BatchCreate = "/Api/Items/Batch";
         }
 
     }

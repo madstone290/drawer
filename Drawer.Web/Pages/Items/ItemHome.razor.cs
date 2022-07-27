@@ -76,7 +76,7 @@ namespace Drawer.Web.Pages.Items
                     Code = itemDto.Code ?? string.Empty,
                     Number = itemDto.Number ?? string.Empty,
                     Sku = itemDto.Sku ?? string.Empty,
-                    QuantityUnit = itemDto.MeasurementUnit ?? string.Empty,
+                    QuantityUnit = itemDto.QuantityUnit ?? string.Empty,
                 };
                 ItemList.Add(item);
             }

@@ -11,7 +11,7 @@ namespace Drawer.Application.Services.Items.Queries
     public record GetItemQuery(long Id) : IQuery<GetItemResult?>;
 
     public record GetItemResult(long Id, string Name, string? Code, string? Number,
-        string? Sku, string? MeasurementUnit);
+        string? Sku, string? QuantityUnit);
 
     public class GetItemQueryHandler : IQueryHandler<GetItemQuery, GetItemResult?>
     {
@@ -28,7 +28,7 @@ namespace Drawer.Application.Services.Items.Queries
 
             return item == null 
                 ? null 
-                : new GetItemResult(item.Id, item.Name, item.Code, item.Number, item.Sku, item.MeasurementUnit);
+                : new GetItemResult(item.Id, item.Name, item.Code, item.Number, item.Sku, item.QuantityUnit);
         }
     }
 }

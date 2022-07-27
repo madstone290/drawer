@@ -49,7 +49,7 @@ namespace Drawer.Web.Pages.Items
                     _item.Code = response.Data.Code ?? string.Empty;
                     _item.Number = response.Data.Number ?? string.Empty;
                     _item.Sku = response.Data.Sku ?? string.Empty;
-                    _item.QuantityUnit = response.Data.MeasurementUnit ?? string.Empty;
+                    _item.QuantityUnit = response.Data.QuantityUnit ?? string.Empty;
                 }
 
             }

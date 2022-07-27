@@ -30,9 +30,9 @@ namespace Drawer.Domain.Models.Items
         public string? Sku { get; private set; } 
 
         /// <summary>
-        /// 계측 단위
+        /// 수량 단위
         /// </summary>
-        public string? MeasurementUnit { get; private set; }
+        public string? QuantityUnit { get; private set; }
 
         private Item() { }
         public Item(string name)
@@ -62,9 +62,9 @@ namespace Drawer.Domain.Models.Items
             Sku = sku?.Trim();
         }
 
-        public void SetMeasurementUnit(string? measurementUnit)
+        public void SetQuantityUnit(string? quantityUnit)
         {
-            MeasurementUnit = measurementUnit?.Trim();
+            QuantityUnit = quantityUnit?.Trim();
         }
     }
 }

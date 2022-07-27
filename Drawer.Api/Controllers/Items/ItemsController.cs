@@ -27,7 +27,7 @@ namespace Drawer.Api.Controllers.Items
             return Ok(
                 new GetItemsResponse(
                     result.Items.Select(x => 
-                    new GetItemsResponse.Item(x.Id, x.Name, x.Code, x.Number, x.Sku, x.MeasurementUnit)).ToList()
+                    new GetItemsResponse.Item(x.Id, x.Name, x.Code, x.Number, x.Sku, x.QuantityUnit)).ToList()
                 )
             );
         }
@@ -44,7 +44,7 @@ namespace Drawer.Api.Controllers.Items
                 return NoContent();
             else
                 return Ok(new GetItemResponse(result.Id, result.Name, result.Code, 
-                    result.Number, result.Sku, result.MeasurementUnit));
+                    result.Number, result.Sku, result.QuantityUnit));
         }
 
         [HttpPost]
@@ -53,9 +53,22 @@ namespace Drawer.Api.Controllers.Items
         public async Task<IActionResult> CreateItem([FromBody] CreateItemRequest request)
         {
             var command = new CreateItemCommand(request.Name, request.Code,
-                request.Number, request.Sku, request.MeasurementUnit);
+                request.Number, request.Sku, request.QuantityUnit);
             var result = await _mediator.Send(command);
             return Ok(new CreateItemResponse(result.Id));
+        }
+
+
+        [HttpPost]
+        [Route(ApiRoutes.Items.BatchCreate)]
+        [ProducesResponseType(typeof(BatchCreateItemResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> BatchCreateItem([FromBody] BatchCreateItemRequest request)
+        {
+            var command = new BatchCreateItemCommand(request.Items.Select(x =>
+                new BatchCreateItemCommand.Item(x.Name, x.Code, x.Number, x.Sku, x.QuantityUnit))
+                .ToList());
+            var result = await _mediator.Send(command);
+            return Ok(new BatchCreateItemResponse(result.IdList));
         }
 
         [HttpPut]
@@ -64,7 +77,7 @@ namespace Drawer.Api.Controllers.Items
         public async Task<IActionResult> UpdateItem([FromRoute] long id, [FromBody] UpdateItemRequest request)
         {
             var command = new UpdateItemCommand(id, request.Name, request.Code,
-                request.Number, request.Sku, request.MeasurementUnit);
+                request.Number, request.Sku, request.QuantityUnit);
             await _mediator.Send(command);
             return Ok();
         }

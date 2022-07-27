@@ -33,7 +33,7 @@ namespace Drawer.Application.Services.Items.Commands
             item.SetCode(command.Code);
             item.SetNumber(command.Number);
             item.SetSku(command.Sku);
-            item.SetMeasurementUnit(command.MeasurementUnit);
+            item.SetQuantityUnit(command.MeasurementUnit);
 
             await _itemRepository.AddAsync(item);
             await _itemRepository.SaveChangesAsync();

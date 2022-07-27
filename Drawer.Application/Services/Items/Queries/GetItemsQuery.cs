@@ -13,7 +13,7 @@ namespace Drawer.Application.Services.Items.Queries
     public record GetItemsResult(IList<GetItemsResult.Item> Items)
     {
         public record Item(long Id, string Name, string? Code, string? Number,
-            string? Sku, string? MeasurementUnit);
+            string? Sku, string? QuantityUnit);
     }
 
     public class GetItemsQueryHandler : IQueryHandler<GetItemsQuery, GetItemsResult>
@@ -31,7 +31,7 @@ namespace Drawer.Application.Services.Items.Queries
 
             return new GetItemsResult(
                 items.Select(item => 
-                    new GetItemsResult.Item(item.Id, item.Name, item.Code, item.Number, item.Sku, item.MeasurementUnit)
+                    new GetItemsResult.Item(item.Id, item.Name, item.Code, item.Number, item.Sku, item.QuantityUnit)
                 ).ToList());
         }
     }

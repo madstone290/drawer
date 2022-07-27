@@ -27,12 +27,12 @@ namespace Drawer.IntergrationTest.Items
         }
 
         [Theory]
-        [InlineData("CreateItem", "code1", "number1", "sku1", "ea")]
+        [InlineData("Pen", "PEN", "N-1", "SKU-PEN", "ea")]
         public async Task CreateItem_Returns_Ok_With_Content(string name, string code,
-            string number, string sku, string measurementUnit)
+            string number, string sku, string quantityUnit)
         {
             // Arrange
-            var request = new CreateItemRequest(name, code, number, sku, measurementUnit);
+            var request = new CreateItemRequest(name, code, number, sku, quantityUnit);
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Items.Create);
             requestMessage.Content = JsonContent.Create(request);
 
@@ -46,12 +46,40 @@ namespace Drawer.IntergrationTest.Items
         }
 
         [Theory]
-        [InlineData("GetItem", "code1", "number1", "sku1", "ea")]
-        public async Task GetItem_Returns_Ok_With_CreatedItem(string name, string code,
-            string number, string sku, string measurementUnit)
+        [InlineData(
+            "Book", "BOOK", "N-2", "SKU-BOOK", "ea",
+            "PostIt", "POST-IT", "N-3", "SKU-POST-IT", "ea"
+        )]
+        public async Task BatchCreateItem_Returns_Ok_With_Content(
+            string name1, string code1, string number1, string sku1, string quantityUnit1,
+            string name2, string code2, string number2, string sku2, string quantityUnit2)
         {
             // Arrange
-            var createRequest = new CreateItemRequest(name, code, number, sku, measurementUnit);
+            var request = new BatchCreateItemRequest(new List<BatchCreateItemRequest.Item>()
+            {
+                new BatchCreateItemRequest.Item(name1, code1, number1, sku1, quantityUnit1),
+                new BatchCreateItemRequest.Item(name2, code2, number2, sku2, quantityUnit2),
+            });
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Items.BatchCreate);
+            requestMessage.Content = JsonContent.Create(request);
+
+            // Act
+            var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
+
+            // Assert
+            responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+            var response = await responseMessage.Content.ReadFromJsonAsync<BatchCreateItemResponse>() ?? default!;
+            response.Should().NotBeNull();
+            response.IdList.Count.Should().Be(2);
+        }
+
+        [Theory]
+        [InlineData("GetItem", "code1", "number1", "sku1", "ea")]
+        public async Task GetItem_Returns_Ok_With_CreatedItem(string name, string code,
+            string number, string sku, string quantityUnit)
+        {
+            // Arrange
+            var createRequest = new CreateItemRequest(name, code, number, sku, quantityUnit);
             var createRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Items.Create);
             createRequestMessage.Content = JsonContent.Create(createRequest);
             var createResponseMessage = await _client.SendAsyncWithMasterAuthentication(createRequestMessage);
@@ -71,7 +99,7 @@ namespace Drawer.IntergrationTest.Items
             getResponse.Code.Should().Be(createRequest.Code);
             getResponse.Number.Should().Be(createRequest.Number);
             getResponse.Sku.Should().Be(createRequest.Sku);
-            getResponse.MeasurementUnit.Should().Be(createRequest.MeasurementUnit);
+            getResponse.QuantityUnit.Should().Be(createRequest.QuantityUnit);
         }
 
         [Theory]
@@ -80,16 +108,16 @@ namespace Drawer.IntergrationTest.Items
             "UpdateItem2", "c2", "n2", "s2", "ea"
         )]
         public async Task GetItems_Returns_Ok_With_CreatedItems(
-            string name1, string code1, string number1, string sku1, string measurementUnit1,
-            string name2, string code2, string number2, string sku2, string measurementUnit2)
+            string name1, string code1, string number1, string sku1, string quantityUnit1,
+            string name2, string code2, string number2, string sku2, string quantityUnit2)
         {
             // Arrange
-            var createRequest1 = new CreateItemRequest(name1, code1, number1, sku1, measurementUnit1);
+            var createRequest1 = new CreateItemRequest(name1, code1, number1, sku1, quantityUnit1);
             var createRequestMessage1 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Items.Create);
             createRequestMessage1.Content = JsonContent.Create(createRequest1);
             var createResponseMessage1 = await _client.SendAsyncWithMasterAuthentication(createRequestMessage1);
 
-            var createRequest2 = new CreateItemRequest(name2, code2, number2, sku2, measurementUnit2);
+            var createRequest2 = new CreateItemRequest(name2, code2, number2, sku2, quantityUnit2);
             var createRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Items.Create);
             createRequestMessage2.Content = JsonContent.Create(createRequest2);
             var createResponseMessage2 = await _client.SendAsyncWithMasterAuthentication(createRequestMessage2);
@@ -108,13 +136,13 @@ namespace Drawer.IntergrationTest.Items
                 x.Code == code1 &&
                 x.Number == number1 &&
                 x.Sku == sku1 &&
-                x.MeasurementUnit == measurementUnit1);
+                x.QuantityUnit == quantityUnit1);
             getItemsResponse.Items.Should().Contain(x =>
                 x.Name == name2 &&
                 x.Code == code2 &&
                 x.Number == number2 &&
                 x.Sku == sku2 &&
-                x.MeasurementUnit == measurementUnit2);
+                x.QuantityUnit == quantityUnit2);
 
         }
 
@@ -124,18 +152,18 @@ namespace Drawer.IntergrationTest.Items
             "UpdateItem2", "c2", "n2", "s2", "ea"
         )]
         public async Task UpdateItem_Returns_Ok(
-            string name1, string code1, string number1, string sku1, string measurementUnit1,
-            string name2, string code2, string number2, string sku2, string measurementUnit2)
+            string name1, string code1, string number1, string sku1, string quantityUnit1,
+            string name2, string code2, string number2, string sku2, string quantityUnit2)
         {
             // Arrange
-            var createRequest = new CreateItemRequest(name1, code1, number1, sku1, measurementUnit1);
+            var createRequest = new CreateItemRequest(name1, code1, number1, sku1, quantityUnit1);
             var createRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Items.Create);
             createRequestMessage.Content = JsonContent.Create(createRequest);
             var createResponseMessage = await _client.SendAsyncWithMasterAuthentication(createRequestMessage);
             var createResponse = await createResponseMessage.Content.ReadFromJsonAsync<CreateItemResponse>() ?? null!;
 
             // Act
-            var updateRequest = new CreateItemRequest(name2, code2, number2, sku2, measurementUnit2);
+            var updateRequest = new CreateItemRequest(name2, code2, number2, sku2, quantityUnit2);
             var updateRequestMessage = new HttpRequestMessage(HttpMethod.Put,
                 ApiRoutes.Items.Update.Replace("{id}", createResponse.Id.ToString()));
             updateRequestMessage.Content = JsonContent.Create(updateRequest);
@@ -155,7 +183,7 @@ namespace Drawer.IntergrationTest.Items
             getResponse.Code.Should().Be(updateRequest.Code);
             getResponse.Number.Should().Be(updateRequest.Number);
             getResponse.Sku.Should().Be(updateRequest.Sku);
-            getResponse.MeasurementUnit.Should().Be(updateRequest.MeasurementUnit);
+            getResponse.QuantityUnit.Should().Be(updateRequest.QuantityUnit);
         }
 
 
