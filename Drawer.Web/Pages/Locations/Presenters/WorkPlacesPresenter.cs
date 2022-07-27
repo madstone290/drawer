@@ -54,7 +54,7 @@ namespace Drawer.Web.Pages.Locations.Presenters
             };
             var dialogParameters = new DialogParameters
             {
-                { nameof(EditWorkPlaceDialog.ActionMode), ActionMode.Add },
+                { nameof(EditWorkPlaceDialog.EditMode), EditMode.Add },
             };
             var dialog = _dialogService.Show<EditWorkPlaceDialog>(null, options: dialogOptions, parameters: dialogParameters);
             var result = await dialog.Result;
@@ -87,7 +87,7 @@ namespace Drawer.Web.Pages.Locations.Presenters
             };
             var dialogParameters = new DialogParameters
             {
-                { nameof(EditWorkPlaceDialog.ActionMode), ActionMode.Update },
+                { nameof(EditWorkPlaceDialog.EditMode), EditMode.Update },
                 { nameof(EditWorkPlaceDialog.Model), new WorkPlaceModel()
                     {
                         Id = selectedItem.Id,

@@ -2,65 +2,89 @@
 @using Drawer.Web.Pages.Items.Models
 @using Drawer.Web.Utils
 
-<MudDialog>
-    <TitleContent>
-        <MudText Typo="Typo.h6">
-            <MudIcon Icon="@Icons.Material.Filled.Queue" />
-            아이템 일괄 추가
-        </MudText>
-    </TitleContent>
+@attribute [Route(Paths.Items.BatchEdit)]
 
-    <DialogContent>
-        <AidTable T="@ItemModel"
-                    Height="80vh"
-                  Items="@ItemList">
-            <HeaderContent>
-                <MudTHeadRow>
-                    <MudTh>이름</MudTh>
-                    <MudTh>코드</MudTh>
-                    <MudTh>번호</MudTh>
-                    <MudTh>SKu</MudTh>
-                    <MudTh>계량 단위</MudTh>
-                </MudTHeadRow>
-            </HeaderContent>
+<ContentTitle Text="아이템 일괄 추가" />
+<AuthorizeView Context="AuthorizeView" Policy="@Policies.CompanyMember">
+    <NotAuthorized>
+        <NeedCompany />
+    </NotAuthorized>
 
-            <RowTemplate>
-                <AidEditableCell @bind-Value="@context.Name" Error="@Validate(context, x => x.Name)" />
-                <AidEditableCell @bind-Value="@context.Code" Error="@Validate(context, x => x.Code)" />
-                <AidEditableCell @bind-Value="@context.Number" Error="@Validate(context, x => x.Number)" />
-                <AidEditableCell @bind-Value="@context.Sku" Error="@Validate(context, x => x.Sku)" />
-                <AidEditableCell @bind-Value="@context.QuantityUnit" Error="@Validate(context, x => x.QuantityUnit)" />
-            </RowTemplate>
+    <Authorized>
+        <AidToolBar>
+            <AidButton Color="Color.Error"
+                       StartIcon="@Icons.Material.Filled.ArrowBack"
+                       OnClick=@(() => Back_Click())>
+                뒤로
+            </AidButton>
+            <AidButton Color="Color.Warning"
+                       StartIcon="@Icons.Material.Filled.Clear"
+                       OnClick=@(() => Cancel_Click())>
+                초기화
+            </AidButton>
+            <AidButton Color="Color.Tertiary"
+                       StartIcon="@Icons.Material.Filled.FileDownload"
+                       OnClick=@(() => ExcelDownload_Click())>
+                엑셀 폼 다운로드
+            </AidButton>
+            <AidButton Color="Color.Tertiary"
+                       StartIcon="@Icons.Material.Filled.FileUpload"
+                       OnClick=@(() => ExcelUpload_Click())>
+                엑셀 업로드
+            </AidButton>
+            <AidButton Color="Color.Secondary"
+                       StartIcon="@Icons.Material.Filled.Add"
+                       OnClick=@(() => NewRow_Click())>
+                행 추가
+            </AidButton>
+                <AidButton Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.Save"
+                       OnClick=@(() => Save_Click())>
+                저장
+            </AidButton>
+        </AidToolBar>
 
-            <FooterContent>
-                <MudTFootRow>
-                    <MudTd colspan="100">
-                        <AidButton FullWidth="true"
-                                   Color="Color.Tertiary"
-                                   StartIcon="@Icons.Material.Filled.Add"
-                                   OnClick="NewRow_Click">행 추가</AidButton>
-                    </MudTd>
-                </MudTFootRow>
-                <MudTFootRow>
-                    <MudTd colSpan="100">총 @(TotalRowCount)개의 행</MudTd>
-                </MudTFootRow>
-            </FooterContent>
-        </AidTable>
-    </DialogContent>
+        <AidDataGrid ReadOnly="false"
+                     T="ItemModel"
+                     Items="@ItemList">
+            <Columns>
+                <Column T="ItemModel" Field="Name" Title="이름">
+                    <EditTemplate>
+                        <AidEditableCell @bind-Value="context.Item.Name" Validate="() => Validate(context.Item, x => x.Name)" />
+                    </EditTemplate>
+                </Column>
 
-    <DialogActions>
-        <AidButton Color="Color.Secondary"
-                   StartIcon="@Icons.Material.Filled.Clear"
-                   OnClick=@(() => Cancel_Click())>
-            취소
-        </AidButton>
-        <AidButton Disabled="!IsSavingEnabled"
-                   Color="Color.Primary"
-                   StartIcon="@Icons.Material.Filled.Save"
-                   OnClick=@(() => Save_Click())>
-            저장
-        </AidButton>
-    </DialogActions>
-</MudDialog>
+                <Column T="ItemModel" Field="Code" Title="코드">
+                    <EditTemplate>
+                        <AidEditableCell @bind-Value="context.Item.Code"
+                                         Validate="() => Validate(context.Item, x => x.Code)" />
+                    </EditTemplate>
+                </Column>
+                <Column T="ItemModel" Field="Number" Title="번호">
+                    <EditTemplate>
+                        <AidEditableCell @bind-Value="context.Item.Number"
+                                         Validate="() => Validate(context.Item, x => x.Number)" />
+                    </EditTemplate>
+                </Column>
+                <Column T="ItemModel" Field="Sku" Title="Sku">
+                    <EditTemplate>
+                        <AidEditableCell @bind-Value="context.Item.Sku"
+                                         Validate="() => Validate(context.Item, x => x.Sku)" />
+                    </EditTemplate>
+                </Column>
+                <Column T="ItemModel" Field="QuantityUnit" Title="단위">
+                    <EditTemplate>
+                        <AidEditableCell @bind-Value="context.Item.QuantityUnit"
+                                         Validate="() => Validate(context.Item, x => x.QuantityUnit)" />
+                    </EditTemplate>
+                </Column>
+            </Columns>
+        </AidDataGrid>
+
+    </Authorized>
+</AuthorizeView>
+
+
+
 
 

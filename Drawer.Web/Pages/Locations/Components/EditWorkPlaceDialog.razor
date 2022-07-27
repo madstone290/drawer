@@ -8,10 +8,10 @@
     </TitleContent>
 
     <DialogContent>
-        <MudForm @ref="Form" @bind-IsValid="IsFormValid"
+        <MudForm @ref="_form" @bind-IsValid="_isFormValid"
                  Model="Model" ValidationDelay="0" Validation="@Validator.ValidateValue()">
             <MudGrid>
-                @if (ActionMode == ActionMode.View || ActionMode == ActionMode.Update)
+                @if (EditMode == EditMode.View || EditMode == EditMode.Update)
                 {
                     <MudItem xs="12" sm="12" md="12">
                         <MudTextField @bind-Value="Model.Id"
@@ -41,7 +41,7 @@
                    Color="Color.Secondary"
                    OnClick="@Cancel_Click">취소</MudButton>
         <MudButton DisableElevation
-                   Disabled="@(!IsFormValid)"
+                   Disabled="@(!_isFormValid)"
                    OnClick="@Save_Click"
                    Variant="Variant.Filled" Color="Color.Primary">저장</MudButton>
     </DialogActions>

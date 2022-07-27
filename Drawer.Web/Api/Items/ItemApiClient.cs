@@ -42,9 +42,9 @@ namespace Drawer.Web.Api.Items
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<GetItemsResponse>> GetItem(long id)
+        public async Task<ApiResponse<GetItemResponse>> GetItem(long id)
         {
-            var request = new ApiRequest<GetItemsResponse>(
+            var request = new ApiRequest<GetItemResponse>(
                 HttpMethod.Get,
                 ApiRoutes.Items.Get.Replace("{id}", $"{id}"));
 

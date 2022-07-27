@@ -18,7 +18,7 @@ namespace Drawer.Web.Pages.Organization.Components
             };
             var dialogParameters = new DialogParameters
             {
-                { nameof(EditCompanyDialog.ActionMode), ActionMode.Add }
+                { nameof(EditCompanyDialog.EditMode), EditMode.Add }
             };
             var dialog = DialogService.Show<EditCompanyDialog>(null, options: dialogOptions, parameters: dialogParameters);
             var result = await dialog.Result;

@@ -19,9 +19,9 @@ namespace Drawer.Web.Pages.Locations.Components
         {
             get
             {
-                if (ActionMode == ActionMode.Add)
+                if (ActionMode == EditMode.Add)
                     return Icons.Material.Filled.Add;
-                else if (ActionMode == ActionMode.Update)
+                else if (ActionMode == EditMode.Update)
                     return Icons.Material.Filled.Update;
                 else
                     return Icons.Material.Filled.ViewAgenda;
@@ -32,9 +32,9 @@ namespace Drawer.Web.Pages.Locations.Components
         {
             get
             {
-                if (ActionMode == ActionMode.Add)
+                if (ActionMode == EditMode.Add)
                     return "추가";
-                else if (ActionMode == ActionMode.Update)
+                else if (ActionMode == EditMode.Update)
                     return "수정";
                 else
                     return "보기";
@@ -44,7 +44,7 @@ namespace Drawer.Web.Pages.Locations.Components
         [Parameter]
         public SpotModel SpotModel { get; set; } = new();
         [Parameter]
-        public ActionMode ActionMode { get; set; }
+        public EditMode ActionMode { get; set; }
         [Inject]
         public EditSpotPresenter Presenter { get; set; } = null!;
 
@@ -86,12 +86,12 @@ namespace Drawer.Web.Pages.Locations.Components
             await Form.Validate();
             if (IsFormValid)
             {
-                if (ActionMode == ActionMode.Add)
+                if (ActionMode == EditMode.Add)
                 {
                     await Presenter.AddSpotAsync();
 
                 }
-                else if (ActionMode == ActionMode.Update)
+                else if (ActionMode == EditMode.Update)
                 {
                     await Presenter.UpdateSpotAsync();
                 }

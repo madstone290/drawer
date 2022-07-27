@@ -22,6 +22,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Blazored.LocalStorage" Version="4.2.0" />
+		<PackageReference Include="ClosedXML" Version="0.96.0" />
 		<PackageReference Include="FluentValidation" Version="11.0.3" />
 		<PackageReference Include="Scrutor" Version="4.2.0" />
 	</ItemGroup>

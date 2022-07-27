@@ -1,7 +1,6 @@
 ﻿@using Drawer.Web.Authentication
 @using Drawer.Web.Pages.Items.Models
-@attribute [Route(Paths.Items.Item)]
-
+@attribute [Route(Paths.Items.Home)]
 
 <ContentTitle Text="아이템" />
 <AuthorizeView Context="AuthorizeView" Policy="@Policies.CompanyMember">
@@ -37,20 +36,14 @@
              <AidButton Disabled="@(!canCreate)"
                         Color="Color.Info"
                         StartIcon="@Icons.Material.Filled.Queue"
-                        OnClick=@(() => BatchAdd_Click())>
+                        OnClick=@(() => BatchEdit_Click())>
                 일괄 추가
-            </AidButton>
-            <AidButton Disabled="@(!canCreate)"
-                        Color="Color.Info"
-                        StartIcon="@Icons.Material.Filled.Upload"
-                        OnClick=@(() => Upload_Click())>
-                업로드
             </AidButton>
             <AidButton Disabled="@(!canRead)"
                         Color="Color.Info"
                         StartIcon="@Icons.Material.Filled.Download"
-                        OnClick=@(() => Download_Click())>
-                다운로드
+                        OnClick=@(() => Download_ClickAsync())>
+                엑셀 받기
             </AidButton>
             <MudSpacer />
 

@@ -4,7 +4,11 @@
     if (!Visible)
         return;
     
-    Class = string.Join(" ", Class, FlexSpace.Class);
+       
+    if (Class == null || !Class.Contains(FlexSpace.Class))
+    {
+        Class = string.Join(" ", Class, FlexSpace.Class);
+    }
 
     base.BuildRenderTree(__builder);
 }

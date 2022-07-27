@@ -10,17 +10,17 @@ namespace Drawer.Web.Pages.Locations.Components
     {
         [CascadingParameter]
         public MudDialogInstance Dialog { get; private set; } = null!;
-        public MudForm Form { get; private set; } = null!;
-        public bool IsFormValid { get; private set; }
+        public MudForm _form{ get; private set; } = null!;
+        public bool _isFormValid { get; private set; }
         public WorkPlaceModelValidator Validator { get; private set; } = new();
 
         public string TitleIcon
         {
             get
             {
-                if (ActionMode == ActionMode.Add)
+                if (EditMode == EditMode.Add)
                     return Icons.Material.Filled.Add;
-                else if (ActionMode == ActionMode.Update)
+                else if (EditMode == EditMode.Update)
                     return Icons.Material.Filled.Update;
                 else
                     return Icons.Material.Filled.ViewAgenda;
@@ -31,9 +31,9 @@ namespace Drawer.Web.Pages.Locations.Components
         {
             get
             {
-                if (ActionMode == ActionMode.Add)
+                if (EditMode == EditMode.Add)
                     return "추가";
-                else if (ActionMode == ActionMode.Update)
+                else if (EditMode == EditMode.Update)
                     return "수정";
                 else
                     return "보기";
@@ -43,7 +43,7 @@ namespace Drawer.Web.Pages.Locations.Components
         [Parameter]
         public WorkPlaceModel Model { get; set; } = new();
         [Parameter]
-        public ActionMode ActionMode { get; set; }
+        public EditMode EditMode { get; set; }
         [Inject]
         public EditWorkPlacePresenter Presenter { get; set; } = null!;
 
@@ -66,15 +66,15 @@ namespace Drawer.Web.Pages.Locations.Components
 
         async Task Save_Click()
         {
-            await Form.Validate();
-            if (IsFormValid)
+            await _form.Validate();
+            if (_isFormValid)
             {
-                if (ActionMode == ActionMode.Add)
+                if (EditMode == EditMode.Add)
                 {
                     await Presenter.AddWorkPlaceAsync();
 
                 }
-                else if (ActionMode == ActionMode.Update)
+                else if (EditMode == EditMode.Update)
                 {
                     await Presenter.UpdateWorkPlaceAsync();
                 }

@@ -42,7 +42,7 @@ namespace Drawer.Web.Pages.Organization.Presenters
             };
             var dialogParameters = new DialogParameters
             {
-                { nameof(EditCompanyDialog.ActionMode), ActionMode.Update },
+                { nameof(EditCompanyDialog.EditMode), EditMode.Update },
                 { nameof(EditCompanyDialog.Model), new EditCompanyModel(View.Model.Id, View.Model.Name, View.Model.PhoneNumber) }
             };
             var dialog = _dialogService.Show<EditCompanyDialog>(null, options: dialogOptions, parameters: dialogParameters);

@@ -1,7 +1,9 @@
 ﻿@inherits MudContainer
 @{
-    if (!string.IsNullOrWhiteSpace(AdditionalClass))
+    if (Class == null || !Class.Contains(AdditionalClass))
+    {
         Class = string.Join(" ", Class, AdditionalClass);
+    }
 
     base.BuildRenderTree(__builder);
 }

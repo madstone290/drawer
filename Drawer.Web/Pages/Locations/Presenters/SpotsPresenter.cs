@@ -85,7 +85,7 @@ namespace Drawer.Web.Pages.Locations.Presenters
             };
             var dialogParameters = new DialogParameters
             {
-                { nameof(EditSpotDialog.ActionMode), ActionMode.Add },
+                { nameof(EditSpotDialog.ActionMode), EditMode.Add },
             };
             var dialog = _dialogService.Show<EditSpotDialog>(null, options: dialogOptions, parameters: dialogParameters);
             var result = await dialog.Result;
@@ -124,7 +124,7 @@ namespace Drawer.Web.Pages.Locations.Presenters
             };
             var dialogParameters = new DialogParameters
             {
-                { nameof(EditSpotDialog.ActionMode), ActionMode.Update },
+                { nameof(EditSpotDialog.ActionMode), EditMode.Update },
                 { nameof(EditSpotDialog.SpotModel), new SpotModel()
                     {
                         Id = selectedItem.Id,

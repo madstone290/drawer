@@ -11,7 +11,7 @@
         <MudForm @ref="Form" @bind-IsValid="IsFormValid"
                  Model="SpotModel" ValidationDelay="0" Validation="@Validator.ValidateValue()">
             <MudGrid>
-                @if (ActionMode == ActionMode.View || ActionMode == ActionMode.Update)
+                @if (ActionMode == EditMode.View || ActionMode == EditMode.Update)
                 {
                     <MudItem xs="12" sm="12" md="12">
                         <MudTextField @bind-Value="SpotModel.Id"

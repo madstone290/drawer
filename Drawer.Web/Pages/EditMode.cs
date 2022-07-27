@@ -1,9 +1,9 @@
 ﻿namespace Drawer.Web.Pages
 {
     /// <summary>
-    /// 다이얼로그 동작
+    /// 편집 모드
     /// </summary>
-    public enum ActionMode
+    public enum EditMode
     {
         /// <summary>
         /// 보기

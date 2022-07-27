@@ -6,6 +6,7 @@ using Drawer.Web.Authentication;
 using Drawer.Web.Encryption;
 using Drawer.Web.Frontend;
 using Drawer.Web.Presenters;
+using Drawer.Web.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
 using MudBlazor;
@@ -68,6 +69,8 @@ builder.Services.AddScoped<ITokenManager, TokenManager>();
 builder.Services.AddScoped<IAuthenticationManager, AuthenticationManager>();
 builder.Services.AddScoped<ILocalStorage, EncryptionLocalStorage>();
 builder.Services.AddScoped<IEncryptionService, EncryptionService>();
+builder.Services.AddScoped<IExcelService, ExcelService>();
+builder.Services.AddScoped<IFileService, FileService>();
 
 builder.Services.Scan(selector =>
 {

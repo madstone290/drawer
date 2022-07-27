@@ -10,6 +10,7 @@ namespace Drawer.Web.Pages.Items.Models
         public string Number { get; set; } = string.Empty;
         public string Sku { get; set; } = string.Empty;
         public string QuantityUnit { get; set; } = string.Empty;
+        public double Price { get; set; }
     }
 
     public class ItemModelValidator : AbstractValidator<ItemModel>

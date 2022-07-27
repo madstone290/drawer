@@ -1,0 +1,8 @@
+﻿@attribute [Route(Paths.Items.View)]
+
+<ItemEdit EditMode="EditMode.View" ItemId="Convert.ToInt64(Id)"/>
+
+@code{
+    [Parameter]
+    public string? Id { get; set; }
+}

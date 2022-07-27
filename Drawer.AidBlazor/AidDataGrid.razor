@@ -1,0 +1,33 @@
+﻿@typeparam T
+@inherits MudDataGrid<T>
+@{
+
+    /* MudDataGrid를 Dialog에 존재하면 또 다른 Dialog가 생성되는 버그가 있음. 22-07-27 */
+    /* DataGrid 다음에 위치한 다이얼로그를 보이지 않도록 한다. */
+    <style>
+        .mud-data-grid + .outline-none{
+            display:none;
+        }
+    </style>
+    if (!Visible)
+        return;
+
+    base.BuildRenderTree(__builder);
+}
+
+@code {
+    public AidDataGrid()
+    {
+        Breakpoint = Breakpoint.None;
+        ShowColumnOptions = false;
+        SortMode = SortMode.None;
+        ColumnResizeMode = ResizeMode.Container;
+        EditMode = DataGridEditMode.Cell;
+        Bordered = true;
+        Dense = true;
+        EditTrigger = DataGridEditTrigger.Manual;
+    }
+
+    [Parameter]
+    public bool Visible { get; set; } = true;
+}

@@ -68,7 +68,7 @@ namespace Drawer.Web.Pages.Locations.Presenters
             };
             var dialogParameters = new DialogParameters
             {
-                { nameof(EditZoneDialog.ActionMode), ActionMode.Add },
+                { nameof(EditZoneDialog.EditMode), EditMode.Add },
             };
             var dialog = _dialogService.Show<EditZoneDialog>(null, options: dialogOptions, parameters: dialogParameters);
             var result = await dialog.Result;
@@ -103,7 +103,7 @@ namespace Drawer.Web.Pages.Locations.Presenters
             };
             var dialogParameters = new DialogParameters
             {
-                { nameof(EditZoneDialog.ActionMode), ActionMode.Update },
+                { nameof(EditZoneDialog.EditMode), EditMode.Update },
                 { nameof(EditZoneDialog.Model), new ZoneModel()
                     {
                         Id = selectedItem.Id,

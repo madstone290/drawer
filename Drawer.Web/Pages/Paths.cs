@@ -44,7 +44,12 @@
 
         public static class Items
         {
-            public const string Item = "/Item";
+            public const string Home = "/Item";
+            public const string BatchEdit = "/Item/BatchEdit";
+            public const string Add = "/Item/Add";
+            public const string Update = "/Item/Update/{id}";
+            public const string View = "/Item/View/{id}";
+            public const string Edit = "/Item/Edit/{id}";
         }
         
     }

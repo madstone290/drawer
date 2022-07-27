@@ -8,7 +8,7 @@
     private T? _value;
 
     [Parameter]
-    public T? Value 
+    public T? Value
     {
         get => _value;
         set
@@ -17,13 +17,18 @@
                 return;
             _value = value;
             ValueChanged.InvokeAsync(value);
+
+            Error = Validate?.Invoke();
         }
     }
-    
-    [Parameter]
-    public EventCallback<T?> ValueChanged{ get; set; }
 
     [Parameter]
+    public EventCallback<T?> ValueChanged { get; set; }
+    
+    [Parameter]
+    public Func<string>? Validate { get; set; }
+
     public string? Error { get; set; }
+
 
 }
