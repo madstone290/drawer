@@ -81,22 +81,21 @@
             </HeaderContent>
 
             <RowTemplate>
-                <AidTd DataLabel="Id">@context.Id</AidTd>
-                <AidTd Style="height:30px;" Class="test" DataLabel="이름">
+                <MudTd Style="height:30px;" Class="test" DataLabel="이름">
                     <MudHighlighter Text="@context.Name" HighlightedText="@searchText" />
-                </AidTd>
-                <AidTd DataLabel="코드">
+                </MudTd>
+                <MudTd DataLabel="코드">
                     <MudHighlighter Text="@context.Code" HighlightedText="@searchText" />
-                </AidTd>
-                <AidTd DataLabel="번호">
+                </MudTd>
+                <MudTd DataLabel="번호">
                     <MudHighlighter Text="@context.Number" HighlightedText="@searchText" />
-                </AidTd>
-                <AidTd DataLabel="Sku">
+                </MudTd>
+                <MudTd DataLabel="Sku">
                     <MudHighlighter Text="@context.Sku" HighlightedText="@searchText" />
-                </AidTd>
-                <AidTd DataLabel="계량 단위">
+                </MudTd>
+                <MudTd DataLabel="계량 단위">
                     <MudHighlighter Text="@context.QuantityUnit" HighlightedText="@searchText" />
-                </AidTd>
+                </MudTd>
             </RowTemplate>
 
             <FooterContent>
