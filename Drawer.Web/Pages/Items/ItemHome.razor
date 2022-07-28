@@ -60,9 +60,6 @@
             <HeaderContent>
                 <MudTHeadRow>
                     <MudTh>
-                        <MudTableSortLabel SortBy="@(new Func<ItemTableModel, object>(x=> x.Id))">Id</MudTableSortLabel>
-                    </MudTh>
-                    <MudTh>
                         <MudTableSortLabel SortBy="@(new Func<ItemTableModel, object>(x => x.Name))">이름</MudTableSortLabel>
                     </MudTh>
                     <MudTh>
@@ -81,7 +78,7 @@
             </HeaderContent>
 
             <RowTemplate>
-                <MudTd Style="height:30px;" Class="test" DataLabel="이름">
+                <MudTd DataLabel="이름">
                     <MudHighlighter Text="@context.Name" HighlightedText="@searchText" />
                 </MudTd>
                 <MudTd DataLabel="코드">
