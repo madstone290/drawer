@@ -17,6 +17,13 @@
         Class = string.Join(" ", Class, FlexSpace.Class);
     }
 
+    if (UseRowSelection)
+    {
+        // RowClassFunc 호출을 위해 필요하다.
+        OnRowClick = new EventCallback<TableRowClickEventArgs<T>>(this, Row_Click);
+        RowClassFunc = GetRowClass;
+    }
+
     base.BuildRenderTree(__builder);
 }
 
@@ -34,16 +41,13 @@
         LoadingProgressColor = Color.Info;
         CustomFooter = true;
         CustomHeader = true;
-        // RowClassFunc 호출을 위해 필요하다.
-        OnRowClick = new EventCallback<TableRowClickEventArgs<T>>(this, Row_Click);
-        RowClassFunc = GetRowClass;
     }
 
-    [Parameter]
-    public bool Visible { get; set; } = true;
+    [Parameter] public bool Visible { get; set; } = true;
+    [Parameter] public FlexSpace FlexSpace { get; set; } = FlexSpace.ColumnFill;
+    [Parameter] public bool UseRowSelection { get; set; } = true;
 
-    [Parameter]
-    public FlexSpace FlexSpace { get; set; } = FlexSpace.ColumnFill;
+
 
     /// <summary>
     /// 현재 선택된 아이템.

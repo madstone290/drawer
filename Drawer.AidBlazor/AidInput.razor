@@ -4,8 +4,11 @@
     if (!Visible)
         return;
 
-    if (Class == null || !Class.Contains(AID_INPUT))
-        Class = string.Join(" ", Class, AID_INPUT);
+    if (Class == null || !Class.Contains(AID_INPUT_CLASS))
+        Class = string.Join(" ", Class, AID_INPUT_CLASS);
+
+    if(IsFull && !Class.Contains(AID_INPUT_FULL_CLASS))
+        Class = string.Join(" ", Class, AID_INPUT_FULL_CLASS);
 
     base.BuildRenderTree(__builder);
 }
@@ -14,12 +17,18 @@
     /// <summary>
     /// AidInput CSS 클래스명
     /// </summary>
-    private const string AID_INPUT = "aid-input";
+    private const string AID_INPUT_CLASS = "aid-input";
+    private const string AID_INPUT_FULL_CLASS = "aid-input-full";
 
     public AidInput()
     {
     }
 
     [Parameter] public bool Visible { get; set; } = true;
+
+    /// <summary>
+    /// InputContainer를 꽉 채울것인가?
+    /// </summary>
+    [Parameter] public bool IsFull { get; set; } = false;
 
 }

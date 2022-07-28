@@ -56,25 +56,37 @@ html, body {
     align-items: center;
 }
     /* 툴바 아이템 */
-    .mud-toolbar.aid-toolbar > * {
+    .aid-toolbar.mud-toolbar > * {
         margin: 2px 3px 2px 3px;
     }
 
-
-
-.aid-input {
+/* 인풋 */
+.aid-input.aid-input-full {
     width: 100%
 }
-/***** MudBlazor에서 사용하는 클래스 *****/
 
-
-/* 수정 */
-.mud-table-dense * .mud-table-row .mud-table-cell {
-    padding: 3px 10px 3px 10px !important;
+/* 테이블셀 */
+.mud-table-cell {
+    padding: 6px 12px 6px 12px;
+    font-size: 1rem;
+    /* 셀 너비 줄이지 않고 그대로 사용 */
+    white-space: nowrap;
+    line-height: 1.5rem;
+    border-right: 1px solid var(--mud-palette-table-lines);
+    border-bottom: 1px solid var(--mud-palette-table-lines);
 }
 
-/* 추가 */
-.mud-table-sticky-footer .mud-table-foot {
+/* 테이블셀 dense*/
+.mud-table-dense * .mud-table-row .mud-table-cell {
+    padding: 3px 6px 3px 6px;
+}
+
+/* 테이블 헤더 셀*/
+.mud-table-root .mud-table-head .mud-table-cell {
+    border-top: 1px solid var(--mud-palette-table-lines);
+}
+    /* 테이블 푸터 */
+    .mud-table-sticky-footer .mud-table-foot {
     position: sticky;
     bottom: 0;
     z-index: 10;
@@ -84,29 +96,15 @@ html, body {
 /* 수정 */
 .mud-table-sticky-footer * .mud-table-root .mud-table-foot * .mud-table-cell {
     /* 셀에 적용되던 속성을 푸터(.mud-table-sticky-footer .mud-table-foot)로 이동 */
-    position: initial !important;
-    bottom: initial !important;
-    z-index: initial !important;
-    background-color: initial !important;
+    position: initial;
+    bottom: initial;
+    z-index: initial;
+    background-color: initial;
 }
-/* 추가 */
+
+/* 테이블 푸터. 첫번재 아이템에 TopBorder적용 */
 .mud-table-foot > .mud-table-row:first-child > .mud-table-cell {
-    /* footer top에 경계선 추가 */
     border-top: 1px solid var(--mud-palette-table-lines);
 }
 
-/* 수정 */
-.mud-table-cell {
-    font-size: 1rem;
-    /* 셀 너비 줄이지 않고 그대로 사용 */
-    white-space: nowrap;
-    /* 셀 높이 변경*/
-    line-height: 1.4 !important;
-    border-bottom: 1px solid var(--mud-palette-table-lines) !important;
-}
 
-/* 수정 */
-.mud-table-root .mud-table-head .mud-table-cell {
-    /* 컬럼 높이 변경*/
-    line-height: 1.5 !important;
-}

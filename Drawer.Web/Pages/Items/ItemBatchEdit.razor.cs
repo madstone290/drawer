@@ -5,6 +5,7 @@ using Drawer.Web.Services;
 using Drawer.Web.Shared.Dialogs;
 using Drawer.Web.Utils;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using MudBlazor;
 using System.Linq.Expressions;
 
@@ -21,15 +22,23 @@ namespace Drawer.Web.Pages.Items
         [Inject] public IDialogService DialogService { get; set; } = null!;
         [Inject] public IExcelService ExcelService { get; set; } = null!;
         [Inject] public IFileService FileService { get; set; } = null!;
+        [Inject] public IJSRuntime JSRuntime { get; set; } = null!;
 
         [Parameter] public EditMode ActionMode { get; set; }
         [Parameter] public List<ItemModel> ItemList { get; set; } = new List<ItemModel>();
 
-        public string Validate(ItemModel item, Expression<Func<ItemModel, object>> expression)
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                await JSRuntime.InvokeVoidAsync("UseTableResize", "mud-table-root");
+            }
+        }
+
+        private string Validate(ItemModel item, Expression<Func<ItemModel, object>> expression)
         {
             return validator.ValidateProperty(item, expression);
         }
-
 
         private void Back_Click()
         {

@@ -44,43 +44,41 @@
             </AidButton>
         </AidToolBar>
 
-        <AidDataGrid ReadOnly="false"
-                     T="ItemModel"
-                     Items="@ItemList">
-            <Columns>
-                <Column T="ItemModel" Field="Name" Title="이름">
-                    <EditTemplate>
-                        <AidEditableCell @bind-Value="context.Item.Name"
-                                         Validate="(v) => Validate(context.Item, x => x.Name)" />
-                    </EditTemplate>
-                </Column>
+        <AidTable ReadOnly="false"
+                  T="ItemModel"
+                  UseRowSelection="false"
+                  Items="@ItemList">
 
-                <Column T="ItemModel" Field="Code" Title="코드">
-                    <EditTemplate>
-                        <AidEditableCell @bind-Value="context.Item.Code"
-                                         Validate="(v) => Validate(context.Item, x => x.Code)" />
-                    </EditTemplate>
-                </Column>
-                <Column T="ItemModel" Field="Number" Title="번호">
-                    <EditTemplate>
-                        <AidEditableCell @bind-Value="context.Item.Number"
-                                         Validate="(v) => Validate(context.Item, x => x.Number)" />
-                    </EditTemplate>
-                </Column>
-                <Column T="ItemModel" Field="Sku" Title="Sku">
-                    <EditTemplate>
-                        <AidEditableCell @bind-Value="context.Item.Sku"
-                                         Validate="(v) => Validate(context.Item, x => x.Sku)" />
-                    </EditTemplate>
-                </Column>
-                <Column T="ItemModel" Field="QuantityUnit" Title="단위">
-                    <EditTemplate>
-                        <AidEditableCell @bind-Value="context.Item.QuantityUnit"
-                                         Validate="(v) => Validate(context.Item, x => x.QuantityUnit)" />
-                    </EditTemplate>
-                </Column>
-            </Columns>
-        </AidDataGrid>
+            <HeaderContent>
+                <MudTHeadRow>
+                    <MudTh Style="min-width:100px;">Name</MudTh>
+                    <MudTh Style="min-width:100px;">Code</MudTh>
+                    <MudTh Style="min-width:100px;">Number</MudTh>
+                    <MudTh Style="min-width:100px;">Sku</MudTh>
+                    <MudTh Style="min-width:100px;">QuantityUnit</MudTh>
+                </MudTHeadRow>
+            </HeaderContent>
+
+            <RowTemplate>
+                <AidEditCell @bind-Value="context.Name"
+                             Validate="((_) => Validate(context, x => x.Name))" />
+                <AidEditCell @bind-Value="context.Code"
+                             Validate="((_) => Validate(context, x => x.Code))" />
+                <AidEditCell @bind-Value="context.Number"
+                             Validate="((_) => Validate(context, x => x.Number))" />
+                <AidEditCell @bind-Value="context.Sku"
+                             Validate="((_) => Validate(context, x => x.Sku))" />
+                <AidEditCell @bind-Value="context.QuantityUnit"
+                             Validate="((_) => Validate(context, x => x.QuantityUnit))" />
+            </RowTemplate>
+
+            <FooterContent>
+                <MudTFootRow>
+                    <MudTd colSpan="100">총 @(TotalRowCount)개의 행</MudTd>
+                </MudTFootRow>
+            </FooterContent>
+
+        </AidTable>
 
     </Authorized>
 </AuthorizeView>

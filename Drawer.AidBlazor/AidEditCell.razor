@@ -1,0 +1,47 @@
+﻿@typeparam T
+
+<MudTd>
+    <AidInput T="T"
+              DisableUnderLine="!showUnderline"
+              IsFull="true"
+              Immediate="false"
+              InputType="InputType.Text"
+              @bind-Value="@Value"
+              @onfocus="OnFocus"
+              @onblur="OnBlur"></AidInput>
+    <MudText Color="Color.Error">@_error</MudText>
+</MudTd>
+
+@code {
+    private T? _value;
+    private string? _error;
+    private bool showUnderline;
+
+    [Parameter]
+    public T? Value
+    {
+        get => _value;
+        set
+        {
+            if (EqualityComparer<T>.Default.Equals(_value, value))
+                return;
+            _value = value;
+            ValueChanged.InvokeAsync(value);
+
+            _error = Validate?.Invoke(value);
+        }
+    }
+
+    [Parameter] public EventCallback<T?> ValueChanged { get; set; }
+    [Parameter] public Func<T?, string>? Validate { get; set; }
+
+    private void OnFocus()
+    {
+        showUnderline = true;
+    }
+
+    private void OnBlur()
+    {
+        showUnderline = false;
+    }
+}
