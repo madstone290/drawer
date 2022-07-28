@@ -17,6 +17,7 @@
                 <MudTextField @bind-Value="@Model.Password"
                               For="@(()=>Model.Password)"
                               Label="비밀번호" 
+                              OnKeyUp="HandlerKeyboard"
                               InputType="InputType.Password" />
 
                 <MudCheckBox @bind-Checked="@Model.RememberEmail"

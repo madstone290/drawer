@@ -6,6 +6,7 @@ using Drawer.Web.Shared;
 using Drawer.Web.Utils;
 using FluentValidation;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
 
 namespace Drawer.Web.Pages.Account
@@ -47,6 +48,13 @@ namespace Drawer.Web.Pages.Account
             await LoadOptionsAsync();
         }
 
+        async Task HandlerKeyboard(KeyboardEventArgs e)
+        {
+            if(e.Key == "Enter")
+            {
+                await SubmitAsync();
+            }
+        }
 
         async Task SubmitAsync()
         {

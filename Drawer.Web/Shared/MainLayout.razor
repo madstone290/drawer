@@ -1,5 +1,6 @@
 ﻿@using Drawer.Web.Authentication
 @using Drawer.Web.Pages
+@using Drawer.Web.Pages.Account.Dialogs
 @using Drawer.Web.Utils
 @inherits LayoutComponentBase
 
@@ -9,7 +10,7 @@
                    MaxWidth="MaxWidth.Medium"
                    NoHeader="false"
                    Position="DialogPosition.Center"
-                   CloseOnEscapeKey="true" 
+                   CloseOnEscapeKey="true"
                    DisableBackdropClick="true" />
 <MudSnackbarProvider />
 
@@ -21,7 +22,8 @@
         <MudSpacer />
 
         <MudButton Color="Color.Inherit" Size="Size.Large" Variant="Variant.Text"
-                   Href="@(Paths.Account.Logout)" Class="@(CssUtil.Visibility(_isAuthenticated))">
+                   OnClick="Logout_Click"
+                   Class="@(CssUtil.Visibility(_isAuthenticated))">
             로그아웃
         </MudButton>
         <MudButton Color="Color.Inherit" Size="Size.Large" Variant="Variant.Text"
@@ -58,7 +60,8 @@
         _drawerOpen = !_drawerOpen;
     }
 
-    [Inject] IAuthenticationManager AuthenticationManager { get; set; } = null!;
+    [Inject] public IAuthenticationManager AuthenticationManager { get; set; } = null!;
+    [Inject] public IDialogService DialogService { get; set; } = null!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -66,6 +69,20 @@
         _isAuthenticated = stste.IsAuthenticated;
     }
 
+    private async Task Logout_Click()
+    {
+        var dialogOptions = new DialogOptions()
+        {
+            MaxWidth = MaxWidth.Small,
+        };
+        var dialog = DialogService.Show<LogoutDialog>(null, options: dialogOptions);
+        var result = await dialog.Result;
+        if (!result.Cancelled)
+        {
+            NavManager.NavigateTo(Paths.Account.LogoutHandler, true);
+        }
+
+    }
 
 
 }

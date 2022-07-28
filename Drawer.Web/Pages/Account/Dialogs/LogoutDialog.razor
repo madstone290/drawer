@@ -1,0 +1,23 @@
+﻿<MudDialog>
+    <DialogContent>
+        <MudText>로그아웃 하시겠습니까?</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Secondary" OnClick="Cancel_Click">아니오</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Ok_Click">예</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = null!;
+
+    private void Cancel_Click() 
+    {
+        MudDialog.Cancel();
+    }
+
+    private void Ok_Click()
+    {
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+    
+}
