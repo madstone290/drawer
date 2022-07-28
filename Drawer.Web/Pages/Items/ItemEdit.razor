@@ -1,14 +1,17 @@
 ﻿@using Drawer.Web.Utils
 <ContentTitle Text="@TitleText" />
 <AidToolBar>
-    <MudButton DisableElevation
-               Variant="Variant.Filled"
-               Color="Color.Secondary"
-               OnClick="Cancel_Click">취소</MudButton>
-    <MudButton DisableElevation
+    <AidButton DisableElevation
+               Color="Color.Error"
+               OnClick="Back_Click">
+        뒤로
+    </AidButton>
+    <AidButton DisableElevation
                Disabled="IsViewMode || !_isFormValid"
-               OnClick="Save_Click"
-               Variant="Variant.Filled" Color="Color.Primary">저장</MudButton>
+               Color="Color.Primary"
+               OnClick="Save_Click">
+        저장
+    </AidButton>
 </AidToolBar>
 
 <MudForm @ref="_form"
@@ -22,20 +25,19 @@
                           For="@(() => _item.Name)"
                           Label="이름"
                           ReadOnly="IsViewMode"
-                          AutoFocus="true"
-                          />
+                          AutoFocus="true" />
         </MudItem>
         <MudItem xs="12" sm="6">
             <MudTextField @bind-Value="_item.Code"
                           For="@(() => _item.Code)"
                           Label="코드"
-                          ReadOnly="IsViewMode"/>
+                          ReadOnly="IsViewMode" />
         </MudItem>
         <MudItem xs="12" sm="6">
             <MudTextField @bind-Value="_item.Number"
                           For="@(() => _item.Number)"
                           Label="번호"
-                          ReadOnly="IsViewMode"/>
+                          ReadOnly="IsViewMode" />
         </MudItem>
         <MudItem xs="12" sm="6">
             <MudTextField @bind-Value="_item.Sku"

@@ -10,7 +10,6 @@
             public const string Login = "/Account/Login";
             public const string LoginHandler = "/Account/LoginHandler";
             public const string LoginCallback = "/Account/LoginCallback";
-            public const string Logout = "/Account/Logout";
             public const string LogoutHandler = "/Account/LogoutHandler";
             public const string LogoutCallback = "/Account/LogoutCallback";
             public const string Register = "/Account/Register";
@@ -34,23 +33,33 @@
             public const string Company = "/Organization/Company";
         }
 
-        public static class Locations
-        {
-            public const string Location = "/Location";
-            public const string WorkPlaces = "/Locations/WorkPlaces";
-            public const string Zones = "/Locations/Zones";
-            public const string Spots = "/Locations/Spots";
-        }
+        public const string WorkplaceHome = "/Workplace";
+        public const string WorkplaceBatchEdit = "/Workplace/BatchEdit";
+        public const string WorkplaceAdd = "/Workplace/Add";
+        public const string WorkplaceUpdate = "/Workplace/Update/{id}";
+        public const string WorkplaceView = "/Workplace/View/{id}";
+        public const string WorkplaceEdit = "/Workplace/Edit/{id}";
 
-        public static class Items
-        {
-            public const string Home = "/Item";
-            public const string BatchEdit = "/Item/BatchEdit";
-            public const string Add = "/Item/Add";
-            public const string Update = "/Item/Update/{id}";
-            public const string View = "/Item/View/{id}";
-            public const string Edit = "/Item/Edit/{id}";
-        }
+        public const string ZoneHome = "/Zone/Home";
+        public const string ZoneBatchEdit = "/Zone/BatchEdit";
+        public const string ZoneAdd = "/Zone/Add";
+        public const string ZoneUpdate = "/Zone/Update/{id}";
+        public const string ZoneView = "/Zone/View/{id}";
+        public const string ZoneEdit = "/Zone/Edit/{id}";
+
+        public const string SpotHome = "/Spot/Home";
+        public const string SpotBatchEdit = "/Spot/BatchEdit";
+        public const string SpotAdd = "/Spot/Add";
+        public const string SpotUpdate = "/Spot/Update/{id}";
+        public const string SpotView = "/Spot/View/{id}";
+        public const string SpotEdit = "/Spot/Edit/{id}";
+
+        public const string ItemHome = "/Item";
+        public const string ItemBatchEdit = "/Item/BatchEdit";
+        public const string ItemAdd = "/Item/Add";
+        public const string ItemUpdate = "/Item/Update/{id}";
+        public const string ItemView = "/Item/View/{id}";
+        public const string ItemEdit = "/Item/Edit/{id}";
         
     }
 }

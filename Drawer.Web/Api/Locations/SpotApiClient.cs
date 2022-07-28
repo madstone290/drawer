@@ -11,22 +11,22 @@ namespace Drawer.Web.Api.Locations
 
         }
 
-        public async Task<ApiResponse<CreateSpotResponse>> AddSpot(long zoneId, string name, string note)
+        public async Task<ApiResponse<CreateSpotResponse>> AddSpot(CreateSpotRequest content)
         {
             var request = new ApiRequest<CreateSpotResponse>(
                 HttpMethod.Post,
                 ApiRoutes.Spots.Create,
-                new CreateSpotRequest(zoneId, name, note));
+                content);
 
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<Unit>> UpdateSpot(long id, string name, string note)
+        public async Task<ApiResponse<Unit>> UpdateSpot(long id, UpdateSpotRequest content)
         {
             var request = new ApiRequest(
                 HttpMethod.Put,
                 ApiRoutes.Spots.Update.Replace("{id}", $"{id}"),
-                new UpdateSpotRequest(name, note));
+                content);
 
             return await SendAsync(request);
         }
@@ -40,9 +40,9 @@ namespace Drawer.Web.Api.Locations
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<GetSpotsResponse>> GetSpot(long id)
+        public async Task<ApiResponse<GetSpotResponse>> GetSpot(long id)
         {
-            var request = new ApiRequest<GetSpotsResponse>(
+            var request = new ApiRequest<GetSpotResponse>(
                 HttpMethod.Get,
                 ApiRoutes.Spots.Get.Replace("{id}", $"{id}"));
 

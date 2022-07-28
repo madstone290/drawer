@@ -6,8 +6,8 @@ namespace Drawer.Web.Pages.Locations.Models
     {
         public long Id { get; set; }
         public long WorkPlaceId { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public string Note { get; set; } = string.Empty;
+        public string? Name { get; set; }
+        public string? Note { get; set; }
     }
 
     public class ZoneModelValidator : AbstractValidator<ZoneModel>

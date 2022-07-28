@@ -1,0 +1,8 @@
+﻿@attribute [Route(Paths.WorkplaceUpdate)]
+
+<WorkplaceEdit EditMode="EditMode.Update" WorkplaceId="Convert.ToInt64(Id)" />
+
+@code{
+    [Parameter]
+    public string? Id { get; set; }
+}

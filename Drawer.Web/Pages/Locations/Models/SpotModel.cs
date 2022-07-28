@@ -5,8 +5,8 @@ namespace Drawer.Web.Pages.Locations.Models
     public class SpotModel
     {
         public long Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public string Note { get; set; } = string.Empty;
+        public string? Name { get; set; } 
+        public string? Note { get; set; } 
         public long ZoneId { get; set; }
     }
 

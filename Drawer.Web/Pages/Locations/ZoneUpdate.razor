@@ -1,0 +1,8 @@
+﻿@attribute [Route(Paths.ZoneUpdate)]
+
+<ZoneEdit EditMode="EditMode.Update" ZoneId="Convert.ToInt64(Id)" />
+
+@code{
+    [Parameter]
+    public string? Id { get; set; }
+}

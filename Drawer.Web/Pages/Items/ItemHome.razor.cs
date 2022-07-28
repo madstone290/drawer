@@ -86,7 +86,7 @@ namespace Drawer.Web.Pages.Items
 
         private void Add_Click()
         {
-            NavManager.NavigateTo(Paths.Items.Add);
+            NavManager.NavigateTo(Paths.ItemAdd);
         }
 
         private void Update_Click()
@@ -98,7 +98,7 @@ namespace Drawer.Web.Pages.Items
                 return;
             }
 
-            var url = Paths.Items.Update.Replace("{id}", $"{selectedItem.Id}");
+            var url = Paths.ItemUpdate.Replace("{id}", $"{selectedItem.Id}");
             NavManager.NavigateTo(url);
         }
 
@@ -135,7 +135,7 @@ namespace Drawer.Web.Pages.Items
         
         private void BatchEdit_Click()
         {
-            NavManager.NavigateTo(Paths.Items.BatchEdit);
+            NavManager.NavigateTo(Paths.ItemBatchEdit);
         }
 
         private async Task Download_ClickAsync()

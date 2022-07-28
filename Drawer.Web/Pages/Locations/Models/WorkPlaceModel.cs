@@ -2,16 +2,26 @@
 
 namespace Drawer.Web.Pages.Locations.Models
 {
-    public class WorkPlaceModel
+    public class WorkplaceModel 
     {
         public long Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public string Note { get; set; } = string.Empty;
+        public string? Name { get; set; }
+        public string? Note { get; set; }
+
+        /// <summary>
+        /// 속성값을 초기화한다.
+        /// </summary>
+        public void Clear()
+        {
+            Id = 0;
+            Name = null;
+            Note = null;
+        }
     }
 
-    public class WorkPlaceModelValidator : AbstractValidator<WorkPlaceModel>
+    public class WorkplaceModelValidator : AbstractValidator<WorkplaceModel>
     {
-        public WorkPlaceModelValidator()
+        public WorkplaceModelValidator()
         {
             RuleFor(x => x.Name)
                  .NotEmpty()

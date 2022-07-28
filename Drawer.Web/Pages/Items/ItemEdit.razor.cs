@@ -28,14 +28,10 @@ namespace Drawer.Web.Pages.Items
 
         public bool IsViewMode => EditMode == EditMode.View;
 
-        [Parameter]
-        public EditMode EditMode { get; set; }
+        [Parameter] public EditMode EditMode { get; set; }
+        [Parameter] public long? ItemId { get; set; }
 
-        [Parameter]
-        public long? ItemId { get; set; }
-
-        [Inject]
-        public ItemApiClient ApiClient { get; set; } = null!;
+        [Inject] public ItemApiClient ApiClient { get; set; } = null!;
 
         protected override async Task OnInitializedAsync()
         {
@@ -51,13 +47,12 @@ namespace Drawer.Web.Pages.Items
                     _item.Sku = response.Data.Sku ?? string.Empty;
                     _item.QuantityUnit = response.Data.QuantityUnit ?? string.Empty;
                 }
-
             }
         }
 
-        void Cancel_Click()
+        void Back_Click()
         {
-            NavManager.NavigateTo(Paths.Items.Home);
+            NavManager.NavigateTo(Paths.ItemHome);
         }
 
         async Task Save_Click()
@@ -73,7 +68,7 @@ namespace Drawer.Web.Pages.Items
                     if (response.IsSuccessful)
                     {
                         _item.Id = response.Data.Id;
-                        NavManager.NavigateTo(Paths.Items.Home);
+                        NavManager.NavigateTo(Paths.ItemHome);
                     }
                 }
                 else if (EditMode == EditMode.Update)
@@ -83,7 +78,7 @@ namespace Drawer.Web.Pages.Items
 
                     if (response.IsSuccessful)
                     {
-                        NavManager.NavigateTo(Paths.Items.Home);
+                        NavManager.NavigateTo(Paths.ItemHome);
                     }
                 }
 

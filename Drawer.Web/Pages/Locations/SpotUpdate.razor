@@ -1,0 +1,8 @@
+﻿@attribute [Route(Paths.SpotUpdate)]
+
+<SpotEdit EditMode="EditMode.Update" SpotId="Convert.ToInt64(Id)" />
+
+@code{
+    [Parameter]
+    public string? Id { get; set; }
+}

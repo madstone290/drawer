@@ -32,8 +32,12 @@ namespace Drawer.Web.Utils
                 property = m.Member.Name;
             else if (expression.Body is UnaryExpression u && u.Operand is MemberExpression mm)
                 property = mm.Member.Name;
-            var value = expression.Compile().Invoke(instance);
-            
+
+            return ValidateProperty(validator, instance, property);
+        }
+
+        public static string ValidateProperty<TModel>(this AbstractValidator<TModel> validator, TModel instance, string property)
+        {
             var context = ValidationContext<TModel>.CreateWithOptions(instance, options => options.IncludeProperties(property));
             var result = validator.Validate(context);
             if (result.IsValid)

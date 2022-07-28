@@ -1,0 +1,38 @@
+﻿@using System.Reflection
+@using Drawer.Contract.Locations
+@using Drawer.Web.Api.Locations
+@using Drawer.Web.Pages.Locations.Models
+@using Drawer.Web.Utils
+@attribute [Route(Paths.WorkplaceBatchEdit)]
+
+<BatchEdit TitleText="작업장 일괄 추가"
+           TModel="WorkplaceBatchEditModel"
+           HomePath="@Paths.WorkplaceHome"
+           SaveAsyncFunc="@SaveWorkplaces"
+           ValidatePropertyFunc="@ValidateProperty"
+           />
+
+@code {
+    private readonly WorkplaceBatchEditModelValidator _validator = new();
+
+    [Inject] public WorkplaceApiClient ApiClient { get; set; } = null!;
+
+    private async Task<string?> SaveWorkplaces(IEnumerable<WorkplaceBatchEditModel> workplaces)
+    {
+        var message = string.Empty;
+        foreach (var workplace in workplaces)
+        {
+            var content = new CreateWorkPlaceRequest(workplace.Name!, workplace.Note);
+            var response = await ApiClient.AddWorkplace(content);
+            if (!response.IsSuccessful)
+                message += response.ErrorMessage;
+        }
+        return message;
+    }
+
+    private  string? ValidateProperty(WorkplaceBatchEditModel instance, string property)
+    {
+        var msg = _validator.ValidateProperty(instance, property);
+        return msg;
+    }
+}

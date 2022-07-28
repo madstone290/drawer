@@ -4,34 +4,34 @@ using Drawer.Web.Authentication;
 
 namespace Drawer.Web.Api.Locations
 {
-    public class WorkPlaceApiClient : ApiClient
+    public class WorkplaceApiClient : ApiClient
     {
-        public WorkPlaceApiClient(HttpClient httpClient, ITokenManager tokenManager) : base(httpClient, tokenManager)
+        public WorkplaceApiClient(HttpClient httpClient, ITokenManager tokenManager) : base(httpClient, tokenManager)
         {
 
         }
 
-        public async Task<ApiResponse<CreateWorkPlaceResponse>> AddWorkPlace(string name, string note)
+        public async Task<ApiResponse<CreateWorkPlaceResponse>> AddWorkplace(CreateWorkPlaceRequest content)
         {
             var request = new ApiRequest<CreateWorkPlaceResponse>(
                 HttpMethod.Post,
                 ApiRoutes.WorkPlaces.Create,
-                new CreateWorkPlaceRequest(name, note));
+                content);
 
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<Unit>> UpdateWorkPlace(long id, string name, string note)
+        public async Task<ApiResponse<Unit>> UpdateWorkplace(long id, UpdateWorkPlaceRequest content)
         {
             var request = new ApiRequest(
                 HttpMethod.Put,
                 ApiRoutes.WorkPlaces.Update.Replace("{id}", $"{id}"),
-                new UpdateWorkPlaceRequest(name, note));
+                content);
 
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<Unit>> DeleteWorkPlace(long id)
+        public async Task<ApiResponse<Unit>> DeleteWorkplace(long id)
         {
             var request = new ApiRequest(
                 HttpMethod.Delete,
@@ -40,16 +40,16 @@ namespace Drawer.Web.Api.Locations
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<GetWorkPlacesResponse>> GetWorkPlace(long id)
+        public async Task<ApiResponse<GetWorkPlaceResponse>> GetWorkplace(long id)
         {
-            var request = new ApiRequest<GetWorkPlacesResponse>(
+            var request = new ApiRequest<GetWorkPlaceResponse>(
                 HttpMethod.Get,
                 ApiRoutes.WorkPlaces.Get.Replace("{id}", $"{id}"));
 
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<GetWorkPlacesResponse>> GetWorkPlaces()
+        public async Task<ApiResponse<GetWorkPlacesResponse>> GetWorkplaces()
         {
             var request = new ApiRequest<GetWorkPlacesResponse>(
                 HttpMethod.Get, 

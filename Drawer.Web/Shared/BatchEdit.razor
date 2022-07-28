@@ -1,0 +1,205 @@
+﻿@typeparam TModel where TModel : class, IBindingObject, new()
+@using Drawer.Web.Authentication
+@using Drawer.Web.DataBinding
+@using Drawer.Web.Pages
+@using Drawer.Web.Pages.Items.Models
+@using Drawer.Web.Services
+@using Drawer.Web.Shared.Dialogs
+@using Drawer.Web.Utils
+@using System.Reflection
+@using static Drawer.Web.Pages.Locations.WorkplaceBatchEdit
+
+<ContentTitle Text="@TitleText" />
+<AuthorizeView Context="AuthorizeView" Policy="@Policies.CompanyMember">
+    <NotAuthorized>
+        <NeedCompany />
+    </NotAuthorized>
+
+    <Authorized>
+        <AidToolBar>
+            <AidButton Color="Color.Error"
+                       StartIcon="@Icons.Material.Filled.ArrowBack"
+                       OnClick=@(() => Back_Click())>
+                뒤로
+            </AidButton>
+            <AidButton Color="Color.Warning"
+                       StartIcon="@Icons.Material.Filled.Clear"
+                       OnClick=@(() => Cancel_Click())>
+                초기화
+            </AidButton>
+            <AidButton Color="Color.Tertiary"
+                       StartIcon="@Icons.Material.Filled.FileDownload"
+                       OnClick=@(() => ExcelDownload_Click())>
+                엑셀 폼 다운로드
+            </AidButton>
+            <AidButton Color="Color.Tertiary"
+                       StartIcon="@Icons.Material.Filled.FileUpload"
+                       OnClick=@(() => ExcelUpload_Click())>
+                엑셀 업로드
+            </AidButton>
+            <AidButton Color="Color.Secondary"
+                       StartIcon="@Icons.Material.Filled.Add"
+                       OnClick=@(() => NewRow_Click())>
+                행 추가
+            </AidButton>
+            <AidButton Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.Save"
+                       OnClick=@(() => Save_Click())>
+                저장
+            </AidButton>
+        </AidToolBar>
+
+        <AidTable ReadOnly="false"
+                  T="TModel"
+                  UseRowSelection="false"
+                  Items="@_modelList">
+
+            <HeaderContent>
+                <MudTHeadRow>
+                    @{
+                        foreach (var propertyInfo in PropertyInfos)
+                        {
+                            <MudTh Style="min-width:100px;">@propertyInfo.Name</MudTh>
+                        }
+                    }
+                </MudTHeadRow>
+            </HeaderContent>
+
+            <RowTemplate>
+                @{
+                    foreach (var propertyInfo in PropertyInfos)
+                    {
+                        <AidEditCell @bind-Value="context.PropertyStringValues[propertyInfo.Name]"
+                             Validate="@((value) => ValidatePropertyFunc(context, propertyInfo.Name))" />
+                    }
+                }
+            </RowTemplate>
+
+            <FooterContent>
+                <MudTFootRow>
+                    <MudTd colSpan="100">총 @(TotalRowCount)개의 행</MudTd>
+                </MudTFootRow>
+            </FooterContent>
+
+        </AidTable>
+
+    </Authorized>
+</AuthorizeView>
+
+@code {
+
+    private readonly List<TModel> _modelList = new List<TModel>();
+
+    public int TotalRowCount => _modelList.Count;
+
+    public bool IsDataValid => _modelList.All(instance =>
+    {
+        return PropertyInfos.All(property => string.IsNullOrEmpty(ValidatePropertyFunc(instance, property.Name)));
+    });
+
+    [Inject] public IDialogService DialogService { get; set; } = null!;
+    [Inject] public IExcelService ExcelService { get; set; } = null!;
+    [Inject] public IFileService FileService { get; set; } = null!;
+    [Inject] public IJSRuntime JSRuntime { get; set; } = null!;
+
+    [Parameter] public string TitleText { get; set; } = string.Empty;
+    [Parameter] public string HomePath { get; set; } = string.Empty;
+    [Parameter] public EditMode ActionMode { get; set; }
+    /// <summary>
+    /// 데이터를 저장하고 결과를 반환하는 함수를 지정한다.
+    /// 결과가 정상이면 null을 반환하고 에러가 발생할 경우 에러메시지를 반환한다.
+    /// </summary>
+    [Parameter] public Func<IEnumerable<TModel>, Task<string?>> SaveAsyncFunc { get; set; } = null!;
+    /// <summary>
+    /// 모델 속성값을 검사한다.
+    /// 속성이 유효한 경우 null을 반환하고 유효하지 않은 경우 에러메시지를 반환한다.
+    /// </summary>
+    [Parameter] public Func<TModel, string?, string?> ValidatePropertyFunc { get; set; } = null!;
+
+    private List<PropertyInfo>? _propertyInfos;
+    public List<PropertyInfo> PropertyInfos
+    {
+        get
+        {
+            if (_propertyInfos == null)
+                _propertyInfos = typeof(TModel).GetProperties().Where(x => x.CanWrite).ToList();
+            return _propertyInfos;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("UseTableResize", "mud-table-root");
+        }
+    }
+
+    private void Back_Click()
+    {
+        NavManager.NavigateTo(HomePath);
+    }
+
+    private void Cancel_Click()
+    {
+        _modelList.Clear();
+    }
+
+    private async void ExcelDownload_Click()
+    {
+
+        var fileName = $"{typeof(TModel).Name}-Form.xlsx";
+        var buffer = ExcelService.WriteTable(new List<TModel>());
+        var fileStream = new MemoryStream(buffer);
+
+        await FileService.DownloadAsync(fileName, fileStream);
+    }
+
+    async Task ExcelUpload_Click()
+    {
+        var dialogOptions = new DialogOptions()
+            {
+                MaxWidth = MaxWidth.Small,
+            };
+        var dialogParameters = new DialogParameters
+        {
+        };
+        var dialog = DialogService.Show<ExcelUploadDialog>(null, options: dialogOptions, parameters: dialogParameters);
+        var result = await dialog.Result;
+        if (!result.Cancelled)
+        {
+            byte[] buffer = (byte[])result.Data;
+
+            var newItemList = new ExcelService().ReadTable<TModel>(buffer);
+            _modelList.AddRange(newItemList);
+        }
+    }
+
+    private void NewRow_Click()
+    {
+        _modelList.Add(new TModel());
+    }
+
+    private async Task Save_Click()
+    {
+        if (!IsDataValid)
+        {
+            Snackbar.Add("데이터가 유효하지 않습니다");
+            return;
+        }
+
+        var message = await SaveAsyncFunc.Invoke(_modelList);
+        if (string.IsNullOrEmpty(message))
+        {
+            Snackbar.Add("저장하였습니다", Severity.Success);
+            NavManager.NavigateTo(HomePath);
+        }
+        else
+        {
+            Snackbar.Add(message, Severity.Error);
+        }
+    }
+}
+
+
+

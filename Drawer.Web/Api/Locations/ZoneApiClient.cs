@@ -11,22 +11,22 @@ namespace Drawer.Web.Api.Locations
 
         }
 
-        public async Task<ApiResponse<CreateZoneResponse>> AddZone(long workPlaceId, string name, string note)
+        public async Task<ApiResponse<CreateZoneResponse>> AddZone(CreateZoneRequest content)
         {
             var request = new ApiRequest<CreateZoneResponse>(
                 HttpMethod.Post,
                 ApiRoutes.Zones.Create,
-                new CreateZoneRequest(workPlaceId, name, note));
+                content);
 
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<Unit>> UpdateZone(long id, string name, string note)
+        public async Task<ApiResponse<Unit>> UpdateZone(long id, UpdateZoneRequest content)
         {
             var request = new ApiRequest(
                 HttpMethod.Put,
                 ApiRoutes.Zones.Update.Replace("{id}", $"{id}"),
-                new UpdateZoneRequest(name, note));
+                content);
 
             return await SendAsync(request);
         }
@@ -40,9 +40,9 @@ namespace Drawer.Web.Api.Locations
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<GetZonesResponse>> GetZone(long id)
+        public async Task<ApiResponse<GetZoneResponse>> GetZone(long id)
         {
-            var request = new ApiRequest<GetZonesResponse>(
+            var request = new ApiRequest<GetZoneResponse>(
                 HttpMethod.Get,
                 ApiRoutes.Zones.Get.Replace("{id}", $"{id}"));
 

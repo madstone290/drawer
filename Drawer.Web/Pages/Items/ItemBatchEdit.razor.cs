@@ -42,7 +42,7 @@ namespace Drawer.Web.Pages.Items
 
         private void Back_Click()
         {
-            NavManager.NavigateTo(Paths.Items.Home);
+            NavManager.NavigateTo(Paths.ItemHome);
         }
 
         private void Cancel_Click()
@@ -99,7 +99,7 @@ namespace Drawer.Web.Pages.Items
 
             if (Snackbar.CheckSuccessFail(response))
             {
-                NavManager.NavigateTo(Paths.Items.Home);
+                NavManager.NavigateTo(Paths.ItemHome);
 
             }
         }
