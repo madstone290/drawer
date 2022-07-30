@@ -6,18 +6,17 @@
 @attribute [Route(Paths.WorkplaceBatchEdit)]
 
 <BatchEdit TitleText="작업장 일괄 추가"
-           TModel="WorkplaceBatchEditModel"
+           TModel="WorkplaceModel"
            HomePath="@Paths.WorkplaceHome"
            SaveAsyncFunc="@SaveWorkplaces"
-           ValidatePropertyFunc="@ValidateProperty"
-           />
+           ValidatePropertyFunc="@ValidateProperty" />
 
 @code {
-    private readonly WorkplaceBatchEditModelValidator _validator = new();
+    private readonly WorkplaceModelValidator _validator = new();
 
     [Inject] public WorkplaceApiClient ApiClient { get; set; } = null!;
 
-    private async Task<string?> SaveWorkplaces(IEnumerable<WorkplaceBatchEditModel> workplaces)
+    private async Task<string?> SaveWorkplaces(IEnumerable<WorkplaceModel> workplaces)
     {
         var message = string.Empty;
         foreach (var workplace in workplaces)
@@ -30,7 +29,7 @@
         return message;
     }
 
-    private  string? ValidateProperty(WorkplaceBatchEditModel instance, string property)
+    private string? ValidateProperty(WorkplaceModel instance, string property)
     {
         var msg = _validator.ValidateProperty(instance, property);
         return msg;

@@ -2,6 +2,9 @@
 
 namespace Drawer.Web.DataBinding
 {
+    /// <summary>
+    /// 제네릭타입으로 2way 데이터바인딩을 위한 인터페이스
+    /// </summary>
     public interface IBindingObject
     {
         IndexObject<string, string?> PropertyStringValues { get; }

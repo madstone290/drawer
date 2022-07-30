@@ -1,0 +1,62 @@
+﻿@using Drawer.Web.Authentication
+@using Drawer.Web.Pages.Items.Models
+@using Drawer.Web.Utils
+@using Drawer.Web.Pages.Locations.Models;
+
+@attribute [Route(Paths.SpotBatchEdit)]
+
+<ContentTitle Text="자리 일괄 추가" />
+<AuthorizeView Context="AuthorizeView" Policy="@Policies.CompanyMember">
+    <NotAuthorized>
+        <NeedCompany />
+    </NotAuthorized>
+
+    <Authorized>
+        <BatchEditToolbar 
+            OnBackClick="Back_Click"
+            OnClearClick="Clear_Click"
+            OnExcelDownloadClick="ExcelDownload_Click"
+            OnExcelUploadClick="ExcelUpload_Click"
+            OnNewRowClick="NewRow_Click"
+            OnSaveClick="Save_Click" />
+
+        <AidTable ReadOnly="false"
+                  T="SpotModel"
+                  UseRowSelection="false"
+                  Items="@SpotList">
+            <HeaderContent>
+                <MudTHeadRow>
+                    <MudTh Style="min-width:100px;">이름</MudTh>
+                    <MudTh Style="min-width:100px;">비고</MudTh>
+                    <MudTh Style="min-width:100px;">구역</MudTh>
+                </MudTHeadRow>
+            </HeaderContent>
+
+            <RowTemplate>
+                <AidEditCell @bind-Value="context.Name"
+                             Validate="((_) => Validate(context, x => x.Name))" />
+                <AidEditCell @bind-Value="context.Note"
+                             Validate="((_) => Validate(context, x => x.Note))" />
+                <MudTd>
+                    <AidCompleteInput TValue="long"
+                                      ItemDictFunc="GetZones"
+                                      @bind-Text="context.ZoneName" 
+                                      @bind-Value="context.ZoneId" />
+                </MudTd>
+            </RowTemplate>
+
+            <FooterContent>
+                <MudTFootRow>
+                    <MudTd colSpan="100">총 @(TotalRowCount)개의 행</MudTd>
+                </MudTFootRow>
+            </FooterContent>
+
+        </AidTable>
+
+    </Authorized>
+</AuthorizeView>
+
+
+
+
+

@@ -71,6 +71,8 @@ builder.Services.AddScoped<ILocalStorage, EncryptionLocalStorage>();
 builder.Services.AddScoped<IEncryptionService, EncryptionService>();
 builder.Services.AddScoped<IExcelService, ExcelService>();
 builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddScoped<IExcelFileService, ExcelFileService>();
+builder.Services.AddTransient<ILockService, LockService>();
 
 builder.Services.Scan(selector =>
 {
@@ -116,4 +118,5 @@ app.UseEndpoints(endpoints =>
 app.MapFallbackToPage("/_Host");
 
 app.Run();
+
 

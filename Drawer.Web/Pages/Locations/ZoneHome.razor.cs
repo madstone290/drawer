@@ -145,7 +145,7 @@ namespace Drawer.Web.Pages.Locations
 
         private void BatchEdit_Click()
         {
-            
+            NavManager.NavigateTo(Paths.ZoneBatchEdit);
         }
 
         private async Task Download_ClickAsync()

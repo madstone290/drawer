@@ -103,6 +103,9 @@
     [Inject] public IJSRuntime JSRuntime { get; set; } = null!;
 
     [Parameter] public string TitleText { get; set; } = string.Empty;
+    /// <summary>
+    /// 뒤로가기에서 사용할 홈 경로
+    /// </summary>
     [Parameter] public string HomePath { get; set; } = string.Empty;
     [Parameter] public EditMode ActionMode { get; set; }
     /// <summary>
@@ -122,7 +125,10 @@
         get
         {
             if (_propertyInfos == null)
-                _propertyInfos = typeof(TModel).GetProperties().Where(x => x.CanWrite).ToList();
+                _propertyInfos = typeof(TModel).GetProperties()
+                .Where(x => x.CanWrite && x.CanRead)
+                .Where(x=> !x.CustomAttributes.Any(x=> x.AttributeType == typeof(NoBindAttribute)))
+               .ToList();
             return _propertyInfos;
         }
     }

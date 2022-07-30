@@ -6,6 +6,7 @@ namespace Drawer.Web.Pages.Locations.Models
     {
         public long Id { get; set; }
         public long WorkPlaceId { get; set; }
+        public string WorkplaceName { get; set; }
         public string? Name { get; set; }
         public string? Note { get; set; }
     }

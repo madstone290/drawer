@@ -1,9 +1,11 @@
-﻿using FluentValidation;
+﻿using Drawer.Web.DataBinding;
+using FluentValidation;
 
 namespace Drawer.Web.Pages.Locations.Models
 {
-    public class WorkplaceModel 
+    public class WorkplaceModel : BindingObject
     {
+        [NoBind]
         public long Id { get; set; }
         public string? Name { get; set; }
         public string? Note { get; set; }

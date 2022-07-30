@@ -1,20 +1,18 @@
-﻿using Drawer.Web.DataBinding;
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace Drawer.Web.Pages.Locations.Models
 {
-    public class SpotModel
-    { 
+    public class SpotBatchEditModel
+    {
         public long Id { get; set; }
-        public string? Name { get; set; } 
-        public string? Note { get; set; } 
+        public string? Name { get; set; }
+        public string? Note { get; set; }
         public long ZoneId { get; set; }
-        public string ZoneName { get; set; }
     }
 
-    public class SpotModelValidator : AbstractValidator<SpotModel>
+    public class SpotBatchEditModelValidator : AbstractValidator<SpotBatchEditModel>
     {
-        public SpotModelValidator()
+        public SpotBatchEditModelValidator()
         {
             RuleFor(x => x.ZoneId)
                 .GreaterThan(0);

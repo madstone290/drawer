@@ -1,0 +1,62 @@
+﻿@using Drawer.Web.Authentication
+@using Drawer.Web.Pages.Items.Models
+@using Drawer.Web.Utils
+@using Drawer.Web.Pages.Locations.Models;
+
+@attribute [Route(Paths.ZoneBatchEdit)]
+
+<ContentTitle Text="구역 일괄 추가" />
+<AuthorizeView Context="AuthorizeView" Policy="@Policies.CompanyMember">
+    <NotAuthorized>
+        <NeedCompany />
+    </NotAuthorized>
+
+    <Authorized>
+        <BatchEditToolbar 
+            OnBackClick="Back_Click"
+            OnClearClick="Clear_Click"
+            OnExcelDownloadClick="ExcelDownload_Click"
+            OnExcelUploadClick="ExcelUpload_Click"
+            OnNewRowClick="NewRow_Click"
+            OnSaveClick="Save_Click" />
+
+        <AidTable ReadOnly="false"
+                  T="ZoneModel"
+                  UseRowSelection="false"
+                  Items="@ZoneList">
+            <HeaderContent>
+                <MudTHeadRow>
+                    <MudTh Style="min-width:100px;">Name</MudTh>
+                    <MudTh Style="min-width:100px;">Note</MudTh>
+                    <MudTh Style="min-width:100px;">WorkplaceName</MudTh>
+                </MudTHeadRow>
+            </HeaderContent>
+
+            <RowTemplate>
+                <AidEditCell @bind-Value="context.Name"
+                             Validate="((_) => Validate(context, x => x.Name))" />
+                <AidEditCell @bind-Value="context.Note"
+                             Validate="((_) => Validate(context, x => x.Note))" />
+                <MudTd>
+                    <AidCompleteInput TValue="long"
+                                      ItemDictFunc="GetWorkplaces"
+                                      @bind-Text="context.WorkplaceName" 
+                                      @bind-Value="context.WorkPlaceId" />
+                </MudTd>
+            </RowTemplate>
+
+            <FooterContent>
+                <MudTFootRow>
+                    <MudTd colSpan="100">총 @(TotalRowCount)개의 행</MudTd>
+                </MudTFootRow>
+            </FooterContent>
+
+        </AidTable>
+
+    </Authorized>
+</AuthorizeView>
+
+
+
+
+

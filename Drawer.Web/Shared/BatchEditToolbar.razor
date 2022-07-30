@@ -1,0 +1,42 @@
+﻿<AidToolBar>
+    <AidButton Color="Color.Error"
+               StartIcon="@Icons.Material.Filled.ArrowBack"
+               OnClick="OnBackClick">
+        뒤로
+    </AidButton>
+    <AidButton Color="Color.Warning"
+               StartIcon="@Icons.Material.Filled.Clear"
+               OnClick="OnClearClick" >
+        초기화
+    </AidButton>
+    <AidButton Color="Color.Tertiary"
+               StartIcon="@Icons.Material.Filled.FileDownload"
+               OnClick="OnExcelDownloadClick">
+        엑셀 폼 다운로드
+    </AidButton>
+    <AidButton Color="Color.Tertiary"
+               StartIcon="@Icons.Material.Filled.FileUpload"
+               OnClick="OnExcelUploadClick">
+        엑셀 업로드
+    </AidButton>
+    <AidButton Color="Color.Secondary"
+               StartIcon="@Icons.Material.Filled.Add"
+               OnClick="OnNewRowClick">
+        행 추가
+    </AidButton>
+    <AidButton Color="Color.Primary"
+               StartIcon="@Icons.Material.Filled.Save"
+               OnClick="OnSaveClick">
+        저장
+    </AidButton>
+</AidToolBar>
+
+@code {
+    [Parameter] public EventCallback<MouseEventArgs> OnBackClick{ get; set; }
+    [Parameter] public EventCallback<MouseEventArgs> OnClearClick{ get; set; }
+    [Parameter] public EventCallback<MouseEventArgs> OnExcelDownloadClick{ get; set; }
+    [Parameter] public EventCallback<MouseEventArgs> OnExcelUploadClick{ get; set; }
+    [Parameter] public EventCallback<MouseEventArgs> OnNewRowClick{ get; set; }
+    [Parameter] public EventCallback<MouseEventArgs> OnSaveClick{ get; set; }
+
+}

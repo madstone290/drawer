@@ -1,0 +1,300 @@
+﻿@typeparam TValue
+<div>
+    <div style="display:flex; flex-direction:column;">
+        <MudInput @ref="_inputReference"
+                  @onfocus="Input_Focus"
+                  @onkeydown="Input_KeyDown"
+                  @onkeyup="Input_KeyUp"
+                  Immediate="true"
+                  FullWidth="true"
+                  T="string"
+                  ValueChanged="@Input_ValueChanged" />
+
+        <MudPopover RelativeWidth="true"
+                    Open="@_isOpen"
+                    Fixed="true"
+                    AnchorOrigin="Origin.BottomLeft"
+                    TransformOrigin="Origin.TopLeft">
+            <MudList Clickable="true"
+                     Style="@Style"
+                     @bind-SelectedValue="_selectedItem">
+                @{
+                    int index = 0;
+                    foreach (var item in _filteredItemList)
+                    {
+                        <MudListItem id="@GetListItemId(index)" Text="@item" Value="@item" OnClick="@ListItem_Click" />
+                        index++;
+                    }
+                }
+            </MudList>
+        </MudPopover>
+        <MudOverlay @bind-Visible="_isOpen" AutoClose="true" />
+    </div>
+    <MudText Color="Color.Error" Typo="Typo.overline">@_error</MudText>
+</div>
+
+
+@code {
+
+    /// <summary>
+    /// 컴포넌트 식별용 아이디
+    /// </summary>
+    private readonly string _componentId = Guid.NewGuid().ToString();
+
+    /// <summary>
+    /// Input 엘리먼트
+    /// </summary>
+    private MudInput<string> _inputReference = null!;
+
+    /// <summary>
+    /// 필터링된 아이템 목록. 드랍다운에 표시된다.
+    /// </summary>
+    private List<string> _filteredItemList = new();
+
+    /// <summary>
+    /// 전체 아이템 목록
+    /// </summary>
+    private List<string> _itemList = new();
+
+    /// <summary>
+    /// 전체 아이템 사전
+    /// </summary>
+    private Dictionary<string, TValue> _itemDict { get; set; } = new();
+
+    /// <summary>
+    /// 드랍다운 열림 상태
+    /// </summary>
+    private bool _isOpen;
+
+    /// <summary>
+    /// 값 유효하지 않을 때의 에러메시지
+    /// </summary>
+    private string? _error;
+
+    /// <summary>
+    /// 리스트 엘리먼트의 렌더링 여부
+    /// </summary>
+    private bool _isListRendering = false;
+
+    /// <summary>
+    /// 드랍다운에서 선택된 아이템 인덱스. 드랍다운 리스트 렌더링 후 아이템 선택에 사용한다.
+    /// </summary>
+    private int _selectedItemIndex;
+
+    /// <summary>
+    /// 드랍다운에서 선택된 아이템
+    /// </summary>
+    private object? _selectedItem;
+
+    private string Style => $"max-height:{MaxHeight}";
+
+    /// <summary>
+    /// 아이템 사전을 불러온다.
+    /// </summary>
+    [Parameter] public Func<Task<Dictionary<string, TValue>>>? ItemDictFunc { get; set; }
+
+    private TValue? _value;
+    [Parameter]
+    public TValue? Value
+    {
+        get => _value;
+        set
+        {
+            if (EqualityComparer<TValue>.Default.Equals(_value, value))
+                return;
+            _value = value;
+            ValueChanged.InvokeAsync(value);
+        }
+    }
+
+    private string? _text;
+    [Parameter]
+    public string? Text
+    {
+        get => _text;
+        set
+        {
+            if (EqualityComparer<string>.Default.Equals(_text, value))
+                return;
+            _text = value;
+            TextChanged.InvokeAsync(value);
+
+            if(value != null)
+                Value = _itemDict.ContainsKey(value) ? _itemDict[value] : default;
+        }
+    }
+
+    [Parameter] public EventCallback<TValue?> ValueChanged { get; set; }
+    [Parameter] public EventCallback<string?> TextChanged { get; set; }
+
+    /// <summary>
+    /// 드랍다운 높이
+    /// </summary>
+    [Parameter] public string MaxHeight { get; set; } = "400px";
+    /// <summary>
+    /// 임의값 허용 여부. 리스트에 없는 아이템도 유효한지 설정한다.
+    /// </summary>
+    [Parameter] public bool AllowArbitraryText { get; set; } = false;
+
+    [Inject] public IScrollManager ScrollManager { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (ItemDictFunc != null)
+        {
+            _itemDict = await ItemDictFunc.Invoke();
+            _itemList = _itemDict.Select(x => x.Key).ToList();
+            StateHasChanged();
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (_isListRendering)
+        {
+            // 리스트 아이템목록 렌더링이 완료된 후 선택된 아이템을 렌더링한다.
+            if (_filteredItemList.Any())
+            {
+                _selectedItem = _filteredItemList[_selectedItemIndex];
+                ScrollToListItem(_selectedItemIndex);
+            }
+            else
+            {
+                _selectedItem = null;
+            }
+            // 중요!!. 아이템을 선택하고 다시 렌더링해야한다.
+            StateHasChanged();
+            _isListRendering = false;
+        }
+    }
+
+    private void Input_Focus()
+    {
+        Input_ValueChanged(_inputReference.Value);
+    }
+
+    private void Input_ValueChanged(string value)
+    {
+        // TODO 사용자입력 <-> 아이템클릭, 엔터입력 구분할 것
+        // 사용자 입력인 경우에만 리스트 아이템 변경
+
+        Text = value;
+
+        if (!_isOpen)
+            _isOpen = true;
+
+        if (AllowArbitraryText == false)
+            _error = IsContained(value);
+
+        // 1. 아이템을 필터링. 선택할 아이템 인덱스 지정.
+        // 2. 아이템 목록 렌더링
+        // 3. 아이템 목록 렌더링이 완료되면 선택할 아이템 인덱스를 이용해서 다시 한번 렌더링
+
+        _filteredItemList.Clear();
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            _filteredItemList.AddRange(_itemList);
+        }
+        else
+        {
+            _filteredItemList.AddRange(_itemList.Where(item =>
+                item.Contains(value, StringComparison.OrdinalIgnoreCase)));
+        }
+
+        // 값이 변하는 경우 항상 첫번째 아이템을 선택한다.
+        _selectedItemIndex = _filteredItemList.Any() ? 0 : -1;
+
+        // 리스트 요소가 렌더링되는지 식별한다.
+        _isListRendering = true;
+
+        StateHasChanged();
+    }
+
+    private void ListItem_Click()
+    {
+        _inputReference.SetText(Convert.ToString(_selectedItem)).AndForget();
+        _isOpen = false;
+    }
+
+    private void Input_KeyDown(KeyboardEventArgs e)
+    {
+        // 탭이 포커스 이동하기 전에 이벤트를 처리한다
+        if (e.Key == "Tab")
+        {
+            _isOpen = false;
+        }
+    }
+
+    void Input_KeyUp(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            Input_KeyUp_Enter();
+        }
+        else if (e.Key == "ArrowUp")
+        {
+            Input_KeyUp_ArrowUp();
+
+        }
+        else if (e.Key == "ArrowDown")
+        {
+            Input_KeyUp_ArrowDown();
+        }
+    }
+
+    private void Input_KeyUp_Enter()
+    {
+        // 드랍다운이 닫힌 경우 새로 연다.
+        // 드랍다운이 열린 경우 선택된 아이템으로 텍스트를 변경한다.
+
+        if (!_isOpen)
+        {
+            _isOpen = true;
+            return;
+        }
+
+        if (_selectedItem != null)
+        {
+            _inputReference.SetText(Convert.ToString(_selectedItem)).AndForget();
+        }
+        _isOpen = false;
+    }
+
+    private void Input_KeyUp_ArrowUp()
+    {
+        if (0 < _selectedItemIndex)
+            _selectedItemIndex--;
+
+        _isListRendering = true;
+        StateHasChanged();
+    }
+
+    private void Input_KeyUp_ArrowDown()
+    {
+        if (_selectedItemIndex < _filteredItemList.Count - 1)
+            _selectedItemIndex++;
+
+        _isListRendering = true;
+        StateHasChanged();
+    }
+
+    private void ScrollToListItem(int index)
+    {
+        var listItemId = GetListItemId(index);
+
+        ScrollManager.ScrollToListItemAsync(listItemId);
+    }
+
+    private string GetListItemId(int index)
+    {
+        return $"{_componentId}_item_{index}";
+    }
+
+    private string? IsContained(string value)
+    {
+        if (!_itemList.Contains(value))
+            return "리스트에 포함되지 않는 문자열입니다";
+        return null;
+    }
+
+}
