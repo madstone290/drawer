@@ -11,13 +11,13 @@ namespace Drawer.Web.Services
         /// <param name="fileName"></param>
         /// <param name="list"></param>
         /// <returns></returns>
-        Task Download<T>(string fileName, IEnumerable<T> list);
+        Task Download<T>(string fileName, IEnumerable<T> list, ExcelOptions? options = null);
 
         /// <summary>
         /// 엑셀파일을 업로드한다.
         /// </summary>
         /// <returns></returns>
-        Task<IEnumerable<T>> Upload<T>();
+        Task<IEnumerable<T>> Upload<T>(ExcelOptions? options = null);
     }
 
     public class ExcelFileService : IExcelFileService
@@ -33,15 +33,15 @@ namespace Drawer.Web.Services
             _dialogService = dialogService;
         }
 
-        public async Task Download<T>(string fileName, IEnumerable<T> list)
+        public async Task Download<T>(string fileName, IEnumerable<T> list, ExcelOptions? options = null)
         {
-            var buffer = _excelService.WriteTable(list);
+            var buffer = _excelService.WriteTable(list, options);
             var fileStream = new MemoryStream(buffer);
 
             await _fileService.DownloadAsync(fileName, fileStream);
         }
 
-        public async Task<IEnumerable<T>> Upload<T>()
+        public async Task<IEnumerable<T>> Upload<T>(ExcelOptions? options = null)
         {
             var dialogOptions = new DialogOptions()
             {
@@ -56,7 +56,7 @@ namespace Drawer.Web.Services
             {
                 byte[] buffer = (byte[])result.Data;
 
-                return new ExcelService().ReadTable<T>(buffer);
+            return new ExcelService().ReadTable<T>(buffer, options);
             }
             else
             {

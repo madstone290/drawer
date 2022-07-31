@@ -5,6 +5,7 @@
 @using Drawer.Web.Api.Locations
 @using Drawer.Web.Pages.Items.Models
 @using Drawer.Web.Pages.Locations.Models
+@using Drawer.Web.Services
 @using Drawer.Web.Utils
 @using System.Linq.Expressions
 @attribute [Route(Paths.ItemBatchEdit)]
@@ -14,7 +15,8 @@
            HomePath="@Paths.ItemHome"
            ExcelFormName="아이템-양식"
            SaveAsyncFunc="@Save"
-           Validate="@Validate">
+           Validate="@Validate"
+           ExcelOptions="_excelOptions" >
 
     <HeadRow>
         <MudTh Style="min-width:100px;">이름</MudTh>
@@ -39,6 +41,14 @@
 
 @code {
     private readonly ItemModelValidator _validator = new();
+    private readonly ExcelOptions _excelOptions = new ExcelOptionsBuilder()
+        .AddColumn(nameof(ItemModel.Name), "이름")
+        .AddColumn(nameof(ItemModel.Code), "코드")
+        .AddColumn(nameof(ItemModel.Number), "번호")
+        .AddColumn(nameof(ItemModel.Sku), "Sku")
+        .AddColumn(nameof(ItemModel.QuantityUnit), "계량단위")
+        .Build();
+
 
     [Inject] public ItemApiClient ItemApiClient { get; set; } = null!;
 

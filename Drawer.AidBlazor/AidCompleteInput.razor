@@ -16,10 +16,10 @@
         <MudPopover RelativeWidth="true"
                     Open="@_isOpen"
                     Fixed="true"
-                    AnchorOrigin="Origin.BottomLeft"
-                    TransformOrigin="Origin.TopLeft">
+                    MaxHeight="@MaxHeight"
+                    AnchorOrigin="Origin.BottomCenter"
+                    TransformOrigin="Origin.TopCenter">
             <MudList Clickable="true"
-                     Style="@Style"
                      @bind-SelectedValue="_selectedItem">
                 @{
                     int index = 0;
@@ -91,8 +91,6 @@
     /// </summary>
     private object? _selectedItem;
 
-    private string Style => $"max-height:{MaxHeight}";
-
     /// <summary>
     /// 아이템 사전을 불러온다.
     /// </summary>
@@ -133,8 +131,7 @@
 
             TextChanged.InvokeAsync(value);
 
-            if(value != null)
-                Value = _itemDict.ContainsKey(value) ? _itemDict[value] : default;
+            RefreshValue();
         }
     }
 
@@ -144,7 +141,7 @@
     /// <summary>
     /// 드랍다운 높이
     /// </summary>
-    [Parameter] public string MaxHeight { get; set; } = "400px";
+    [Parameter] public int MaxHeight { get; set; } = 200;
     /// <summary>
     /// 임의값 허용 여부. 리스트에 없는 아이템도 유효한지 설정한다.
     /// </summary>
@@ -158,6 +155,8 @@
         {
             _itemDict = await ItemDictFunc.Invoke();
             _itemList = _itemDict.Select(x => x.Key).ToList();
+
+            RefreshValue();
         }
     }
 
@@ -165,7 +164,7 @@
     {
         if (firstRender)
         {
-            _error = Validate?.Invoke(Value);    
+            _error = Validate?.Invoke(Value);
             StateHasChanged();
         }
 
@@ -186,9 +185,18 @@
             _isListRendering = false;
         }
     }
-    
+
+    /// <summary>
+    /// 아이템사전에서 Text를 찾아 Value를 갱신한다.
+    /// </summary>
+    private void RefreshValue()
+    {
+        if (Text != null)
+            Value = _itemDict.ContainsKey(Text) ? _itemDict[Text] : default;
+    }
+
     private void Input_Focus()
-    {   
+    {
         Input_ValueChanged(_inputReference.Value);
         showUnderline = true;
     }
@@ -322,6 +330,6 @@
         return null;
     }
 
-   
+
 
 }

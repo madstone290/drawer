@@ -65,7 +65,7 @@
                         <MudTableSortLabel T="ZoneTableModel" SortBy="x => x.Note">비고</MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel T="ZoneTableModel" SortBy="x => x.WorkPlaceName">작업장</MudTableSortLabel>
+                        <MudTableSortLabel T="ZoneTableModel" SortBy="x => x.WorkplaceName">작업장</MudTableSortLabel>
                     </MudTh>
                 </MudTHeadRow>
             </HeaderContent>
@@ -78,7 +78,7 @@
                     <MudHighlighter Text="@context.Note" HighlightedText="@searchText" />
                 </MudTd>
                 <MudTd DataLabel="작업장">
-                    <MudHighlighter Text="@context.WorkPlaceName" HighlightedText="@searchText" />
+                    <MudHighlighter Text="@context.WorkplaceName" HighlightedText="@searchText" />
                 </MudTd>
             </RowTemplate>
 

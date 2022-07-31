@@ -15,6 +15,12 @@ namespace Drawer.Web.Pages.Locations
         private AidTable<WorkplaceModel> _table = null!;
         private bool _isTableLoading;
         private List<WorkplaceModel> _workplaceList = new();
+        private readonly ExcelOptions _excelOptions = new ExcelOptionsBuilder()
+            .AddColumn(nameof(WorkplaceModel.Name), "이름")
+            .AddColumn(nameof(WorkplaceModel.Note), "비고")
+            .Build();
+
+
 
         private bool canCreate = false;
         private bool canRead = false;
@@ -68,7 +74,7 @@ namespace Drawer.Web.Pages.Locations
                 {
                     Id = item.Id,
                     Name = item.Name,
-                    Note = item.Note ?? string.Empty
+                    Note = item.Note
                 };
                 _workplaceList.Add(workPlaceModel);
             }
@@ -127,9 +133,9 @@ namespace Drawer.Web.Pages.Locations
 
         private async Task Download_ClickAsync()
         {
-            var buffer = ExcelService.WriteTable(_workplaceList);
+            var buffer = ExcelService.WriteTable(_workplaceList, _excelOptions);
             var fileStream = new MemoryStream(buffer);
-            var fileName = $"Workplace-{DateTime.Now:yyMMdd-HHmmss}.xlsx";
+            var fileName = $"작업장-{DateTime.Now:yyMMdd-HHmmss}.xlsx";
             using var streamRef = new DotNetStreamReference(fileStream);
 
             await JS.InvokeVoidAsync("downloadFile", fileName, streamRef);

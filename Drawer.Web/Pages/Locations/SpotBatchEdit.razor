@@ -13,6 +13,7 @@
            HomePath="@Paths.SpotHome"
            ExcelFormName="자리-양식"
            SaveAsyncFunc="@Save"
+           ExcelOptions="@_excelOptions"
            Validate="@Validate">
 
     <HeadRow>
@@ -36,6 +37,11 @@
 
 @code {
     private readonly SpotModelValidator _validator = new();
+    private readonly ExcelOptions _excelOptions = new ExcelOptionsBuilder()
+        .AddColumn(nameof(SpotModel.Name), "이름")
+        .AddColumn(nameof(SpotModel.Note), "비고")
+        .AddColumn(nameof(SpotModel.ZoneName), "구역")
+        .Build();
 
     [Inject] public SpotApiClient SpotApiClient { get; set; } = null!;
     [Inject] public ZoneApiClient ZoneApiClient { get; set; } = null!;

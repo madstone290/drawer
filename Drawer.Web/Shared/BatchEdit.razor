@@ -126,6 +126,11 @@
     /// </summary>
     [Parameter] public Func<TModel, bool>? Validate { get; set; }
 
+    /// <summary>
+    /// 엑셀 읽기/쓰기에 사용할 옵션
+    /// </summary>
+    [Parameter] public ExcelOptions? ExcelOptions { get; set; }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -146,12 +151,12 @@
 
     private async void ExcelDownload_Click()
     {
-        await ExcelFileService.Download(ExcelFormFileName, new List<TModel>());
+        await ExcelFileService.Download(ExcelFormFileName, new List<TModel>(), ExcelOptions);
     }
 
     async Task ExcelUpload_Click()
     {
-        var newModelList = await ExcelFileService.Upload<TModel>();
+        var newModelList = await ExcelFileService.Upload<TModel>(ExcelOptions);
         _modelList.AddRange(newModelList);
     }
 

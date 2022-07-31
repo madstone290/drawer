@@ -11,8 +11,16 @@ using MudBlazor;
 namespace Drawer.Web.Pages.Items
 {
     public partial class ItemHome
-    { 
+    {
         private AidTable<ItemTableModel> table = null!;
+        private readonly ExcelOptions _excelOptions = new ExcelOptionsBuilder()
+            .AddColumn(nameof(ItemTableModel.Name), "이름")
+            .AddColumn(nameof(ItemTableModel.Code), "코드")
+            .AddColumn(nameof(ItemTableModel.Number), "번호")
+            .AddColumn(nameof(ItemTableModel.Sku), "Sku")
+            .AddColumn(nameof(ItemTableModel.QuantityUnit), "계량단위")
+            .Build();
+
 
         private bool canCreate = false;
         private bool canRead = false;
@@ -51,7 +59,7 @@ namespace Drawer.Web.Pages.Items
             if (item == null)
                 return false;
 
-            return item.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase) || 
+            return item.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
                 item.Code.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
                 item.Number.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
                 item.Sku.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
@@ -132,7 +140,7 @@ namespace Drawer.Web.Pages.Items
                 }
             }
         }
-        
+
         private void BatchEdit_Click()
         {
             NavManager.NavigateTo(Paths.ItemBatchEdit);
@@ -140,9 +148,9 @@ namespace Drawer.Web.Pages.Items
 
         private async Task Download_ClickAsync()
         {
-            var buffer = ExcelService.WriteTable(ItemList);
+            var buffer = ExcelService.WriteTable(ItemList, _excelOptions);
             var fileStream = new MemoryStream(buffer);
-            var fileName = $"Item-{DateTime.Now:yyMMdd-HHmmss}.xlsx";
+            var fileName = $"아이템-{DateTime.Now:yyMMdd-HHmmss}.xlsx";
             using var streamRef = new DotNetStreamReference(fileStream);
 
             await JS.InvokeVoidAsync("downloadFile", fileName, streamRef);

@@ -14,8 +14,13 @@ namespace Drawer.Web.Pages.Locations
     public partial class ZoneHome
     {
         private AidTable<ZoneTableModel> table = null!;
-        private List<GetWorkPlacesResponse.WorkPlace> _workPlaceList = new List<GetWorkPlacesResponse.WorkPlace>();
-        private IList<ZoneTableModel> _zoneList =new List<ZoneTableModel>();
+        private readonly List<GetWorkPlacesResponse.WorkPlace> _workPlaceList = new();
+        private readonly List<ZoneTableModel> _zoneList = new();
+        private readonly ExcelOptions _excelOptions = new ExcelOptionsBuilder()
+            .AddColumn(nameof(ZoneTableModel.Name), "이름")
+            .AddColumn(nameof(ZoneTableModel.Note), "비고")
+            .AddColumn(nameof(ZoneTableModel.WorkplaceName), "작업장")
+            .Build();
 
         private bool _isTableLoading;
         private bool canCreate = false;
@@ -54,7 +59,7 @@ namespace Drawer.Web.Pages.Locations
 
             return model.Note.Contains(searchText, StringComparison.OrdinalIgnoreCase) || 
                 model.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase) || 
-                model.WorkPlaceName.Contains(searchText, StringComparison.OrdinalIgnoreCase);
+                model.WorkplaceName.Contains(searchText, StringComparison.OrdinalIgnoreCase);
         }
 
         private async Task Load_Click()
@@ -87,9 +92,9 @@ namespace Drawer.Web.Pages.Locations
                     {
                         Id = item.Id,
                         Name = item.Name,
-                        Note = item.Note ?? string.Empty,
-                        WorkPlaceId = item.WorkPlaceId,
-                        WorkPlaceName = _workPlaceList.FirstOrDefault(x => x.Id == item.WorkPlaceId)?.Name ?? string.Empty,
+                        Note = item.Note,
+                        WorkplaceId = item.WorkPlaceId,
+                        WorkplaceName = _workPlaceList.FirstOrDefault(x => x.Id == item.WorkPlaceId)?.Name,
                     };
                     _zoneList.Add(workPlaceModel);
                 }
@@ -150,9 +155,9 @@ namespace Drawer.Web.Pages.Locations
 
         private async Task Download_ClickAsync()
         {
-            var buffer = ExcelService.WriteTable(_zoneList);
+            var buffer = ExcelService.WriteTable(_zoneList, _excelOptions);
             var fileStream = new MemoryStream(buffer);
-            var fileName = $"Zone-{DateTime.Now:yyMMdd-HHmmss}.xlsx";
+            var fileName = $"구역-{DateTime.Now:yyMMdd-HHmmss}.xlsx";
             using var streamRef = new DotNetStreamReference(fileStream);
 
             await JS.InvokeVoidAsync("downloadFile", fileName, streamRef);

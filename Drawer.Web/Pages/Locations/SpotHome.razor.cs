@@ -18,6 +18,12 @@ namespace Drawer.Web.Pages.Locations
         private List<SpotTableModel> _spotList = new();
         private readonly List<GetWorkPlacesResponse.WorkPlace> _workPlaceList = new();
         private readonly List<GetZonesResponse.Zone> _zoneList = new();
+        private readonly ExcelOptions _excelOptions = new ExcelOptionsBuilder()
+            .AddColumn(nameof(SpotTableModel.Name), "이름")
+            .AddColumn(nameof(SpotTableModel.Note), "비고")
+            .AddColumn(nameof(SpotTableModel.WorkplaceName), "작업장")
+            .AddColumn(nameof(SpotTableModel.ZoneName), "구역")
+            .Build();
 
         private bool canCreate = false;
         private bool canRead = false;
@@ -59,7 +65,7 @@ namespace Drawer.Web.Pages.Locations
 
             return model.Note.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
                 model.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
-                model.WorkPlaceName.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+                model.WorkplaceName.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
                 model.ZoneName.Contains(searchText, StringComparison.OrdinalIgnoreCase);
         }
 
@@ -101,11 +107,11 @@ namespace Drawer.Web.Pages.Locations
                 {
                     Id = item.Id,
                     Name = item.Name,
-                    Note = item.Note ?? string.Empty,
+                    Note = item.Note,
                     ZoneId = zone.Id,
                     ZoneName = zone.Name,
-                    WorkPlaceId = workPlace.Id,
-                    WorkPlaceName = workPlace.Name,
+                    WorkplaceId = workPlace.Id,
+                    WorkplaceName = workPlace.Name,
                 };
                 _spotList.Add(spot);
             }
@@ -164,9 +170,9 @@ namespace Drawer.Web.Pages.Locations
 
         private async Task Download_ClickAsync()
         {
-            var buffer = ExcelService.WriteTable(_spotList);
+            var buffer = ExcelService.WriteTable(_spotList, _excelOptions);
             var fileStream = new MemoryStream(buffer);
-            var fileName = $"Spot-{DateTime.Now:yyMMdd-HHmmss}.xlsx";
+            var fileName = $"자리-{DateTime.Now:yyMMdd-HHmmss}.xlsx";
             using var streamRef = new DotNetStreamReference(fileStream);
 
             await JS.InvokeVoidAsync("downloadFile", fileName, streamRef);

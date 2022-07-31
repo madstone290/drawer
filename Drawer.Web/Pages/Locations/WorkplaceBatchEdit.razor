@@ -2,6 +2,7 @@
 @using Drawer.Contract.Locations
 @using Drawer.Web.Api.Locations
 @using Drawer.Web.Pages.Locations.Models
+@using Drawer.Web.Services
 @using Drawer.Web.Utils
 @attribute [Route(Paths.WorkplaceBatchEdit)]
 
@@ -10,6 +11,7 @@
            HomePath="@Paths.WorkplaceHome"
            ExcelFormName="작업장-양식"
            SaveAsyncFunc="@Save"
+           ExcelOptions="_excelOptions"
            Validate="@Validate">
 
     <HeadRow>
@@ -26,6 +28,10 @@
 
 @code {
     private readonly WorkplaceModelValidator _validator = new();
+    private readonly ExcelOptions _excelOptions = new ExcelOptionsBuilder()
+        .AddColumn(nameof(WorkplaceModel.Name), "이름")
+        .AddColumn(nameof(WorkplaceModel.Note), "비고")
+        .Build();
 
     [Inject] public WorkplaceApiClient ApiClient { get; set; } = null!;
 

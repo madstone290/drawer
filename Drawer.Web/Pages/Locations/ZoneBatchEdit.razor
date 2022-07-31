@@ -13,6 +13,7 @@
            HomePath="@Paths.ZoneHome"
            ExcelFormName="구역-양식"
            SaveAsyncFunc="@Save"
+           ExcelOptions="@_excelOptions"
            Validate="@Validate">
 
     <HeadRow>
@@ -35,6 +36,11 @@
 
 @code {
     private readonly ZoneModelValidator _validator = new();
+    private readonly ExcelOptions _excelOptions = new ExcelOptionsBuilder()
+        .AddColumn(nameof(ZoneModel.Name), "이름")
+        .AddColumn(nameof(ZoneModel.Note), "비고")
+        .AddColumn(nameof(ZoneModel.WorkplaceName), "작업장")
+        .Build();
 
     [Inject] public ZoneApiClient ZoneApiClient { get; set; } = null!;
     [Inject] public WorkplaceApiClient WorkplaceApiClient { get; set; } = null!;

@@ -14,8 +14,8 @@ function makeTableResize(table) {
 
     // div 생성
     for (var i = 0; i < cols.length; i++) {
-        // div position: absolute 적용을 위해서 
-        cols[i].style.position = 'relative';
+        // 고정 헤더 적용
+        cols[i].style.position = 'sticky';
 
         let div = document.createElement('div');
         div.style.top = 0;
