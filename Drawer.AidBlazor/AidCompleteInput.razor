@@ -2,12 +2,15 @@
 <div>
     <div style="display:flex; flex-direction:column;">
         <MudInput @ref="_inputReference"
-                  @onfocus="Input_Focus"
                   @onkeydown="Input_KeyDown"
                   @onkeyup="Input_KeyUp"
+                  @onfocus="Input_Focus"
+                  @onblur="Input_Blur"
                   Immediate="true"
                   FullWidth="true"
                   T="string"
+                  Value="_text"
+                  DisableUnderLine="@(!showUnderline)"
                   ValueChanged="@Input_ValueChanged" />
 
         <MudPopover RelativeWidth="true"
@@ -35,6 +38,8 @@
 
 
 @code {
+
+    private bool showUnderline;
 
     /// <summary>
     /// 컴포넌트 식별용 아이디
@@ -93,6 +98,11 @@
     /// </summary>
     [Parameter] public Func<Task<Dictionary<string, TValue>>>? ItemDictFunc { get; set; }
 
+    /// <summary>
+    /// 값 유효성을 검사한다.
+    /// </summary>
+    [Parameter] public Func<TValue?, string?>? Validate { get; set; }
+
     private TValue? _value;
     [Parameter]
     public TValue? Value
@@ -104,6 +114,9 @@
                 return;
             _value = value;
             ValueChanged.InvokeAsync(value);
+
+            if (Validate != null)
+                _error = Validate(value);
         }
     }
 
@@ -117,6 +130,7 @@
             if (EqualityComparer<string>.Default.Equals(_text, value))
                 return;
             _text = value;
+
             TextChanged.InvokeAsync(value);
 
             if(value != null)
@@ -144,12 +158,17 @@
         {
             _itemDict = await ItemDictFunc.Invoke();
             _itemList = _itemDict.Select(x => x.Key).ToList();
-            StateHasChanged();
         }
     }
 
     protected override void OnAfterRender(bool firstRender)
     {
+        if (firstRender)
+        {
+            _error = Validate?.Invoke(Value);    
+            StateHasChanged();
+        }
+
         if (_isListRendering)
         {
             // 리스트 아이템목록 렌더링이 완료된 후 선택된 아이템을 렌더링한다.
@@ -167,10 +186,16 @@
             _isListRendering = false;
         }
     }
-
+    
     private void Input_Focus()
-    {
+    {   
         Input_ValueChanged(_inputReference.Value);
+        showUnderline = true;
+    }
+
+    private void Input_Blur()
+    {
+        showUnderline = false;
     }
 
     private void Input_ValueChanged(string value)
@@ -296,5 +321,7 @@
             return "리스트에 포함되지 않는 문자열입니다";
         return null;
     }
+
+   
 
 }

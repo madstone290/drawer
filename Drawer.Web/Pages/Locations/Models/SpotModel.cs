@@ -9,7 +9,7 @@ namespace Drawer.Web.Pages.Locations.Models
         public string? Name { get; set; } 
         public string? Note { get; set; } 
         public long ZoneId { get; set; }
-        public string ZoneName { get; set; }
+        public string? ZoneName { get; set; }
     }
 
     public class SpotModelValidator : AbstractValidator<SpotModel>
@@ -17,11 +17,14 @@ namespace Drawer.Web.Pages.Locations.Models
         public SpotModelValidator()
         {
             RuleFor(x => x.ZoneId)
-                .GreaterThan(0);
+                .GreaterThan(0)
+                .WithMessage("* 필수");
+
 
             RuleFor(x => x.Name)
                  .NotEmpty()
-                 .Length(1, 100);
+                 .WithMessage("* 필수");
+                 
         }
     }
 }

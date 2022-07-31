@@ -8,25 +8,43 @@
 <BatchEdit TitleText="작업장 일괄 추가"
            TModel="WorkplaceModel"
            HomePath="@Paths.WorkplaceHome"
-           SaveAsyncFunc="@SaveWorkplaces"
-           ValidatePropertyFunc="@ValidateProperty" />
+           ExcelFormName="작업장-양식"
+           SaveAsyncFunc="@Save"
+           Validate="@Validate">
+
+    <HeadRow>
+        <MudTh Style="min-width:100px;">이름</MudTh>
+        <MudTh Style="min-width:100px;">비고</MudTh>
+    </HeadRow>
+    <BodyRow>
+        <AidInputCell @bind-Value="context.Name"
+                      Validate="@((value) => ValidateProperty(context, nameof(ZoneModel.Name)))" />
+        <AidInputCell @bind-Value="context.Note"
+                      Validate="@((value) => ValidateProperty(context, nameof(ZoneModel.Note)))" />
+    </BodyRow>
+</BatchEdit>
 
 @code {
     private readonly WorkplaceModelValidator _validator = new();
 
     [Inject] public WorkplaceApiClient ApiClient { get; set; } = null!;
 
-    private async Task<string?> SaveWorkplaces(IEnumerable<WorkplaceModel> workplaces)
+    private async Task<bool> Save(IEnumerable<WorkplaceModel> workplaces)
     {
-        var message = string.Empty;
+        bool success = true;
         foreach (var workplace in workplaces)
         {
             var content = new CreateWorkPlaceRequest(workplace.Name!, workplace.Note);
             var response = await ApiClient.AddWorkplace(content);
-            if (!response.IsSuccessful)
-                message += response.ErrorMessage;
+            success &= Snackbar.CheckSuccessFail(response);
         }
-        return message;
+        return success;
+    }
+
+    private bool Validate(WorkplaceModel instance)
+    {
+        var result = _validator.Validate(instance);
+        return result.IsValid;
     }
 
     private string? ValidateProperty(WorkplaceModel instance, string property)

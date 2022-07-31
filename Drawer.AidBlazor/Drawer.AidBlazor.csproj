@@ -18,7 +18,7 @@
 	<ItemGroup>
 	  <Resource Include="AidButton.razor" />
 	  <Resource Include="AidContainer.razor" />
-	  <Resource Include="AidEditCell.razor" />
+	  <Resource Include="AidInput.razor" />
 	  <Resource Include="AidMainContent.razor" />
 	  <Resource Include="AidTable.razor" />
 	  <Resource Include="AidTextField.razor" />

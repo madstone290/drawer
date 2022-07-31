@@ -6,7 +6,7 @@ namespace Drawer.Web.Pages.Locations.Models
     {
         public long Id { get; set; }
         public long WorkPlaceId { get; set; }
-        public string WorkplaceName { get; set; }
+        public string? WorkplaceName { get; set; }
         public string? Name { get; set; }
         public string? Note { get; set; }
     }
@@ -16,11 +16,10 @@ namespace Drawer.Web.Pages.Locations.Models
         public ZoneModelValidator()
         {
             RuleFor(x => x.WorkPlaceId)
-                .GreaterThan(0);
+                .GreaterThan(0).WithMessage("* 필수");
 
             RuleFor(x => x.Name)
-                 .NotEmpty()
-                 .Length(1, 100);
+                 .NotEmpty().WithMessage("* 필수");
         }
     }
 }

@@ -33,8 +33,6 @@ namespace Drawer.Web.Shared.Dialogs
 
                 Dialog.Close(buffer);
             }
-
-            
         }
     }
 }

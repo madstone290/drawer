@@ -3,9 +3,8 @@ using FluentValidation;
 
 namespace Drawer.Web.Pages.Locations.Models
 {
-    public class WorkplaceModel : BindingObject
-    {
-        [NoBind]
+    public class WorkplaceModel
+    { 
         public long Id { get; set; }
         public string? Name { get; set; }
         public string? Note { get; set; }
@@ -27,7 +26,8 @@ namespace Drawer.Web.Pages.Locations.Models
         {
             RuleFor(x => x.Name)
                  .NotEmpty()
-                 .Length(1, 100);
+                 .WithMessage("* 필수");
+                 
         }
     }
 }

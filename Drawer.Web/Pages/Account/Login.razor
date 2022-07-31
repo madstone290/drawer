@@ -2,7 +2,10 @@
 @attribute [Route(Paths.Account.Login)]
 @attribute [AllowAnonymous]
 
-<ContentError Text="@Error"/>
+@if (!string.IsNullOrWhiteSpace(Error))
+{
+<MudAlert Severity="Severity.Error">@Error</MudAlert>        
+}
 <MudGrid>
     <MudItem xs="12" sm="7">
         <MudPaper Class="pa-4 mt-4">

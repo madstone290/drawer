@@ -1,0 +1,50 @@
+﻿@typeparam TValue
+<MudTd>
+    <AidCompleteInput TValue="@TValue"
+              @bind-Value="@Value"
+              @bind-Text="@Text"
+              ItemDictFunc="@ItemDictFunc"
+              Validate="@Validate" />
+</MudTd>
+
+@code {
+    private TValue? _value;
+    [Parameter]
+    public TValue? Value
+    {
+        get => _value;
+        set
+        {
+            if (EqualityComparer<TValue>.Default.Equals(_value, value))
+                return;
+            _value = value;
+            ValueChanged.InvokeAsync(value);
+        }
+    }
+    private string? _text;
+    [Parameter]
+    public string? Text
+    {
+        get => _text;
+        set
+        {
+            if (EqualityComparer<string>.Default.Equals(_text, value))
+                return;
+            _text = value;
+            TextChanged.InvokeAsync(value);
+        }
+    }
+
+    [Parameter] public EventCallback<TValue?> ValueChanged { get; set; }
+    [Parameter] public EventCallback<string?> TextChanged { get; set; }
+
+    /// <summary>
+    /// 값 유효성을 검사한다.
+    /// </summary>
+    [Parameter] public Func<TValue?, string>? Validate { get; set; }
+
+    /// <summary>
+    /// 아이템 사전을 불러온다.
+    /// </summary>
+    [Parameter] public Func<Task<Dictionary<string, TValue>>>? ItemDictFunc { get; set; }
+}

@@ -1,61 +1,95 @@
-﻿@using Drawer.Web.Authentication
+﻿@using Drawer.Contract.Locations
+@using Drawer.Web.Api.Locations
+@using Drawer.Web.Authentication
 @using Drawer.Web.Pages.Items.Models
+@using Drawer.Web.Services
 @using Drawer.Web.Utils
 @using Drawer.Web.Pages.Locations.Models;
 
 @attribute [Route(Paths.SpotBatchEdit)]
 
-<ContentTitle Text="자리 일괄 추가" />
-<AuthorizeView Context="AuthorizeView" Policy="@Policies.CompanyMember">
-    <NotAuthorized>
-        <NeedCompany />
-    </NotAuthorized>
+<BatchEdit TitleText="자리 일괄 추가"
+           TModel="SpotModel"
+           HomePath="@Paths.SpotHome"
+           ExcelFormName="자리-양식"
+           SaveAsyncFunc="@Save"
+           Validate="@Validate">
 
-    <Authorized>
-        <BatchEditToolbar 
-            OnBackClick="Back_Click"
-            OnClearClick="Clear_Click"
-            OnExcelDownloadClick="ExcelDownload_Click"
-            OnExcelUploadClick="ExcelUpload_Click"
-            OnNewRowClick="NewRow_Click"
-            OnSaveClick="Save_Click" />
+    <HeadRow>
+        <MudTh Style="min-width:100px;">이름</MudTh>
+        <MudTh Style="min-width:100px;">비고</MudTh>
+        <MudTh Style="min-width:100px;">구역</MudTh>
+    </HeadRow>
+    <BodyRow>
+        <AidInputCell @bind-Value="context.Name"
+                      Validate="@((_) => ValidateProperty(context, nameof(SpotModel.Name)))" />
 
-        <AidTable ReadOnly="false"
-                  T="SpotModel"
-                  UseRowSelection="false"
-                  Items="@SpotList">
-            <HeaderContent>
-                <MudTHeadRow>
-                    <MudTh Style="min-width:100px;">이름</MudTh>
-                    <MudTh Style="min-width:100px;">비고</MudTh>
-                    <MudTh Style="min-width:100px;">구역</MudTh>
-                </MudTHeadRow>
-            </HeaderContent>
+        <AidInputCell @bind-Value="context.Note"
+                      Validate="@((_) => ValidateProperty(context, nameof(SpotModel.Note)))" />
+        <AidCompleteInputCell TValue="long"
+                              ItemDictFunc="GetZones"
+                              Validate="@((_) => ValidateProperty(context, nameof(SpotModel.ZoneId)))"
+                              @bind-Text="context.ZoneName"
+                              @bind-Value="context.ZoneId" />
+    </BodyRow>
+</BatchEdit>
 
-            <RowTemplate>
-                <AidEditCell @bind-Value="context.Name"
-                             Validate="((_) => Validate(context, x => x.Name))" />
-                <AidEditCell @bind-Value="context.Note"
-                             Validate="((_) => Validate(context, x => x.Note))" />
-                <MudTd>
-                    <AidCompleteInput TValue="long"
-                                      ItemDictFunc="GetZones"
-                                      @bind-Text="context.ZoneName" 
-                                      @bind-Value="context.ZoneId" />
-                </MudTd>
-            </RowTemplate>
+@code {
+    private readonly SpotModelValidator _validator = new();
 
-            <FooterContent>
-                <MudTFootRow>
-                    <MudTd colSpan="100">총 @(TotalRowCount)개의 행</MudTd>
-                </MudTFootRow>
-            </FooterContent>
+    [Inject] public SpotApiClient SpotApiClient { get; set; } = null!;
+    [Inject] public ZoneApiClient ZoneApiClient { get; set; } = null!;
+    [Inject] public ILockService LockService { get; set; } = null!;
 
-        </AidTable>
+    protected override async Task OnInitializedAsync()
+    {
+        await GetZones();
+    }
 
-    </Authorized>
-</AuthorizeView>
+    private async Task<Dictionary<string, long>> GetZones()
+    {
+        var dict = await LockService.DoAsync<Dictionary<string, long>>(async () =>
+        {
+            var zoneResponse = await ZoneApiClient.GetZones();
 
+            var zoneDict = new Dictionary<string, long>();
+            if (Snackbar.CheckFail(zoneResponse))
+            {
+                foreach (var Zone in zoneResponse.Data.Zones)
+                    zoneDict[Zone.Name] = Zone.Id;
+            }
+            return zoneDict;
+        });
+        return dict;
+    }
+
+
+    private async Task<bool> Save(IEnumerable<SpotModel> spots)
+    {
+
+        bool success = true;
+        foreach (var Spot in spots)
+        {
+            var content = new CreateSpotRequest(Spot.ZoneId, Spot.Name, Spot.Note);
+            var response = await SpotApiClient.AddSpot(content);
+            success &= Snackbar.CheckSuccessFail(response);
+        }
+        return success;
+
+    }
+
+    private bool Validate(SpotModel instance)
+    {
+        var result = _validator.Validate(instance);
+        return result.IsValid;
+    }
+
+    private string? ValidateProperty(SpotModel instance, string property)
+    {
+        var msg = _validator.ValidateProperty(instance, property);
+        return msg;
+    }
+}
 
 
 

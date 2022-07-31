@@ -1,89 +1,66 @@
-﻿@using Drawer.Web.Authentication
+﻿@using System.Reflection
+@using Drawer.Contract.Items
+@using Drawer.Contract.Locations
+@using Drawer.Web.Api.Items
+@using Drawer.Web.Api.Locations
 @using Drawer.Web.Pages.Items.Models
+@using Drawer.Web.Pages.Locations.Models
 @using Drawer.Web.Utils
-
+@using System.Linq.Expressions
 @attribute [Route(Paths.ItemBatchEdit)]
 
-<ContentTitle Text="아이템 일괄 추가" />
-<AuthorizeView Context="AuthorizeView" Policy="@Policies.CompanyMember">
-    <NotAuthorized>
-        <NeedCompany />
-    </NotAuthorized>
+<BatchEdit TitleText="아이템 일괄 추가"
+           TModel="ItemModel"
+           HomePath="@Paths.ItemHome"
+           ExcelFormName="아이템-양식"
+           SaveAsyncFunc="@Save"
+           Validate="@Validate">
 
-    <Authorized>
-        <AidToolBar>
-            <AidButton Color="Color.Error"
-                       StartIcon="@Icons.Material.Filled.ArrowBack"
-                       OnClick=@(() => Back_Click())>
-                뒤로
-            </AidButton>
-            <AidButton Color="Color.Warning"
-                       StartIcon="@Icons.Material.Filled.Clear"
-                       OnClick=@(() => Cancel_Click())>
-                초기화
-            </AidButton>
-            <AidButton Color="Color.Tertiary"
-                       StartIcon="@Icons.Material.Filled.FileDownload"
-                       OnClick=@(() => ExcelDownload_Click())>
-                엑셀 폼 다운로드
-            </AidButton>
-            <AidButton Color="Color.Tertiary"
-                       StartIcon="@Icons.Material.Filled.FileUpload"
-                       OnClick=@(() => ExcelUpload_Click())>
-                엑셀 업로드
-            </AidButton>
-            <AidButton Color="Color.Secondary"
-                       StartIcon="@Icons.Material.Filled.Add"
-                       OnClick=@(() => NewRow_Click())>
-                행 추가
-            </AidButton>
-            <AidButton Color="Color.Primary"
-                       StartIcon="@Icons.Material.Filled.Save"
-                       OnClick=@(() => Save_Click())>
-                저장
-            </AidButton>
-        </AidToolBar>
+    <HeadRow>
+        <MudTh Style="min-width:100px;">이름</MudTh>
+        <MudTh Style="min-width:100px;">코드</MudTh>
+        <MudTh Style="min-width:100px;">번호</MudTh>
+        <MudTh Style="min-width:100px;">Sku</MudTh>
+        <MudTh Style="min-width:100px;">계량 단위</MudTh>
+    </HeadRow>
+    <BodyRow>
+        <AidInputCell @bind-Value="context.Name"
+                      Validate="((_) => ValidateProperty(context, x => x.Name))" />
+        <AidInputCell @bind-Value="context.Code"
+                      Validate="((_) => ValidateProperty(context, x => x.Code))" />
+        <AidInputCell @bind-Value="context.Number"
+                      Validate="((_) => ValidateProperty(context, x => x.Number))" />
+        <AidInputCell @bind-Value="context.Sku"
+                      Validate="((_) => ValidateProperty(context, x => x.Sku))" />
+        <AidInputCell @bind-Value="context.QuantityUnit"
+                      Validate="((_) => ValidateProperty(context, x => x.QuantityUnit))" />
+    </BodyRow>
+</BatchEdit>
 
-        <AidTable ReadOnly="false"
-                  T="ItemModel"
-                  UseRowSelection="false"
-                  Items="@ItemList">
+@code {
+    private readonly ItemModelValidator _validator = new();
 
-            <HeaderContent>
-                <MudTHeadRow>
-                    <MudTh Style="min-width:100px;">Name</MudTh>
-                    <MudTh Style="min-width:100px;">Code</MudTh>
-                    <MudTh Style="min-width:100px;">Number</MudTh>
-                    <MudTh Style="min-width:100px;">Sku</MudTh>
-                    <MudTh Style="min-width:100px;">QuantityUnit</MudTh>
-                </MudTHeadRow>
-            </HeaderContent>
+    [Inject] public ItemApiClient ItemApiClient { get; set; } = null!;
 
-            <RowTemplate>
-                <AidEditCell @bind-Value="context.Name"
-                             Validate="((_) => Validate(context, x => x.Name))" />
-                <AidEditCell @bind-Value="context.Code"
-                             Validate="((_) => Validate(context, x => x.Code))" />
-                <AidEditCell @bind-Value="context.Number"
-                             Validate="((_) => Validate(context, x => x.Number))" />
-                <AidEditCell @bind-Value="context.Sku"
-                             Validate="((_) => Validate(context, x => x.Sku))" />
-                <AidEditCell @bind-Value="context.QuantityUnit"
-                             Validate="((_) => Validate(context, x => x.QuantityUnit))" />
-            </RowTemplate>
+    private async Task<bool> Save(IEnumerable<ItemModel> items)
+    {
+        var content = new BatchCreateItemRequest(items.Select(item =>
+              new BatchCreateItemRequest.Item(item.Name, item.Code, item.Number, item.Sku, item.QuantityUnit)).ToList());
 
-            <FooterContent>
-                <MudTFootRow>
-                    <MudTd colSpan="100">총 @(TotalRowCount)개의 행</MudTd>
-                </MudTFootRow>
-            </FooterContent>
+        var response = await ItemApiClient.BatchAddItem(content);
 
-        </AidTable>
+        return Snackbar.CheckSuccessFail(response);
+    }
 
-    </Authorized>
-</AuthorizeView>
+    private bool Validate(ItemModel instance)
+    {
+        var result = _validator.Validate(instance);
+        return result.IsValid;
+    }
 
+    private string ValidateProperty(ItemModel item, Expression<Func<ItemModel, object>> expression)
+    {
+        return _validator.ValidateProperty(item, expression);
+    }
 
-
-
-
+}
