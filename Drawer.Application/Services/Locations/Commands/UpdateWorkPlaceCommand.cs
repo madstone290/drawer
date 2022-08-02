@@ -19,9 +19,9 @@ namespace Drawer.Application.Services.Locations.Commands
 
     public class UpdateWorkPlaceCommandHandler : ICommandHandler<UpdateWorkPlaceCommand, UpdateWorkPlaceResult>
     {
-        private readonly IWorkPlaceRepository _workPlaceRepository;
+        private readonly IWorkplaceRepository _workPlaceRepository;
 
-        public UpdateWorkPlaceCommandHandler(IWorkPlaceRepository workPlaceRepository)
+        public UpdateWorkPlaceCommandHandler(IWorkplaceRepository workPlaceRepository)
         {
             _workPlaceRepository = workPlaceRepository;
         }
@@ -30,7 +30,7 @@ namespace Drawer.Application.Services.Locations.Commands
         {
             var workPlace = await _workPlaceRepository.FindByIdAsync(command.Id);
             if (workPlace == null)
-                throw new EntityNotFoundException<WorkPlace>(command.Id);
+                throw new EntityNotFoundException<Workplace>(command.Id);
 
             workPlace.SetName(command.Name);
             workPlace.SetNote(command.Note);

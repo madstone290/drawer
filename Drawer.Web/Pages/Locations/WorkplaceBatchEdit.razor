@@ -37,14 +37,12 @@
 
     private async Task<bool> Save(IEnumerable<WorkplaceModel> workplaces)
     {
-        bool success = true;
-        foreach (var workplace in workplaces)
-        {
-            var content = new CreateWorkPlaceRequest(workplace.Name!, workplace.Note);
-            var response = await ApiClient.AddWorkplace(content);
-            success &= Snackbar.CheckSuccessFail(response);
-        }
-        return success;
+        var content = new BatchCreateWorkplaceRequest(workplaces.Select(x =>
+            new BatchCreateWorkplaceRequest.Workplace(x.Name, x.Note)).ToList());
+        
+            var response = await ApiClient.BatchAddWorkplace(content);
+
+        return Snackbar.CheckSuccessFail(response);
     }
 
     private bool Validate(WorkplaceModel instance)

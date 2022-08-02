@@ -3,24 +3,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Drawer.Contract.Locations.GetWorkPlacesResponse;
+using static Drawer.Contract.Locations.GetWorkplacesResponse;
 
 namespace Drawer.Contract.Locations
 {
-    public class WorkPlaceContracts
+    public class WorkplaceContracts
     {
     }
 
-    public record CreateWorkPlaceRequest(string Name, string? Note);
-
-    public record CreateWorkPlaceResponse(long Id);
-
-    public record UpdateWorkPlaceRequest(string Name, string? Note);
-
-    public record GetWorkPlaceResponse(long Id, string Name, string? Note);
-
-    public record GetWorkPlacesResponse(IList<WorkPlace> WorkPlaces)
+    public record BatchCreateWorkplaceRequest(IList<BatchCreateWorkplaceRequest.Workplace> Workplaces)
     {
-        public record WorkPlace(long Id, string Name, string? Note);
+        public record Workplace(string Name, string? Note);
+    }
+
+    public record BatchCreateWorkplaceResponse(IList<long> IdList);
+
+    public record CreateWorkplaceRequest(string Name, string? Note);
+
+    public record CreateWorkplaceResponse(long Id);
+
+    public record UpdateWorkplaceRequest(string Name, string? Note);
+
+    public record GetWorkplaceResponse(long Id, string Name, string? Note);
+
+    public record GetWorkplacesResponse(IList<Workplace> Workplaces)
+    {
+        public record Workplace(long Id, string Name, string? Note);
     }
 }

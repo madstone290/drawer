@@ -21,6 +21,16 @@ namespace Drawer.Web.Api.Locations
             return await SendAsync(request);
         }
 
+        public async Task<ApiResponse<BatchCreateZoneResponse>> BatchAddZone(BatchCreateZoneRequest content)
+        {
+            var request = new ApiRequest<BatchCreateZoneResponse>(
+                HttpMethod.Post,
+                ApiRoutes.Zones.BatchCreate,
+                content);
+
+            return await SendAsync(request);
+        }
+
         public async Task<ApiResponse<Unit>> UpdateZone(long id, UpdateZoneRequest content)
         {
             var request = new ApiRequest(

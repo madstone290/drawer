@@ -61,7 +61,7 @@ namespace Drawer.Web.Pages.Locations
                         Id = zone.Id,
                         Name = zone.Name,
                         Note = zone.Note,
-                        WorkPlaceId = zone.WorkPlaceId
+                        WorkplaceId = zone.WorkplaceId
                     });
                 }
             }

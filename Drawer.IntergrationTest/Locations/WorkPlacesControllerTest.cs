@@ -14,25 +14,24 @@ using Xunit.Abstractions;
 namespace Drawer.IntergrationTest.Locations
 {
     [Collection(ApiInstanceCollection.Default)]
-    public class WorkPlacesControllerTest
+    public class WorkplacesControllerTest
     {
         private readonly HttpClient _client;
         private readonly ITestOutputHelper _outputHelper;
 
-        public WorkPlacesControllerTest(ApiInstance apiInstance, ITestOutputHelper outputHelper)
+        public WorkplacesControllerTest(ApiInstance apiInstance, ITestOutputHelper outputHelper)
         {
             _client = apiInstance.Client;
             _outputHelper = outputHelper;
         }
 
         [Theory]
-        [InlineData("작업장1", "작업장입니다")]
-        [InlineData("작업장2", "작업장입니다")]
+        [InlineData("창고1", "창고입니다")]
         public async Task CreateWorkPlace_Returns_Ok_With_Content(string name, string description) 
         {
             // Arrange
-            var request = new CreateWorkPlaceRequest(name, description);
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.WorkPlaces.Create);
+            var request = new CreateWorkplaceRequest(name, description);
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Workplaces.Create);
             requestMessage.Content = JsonContent.Create(request);
 
             // Act
@@ -40,31 +39,57 @@ namespace Drawer.IntergrationTest.Locations
 
             // Assert
             responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var response = await responseMessage.Content.ReadFromJsonAsync<CreateWorkPlaceResponse>();
+            var response = await responseMessage.Content.ReadFromJsonAsync<CreateWorkplaceResponse>();
             response.Should().NotBeNull();
         }
 
         [Theory]
-        [InlineData("작업장", "작업장입니다")]
-        [InlineData("창고", "창고입니다")]
-        [InlineData("냉동실", "매장 냉동실입니다")]
+        [InlineData(
+           "창고2", "창고입니다",
+           "창고3", "창고입니다"
+       )]
+        public async Task BatchCreateWorkplace_Returns_Ok_With_Content(
+           string name1, string note1, 
+           string name2, string note2)
+        {
+            // Arrange
+            var request = new BatchCreateWorkplaceRequest(new List<BatchCreateWorkplaceRequest.Workplace>()
+            {
+                new BatchCreateWorkplaceRequest.Workplace(name1, note1),
+                new BatchCreateWorkplaceRequest.Workplace(name2, note2),
+            });
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Workplaces.BatchCreate);
+            requestMessage.Content = JsonContent.Create(request);
+
+            // Act
+            var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
+
+            // Assert
+            responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+            var response = await responseMessage.Content.ReadFromJsonAsync<BatchCreateWorkplaceResponse>() ?? default!;
+            response.Should().NotBeNull();
+            response.IdList.Count.Should().Be(2);
+        }
+
+        [Theory]
+        [InlineData("냉동창고1", "냉동창고입니다")]
         public async Task GetWorkPlace_Returns_Ok_With_CreatedWorkPlace(string name, string note)
         {
             // Arrange
-            var createRequest = new CreateWorkPlaceRequest(name, note);
-            var createRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.WorkPlaces.Create);
+            var createRequest = new CreateWorkplaceRequest(name, note);
+            var createRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Workplaces.Create);
             createRequestMessage.Content = JsonContent.Create(createRequest);
             var createResponseMessage = await _client.SendAsyncWithMasterAuthentication(createRequestMessage);
-            var createResponse = await createResponseMessage.Content.ReadFromJsonAsync<CreateWorkPlaceResponse>() ?? null!;
+            var createResponse = await createResponseMessage.Content.ReadFromJsonAsync<CreateWorkplaceResponse>() ?? null!;
 
             // Act
             var getRequestMessage = new HttpRequestMessage(HttpMethod.Get,
-                ApiRoutes.WorkPlaces.Get.Replace("{id}", createResponse.Id.ToString()));
+                ApiRoutes.Workplaces.Get.Replace("{id}", createResponse.Id.ToString()));
             var getResponseMessage = await _client.SendAsyncWithMasterAuthentication(getRequestMessage);
 
             // Assert
             getResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var getResponse = await getResponseMessage.Content.ReadFromJsonAsync<GetWorkPlaceResponse>() ?? null!;
+            var getResponse = await getResponseMessage.Content.ReadFromJsonAsync<GetWorkplaceResponse>() ?? null!;
             getResponse.Should().NotBeNull();
             getResponse.Id.Should().Be(createResponse.Id);
             getResponse.Name.Should().Be(createRequest.Name);
@@ -72,50 +97,50 @@ namespace Drawer.IntergrationTest.Locations
         }
 
         [Theory]
-        [InlineData("작업장1", "작업장1입니다", "창고1", "창고1입니다")]
+        [InlineData("매장1", "매장1입니다", "매장2", "매장2입니다")]
         public async Task GetWorkPlaces_Returns_Ok_With_CreatedWorkPlaces(
             string name1, string note1,
             string name2, string note2)
         {
             // Arrange
-            var createRequest1 = new CreateWorkPlaceRequest(name1, note1);
-            var createRequestMessage1 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.WorkPlaces.Create);
+            var createRequest1 = new CreateWorkplaceRequest(name1, note1);
+            var createRequestMessage1 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Workplaces.Create);
             createRequestMessage1.Content = JsonContent.Create(createRequest1);
             var createResponseMessage1 = await _client.SendAsyncWithMasterAuthentication(createRequestMessage1);
 
-            var createRequest2 = new CreateWorkPlaceRequest(name2, note2);
-            var createRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.WorkPlaces.Create);
+            var createRequest2 = new CreateWorkplaceRequest(name2, note2);
+            var createRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Workplaces.Create);
             createRequestMessage2.Content = JsonContent.Create(createRequest2);
             var createResponseMessage2 = await _client.SendAsyncWithMasterAuthentication(createRequestMessage2);
 
             // Act
-            var getWorkPlacesRequestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.WorkPlaces.GetList);
+            var getWorkPlacesRequestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.Workplaces.GetList);
             var getWorkPlacesResponseMessage = await _client.SendAsyncWithMasterAuthentication(getWorkPlacesRequestMessage);
 
             // Assert
             getWorkPlacesResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var getWorkPlacesResponse = await getWorkPlacesResponseMessage.Content.ReadFromJsonAsync<GetWorkPlacesResponse>() ?? null!;
+            var getWorkPlacesResponse = await getWorkPlacesResponseMessage.Content.ReadFromJsonAsync<GetWorkplacesResponse>() ?? null!;
             getWorkPlacesResponse.Should().NotBeNull();
-            getWorkPlacesResponse.WorkPlaces.Should().NotBeNull();
-            getWorkPlacesResponse.WorkPlaces.Should().Contain(x=> x.Name == name1 && x.Note == note1);
-            getWorkPlacesResponse.WorkPlaces.Should().Contain(x => x.Name == name2 && x.Note == note2);
+            getWorkPlacesResponse.Workplaces.Should().NotBeNull();
+            getWorkPlacesResponse.Workplaces.Should().Contain(x=> x.Name == name1 && x.Note == note1);
+            getWorkPlacesResponse.Workplaces.Should().Contain(x => x.Name == name2 && x.Note == note2);
         }
 
         [Theory]
-        [InlineData("작업장", "작업장입니다", "작업장 수정", "수정된 작업장입니다" )]
+        [InlineData("현장1", "현장입니다", "현장1-수정", "수정된 현장입니다" )]
         public async Task UpdateWorkPlace_Returns_Ok(string name1, string note1, string name2, string note2)
         {
             // Arrange
-            var createRequest = new CreateWorkPlaceRequest(name1, note1);
-            var createRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.WorkPlaces.Create);
+            var createRequest = new CreateWorkplaceRequest(name1, note1);
+            var createRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Workplaces.Create);
             createRequestMessage.Content = JsonContent.Create(createRequest);
             var createResponseMessage = await _client.SendAsyncWithMasterAuthentication(createRequestMessage);
-            var createResponse = await createResponseMessage.Content.ReadFromJsonAsync<CreateWorkPlaceResponse>() ?? null!;
+            var createResponse = await createResponseMessage.Content.ReadFromJsonAsync<CreateWorkplaceResponse>() ?? null!;
 
             // Act
-            var updateRequest = new CreateWorkPlaceRequest(name2, note2);
+            var updateRequest = new CreateWorkplaceRequest(name2, note2);
             var updateRequestMessage = new HttpRequestMessage(HttpMethod.Put,
-                ApiRoutes.WorkPlaces.Update.Replace("{id}", createResponse.Id.ToString()));
+                ApiRoutes.Workplaces.Update.Replace("{id}", createResponse.Id.ToString()));
             updateRequestMessage.Content = JsonContent.Create(updateRequest);
             var updateResponseMessage = await _client.SendAsyncWithMasterAuthentication(updateRequestMessage);
 
@@ -123,10 +148,10 @@ namespace Drawer.IntergrationTest.Locations
             updateResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
 
             var getRequestMessage = new HttpRequestMessage(HttpMethod.Get, 
-                ApiRoutes.WorkPlaces.Get.Replace("{id}", createResponse.Id.ToString()));
+                ApiRoutes.Workplaces.Get.Replace("{id}", createResponse.Id.ToString()));
             var getResponseMessage = await _client.SendAsyncWithMasterAuthentication(getRequestMessage);
             getResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var getResponse = await getResponseMessage.Content.ReadFromJsonAsync<GetWorkPlaceResponse>() ?? null!;
+            var getResponse = await getResponseMessage.Content.ReadFromJsonAsync<GetWorkplaceResponse>() ?? null!;
             getResponse.Should().NotBeNull();
             getResponse.Id.Should().Be(createResponse.Id);
             getResponse.Name.Should().Be(updateRequest.Name);
@@ -134,26 +159,26 @@ namespace Drawer.IntergrationTest.Locations
         }
 
         [Theory]
-        [InlineData("작업장", "작업장입니다")]
+        [InlineData("현장2", "현장2입니다")]
         public async Task DeleteWorkPlace_Returns_Ok(string name, string note)
         {
             // Arrange
-            var createRequest = new CreateWorkPlaceRequest(name, note);
-            var createRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.WorkPlaces.Create);
+            var createRequest = new CreateWorkplaceRequest(name, note);
+            var createRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Workplaces.Create);
             createRequestMessage.Content = JsonContent.Create(createRequest);
             var createResponseMessage = await _client.SendAsyncWithMasterAuthentication(createRequestMessage);
-            var createResponse = await createResponseMessage.Content.ReadFromJsonAsync<CreateWorkPlaceResponse>() ?? null!;
+            var createResponse = await createResponseMessage.Content.ReadFromJsonAsync<CreateWorkplaceResponse>() ?? null!;
 
             // Act
             var deleteRequestMessage = new HttpRequestMessage(HttpMethod.Delete,
-                ApiRoutes.WorkPlaces.Delete.Replace("{id}", createResponse.Id.ToString()));
+                ApiRoutes.Workplaces.Delete.Replace("{id}", createResponse.Id.ToString()));
             var deleteResponseMessage = await _client.SendAsyncWithMasterAuthentication(deleteRequestMessage);
 
             // Assert
             deleteResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
 
             var getRequestMessage = new HttpRequestMessage(HttpMethod.Get,
-                ApiRoutes.WorkPlaces.Get.Replace("{id}", createResponse.Id.ToString()));
+                ApiRoutes.Workplaces.Get.Replace("{id}", createResponse.Id.ToString()));
             var getResponseMessage = await _client.SendAsyncWithMasterAuthentication(getRequestMessage);
             getResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.NoContent);
         }

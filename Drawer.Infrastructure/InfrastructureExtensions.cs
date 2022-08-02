@@ -117,7 +117,7 @@ namespace Drawer.Infrastructure
             services.AddScoped<ICompanyMemberRepository, CompanyMemberRepository>();
 
             services.AddScoped<ISpotRepository, SpotRepository>();
-            services.AddScoped<IWorkPlaceRepository, WorkPlaceRepository>();
+            services.AddScoped<IWorkplaceRepository, WorkPlaceRepository>();
             services.AddScoped<IZoneRepository, ZoneRepository>();
 
             services.AddScoped<IItemRepository, ItemRepository>();

@@ -10,13 +10,13 @@ using System.Threading.Tasks;
 
 namespace Drawer.Infrastructure.Repos.Locations
 {
-    public class WorkPlaceRepository : Repository<WorkPlace, long>, IWorkPlaceRepository
+    public class WorkPlaceRepository : Repository<Workplace, long>, IWorkplaceRepository
     {
         public WorkPlaceRepository(DrawerDbContext dbContext) : base(dbContext)
         {
         }
 
-        public async Task<IList<WorkPlace>> FindAll()
+        public async Task<IList<Workplace>> FindAll()
         {
             return await _dbContext.WorkPlaces.ToListAsync();
         }

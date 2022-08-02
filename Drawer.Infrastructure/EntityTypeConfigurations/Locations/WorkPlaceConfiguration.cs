@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace Drawer.Infrastructure.EntityTypeConfigurations.Locations
 {
-    public class WorkPlaceConfiguration : IEntityTypeConfiguration<WorkPlace>
+    public class WorkPlaceConfiguration : IEntityTypeConfiguration<Workplace>
     {
-        public void Configure(EntityTypeBuilder<WorkPlace> builder)
+        public void Configure(EntityTypeBuilder<Workplace> builder)
         {
         }
     }

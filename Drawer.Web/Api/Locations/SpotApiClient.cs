@@ -21,6 +21,16 @@ namespace Drawer.Web.Api.Locations
             return await SendAsync(request);
         }
 
+        public async Task<ApiResponse<BatchCreateSpotResponse>> BatchAddSpot(BatchCreateSpotRequest content)
+        {
+            var request = new ApiRequest<BatchCreateSpotResponse>(
+                HttpMethod.Post,
+                ApiRoutes.Spots.BatchCreate,
+                content);
+
+            return await SendAsync(request);
+        }
+
         public async Task<ApiResponse<Unit>> UpdateSpot(long id, UpdateSpotRequest content)
         {
             var request = new ApiRequest(

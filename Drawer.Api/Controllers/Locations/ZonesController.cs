@@ -49,9 +49,21 @@ namespace Drawer.Api.Controllers.Locations
         [ProducesResponseType(typeof(CreateZoneResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateZone([FromBody] CreateZoneRequest request)
         {
-            var command = new CreateZoneCommand(request.WorkPlaceId, request.Name, request.Note);
+            var command = new CreateZoneCommand(request.WorkplaceId, request.Name, request.Note);
             var result = await _mediator.Send(command);
             return Ok(new CreateZoneResponse(result.Id));
+        }
+
+        [HttpPost]
+        [Route(ApiRoutes.Zones.BatchCreate)]
+        [ProducesResponseType(typeof(BatchCreateZoneResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> BatchCreateItem([FromBody] BatchCreateZoneRequest request)
+        {
+            var command = new BatchCreateZoneCommand(request.Zones.Select(x =>
+                new BatchCreateZoneCommand.Zone(x.WorkplaceId, x.Name, x.Note))
+                .ToList());
+            var result = await _mediator.Send(command);
+            return Ok(new BatchCreateZoneResponse(result.IdList));
         }
 
         [HttpPut]

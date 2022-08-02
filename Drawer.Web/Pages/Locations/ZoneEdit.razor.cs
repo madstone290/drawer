@@ -46,14 +46,14 @@ namespace Drawer.Web.Pages.Locations
                     _zone.Id = response.Data.Id;
                     _zone.Name = response.Data.Name;
                     _zone.Note = response.Data.Note;
-                    _zone.WorkPlaceId = response.Data.WorkPlaceId;
+                    _zone.WorkplaceId = response.Data.WorkplaceId;
                 }
             }
 
             var workplaceResponse = await WorkplaceApiClient.GetWorkplaces();
             if (Snackbar.CheckFail(workplaceResponse))
             {
-                foreach (var workPlace in workplaceResponse.Data.WorkPlaces)
+                foreach (var workPlace in workplaceResponse.Data.Workplaces)
                 {
                     _workplaceList.Add(new WorkplaceModel()
                     {
@@ -78,7 +78,7 @@ namespace Drawer.Web.Pages.Locations
             {
                 if (EditMode == EditMode.Add)
                 {
-                    var content = new CreateZoneRequest(_zone.WorkPlaceId, _zone.Name!, _zone.Note);
+                    var content = new CreateZoneRequest(_zone.WorkplaceId, _zone.Name!, _zone.Note);
                     var response = await ZoneApiClient.AddZone(content);
                     if (Snackbar.CheckSuccessFail(response))
                     {

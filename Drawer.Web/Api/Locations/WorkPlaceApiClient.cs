@@ -11,21 +11,31 @@ namespace Drawer.Web.Api.Locations
 
         }
 
-        public async Task<ApiResponse<CreateWorkPlaceResponse>> AddWorkplace(CreateWorkPlaceRequest content)
+        public async Task<ApiResponse<CreateWorkplaceResponse>> AddWorkplace(CreateWorkplaceRequest content)
         {
-            var request = new ApiRequest<CreateWorkPlaceResponse>(
+            var request = new ApiRequest<CreateWorkplaceResponse>(
                 HttpMethod.Post,
-                ApiRoutes.WorkPlaces.Create,
+                ApiRoutes.Workplaces.Create,
                 content);
 
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<Unit>> UpdateWorkplace(long id, UpdateWorkPlaceRequest content)
+        public async Task<ApiResponse<BatchCreateWorkplaceResponse>> BatchAddWorkplace(BatchCreateWorkplaceRequest content)
+        {
+            var request = new ApiRequest<BatchCreateWorkplaceResponse>(
+                HttpMethod.Post,
+                ApiRoutes.Workplaces.BatchCreate,
+                content);
+
+            return await SendAsync(request);
+        }
+
+        public async Task<ApiResponse<Unit>> UpdateWorkplace(long id, UpdateWorkplaceRequest content)
         {
             var request = new ApiRequest(
                 HttpMethod.Put,
-                ApiRoutes.WorkPlaces.Update.Replace("{id}", $"{id}"),
+                ApiRoutes.Workplaces.Update.Replace("{id}", $"{id}"),
                 content);
 
             return await SendAsync(request);
@@ -35,25 +45,25 @@ namespace Drawer.Web.Api.Locations
         {
             var request = new ApiRequest(
                 HttpMethod.Delete,
-                ApiRoutes.WorkPlaces.Delete.Replace("{id}", $"{id}"));
+                ApiRoutes.Workplaces.Delete.Replace("{id}", $"{id}"));
                 
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<GetWorkPlaceResponse>> GetWorkplace(long id)
+        public async Task<ApiResponse<GetWorkplaceResponse>> GetWorkplace(long id)
         {
-            var request = new ApiRequest<GetWorkPlaceResponse>(
+            var request = new ApiRequest<GetWorkplaceResponse>(
                 HttpMethod.Get,
-                ApiRoutes.WorkPlaces.Get.Replace("{id}", $"{id}"));
+                ApiRoutes.Workplaces.Get.Replace("{id}", $"{id}"));
 
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<GetWorkPlacesResponse>> GetWorkplaces()
+        public async Task<ApiResponse<GetWorkplacesResponse>> GetWorkplaces()
         {
-            var request = new ApiRequest<GetWorkPlacesResponse>(
+            var request = new ApiRequest<GetWorkplacesResponse>(
                 HttpMethod.Get, 
-                ApiRoutes.WorkPlaces.GetList);
+                ApiRoutes.Workplaces.GetList);
 
             return await SendAsync(request);
         }

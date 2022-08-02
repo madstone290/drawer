@@ -68,7 +68,7 @@ namespace Drawer.Web.Pages.Locations
                 return;
 
             _workplaceList.Clear();
-            foreach (var item in response.Data.WorkPlaces)
+            foreach (var item in response.Data.Workplaces)
             {
                 var workPlaceModel = new WorkplaceModel()
                 {

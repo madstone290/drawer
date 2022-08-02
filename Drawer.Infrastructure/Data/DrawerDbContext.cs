@@ -38,7 +38,7 @@ namespace Drawer.Infrastructure.Data
         public DbSet<Company> Companies { get; set; } = default!;
         public DbSet<CompanyMember> CompanyMembers { get; set; } = default!;
 
-        public DbSet<WorkPlace> WorkPlaces { get; set; } = default!;
+        public DbSet<Workplace> WorkPlaces { get; set; } = default!;
         public DbSet<Zone> Zones { get; set; } = default!;
         public DbSet<Spot> Spots { get; set; } = default!;
 

@@ -20,9 +20,9 @@ namespace Drawer.Application.Services.Locations.Commands
     public class CreateZoneCommandHandler : ICommandHandler<CreateZoneCommand, CreateZoneResult>
     {
         private readonly IZoneRepository _zoneRepository;
-        private readonly IWorkPlaceRepository _workPlaceRepository;
+        private readonly IWorkplaceRepository _workPlaceRepository;
 
-        public CreateZoneCommandHandler(IZoneRepository zoneRepository, IWorkPlaceRepository workPlaceRepository)
+        public CreateZoneCommandHandler(IZoneRepository zoneRepository, IWorkplaceRepository workPlaceRepository)
         {
             _zoneRepository = zoneRepository;
             _workPlaceRepository = workPlaceRepository;
@@ -31,7 +31,7 @@ namespace Drawer.Application.Services.Locations.Commands
         public async Task<CreateZoneResult> Handle(CreateZoneCommand command, CancellationToken cancellationToken)
         {
             var workPlace = await _workPlaceRepository.FindByIdAsync(command.WorkPlaceId)
-                ?? throw new EntityNotFoundException<WorkPlace>(command.WorkPlaceId);
+                ?? throw new EntityNotFoundException<Workplace>(command.WorkPlaceId);
 
             var zone = new Zone(workPlace, command.Name);
             zone.SetNote(command.Note);

@@ -72,16 +72,12 @@
 
     private async Task<bool> Save(IEnumerable<SpotModel> spots)
     {
+        var content = new BatchCreateSpotRequest(spots.Select(x =>
+            new BatchCreateSpotRequest.Spot(x.ZoneId, x.Name!, x.Note)).ToList());
 
-        bool success = true;
-        foreach (var Spot in spots)
-        {
-            var content = new CreateSpotRequest(Spot.ZoneId, Spot.Name, Spot.Note);
-            var response = await SpotApiClient.AddSpot(content);
-            success &= Snackbar.CheckSuccessFail(response);
-        }
-        return success;
+        var response = await SpotApiClient.BatchAddSpot(content);
 
+        return Snackbar.CheckSuccessFail(response);
     }
 
     private bool Validate(SpotModel instance)

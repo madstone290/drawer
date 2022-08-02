@@ -55,6 +55,18 @@ namespace Drawer.Api.Controllers.Locations
             return Ok(new CreateSpotResponse(result.Id));
         }
 
+        [HttpPost]
+        [Route(ApiRoutes.Spots.BatchCreate)]
+        [ProducesResponseType(typeof(BatchCreateSpotResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> BatchCreateItem([FromBody] BatchCreateSpotRequest request)
+        {
+            var command = new BatchCreateSpotCommand(request.Spots.Select(x =>
+                new BatchCreateSpotCommand.Spot(x.ZoneId, x.Name, x.Note))
+                .ToList());
+            var result = await _mediator.Send(command);
+            return Ok(new BatchCreateSpotResponse(result.IdList));
+        }
+
         [HttpPut]
         [Route(ApiRoutes.Spots.Update)]
         [ProducesResponseType(StatusCodes.Status200OK)]

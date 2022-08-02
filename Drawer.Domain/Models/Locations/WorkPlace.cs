@@ -10,7 +10,7 @@ namespace Drawer.Domain.Models.Locations
     /// <summary>
     /// 사업장
     /// </summary>
-    public class WorkPlace : CompanyResourceEntity<long>
+    public class Workplace : CompanyResourceEntity<long>
     {
         /// <summary>
         /// 사업장명
@@ -22,7 +22,7 @@ namespace Drawer.Domain.Models.Locations
         /// </summary>
         public string? Note { get; private set; } 
 
-        public WorkPlace(string name)
+        public Workplace(string name)
         {
             SetName(name);
         }

@@ -12,6 +12,13 @@ namespace Drawer.Contract.Locations
 
     }
 
+    public record BatchCreateSpotRequest(IList<BatchCreateSpotRequest.Spot> Spots)
+    {
+        public record Spot(long ZoneId, string Name, string? Note);
+    }
+
+    public record BatchCreateSpotResponse(IList<long> IdList);
+
     public record CreateSpotRequest(long ZoneId, string Name, string? Note);
 
     public record CreateSpotResponse(long Id);

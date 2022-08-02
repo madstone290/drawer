@@ -20,9 +20,9 @@ namespace Drawer.Application.Services.Locations.Queries
 
     public class GetWorkPlacesQueryHandler : IQueryHandler<GetWorkPlacesQuery, GetWorkPlacesResult>
     {
-        private readonly IWorkPlaceRepository _workPlaceRepository;
+        private readonly IWorkplaceRepository _workPlaceRepository;
 
-        public GetWorkPlacesQueryHandler(IWorkPlaceRepository WorkPlaceRepository)
+        public GetWorkPlacesQueryHandler(IWorkplaceRepository WorkPlaceRepository)
         {
             _workPlaceRepository = WorkPlaceRepository;
         }

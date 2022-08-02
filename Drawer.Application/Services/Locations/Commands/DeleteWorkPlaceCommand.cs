@@ -20,9 +20,9 @@ namespace Drawer.Application.Services.Locations.Commands
 
     public class DeleteWorkPlaceCommandHandler : ICommandHandler<DeleteWorkPlaceCommand, DeleteWorkPlaceResult>
     {
-        private readonly IWorkPlaceRepository _workPlaceRepository;
+        private readonly IWorkplaceRepository _workPlaceRepository;
 
-        public DeleteWorkPlaceCommandHandler(IWorkPlaceRepository workPlaceRepository)
+        public DeleteWorkPlaceCommandHandler(IWorkplaceRepository workPlaceRepository)
         {
             _workPlaceRepository = workPlaceRepository;
         }
@@ -31,7 +31,7 @@ namespace Drawer.Application.Services.Locations.Commands
         {
             var workPlace = await _workPlaceRepository.FindByIdAsync(command.Id);
             if (workPlace == null)
-                throw new EntityNotFoundException<WorkPlace>(command.Id);
+                throw new EntityNotFoundException<Workplace>(command.Id);
             
             _workPlaceRepository.Remove(workPlace);
             await _workPlaceRepository.SaveChangesAsync();

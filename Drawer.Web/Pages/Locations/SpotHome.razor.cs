@@ -16,7 +16,7 @@ namespace Drawer.Web.Pages.Locations
         private AidTable<SpotTableModel> _table = null!;
         private bool _isTableLoading;
         private List<SpotTableModel> _spotList = new();
-        private readonly List<GetWorkPlacesResponse.WorkPlace> _workPlaceList = new();
+        private readonly List<GetWorkplacesResponse.Workplace> _workPlaceList = new();
         private readonly List<GetZonesResponse.Zone> _zoneList = new();
         private readonly ExcelOptions _excelOptions = new ExcelOptionsBuilder()
             .AddColumn(nameof(SpotTableModel.Name), "이름")
@@ -63,10 +63,10 @@ namespace Drawer.Web.Pages.Locations
             if (model == null)
                 return false;
 
-            return model.Note.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
-                model.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
-                model.WorkplaceName.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
-                model.ZoneName.Contains(searchText, StringComparison.OrdinalIgnoreCase);
+            return model.Note?.Contains(searchText, StringComparison.OrdinalIgnoreCase) == true ||
+                model.Name?.Contains(searchText, StringComparison.OrdinalIgnoreCase) == true ||
+                model.WorkplaceName?.Contains(searchText, StringComparison.OrdinalIgnoreCase) == true||
+                model.ZoneName?.Contains(searchText, StringComparison.OrdinalIgnoreCase) == true;
         }
 
         private async Task Load_Click()
@@ -97,12 +97,12 @@ namespace Drawer.Web.Pages.Locations
             _zoneList.Clear();
             _zoneList.AddRange(zoneResponse.Data.Zones);
             _workPlaceList.Clear();
-            _workPlaceList.AddRange(workPlaceResponse.Data.WorkPlaces);
+            _workPlaceList.AddRange(workPlaceResponse.Data.Workplaces);
 
             foreach (var item in spotReponse.Data.Spots)
             {
                 var zone = _zoneList.First(x => x.Id == item.ZoneId);
-                var workPlace = _workPlaceList.First(x => x.Id == zone.WorkPlaceId);
+                var workPlace = _workPlaceList.First(x => x.Id == zone.WorkplaceId);
                 var spot = new SpotTableModel()
                 {
                     Id = item.Id,

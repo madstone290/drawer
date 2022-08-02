@@ -28,9 +28,9 @@
                       Validate="@((_) => ValidateProperty(context, nameof(ZoneModel.Note)))" />
         <AidCompleteInputCell TValue="long"
                           ItemDictFunc="GetWorkplaces"
-                          Validate="@((_) => ValidateProperty(context, nameof(ZoneModel.WorkPlaceId)))"
+                          Validate="@((_) => ValidateProperty(context, nameof(ZoneModel.WorkplaceId)))"
                           @bind-Text="context.WorkplaceName"
-                          @bind-Value="context.WorkPlaceId" />
+                          @bind-Value="context.WorkplaceId" />
     </BodyRow>
 </BatchEdit>
 
@@ -60,7 +60,7 @@
             var workplaceDict = new Dictionary<string, long>();
             if (Snackbar.CheckFail(workplaceResponse))
             {
-                foreach (var workplace in workplaceResponse.Data.WorkPlaces)
+                foreach (var workplace in workplaceResponse.Data.Workplaces)
                     workplaceDict[workplace.Name] = workplace.Id;
             }
             return workplaceDict;
@@ -71,14 +71,12 @@
 
     private async Task<bool> Save(IEnumerable<ZoneModel> zones)
     {
-        bool success = true;
-        foreach (var zone in zones)
-        {
-            var content = new CreateZoneRequest(zone.WorkPlaceId, zone.Name, zone.Note);
-            var response = await ZoneApiClient.AddZone(content);
-            success &= Snackbar.CheckSuccessFail(response);
-        }
-        return success;
+        var content = new BatchCreateZoneRequest(zones.Select(x =>
+            new BatchCreateZoneRequest.Zone(x.WorkplaceId, x.Name!, x.Note)).ToList());
+        
+        var response = await ZoneApiClient.BatchAddZone(content);
+
+        return Snackbar.CheckSuccessFail(response);
     }
 
     private bool Validate(ZoneModel instance)

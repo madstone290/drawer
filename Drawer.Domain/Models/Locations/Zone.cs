@@ -20,7 +20,7 @@ namespace Drawer.Domain.Models.Locations
         /// <summary>
         /// 구역이 포함된 장소
         /// </summary>
-        public WorkPlace WorkPlace { get; private set; } = null!;
+        public Workplace WorkPlace { get; private set; } = null!;
 
         public long WorkPlaceId { get; private set; }
 
@@ -30,10 +30,10 @@ namespace Drawer.Domain.Models.Locations
         public string? Note { get; private set; }
 
         private Zone() { }
-        public Zone(WorkPlace workPlace, string name)
+        public Zone(Workplace workPlace, string name)
         {
             if (workPlace == null)
-                throw new EntityNullException<WorkPlace>(nameof(workPlace));
+                throw new EntityNullException<Workplace>(nameof(workPlace));
             WorkPlace = workPlace;
             WorkPlaceId = workPlace.Id;
             SetName(name);

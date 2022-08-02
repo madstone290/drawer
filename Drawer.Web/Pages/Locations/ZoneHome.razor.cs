@@ -14,7 +14,7 @@ namespace Drawer.Web.Pages.Locations
     public partial class ZoneHome
     {
         private AidTable<ZoneTableModel> table = null!;
-        private readonly List<GetWorkPlacesResponse.WorkPlace> _workPlaceList = new();
+        private readonly List<GetWorkplacesResponse.Workplace> _workPlaceList = new();
         private readonly List<ZoneTableModel> _zoneList = new();
         private readonly ExcelOptions _excelOptions = new ExcelOptionsBuilder()
             .AddColumn(nameof(ZoneTableModel.Name), "이름")
@@ -57,9 +57,9 @@ namespace Drawer.Web.Pages.Locations
             if (model == null)
                 return false;
 
-            return model.Note.Contains(searchText, StringComparison.OrdinalIgnoreCase) || 
-                model.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase) || 
-                model.WorkplaceName.Contains(searchText, StringComparison.OrdinalIgnoreCase);
+            return model.Note?.Contains(searchText, StringComparison.OrdinalIgnoreCase) == true|| 
+                model.Name?.Contains(searchText, StringComparison.OrdinalIgnoreCase) == true|| 
+                model.WorkplaceName?.Contains(searchText, StringComparison.OrdinalIgnoreCase) == true;
         }
 
         private async Task Load_Click()
@@ -84,7 +84,7 @@ namespace Drawer.Web.Pages.Locations
             {
                 _zoneList.Clear();
                 _workPlaceList.Clear();
-                _workPlaceList.AddRange(workPlaceResponse.Data.WorkPlaces);
+                _workPlaceList.AddRange(workPlaceResponse.Data.Workplaces);
 
                 foreach (var item in zoneResponse.Data.Zones)
                 {
@@ -93,8 +93,8 @@ namespace Drawer.Web.Pages.Locations
                         Id = item.Id,
                         Name = item.Name,
                         Note = item.Note,
-                        WorkplaceId = item.WorkPlaceId,
-                        WorkplaceName = _workPlaceList.FirstOrDefault(x => x.Id == item.WorkPlaceId)?.Name,
+                        WorkplaceId = item.WorkplaceId,
+                        WorkplaceName = _workPlaceList.FirstOrDefault(x => x.Id == item.WorkplaceId)?.Name,
                     };
                     _zoneList.Add(workPlaceModel);
                 }

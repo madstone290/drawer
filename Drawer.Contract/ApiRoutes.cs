@@ -54,40 +54,37 @@ namespace Drawer.Contract
             public const string GetMembers = Index + "/Members";
         }
 
-        public static class WorkPlaces
+        public static class Workplaces
         {
-            private const string Controller = "/WorkPlaces";
-            private const string Index = Base + Controller;
+            public const string Create = "/Api/Workplaces";
+            public const string Update = "/Api/Workplaces/{id}";
+            public const string Delete = "/Api/Workplaces/{id}";
+            public const string Get = "/Api/Workplaces/{id}";
+            public const string GetList = "/Api/Workplaces";
 
-            public const string Create = Index;
-            public const string Update = Index + "/{id}";
-            public const string Delete = Index + "/{id}";
-            public const string Get = Index + "/{id}";
-            public const string GetList = Index;
+            public const string BatchCreate = "/Api/Workplaces/Batch";
         }
 
         public static class Zones
         {
-            private const string Controller = "/Zones";
-            private const string Index = Base + Controller;
+            public const string Create = "/Api/Zones";
+            public const string Update = "/Api/Zones/{id}";
+            public const string Delete = "/Api/Zones/{id}";
+            public const string Get = "/Api/Zones/{id}";
+            public const string GetList = "/Api/Zones";
 
-            public const string Create = Index;
-            public const string Update = Index + "/{id}";
-            public const string Delete = Index + "/{id}";
-            public const string Get = Index + "/{id}";
-            public const string GetList = Index;
+            public const string BatchCreate = "/Api/Zones/Batch";
         }
 
         public static class Spots
         {
-            private const string Controller = "/Spots";
-            private const string Index = Base + Controller;
+            public const string Create = "/Api/Spots";
+            public const string Update = "/Api/Spots/{id}";
+            public const string Delete = "/Api/Spots/{id}";
+            public const string Get = "/Api/Spots/{id}";
+            public const string GetList = "/Api/Spots";
 
-            public const string Create = Index;
-            public const string Update = Index + "/{id}";
-            public const string Delete = Index + "/{id}";
-            public const string Get = Index + "/{id}";
-            public const string GetList = Index;
+            public const string BatchCreate = "/Api/Spots/Batch";
         }
 
         public static class Items

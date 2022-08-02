@@ -12,6 +12,12 @@ namespace Drawer.Infrastructure.Data
 {
     public static class EfCoreExtensions
     {
+        /// <summary>
+        /// T타입에 할당가능한 모든 타입에 대해 쿼리필터를 추가한다.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="modelBuilder"></param>
+        /// <param name="expression"></param>
         public static void AddQueryFilterToAllEntitiesAssignableFrom<T>(this ModelBuilder modelBuilder,
            Expression<Func<T, bool>> expression)
         {

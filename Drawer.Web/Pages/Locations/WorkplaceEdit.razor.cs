@@ -60,7 +60,7 @@ namespace Drawer.Web.Pages.Locations
             {
                 if (EditMode == EditMode.Add)
                 {
-                    var content = new CreateWorkPlaceRequest(_workplace.Name!, _workplace.Note);
+                    var content = new CreateWorkplaceRequest(_workplace.Name!, _workplace.Note);
                     var response = await ApiClient.AddWorkplace(content);
                     if (Snackbar.CheckSuccessFail(response))
                     {
@@ -69,7 +69,7 @@ namespace Drawer.Web.Pages.Locations
                 }
                 else if (EditMode == EditMode.Update)
                 {
-                    var content = new UpdateWorkPlaceRequest(_workplace.Name!,_workplace.Note);
+                    var content = new UpdateWorkplaceRequest(_workplace.Name!,_workplace.Note);
                     var response = await ApiClient.UpdateWorkplace(_workplace.Id, content);
                     if (Snackbar.CheckSuccessFail(response))
                     {

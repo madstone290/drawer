@@ -18,16 +18,16 @@ namespace Drawer.Application.Services.Locations.Commands
 
     public class CreateWorkPlaceCommandHandler : ICommandHandler<CreateWorkPlaceCommand, CreateWorkPlaceResult>
     {
-        private readonly IWorkPlaceRepository _workPlaceRepository;
+        private readonly IWorkplaceRepository _workPlaceRepository;
 
-        public CreateWorkPlaceCommandHandler(IWorkPlaceRepository workPlaceRepository)
+        public CreateWorkPlaceCommandHandler(IWorkplaceRepository workPlaceRepository)
         {
             _workPlaceRepository = workPlaceRepository;
         }
 
         public async Task<CreateWorkPlaceResult> Handle(CreateWorkPlaceCommand command, CancellationToken cancellationToken)
         {
-            var workPlace = new WorkPlace(command.Name);
+            var workPlace = new Workplace(command.Name);
             workPlace.SetNote(command.Note);
             await _workPlaceRepository.AddAsync(workPlace);
             await _workPlaceRepository.SaveChangesAsync();

@@ -25,13 +25,13 @@ namespace Drawer.IntergrationTest.Locations
             _outputHelper = outputHelper;
         }
 
-        async Task<long> CreateWorkPlace()
+        async Task<long> CreateWorkplace()
         {
-            var request = new CreateWorkPlaceRequest(Guid.NewGuid().ToString(), null);
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.WorkPlaces.Create);
+            var request = new CreateWorkplaceRequest(Guid.NewGuid().ToString(), null);
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Workplaces.Create);
             requestMessage.Content = JsonContent.Create(request);
             var ResponseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
-            var Response = await ResponseMessage.Content.ReadFromJsonAsync<CreateWorkPlaceResponse>() ?? default!;
+            var Response = await ResponseMessage.Content.ReadFromJsonAsync<CreateWorkplaceResponse>() ?? default!;
             return Response.Id;
         }
 
@@ -40,8 +40,8 @@ namespace Drawer.IntergrationTest.Locations
         public async Task CreateZone_Returns_Ok_With_Content(string name, string note)
         {
             // Arrange
-            var workPlaceId = await CreateWorkPlace();
-            var request = new CreateZoneRequest(workPlaceId, name, note);
+            var workplaceId = await CreateWorkplace();
+            var request = new CreateZoneRequest(workplaceId, name, note);
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Zones.Create);
             requestMessage.Content = JsonContent.Create(request);
 
@@ -55,11 +55,40 @@ namespace Drawer.IntergrationTest.Locations
         }
 
         [Theory]
+        [InlineData(
+            "1구역-배치", "1구역입니다", 
+            "2구역-배치", "2구역입니다"
+        )]
+        public async Task BatchCreateZone_Returns_Ok_With_Content(
+            string name1, string note1,
+            string name2, string note2)
+        {
+            var workplaceId = await CreateWorkplace();
+            // Arrange
+            var request = new BatchCreateZoneRequest(new List<BatchCreateZoneRequest.Zone>()
+            {
+                new BatchCreateZoneRequest.Zone(workplaceId, name1, note1),
+                new BatchCreateZoneRequest.Zone(workplaceId, name2, note2),
+            });
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Zones.BatchCreate);
+            requestMessage.Content = JsonContent.Create(request);
+
+            // Act
+            var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
+
+            // Assert
+            responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+            var response = await responseMessage.Content.ReadFromJsonAsync<BatchCreateZoneResponse>() ?? default!;
+            response.Should().NotBeNull();
+            response.IdList.Count.Should().Be(2);
+        }
+
+        [Theory]
         [InlineData("Z-1-1", "note1")]
         public async Task GetZone_Returns_Ok_With_CreatedZone(string name, string note)
         {
             // Arrange
-            var workPlaceId = await CreateWorkPlace();
+            var workPlaceId = await CreateWorkplace();
             var createRequest = new CreateZoneRequest(workPlaceId, name, note);
             var createRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Zones.Create);
             createRequestMessage.Content = JsonContent.Create(createRequest);
@@ -85,13 +114,13 @@ namespace Drawer.IntergrationTest.Locations
         public async Task GetZones_Returns_Ok_With_CreatedZones(string name1, string note1, string name2, string note2)
         {
             // Arrange
-            var workPlaceId1 = await CreateWorkPlace();
+            var workPlaceId1 = await CreateWorkplace();
             var createRequest1 = new CreateZoneRequest(workPlaceId1, name1, note1);
             var createRequestMessage1 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Zones.Create);
             createRequestMessage1.Content = JsonContent.Create(createRequest1);
             var createResponseMessage1 = await _client.SendAsyncWithMasterAuthentication(createRequestMessage1);
 
-            var workPlaceId2 = await CreateWorkPlace();
+            var workPlaceId2 = await CreateWorkplace();
             var createRequest2 = new CreateZoneRequest(workPlaceId2, name2, note2);
             var createRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Zones.Create);
             createRequestMessage2.Content = JsonContent.Create(createRequest2);
@@ -106,8 +135,8 @@ namespace Drawer.IntergrationTest.Locations
             var getZonesResponse = await getZonesResponseMessage.Content.ReadFromJsonAsync<GetZonesResponse>() ?? null!;
             getZonesResponse.Should().NotBeNull();
             getZonesResponse.Zones.Should().NotBeNull();
-            getZonesResponse.Zones.Should().Contain(x => x.WorkPlaceId == workPlaceId1 && x.Name == name1 && x.Note == note1);
-            getZonesResponse.Zones.Should().Contain(x => x.WorkPlaceId == workPlaceId2 && x.Name == name2 && x.Note == note2);
+            getZonesResponse.Zones.Should().Contain(x => x.WorkplaceId == workPlaceId1 && x.Name == name1 && x.Note == note1);
+            getZonesResponse.Zones.Should().Contain(x => x.WorkplaceId == workPlaceId2 && x.Name == name2 && x.Note == note2);
         }
 
         [Theory]
@@ -115,7 +144,7 @@ namespace Drawer.IntergrationTest.Locations
         public async Task UpdateZone_Returns_Ok(string name1, string note1, string name2, string note2)
         {
             // Arrange
-            var workPlaceId = await CreateWorkPlace();
+            var workPlaceId = await CreateWorkplace();
             var createRequest = new CreateZoneRequest(workPlaceId, name1, note1);
             var createRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Zones.Create);
             createRequestMessage.Content = JsonContent.Create(createRequest);
@@ -148,7 +177,7 @@ namespace Drawer.IntergrationTest.Locations
         public async Task DeleteZone_Returns_Ok(string name, string note)
         {
             // Arrange
-            var workPlaceId = await CreateWorkPlace();
+            var workPlaceId = await CreateWorkplace();
             var createRequest = new CreateZoneRequest(workPlaceId, name, note);
             var createRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Zones.Create);
             createRequestMessage.Content = JsonContent.Create(createRequest);

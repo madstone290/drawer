@@ -8,33 +8,33 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Drawer.Api.Controllers.Locations
 {
-    public class WorkPlacesController : ApiController
+    public class WorkplacesController : ApiController
     {
         private readonly IMediator _mediator;
 
-        public WorkPlacesController(IMediator mediator)
+        public WorkplacesController(IMediator mediator)
         {
             _mediator = mediator;
         }
 
         [HttpGet]
-        [Route(ApiRoutes.WorkPlaces.GetList)]
-        [ProducesResponseType(typeof(GetWorkPlacesResponse), StatusCodes.Status200OK)]
+        [Route(ApiRoutes.Workplaces.GetList)]
+        [ProducesResponseType(typeof(GetWorkplacesResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetWorkPlaces()
         {
             var query = new GetWorkPlacesQuery();
             var result = await _mediator.Send(query);
             return Ok(
-                new GetWorkPlacesResponse(
-                    result.WorkPlaces.Select(x => new GetWorkPlacesResponse.WorkPlace(x.Id, x.Name, x.Note)).ToList()
+                new GetWorkplacesResponse(
+                    result.WorkPlaces.Select(x => new GetWorkplacesResponse.Workplace(x.Id, x.Name, x.Note)).ToList()
                 )
             );
         }
 
 
         [HttpGet]
-        [Route(ApiRoutes.WorkPlaces.Get)]
-        [ProducesResponseType(typeof(GetWorkPlaceResponse), StatusCodes.Status200OK)]
+        [Route(ApiRoutes.Workplaces.Get)]
+        [ProducesResponseType(typeof(GetWorkplaceResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetWorkPlace([FromRoute] long id)
         {
             var query = new GetWorkPlaceQuery(id);
@@ -42,23 +42,35 @@ namespace Drawer.Api.Controllers.Locations
             if (result == null)
                 return NoContent();
             else
-                return Ok(new GetWorkPlaceResponse(result.Id, result.Name, result.Note));
+                return Ok(new GetWorkplaceResponse(result.Id, result.Name, result.Note));
         }
 
         [HttpPost]
-        [Route(ApiRoutes.WorkPlaces.Create)]
-        [ProducesResponseType(typeof(CreateWorkPlaceResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> CreateWorkPlace([FromBody] CreateWorkPlaceRequest request)
+        [Route(ApiRoutes.Workplaces.Create)]
+        [ProducesResponseType(typeof(CreateWorkplaceResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> CreateWorkPlace([FromBody] CreateWorkplaceRequest request)
         {
             var command = new CreateWorkPlaceCommand(request.Name, request.Note);
             var result = await _mediator.Send(command);
-            return Ok(new CreateWorkPlaceResponse(result.Id));
+            return Ok(new CreateWorkplaceResponse(result.Id));
+        }
+
+        [HttpPost]
+        [Route(ApiRoutes.Workplaces.BatchCreate)]
+        [ProducesResponseType(typeof(BatchCreateWorkplaceResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> BatchCreateItem([FromBody] BatchCreateWorkplaceRequest request)
+        {
+            var command = new BatchCreateWorkplaceCommand(request.Workplaces.Select(x =>
+                new BatchCreateWorkplaceCommand.Workplace(x.Name, x.Note))
+                .ToList());
+            var result = await _mediator.Send(command);
+            return Ok(new BatchCreateWorkplaceResponse(result.IdList));
         }
 
         [HttpPut]
-        [Route(ApiRoutes.WorkPlaces.Update)]
+        [Route(ApiRoutes.Workplaces.Update)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> UpdateWorkPlace([FromRoute] long id, [FromBody] UpdateWorkPlaceRequest request)
+        public async Task<IActionResult> UpdateWorkPlace([FromRoute] long id, [FromBody] UpdateWorkplaceRequest request)
         {
             var command = new UpdateWorkPlaceCommand(id, request.Name, request.Note);
             await _mediator.Send(command);
@@ -66,7 +78,7 @@ namespace Drawer.Api.Controllers.Locations
         }
 
         [HttpDelete]
-        [Route(ApiRoutes.WorkPlaces.Delete)]
+        [Route(ApiRoutes.Workplaces.Delete)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> DeleteWorkPlace([FromRoute] long id)
         {

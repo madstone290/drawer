@@ -25,19 +25,19 @@ namespace Drawer.IntergrationTest.Locations
             _outputHelper = outputHelper;
         }
 
-        async Task<long> CreateWorkPlace()
+        async Task<long> CreateWorkplace()
         {
-            var request = new CreateWorkPlaceRequest(Guid.NewGuid().ToString(), null);
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.WorkPlaces.Create);
+            var request = new CreateWorkplaceRequest(Guid.NewGuid().ToString(), null);
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Workplaces.Create);
             requestMessage.Content = JsonContent.Create(request);
             var ResponseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
-            var Response = await ResponseMessage.Content.ReadFromJsonAsync<CreateWorkPlaceResponse>() ?? default!;
+            var Response = await ResponseMessage.Content.ReadFromJsonAsync<CreateWorkplaceResponse>() ?? default!;
             return Response.Id;
         }
 
         async Task<long> CreateZone()
         {
-            var workPlaceId = await CreateWorkPlace();
+            var workPlaceId = await CreateWorkplace();
             var zoneRequest = new CreateZoneRequest(workPlaceId, Guid.NewGuid().ToString(), null);
             var zoneRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Zones.Create);
             zoneRequestMessage.Content = JsonContent.Create(zoneRequest);
@@ -48,7 +48,7 @@ namespace Drawer.IntergrationTest.Locations
 
         [Theory]
         [InlineData("P-1", "note1")]
-        public async Task CreatePosition_Returns_Ok_With_Content(string name, string note) 
+        public async Task CreateSpot_Returns_Ok_With_Content(string name, string note)
         {
             // Arrange
             var zoneId = await CreateZone();
@@ -66,8 +66,46 @@ namespace Drawer.IntergrationTest.Locations
         }
 
         [Theory]
+        [InlineData(
+           "1자리-배치", "1자리입니다",
+           "2자리-배치", "2자리입니다"
+        )]
+        public async Task BatchCreateSpot_Returns_Ok_With_Content(
+           string name1, string note1,
+           string name2, string note2)
+        {
+            var zoneId = await CreateZone();
+            // Arrange
+            var request = new BatchCreateSpotRequest(new List<BatchCreateSpotRequest.Spot>()
+            {
+                new BatchCreateSpotRequest.Spot(zoneId, name1, note1),
+                new BatchCreateSpotRequest.Spot(zoneId, name2, note2),
+            });
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Spots.BatchCreate);
+            requestMessage.Content = JsonContent.Create(request);
+
+            // Act
+            var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
+
+            // Assert
+            try
+            {
+                responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+                var response = await responseMessage.Content.ReadFromJsonAsync<BatchCreateSpotResponse>() ?? default!;
+                response.Should().NotBeNull();
+                response.IdList.Count.Should().Be(2);
+            }
+            catch
+            {
+                _outputHelper.WriteLine(await responseMessage.Content.ReadAsStringAsync());
+                throw;
+            }
+        } 
+
+
+        [Theory]
         [InlineData("P-1-1", "note1")]
-        public async Task GetPosition_Returns_Ok_With_CreatedPosition(string name, string note)
+        public async Task GetSpot_Returns_Ok_With_CreatedSpot(string name, string note)
         {
             // Arrange
             var zoneId = await CreateZone();
@@ -93,7 +131,7 @@ namespace Drawer.IntergrationTest.Locations
 
         [Theory]
         [InlineData("P-1-1", "note1", "P-1-3", "note2")]
-        public async Task GetPositions_Returns_Ok_With_CreatedPositions(string name1, string note1, string name2, string note2)
+        public async Task GetSpots_Returns_Ok_With_CreatedSpots(string name1, string note1, string name2, string note2)
         {
             // Arrange
             var zoneId1 = await CreateZone();
@@ -109,21 +147,21 @@ namespace Drawer.IntergrationTest.Locations
             var createResponseMessage2 = await _client.SendAsyncWithMasterAuthentication(createRequestMessage2);
 
             // Act
-            var getPositionsRequestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.Spots.GetList);
-            var getPositionsResponseMessage = await _client.SendAsyncWithMasterAuthentication(getPositionsRequestMessage);
+            var getSpotsRequestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.Spots.GetList);
+            var getSpotsResponseMessage = await _client.SendAsyncWithMasterAuthentication(getSpotsRequestMessage);
 
             // Assert
-            getPositionsResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var getPositionsResponse = await getPositionsResponseMessage.Content.ReadFromJsonAsync<GetSpotsResponse>() ?? null!;
-            getPositionsResponse.Should().NotBeNull();
-            getPositionsResponse.Spots.Should().NotBeNull();
-            getPositionsResponse.Spots.Should().Contain(x=> x.Name == name1 && x.Note == note1);
-            getPositionsResponse.Spots.Should().Contain(x => x.Name == name2 && x.Note == note2);
+            getSpotsResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+            var getSpotsResponse = await getSpotsResponseMessage.Content.ReadFromJsonAsync<GetSpotsResponse>() ?? null!;
+            getSpotsResponse.Should().NotBeNull();
+            getSpotsResponse.Spots.Should().NotBeNull();
+            getSpotsResponse.Spots.Should().Contain(x => x.Name == name1 && x.Note == note1);
+            getSpotsResponse.Spots.Should().Contain(x => x.Name == name2 && x.Note == note2);
         }
 
         [Theory]
-        [InlineData("P-3-4","note1", "P-23-1", "note2")]
-        public async Task UpdatePosition_Returns_Ok(string name1, string note1, string name2, string note2)
+        [InlineData("P-3-4", "note1", "P-23-1", "note2")]
+        public async Task UpdateSpot_Returns_Ok(string name1, string note1, string name2, string note2)
         {
             // Arrange
             var zoneId1 = await CreateZone();
@@ -144,7 +182,7 @@ namespace Drawer.IntergrationTest.Locations
             // Assert
             updateResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
 
-            var getRequestMessage = new HttpRequestMessage(HttpMethod.Get, 
+            var getRequestMessage = new HttpRequestMessage(HttpMethod.Get,
                 ApiRoutes.Spots.Get.Replace("{id}", createResponse.Id.ToString()));
             var getResponseMessage = await _client.SendAsyncWithMasterAuthentication(getRequestMessage);
             getResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
@@ -157,7 +195,7 @@ namespace Drawer.IntergrationTest.Locations
 
         [Theory]
         [InlineData("P-34-4", "note1")]
-        public async Task DeletePosition_Returns_Ok(string name, string note)
+        public async Task DeleteSpot_Returns_Ok(string name, string note)
         {
             // Arrange
             var zoneId = await CreateZone();
