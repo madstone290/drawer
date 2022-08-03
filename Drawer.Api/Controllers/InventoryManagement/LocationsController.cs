@@ -25,7 +25,8 @@ namespace Drawer.Api.Controllers.InventoryManagement
             var result = await _mediator.Send(query);
             return Ok(
                 new GetLocationsResponse(
-                    result.Locations.Select(x => new GetLocationsResponse.Location(x.Id, x.UpperLocationId, x.Name, x.Note)).ToList()
+                    result.Locations.Select(x => 
+                    new GetLocationsResponse.Location(x.Id, x.UpperLocationId, x.Name, x.Note, x.HierarchyLevel)).ToList()
                 )
             );
         }
@@ -41,7 +42,7 @@ namespace Drawer.Api.Controllers.InventoryManagement
             if (result == null)
                 return NoContent();
             else
-                return Ok(new GetLocationResponse(result.Id, result.UpperLocationId, result.Name, result.Note));
+                return Ok(new GetLocationResponse(result.Id, result.UpperLocationId, result.Name, result.Note, result.HierarchyLevel));
         }
 
         [HttpPost]

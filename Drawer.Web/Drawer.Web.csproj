@@ -33,4 +33,9 @@
 		<ProjectReference Include="..\Drawer.Shared\Drawer.Shared.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Api\Items\" />
+	  <Folder Include="Pages\Inventory\" />
+	</ItemGroup>
+
 </Project>

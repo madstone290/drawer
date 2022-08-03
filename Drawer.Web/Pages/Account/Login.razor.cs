@@ -1,10 +1,7 @@
-﻿using Blazored.LocalStorage;
-using Drawer.Web.Authentication;
+﻿using Drawer.Web.Authentication;
 using Drawer.Web.Frontend;
 using Drawer.Web.Pages.Account.Models;
-using Drawer.Web.Shared;
 using Drawer.Web.Utils;
-using FluentValidation;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;

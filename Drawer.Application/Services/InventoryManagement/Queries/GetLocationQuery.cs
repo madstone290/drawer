@@ -10,7 +10,7 @@ namespace Drawer.Application.Services.InventoryManagement.Queries
 {
     public record GetLocationQuery(long Id) : IQuery<GetLocationResult?>;
 
-    public record GetLocationResult(long Id, long? UpperLocationId, string Name, string? Note);
+    public record GetLocationResult(long Id, long? UpperLocationId, string Name, string? Note, int HierarchyLevel);
 
     public class GetLocationQueryHandler : IQueryHandler<GetLocationQuery, GetLocationResult?>
     {
@@ -27,7 +27,7 @@ namespace Drawer.Application.Services.InventoryManagement.Queries
 
             return location == null
                 ? null
-                : new GetLocationResult(location.Id, location.UpperLocationId, location.Name, location.Note);
+                : new GetLocationResult(location.Id, location.UpperLocationId, location.Name, location.Note, location.HierarchyLevel);
         }
     }
 }

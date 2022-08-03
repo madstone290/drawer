@@ -103,8 +103,8 @@ namespace Drawer.IntergrationTest.InventoryManagement
 
         [Theory]
         [InlineData(
-            "UpdateItem1", "c1", "n1", "s1", "ea",
-            "UpdateItem2", "c2", "n2", "s2", "ea"
+            "아이템-1-1", "c1", "n1", "s1", "ea",
+            "아이템-1-2", "c2", "n2", "s2", "ea"
         )]
         public async Task GetItems_Returns_Ok_With_CreatedItems(
             string name1, string code1, string number1, string sku1, string quantityUnit1,
@@ -147,8 +147,8 @@ namespace Drawer.IntergrationTest.InventoryManagement
 
         [Theory]
         [InlineData(
-            "UpdateItem1", "c1", "n1", "s1", "ea",
-            "UpdateItem2", "c2", "n2", "s2", "ea"
+            "아이템-2-1", "c1", "n1", "s1", "ea",
+            "아이템-2-2", "c2", "n2", "s2", "ea"
         )]
         public async Task UpdateItem_Returns_Ok(
             string name1, string code1, string number1, string sku1, string quantityUnit1,

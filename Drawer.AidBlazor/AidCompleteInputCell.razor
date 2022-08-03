@@ -1,10 +1,11 @@
 ﻿@typeparam TValue
 <MudTd>
     <AidCompleteInput TValue="@TValue"
-              @bind-Value="@Value"
-              @bind-Text="@Text"
-              ItemDictFunc="@ItemDictFunc"
-              Validate="@Validate" />
+                      AllowArbitraryText="@AllowArbitraryText"
+                      @bind-Value="@Value"
+                      @bind-Text="@Text"
+                      ItemDictFunc="@ItemDictFunc"
+                      Validate="@Validate" />
 </MudTd>
 
 @code {
@@ -47,4 +48,6 @@
     /// 아이템 사전을 불러온다.
     /// </summary>
     [Parameter] public Func<Task<Dictionary<string, TValue>>>? ItemDictFunc { get; set; }
+
+    [Parameter] public bool AllowArbitraryText { get; set; }
 }

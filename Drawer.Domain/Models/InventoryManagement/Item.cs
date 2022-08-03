@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Drawer.Domain.Models.InventoryManagement
 {
-    public class Item : Entity<long>
+    public class Item : CompanyResourceEntity<long>
     {
         /// <summary>
         /// 품명

@@ -23,10 +23,10 @@ namespace Drawer.Contract.InventoryManagement
 
     public record UpdateLocationRequest(string Name, string? Note);
 
-    public record GetLocationResponse(long Id, long? UpperLocationId, string Name, string? Note);
+    public record GetLocationResponse(long Id, long? UpperLocationId, string Name, string? Note,int HierarchyLevel);
 
     public record GetLocationsResponse(IList<GetLocationsResponse.Location> Locations)
     {
-        public record Location(long Id, long? UpperLocationId, string Name, string? Note);
+        public record Location(long Id, long? UpperLocationId, string Name, string? Note, int HierarchyLevel);
     }
 }

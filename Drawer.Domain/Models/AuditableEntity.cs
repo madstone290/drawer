@@ -12,14 +12,16 @@ namespace Drawer.Domain.Models
     /// <typeparam name="TId"></typeparam>
     public class AuditableEntity<TId> : Entity<TId>, IAuditable, ISoftDelete
     {
-        public DateTime Created { get; set; }
+        public DateTime CreatedAt { get; set; }
 
         public string CreatedBy { get; set; } = default!;
 
-        public DateTime? LastModified { get; set; }
+        public DateTime? LastModifiedAt { get; set; }
 
         public string? LastModifiedBy { get; set; }
 
-        public bool IsDeleted { get; set; }
+        public DateTime? DeletedAt { get; set; }
+
+        public string? DeletedBy { get; set; }
     }
 }

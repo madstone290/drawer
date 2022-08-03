@@ -1,4 +1,5 @@
-﻿@typeparam TValue
+﻿@using System.Linq.Expressions
+@typeparam TValue
 <div>
     <div style="display:flex; flex-direction:column;">
         <MudInput @ref="_inputReference"
@@ -10,6 +11,7 @@
                   FullWidth="true"
                   T="string"
                   Value="_text"
+                  For="@For"
                   DisableUnderLine="@(!showUnderline)"
                   ValueChanged="@Input_ValueChanged" />
 
@@ -91,6 +93,9 @@
     /// </summary>
     private object? _selectedItem;
 
+    [Inject] public IScrollManager ScrollManager { get; set; } = null!;
+
+
     /// <summary>
     /// 아이템 사전을 불러온다.
     /// </summary>
@@ -147,7 +152,7 @@
     /// </summary>
     [Parameter] public bool AllowArbitraryText { get; set; } = false;
 
-    [Inject] public IScrollManager ScrollManager { get; set; } = null!;
+    [Parameter] public Expression<Func<string>>? For { get; set; } 
 
     protected override async Task OnInitializedAsync()
     {

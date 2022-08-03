@@ -26,16 +26,16 @@ namespace Drawer.Domain.Models.InventoryManagement
         public long? UpperLocationId { get; private set; }
 
         /// <summary>
-        /// 루트 위치 여부
+        /// 계층 레벨. 0부터시작해서 1씩 증가한다.
         /// </summary>
-        public bool IsRoot { get; private set; }
+        public int HierarchyLevel { get; private set; }
 
         private Location() { }
         public Location(Location? upperLocation, string name)
         {
             UpperLocation = upperLocation;
             UpperLocationId = upperLocation?.Id;
-            IsRoot = upperLocation == null;
+            HierarchyLevel = upperLocation == null ? 0 : upperLocation.HierarchyLevel + 1;
             SetName(name);
         }
 

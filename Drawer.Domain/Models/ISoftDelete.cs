@@ -11,9 +11,8 @@ namespace Drawer.Domain.Models
     /// </summary>
     public interface ISoftDelete
     {
-        /// <summary>
-        /// 엔티티 삭제 여부
-        /// </summary>
-        bool IsDeleted { get; set; }
+        DateTime? DeletedAt { get; set; }
+
+        string? DeletedBy { get; set; }
     }
 }

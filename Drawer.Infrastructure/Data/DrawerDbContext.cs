@@ -60,7 +60,7 @@ namespace Drawer.Infrastructure.Data
 
 
             builder.AddQueryFilterToAllEntitiesAssignableFrom<ICompanyResource>(e => e.CompanyId == _companyIdProvider.GetCompanyId());
-            builder.AddQueryFilterToAllEntitiesAssignableFrom<ISoftDelete>(e => e.IsDeleted == false);
+            builder.AddQueryFilterToAllEntitiesAssignableFrom<ISoftDelete>(e => e.DeletedAt == null);
         }
 
         public override int SaveChanges()
@@ -71,8 +71,8 @@ namespace Drawer.Infrastructure.Data
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
             ApplyCompanyIdToCompanyResource();
-            ApplySoftDelete();
             ApplyAuditTrail();
+            ApplySoftDelete();
             return base.SaveChanges(acceptAllChangesOnSuccess);
         }
 
@@ -85,8 +85,8 @@ namespace Drawer.Infrastructure.Data
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
             ApplyCompanyIdToCompanyResource();
-            ApplySoftDelete();
             ApplyAuditTrail();
+            ApplySoftDelete();
             return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         }
 
@@ -125,14 +125,14 @@ namespace Drawer.Infrastructure.Data
             var now = DateTime.UtcNow;
             foreach (var entry in addedEntries)
             {
-                entry.Entity.Created = now;
+                entry.Entity.CreatedAt = now;
                 entry.Entity.CreatedBy = _userIdProvider.GetUserId()
                     ?? throw new Exception("유효하지 않는 사용자Id입니다");
             }
 
             foreach (var entry in modifiedEntries)
             {
-                entry.Entity.LastModified = now;
+                entry.Entity.LastModifiedAt = now;
                 entry.Entity.LastModifiedBy = _userIdProvider.GetUserId()
                     ?? throw new Exception("유효하지 않는 사용자Id입니다");
             }
@@ -149,7 +149,9 @@ namespace Drawer.Infrastructure.Data
             foreach (var entry in deleteEntries)
             {
                 entry.State = EntityState.Modified;
-                entry.Entity.IsDeleted = true;
+                entry.Entity.DeletedAt = DateTime.UtcNow;
+                entry.Entity.DeletedBy = _userIdProvider.GetUserId()
+                    ?? throw new Exception("유효하지 않는 사용자Id입니다");
             }
         }
 

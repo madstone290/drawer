@@ -60,7 +60,14 @@
         public const string ItemUpdate = "/Item/Update/{id}";
         public const string ItemView = "/Item/View/{id}";
         public const string ItemEdit = "/Item/Edit/{id}";
-        
+
+        public const string LocationHome = "/Location";
+        public const string LocationBatchEdit = "/Location/BatchEdit";
+        public const string LocationAdd = "/Location/Add";
+        public const string LocationUpdate = "/Location/Update/{id}";
+        public const string LocationView = "/Location/View/{id}";
+        public const string LocationEdit = "/Location/Edit/{id}";
+
     }
 }
 

@@ -1,0 +1,46 @@
+﻿@using Drawer.Web.Pages.Location.Models
+@using Drawer.Web.Utils
+<ContentTitle Text="@TitleText" />
+<AidToolBar>
+    <AidButton DisableElevation
+               Color="Color.Error"
+               OnClick="Back_Click">
+        뒤로
+    </AidButton>
+    <AidButton DisableElevation
+               Disabled="IsViewMode || !_isFormValid"
+               Color="Color.Primary"
+               OnClick="Save_Click">
+        저장
+    </AidButton>
+</AidToolBar>
+
+<MudForm @ref="_form"
+         @bind-IsValid="_isFormValid"
+         Model="_location" ValidationDelay="0" Validation="@_validator.ValidateValue()">
+    <MudGrid>
+
+        <MudItem xs="12" sm="6">
+            <MudTextField @bind-Value="_location.Name"
+                          For="@(() => _location.Name)"
+                          Label="이름"
+                          AutoFocus="true" />
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudAutocomplete T="long"
+                             Label="상위 위치"
+                             @bind-Value="_location.UpperLocationId"
+                             For="@(()=> _location.UpperLocationId)"
+                             ResetValueOnEmptyText="true"
+                             Clearable="true"
+                             SearchFunc="@FilterLocationIds"
+                             Variant="Variant.Text"
+                             ToStringFunc="@DisplayLocationName" />
+        </MudItem>
+        <MudItem xs="12" sm="12">
+            <MudTextField @bind-Value="_location.Note"
+                          For="@(() => _location.Note)"
+                          Label="비고" />
+        </MudItem>
+    </MudGrid>
+</MudForm>

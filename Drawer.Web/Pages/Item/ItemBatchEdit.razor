@@ -1,0 +1,76 @@
+﻿@using System.Reflection
+@using Drawer.Contract.InventoryManagement
+@using Drawer.Contract.Locations
+@using Drawer.Web.Api.InventoryManagement
+@using Drawer.Web.Api.Locations
+@using Drawer.Web.Pages.Item.Models
+@using Drawer.Web.Pages.LocationOld.Models
+@using Drawer.Web.Services
+@using Drawer.Web.Utils
+@using System.Linq.Expressions
+@attribute [Route(Paths.ItemBatchEdit)]
+
+<BatchEdit TitleText="아이템 일괄 추가"
+           TModel="ItemModel"
+           HomePath="@Paths.ItemHome"
+           ExcelFormName="아이템-양식"
+           SaveAsyncFunc="@Save"
+           Validate="@Validate"
+           ExcelOptions="_excelOptions" >
+
+    <HeadRow>
+        <MudTh Style="min-width:100px;">이름</MudTh>
+        <MudTh Style="min-width:100px;">코드</MudTh>
+        <MudTh Style="min-width:100px;">번호</MudTh>
+        <MudTh Style="min-width:100px;">Sku</MudTh>
+        <MudTh Style="min-width:100px;">계량 단위</MudTh>
+    </HeadRow>
+    <BodyRow>
+        <AidInputCell @bind-Value="context.Name"
+                      Validate="((_) => ValidateProperty(context, x => x.Name))" />
+        <AidInputCell @bind-Value="context.Code"
+                      Validate="((_) => ValidateProperty(context, x => x.Code))" />
+        <AidInputCell @bind-Value="context.Number"
+                      Validate="((_) => ValidateProperty(context, x => x.Number))" />
+        <AidInputCell @bind-Value="context.Sku"
+                      Validate="((_) => ValidateProperty(context, x => x.Sku))" />
+        <AidInputCell @bind-Value="context.QuantityUnit"
+                      Validate="((_) => ValidateProperty(context, x => x.QuantityUnit))" />
+    </BodyRow>
+</BatchEdit>
+
+@code {
+    private readonly ItemModelValidator _validator = new();
+    private readonly ExcelOptions _excelOptions = new ExcelOptionsBuilder()
+        .AddColumn(nameof(ItemModel.Name), "이름")
+        .AddColumn(nameof(ItemModel.Code), "코드")
+        .AddColumn(nameof(ItemModel.Number), "번호")
+        .AddColumn(nameof(ItemModel.Sku), "Sku")
+        .AddColumn(nameof(ItemModel.QuantityUnit), "계량단위")
+        .Build();
+
+
+    [Inject] public ItemApiClient ItemApiClient { get; set; } = null!;
+
+    private async Task<bool> Save(IEnumerable<ItemModel> items)
+    {
+        var content = new BatchCreateItemRequest(items.Select(item =>
+              new BatchCreateItemRequest.Item(item.Name, item.Code, item.Number, item.Sku, item.QuantityUnit)).ToList());
+
+        var response = await ItemApiClient.BatchAddItem(content);
+
+        return Snackbar.CheckSuccessFail(response);
+    }
+
+    private bool Validate(ItemModel instance)
+    {
+        var result = _validator.Validate(instance);
+        return result.IsValid;
+    }
+
+    private string ValidateProperty(ItemModel item, Expression<Func<ItemModel, object>> expression)
+    {
+        return _validator.ValidateProperty(item, expression);
+    }
+
+}

@@ -57,7 +57,7 @@ namespace Drawer.IntergrationTest.InventoryManagement
         [Theory]
         [InlineData(
             "위치-배치-1", "위치입니다",
-            "위치-배치-1", "위치입니다"
+            "위치-배치-2", "위치입니다"
         )]
         public async Task BatchCreateLocation_Returns_Ok_With_Content(
             string name1, string note1,

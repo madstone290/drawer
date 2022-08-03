@@ -11,11 +11,11 @@ namespace Drawer.Domain.Models
     /// </summary>
     public interface IAuditable
     {
-        DateTime Created { get; set; }
+        DateTime CreatedAt { get; set; }
 
         string CreatedBy { get; set; }
 
-        DateTime? LastModified { get; set; }
+        DateTime? LastModifiedAt { get; set; }
 
         string? LastModifiedBy { get; set; }
     }

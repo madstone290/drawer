@@ -13,7 +13,7 @@ namespace Drawer.Application.Services.InventoryManagement.Queries
 
     public record GetLocationsResult(IList<GetLocationsResult.Location> Locations)
     {
-        public record Location(long Id, long? UpperLocationId, string Name, string? Note);
+        public record Location(long Id, long? UpperLocationId, string Name, string? Note, int HierarchyLevel);
     }
 
     public class GetLocationsQueryHandler : IQueryHandler<GetLocationsQuery, GetLocationsResult>
@@ -31,7 +31,7 @@ namespace Drawer.Application.Services.InventoryManagement.Queries
 
             return new GetLocationsResult(
                 locations.Select(x =>
-                    new GetLocationsResult.Location(x.Id, x.UpperLocationId, x.Name, x.Note)
+                    new GetLocationsResult.Location(x.Id, x.UpperLocationId, x.Name, x.Note, x.HierarchyLevel)
                 ).ToList());
         }
     }

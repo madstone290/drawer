@@ -9,11 +9,12 @@ using System.Threading.Tasks;
 
 namespace Drawer.Infrastructure.EntityTypeConfigurations.InventoryManagement
 {
-    public class LocationConfiguration : IEntityTypeConfiguration<Location>
+    public class ItemConfiguration : IEntityTypeConfiguration<Item>
     {
-        public void Configure(EntityTypeBuilder<Location> builder)
+        public void Configure(EntityTypeBuilder<Item> builder)
         {
             builder.Property(x => x.DeletedAt).HasColumnName("deleted_at");
+
             builder.HasIndex(x => new
             {
                 x.Name,
@@ -21,13 +22,6 @@ namespace Drawer.Infrastructure.EntityTypeConfigurations.InventoryManagement
             })
                 .HasFilter("deleted_at IS NULL")
                 .IsUnique();
-
-            builder.Property(x => x.UpperLocationId).IsRequired(false);
-
-            builder.HasOne(x => x.UpperLocation)
-              .WithMany()
-              .HasForeignKey(x => x.UpperLocationId)
-              .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
