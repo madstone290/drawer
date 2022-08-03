@@ -1,6 +1,4 @@
 ﻿using Drawer.Domain.Config;
-using Drawer.Domain.Models.BasicInfo;
-using Drawer.Domain.Models.Items;
 using System;
 using System.Collections.Generic;
 using System.Linq;

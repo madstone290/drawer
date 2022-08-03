@@ -1,11 +1,7 @@
 ﻿using Drawer.Application.Config;
 using Drawer.Application.Exceptions;
-using Drawer.Application.Services.BasicInfo.Repos;
 using Drawer.Application.Services.InventoryManagement.Repos;
-using Drawer.Application.Services.Items.Repos;
-using Drawer.Domain.Models.BasicInfo;
 using Drawer.Domain.Models.InventoryManagement;
-using Drawer.Domain.Models.Items;
 using System;
 using System.Collections.Generic;
 using System.Linq;

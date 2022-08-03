@@ -1,7 +1,5 @@
 ﻿using Drawer.Contract;
-using Drawer.Contract.BasicInfo;
 using Drawer.Contract.InventoryManagement;
-using Drawer.Contract.Items;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;

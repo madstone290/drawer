@@ -1,8 +1,6 @@
 ﻿using Drawer.Domain.Models;
 using Drawer.Domain.Models.Authentication;
-using Drawer.Domain.Models.BasicInfo;
 using Drawer.Domain.Models.InventoryManagement;
-using Drawer.Domain.Models.Items;
 using Drawer.Domain.Models.Locations;
 using Drawer.Domain.Models.Organization;
 using Drawer.Domain.Models.UserInformation;
