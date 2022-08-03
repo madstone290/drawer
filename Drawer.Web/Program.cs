@@ -69,9 +69,11 @@ builder.Services.AddScoped<ITokenManager, TokenManager>();
 builder.Services.AddScoped<IAuthenticationManager, AuthenticationManager>();
 builder.Services.AddScoped<ILocalStorage, EncryptionLocalStorage>();
 builder.Services.AddScoped<IEncryptionService, EncryptionService>();
+builder.Services.AddScoped<IBlazorComponentService, BlazorComponentService>();
+builder.Services.AddScoped<IExcelFileService, ExcelFileService>();
 builder.Services.AddScoped<IExcelService, ExcelService>();
 builder.Services.AddScoped<IFileService, FileService>();
-builder.Services.AddScoped<IExcelFileService, ExcelFileService>();
+builder.Services.AddScoped<IJavaScriptService, JavaScriptService>();
 builder.Services.AddTransient<ILockService, LockService>();
 
 builder.Services.Scan(selector =>

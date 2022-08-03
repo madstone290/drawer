@@ -31,8 +31,7 @@ namespace Drawer.Web.Pages.Locations
 
         [Inject] public WorkplaceApiClient ApiClient { get; set; } = null!;
         [Inject] public IDialogService DialogService { get; set; } = null!;
-        [Inject] public IExcelService ExcelService { get; set; } = null!;
-        [Inject] public IJSRuntime JS { get; set; } = null!;
+        [Inject] public IExcelFileService ExcelFileService { get; set; } = null!;
 
         public WorkplaceModel? SelectedWorkPlace => _table.FocusedItem;
 
@@ -133,12 +132,8 @@ namespace Drawer.Web.Pages.Locations
 
         private async Task Download_ClickAsync()
         {
-            var buffer = ExcelService.WriteTable(_workplaceList, _excelOptions);
-            var fileStream = new MemoryStream(buffer);
             var fileName = $"작업장-{DateTime.Now:yyMMdd-HHmmss}.xlsx";
-            using var streamRef = new DotNetStreamReference(fileStream);
-
-            await JS.InvokeVoidAsync("downloadFile", fileName, streamRef);
+            await ExcelFileService.Download(fileName, _workplaceList, _excelOptions);
         }
     }
 }

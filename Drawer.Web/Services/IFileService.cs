@@ -9,18 +9,16 @@ namespace Drawer.Web.Services
 
     public class FileService : IFileService
     {
-        private readonly IJSRuntime _jsRuntime;
+        private readonly IJavaScriptService _javaScriptService;
 
-        public FileService(IJSRuntime jsRuntime)
+        public FileService(IJavaScriptService javaScriptService)
         {
-            _jsRuntime = jsRuntime;
+            _javaScriptService = javaScriptService;
         }
 
         public async Task DownloadAsync(string fileName, Stream stream)
         {
-            using var streamRef = new DotNetStreamReference(stream);
-
-            await _jsRuntime.InvokeVoidAsync("downloadFile", fileName, streamRef);
+            await _javaScriptService.DownloadFile(fileName, stream);
         }
     }
 }

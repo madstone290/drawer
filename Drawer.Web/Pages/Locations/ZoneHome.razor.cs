@@ -33,8 +33,7 @@ namespace Drawer.Web.Pages.Locations
         [Inject] public ZoneApiClient ZoneApiClient { get; set; } = null!;
         [Inject] public WorkplaceApiClient WorkPlaceApiClient { get; set; } = null!;
         [Inject] public IDialogService DialogService { get; set; } = null!;
-        [Inject] public IExcelService ExcelService { get; set; } = null!;
-        [Inject] public IJSRuntime JS { get; set; } = null!;
+        [Inject] public IExcelFileService ExcelFileService { get; set; } = null!;
 
         public ZoneTableModel? SelectedZone => table.FocusedItem;
         public int TotalRowCount => _zoneList.Count;
@@ -155,12 +154,8 @@ namespace Drawer.Web.Pages.Locations
 
         private async Task Download_ClickAsync()
         {
-            var buffer = ExcelService.WriteTable(_zoneList, _excelOptions);
-            var fileStream = new MemoryStream(buffer);
-            var fileName = $"구역-{DateTime.Now:yyMMdd-HHmmss}.xlsx";
-            using var streamRef = new DotNetStreamReference(fileStream);
-
-            await JS.InvokeVoidAsync("downloadFile", fileName, streamRef);
+            var fileName = $"작업장-{DateTime.Now:yyMMdd-HHmmss}.xlsx";
+            await ExcelFileService.Download(fileName, _zoneList, _excelOptions);
         }
     }
 }

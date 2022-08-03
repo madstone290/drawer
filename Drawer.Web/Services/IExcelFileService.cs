@@ -36,9 +36,9 @@ namespace Drawer.Web.Services
         public async Task Download<T>(string fileName, IEnumerable<T> list, ExcelOptions? options = null)
         {
             var buffer = _excelService.WriteTable(list, options);
-            var fileStream = new MemoryStream(buffer);
+            var stream = new MemoryStream(buffer);
 
-            await _fileService.DownloadAsync(fileName, fileStream);
+            await _fileService.DownloadAsync(fileName, stream);
         }
 
         public async Task<IEnumerable<T>> Upload<T>(ExcelOptions? options = null)

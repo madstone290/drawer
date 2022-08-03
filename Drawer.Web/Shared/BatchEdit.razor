@@ -91,7 +91,7 @@
 
 
     [Inject] public IExcelFileService ExcelFileService { get; set; } = null!;
-    [Inject] public IJSRuntime JSRuntime { get; set; } = null!;
+    [Inject] public IBlazorComponentService BlazorComponentService { get; set; } = null!;
 
     /// <summary>
     /// 화면 타이틀
@@ -135,7 +135,7 @@
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeVoidAsync("UseTableResize", "mud-table-root");
+            await BlazorComponentService.TableResize();
         }
     }
 

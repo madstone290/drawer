@@ -38,8 +38,7 @@ namespace Drawer.Web.Pages.Locations
         [Inject] public ZoneApiClient ZoneApiClient { get; set; } = null!;
         [Inject] public WorkplaceApiClient WorkPlaceApiClient { get; set; } = null!;
         [Inject] public IDialogService DialogService { get; set; } = null!;
-        [Inject] public IExcelService ExcelService { get; set; } = null!;
-        [Inject] public IJSRuntime JS { get; set; } = null!;
+        [Inject] public IExcelFileService ExcelFileService { get; set; } = null!;
 
         public SpotTableModel? SelectedSpot => _table.FocusedItem;
 
@@ -170,12 +169,8 @@ namespace Drawer.Web.Pages.Locations
 
         private async Task Download_ClickAsync()
         {
-            var buffer = ExcelService.WriteTable(_spotList, _excelOptions);
-            var fileStream = new MemoryStream(buffer);
             var fileName = $"자리-{DateTime.Now:yyMMdd-HHmmss}.xlsx";
-            using var streamRef = new DotNetStreamReference(fileStream);
-
-            await JS.InvokeVoidAsync("downloadFile", fileName, streamRef);
+            await ExcelFileService.Download(fileName, _spotList, _excelOptions);
         }
     }
 }

@@ -31,8 +31,7 @@ namespace Drawer.Web.Pages.Items
 
         [Inject] public ItemApiClient ItemApiClient { get; set; } = null!;
         [Inject] public IDialogService DialogService { get; set; } = null!;
-        [Inject] public IExcelService ExcelService { get; set; } = null!;
-        [Inject] public IJSRuntime JS { get; set; } = null!;
+        [Inject] public IExcelFileService ExcelFileService { get; set; } = null!;
 
         public ItemTableModel? SelectedItem => table.FocusedItem;
 
@@ -148,12 +147,8 @@ namespace Drawer.Web.Pages.Items
 
         private async Task Download_ClickAsync()
         {
-            var buffer = ExcelService.WriteTable(ItemList, _excelOptions);
-            var fileStream = new MemoryStream(buffer);
             var fileName = $"아이템-{DateTime.Now:yyMMdd-HHmmss}.xlsx";
-            using var streamRef = new DotNetStreamReference(fileStream);
-
-            await JS.InvokeVoidAsync("downloadFile", fileName, streamRef);
+            await ExcelFileService.Download(fileName, ItemList, _excelOptions);
         }
     }
 }

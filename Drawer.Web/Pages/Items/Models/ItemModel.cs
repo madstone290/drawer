@@ -18,7 +18,7 @@ namespace Drawer.Web.Pages.Items.Models
         {
             RuleFor(x => x.Name)
                  .NotEmpty()
-                 .WithMessage("이름은 필수입니다");
+                 .WithMessage("* 필수");
                  
         }
     }
