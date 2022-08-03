@@ -1,6 +1,5 @@
 ﻿using Drawer.Contract;
 using Drawer.Contract.BasicInfo;
-using Drawer.Contract.Locations;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;
@@ -28,7 +27,7 @@ namespace Drawer.IntergrationTest.BasicInfo
 
         async Task<long> CreateUpperLocation()
         {
-            var request = new CreateWorkplaceRequest(Guid.NewGuid().ToString(), null);
+            var request = new CreateLocationRequest(null, Guid.NewGuid().ToString(), null);
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Create);
             requestMessage.Content = JsonContent.Create(request);
             var ResponseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);

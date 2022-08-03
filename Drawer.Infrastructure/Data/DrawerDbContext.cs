@@ -1,6 +1,7 @@
 ﻿using Drawer.Domain.Models;
 using Drawer.Domain.Models.Authentication;
 using Drawer.Domain.Models.BasicInfo;
+using Drawer.Domain.Models.InventoryManagement;
 using Drawer.Domain.Models.Items;
 using Drawer.Domain.Models.Locations;
 using Drawer.Domain.Models.Organization;
@@ -45,6 +46,8 @@ namespace Drawer.Infrastructure.Data
 
         public DbSet<Item> Items { get; set; } = default!;
         public DbSet<Location> Locations { get; set; } = default!;
+        public DbSet<InventoryDetail> InventoryDetails { get; set; } = default!;
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
