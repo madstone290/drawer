@@ -1,0 +1,313 @@
+﻿@typeparam TKey
+@using System.Linq.Expressions
+
+<div style="display:flex; flex-direction:column;">
+    <MudTextField @ref="_textFieldReference"
+                  T="string"
+                  Immediate="true"
+                  Validation="@Validation"
+                  Label="@Label"
+                  DisableUnderLine="@(DisableUnderLine && !_isInputFocused)"
+                  Value="@Value"
+                  ValueChanged="@TextField_ValueChanged"
+                  OnKeyDown="TextField_KeyDown"
+                  OnKeyUp="TextField_KeyUp"
+                  @onblur="@TextField_Blur"
+                  @onfocus="@TextField_Focus">
+    </MudTextField>
+    <MudPopover RelativeWidth="true"
+                Open="@_isOpen"
+                Fixed="true"
+                MaxHeight="@MaxHeight"
+                AnchorOrigin="Origin.BottomCenter"
+                TransformOrigin="Origin.TopCenter">
+        <MudList Clickable="true" @bind-SelectedValue="_selectedListItemValue">
+            @{
+                if (_filteredItemValues != null)
+                {
+                    int index = 0;
+                    foreach (var item in _filteredItemValues)
+                    {
+                        Debug($"Creating item {item}");
+                        <MudListItem id="@GetListItemId(index)" Text="@item" Value="@item" OnClick="@ListItem_Click" />
+                        index++;
+                    }
+                }
+            }
+        </MudList>
+    </MudPopover>
+    <MudOverlay AutoClose="true" @bind-Visible="_isOpen" />
+</div>
+
+
+@code {
+
+    private MudTextField<string> _textFieldReference = null!;
+
+    /// <summary>
+    /// 컴포넌트 식별용 아이디
+    /// </summary>
+    private readonly string _componentId = Guid.NewGuid().ToString();
+
+    /// <summary>
+    /// 인풋 포커스 여부
+    /// </summary>
+    private bool _isInputFocused;
+
+    /// <summary>
+    /// 리스트 렌더링 여부
+    /// </summary>
+    private bool _isListRendering;
+
+    /// <summary>
+    /// 메뉴 오픈 여부
+    /// </summary>
+    private bool _isOpen;
+
+    /// <summary>
+    /// 리스트 아이템 선택여부.
+    /// 엔터키 혹은 마우스클릭을 통해 변경된다.
+    /// </summary>
+    private bool _isItemChosen;
+
+    /// <summary>
+    /// 리스트에서 선택된 아이템 인덱스.
+    /// 인덱스를 지정하고 메뉴 재렌더링 후에 해당 인덱스에 해당하는 아이템 값을 선택한다.
+    /// </summary>
+    private int _selectedListItemIndex;
+
+    /// <summary>
+    /// 리스트에서 선택된 아이템 값
+    /// </summary>
+    private object? _selectedListItemValue;
+
+    /// <summary>
+    /// 메뉴리스트에서 필터링된 아이템 값 목록
+    /// </summary>
+    private List<string>? _filteredItemValues;
+
+    [Inject] public IScrollManager ScrollManager { get; set; } = null!;
+    [Parameter] public bool DisableUnderLine { get; set; }
+    [Parameter] public Func<string, string>? Validation { get; set; }
+    [Parameter] public string? Label { get; set; }
+    [Parameter] public int MaxHeight { get; set; } = 200;
+    /// <summary>
+    /// 메뉴리스트 아이템 값 목록
+    /// </summary>
+    [Parameter] public List<string>? ItemValues { get; set; }
+
+    [Parameter] public Func<string, TKey?>? KeyFunc { get; set; }
+
+    [Parameter] public TKey? Key { get; set; }
+    [Parameter] public string? Value { get; set; }
+    [Parameter] public EventCallback<TKey?> KeyChanged { get; set; }
+    [Parameter] public EventCallback<string?> ValueChanged { get; set; }
+
+    private int RenderCount = 1;
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Debug($"{RenderCount++} OnAfterRender");
+        if (_isListRendering)
+        {
+            Debug($"_isListRendering");
+            // 아이템 목록이 갱신된 후 아이템을 선택한다.
+            if (_filteredItemValues != null && _selectedListItemIndex < _filteredItemValues.Count)
+            {
+                Debug($"_filteredItemValues != null");
+                _selectedListItemValue = _filteredItemValues[_selectedListItemIndex];
+                ScrollToListItem(_selectedListItemIndex);
+            }
+            _isListRendering = false;
+        }
+
+    }
+
+    private void TextField_Blur()
+    {
+        _isInputFocused = false;
+    }
+
+    private void TextField_Focus()
+    {
+        _isInputFocused = true;
+        ShowMenu();
+    }
+
+    private async void ListItem_Click()
+    {
+        _isItemChosen = true;
+        await _textFieldReference.SetText(Convert.ToString(_selectedListItemValue));
+        _isOpen = false;
+    }
+
+    private async Task TextField_ValueChanged(string value)
+    {
+        await SetValueAsync(value);
+
+        if (_isItemChosen)
+        {
+            _isItemChosen = false;
+        }
+        else
+        {
+            ShowMenu();
+        }
+    }
+
+    private void TextField_KeyDown(KeyboardEventArgs e)
+    {
+        // 탭이 포커스 이동하기 전에 이벤트를 처리한다
+        if (e.Key == "Tab")
+        {
+            _isOpen = false;
+        }
+    }
+
+    private void TextField_KeyUp(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            TextField_KeyUp_Enter();
+        }
+        else if (e.Key == "ArrowUp")
+        {
+            TextField_KeyUp_ArrowUp();
+
+        }
+        else if (e.Key == "ArrowDown")
+        {
+            TextField_KeyUp_ArrowDown();
+        }
+    }
+
+    private async void TextField_KeyUp_Enter()
+    {
+        // 드랍다운이 닫힌 경우 새로 연다.
+        // 드랍다운이 열린 경우 선택된 아이템으로 텍스트를 변경한다.
+
+        if (!_isOpen)
+        {
+            ShowMenu();
+            return;
+        }
+
+        if (_selectedListItemValue != null)
+        {
+            _isItemChosen = true;
+            await _textFieldReference.SetText(Convert.ToString(_selectedListItemValue));
+            _isOpen = false;
+        }
+    }
+
+    private void TextField_KeyUp_ArrowUp()
+    {
+        if (!_isOpen || _filteredItemValues == null)
+            return;
+
+        _selectedListItemIndex--;
+        if (_selectedListItemIndex < 0)
+            _selectedListItemIndex = _filteredItemValues.Count - 1;
+
+        _selectedListItemValue = _filteredItemValues[_selectedListItemIndex];
+        ScrollToListItem(_selectedListItemIndex);
+    }
+
+    private void TextField_KeyUp_ArrowDown()
+    {
+        if (!_isOpen || _filteredItemValues == null)
+            return;
+
+        _selectedListItemIndex++;
+        if (_filteredItemValues.Count <= _selectedListItemIndex)
+            _selectedListItemIndex = 0;
+
+        _selectedListItemValue = _filteredItemValues[_selectedListItemIndex];
+        ScrollToListItem(_selectedListItemIndex);
+    }
+
+    private async Task SetKeyAsync(TKey? key)
+    {
+        if (EqualityComparer<TKey>.Default.Equals(Key, key))
+            return;
+        Key = key;
+        if (KeyChanged.HasDelegate)
+            await KeyChanged.InvokeAsync(key);
+    }
+
+    private async Task SetValueAsync(string value)
+    {
+        if (EqualityComparer<string>.Default.Equals(Value, value))
+            return;
+        Value = value;
+        await RefreshKeyAsync();
+        if (ValueChanged.HasDelegate)
+            await ValueChanged.InvokeAsync(value);
+    }
+
+    /// <summary>
+    /// 입력에 맞는 메뉴를 보여준다
+    /// </summary>
+    private void ShowMenu()
+    {
+        // 1. 아이템을 필터링. 선택할 아이템 인덱스 지정.
+        // 2. 아이템 목록 렌더링
+        // 3. 아이템 목록 렌더링이 완료되면 선택할 아이템 인덱스를 이용해서 다시 한번 렌더링
+
+        if (ItemValues == null)
+            return;
+        Debug("ShowMenu");
+        if (string.IsNullOrWhiteSpace(Value))
+        {
+            Debug("Value is null");
+            _filteredItemValues = ItemValues.ToList();
+        }
+        else
+        {
+            Debug("Value is not null");
+            _filteredItemValues = ItemValues.Where(item =>
+                item.Contains(Value, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+        Debug($"FilteredItem Count: {_filteredItemValues?.Count}");
+        _isOpen = false;
+        _isOpen = 0 < _filteredItemValues?.Count;
+
+
+        // 첫번재 아이템을 선택한다
+        _selectedListItemIndex = 0;
+
+        // 리스트 요소가 렌더링되는지 식별한다
+        _isListRendering = true;
+
+        // 변경된 리스트아이템을 렌더링한다
+        StateHasChanged();
+    }
+
+    private void ScrollToListItem(int index)
+    {
+        var listItemId = GetListItemId(index);
+
+        ScrollManager.ScrollToListItemAsync(listItemId);
+    }
+
+    private string GetListItemId(int index)
+    {
+        return $"{_componentId}_item_{index}";
+    }
+
+    private async Task RefreshKeyAsync()
+    {
+        if (Value != null && KeyFunc != null)
+        {
+            var key = KeyFunc.Invoke(Value);
+            await SetKeyAsync(key);
+        }
+    }
+
+    private void Debug(string message)
+    {
+#if DEBUG
+    Console.WriteLine(message);
+#endif
+    }
+
+}

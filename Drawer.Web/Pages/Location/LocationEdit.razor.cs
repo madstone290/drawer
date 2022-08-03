@@ -93,24 +93,17 @@ namespace Drawer.Web.Pages.Location
             }
         }
 
-        private string? ValidateProperty(LocationModel instance, string property)
+        private string? ValidateUpperLocation(LocationModel location)
         {
-            var msg = _validator.ValidateProperty(instance, property);
-            return msg;
+            if (string.IsNullOrWhiteSpace(location.UpperLocationName))
+                return null;
+            if (_locations.Any(l => string.Equals(l.Name, location.UpperLocationName, StringComparison.OrdinalIgnoreCase)))
+                return null;
+            else
+                return "잘못된 위치입니다";
         }
 
-        Task<IEnumerable<long>> FilterLocationIds(string filterText)
-        {
-            var filterResult = filterText == null
-                ? _locations
-                : _locations.Where(x => x.Name != null && x.Name.Contains(filterText, StringComparison.InvariantCultureIgnoreCase));
-
-            return Task.FromResult(filterResult.Select(x => x.Id));
-        }
-
-        string? DisplayLocationName(long id)
-        {
-            return _locations.FirstOrDefault(x => x.Id == id)?.Name;
-        }
+        
+      
     }
 }
