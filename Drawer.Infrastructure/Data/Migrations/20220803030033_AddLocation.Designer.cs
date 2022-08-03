@@ -3,6 +3,7 @@ using System;
 using Drawer.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Drawer.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(DrawerDbContext))]
-    partial class DrawerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220803030033_AddLocation")]
+    partial class AddLocation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -89,7 +91,7 @@ namespace Drawer.Infrastructure.Data.Migrations
                     b.Property<string>("Note")
                         .HasColumnType("text");
 
-                    b.Property<long?>("UpperLocationId")
+                    b.Property<long>("UpperLocationId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
@@ -575,7 +577,8 @@ namespace Drawer.Infrastructure.Data.Migrations
                     b.HasOne("Drawer.Domain.Models.BasicInfo.Location", "UpperLocation")
                         .WithMany()
                         .HasForeignKey("UpperLocationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("UpperLocation");
                 });

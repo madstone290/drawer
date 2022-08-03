@@ -1,5 +1,6 @@
 ﻿using Drawer.Application.Services.Authentication;
 using Drawer.Application.Services.Authentication.Repos;
+using Drawer.Application.Services.BasicInfo.Repos;
 using Drawer.Application.Services.Items.Repos;
 using Drawer.Application.Services.Locations.Repos;
 using Drawer.Application.Services.Organization;
@@ -121,7 +122,7 @@ namespace Drawer.Infrastructure
             services.AddScoped<IZoneRepository, ZoneRepository>();
 
             services.AddScoped<IItemRepository, ItemRepository>();
-
+            services.AddScoped<ILocationRepository, LocationRepository>();
         }
     }
 }
