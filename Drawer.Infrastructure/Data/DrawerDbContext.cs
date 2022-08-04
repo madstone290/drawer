@@ -4,6 +4,7 @@ using Drawer.Domain.Models.InventoryManagement;
 using Drawer.Domain.Models.Locations;
 using Drawer.Domain.Models.Organization;
 using Drawer.Domain.Models.UserInformation;
+using Drawer.Infrastructure.Data.Audit;
 using Drawer.Infrastructure.Services.Organization;
 using Drawer.Infrastructure.Services.UserInformation;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -30,6 +31,8 @@ namespace Drawer.Infrastructure.Data
             _companyIdProvider = companyIdProvider;
             _userIdProvider = userIdProvider;
         }
+
+        public DbSet<AuditEvent> AuditEvents { get; set; } = default!;
 
         public DbSet<RefreshToken> RefreshTokens { get; set; } = default!;
 
@@ -115,6 +118,28 @@ namespace Drawer.Infrastructure.Data
         /// </summary>
         void ApplyAuditTrail()
         {
+            var entries = ChangeTracker.Entries<IAuditable>()
+                .ToList();
+
+            foreach (var entry in entries)
+            {
+                string? eventType = null;
+                if (entry.State == EntityState.Added)
+                    eventType = "Insert";
+                else if (entry.State == EntityState.Modified)
+                    eventType = "Update";
+                else if (entry.State == EntityState.Deleted)
+                    eventType = "Delete";
+
+                if (eventType != null)
+                {
+                    var entity = entry.Entity;
+                    var userId = _userIdProvider.GetUserId() ?? throw new Exception("유효하지 않는 사용자Id입니다");
+                    var auditEvent = new AuditEvent(eventType, entity.GetType().Name, entity.AuditId.ToString(), userId, null);
+                    AuditEvents.Add(auditEvent);
+                }
+            }
+
             var addedEntries = ChangeTracker.Entries<IAuditable>()
                 .Where(p => p.State == EntityState.Added);
 

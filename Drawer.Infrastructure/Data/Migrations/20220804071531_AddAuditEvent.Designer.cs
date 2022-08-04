@@ -3,6 +3,7 @@ using System;
 using Drawer.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Drawer.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(DrawerDbContext))]
-    partial class DrawerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220804071531_AddAuditEvent")]
+    partial class AddAuditEvent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -58,9 +60,6 @@ namespace Drawer.Infrastructure.Data.Migrations
                         .HasColumnType("bigint");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<Guid>("AuditId")
-                        .HasColumnType("uuid");
 
                     b.Property<string>("CompanyId")
                         .IsRequired()
@@ -110,9 +109,6 @@ namespace Drawer.Infrastructure.Data.Migrations
                         .HasColumnType("bigint");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<Guid>("AuditId")
-                        .HasColumnType("uuid");
 
                     b.Property<string>("Code")
                         .HasColumnType("text");
@@ -171,9 +167,6 @@ namespace Drawer.Infrastructure.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<Guid>("AuditId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("CompanyId")
                         .IsRequired()
                         .HasColumnType("text");
@@ -230,9 +223,6 @@ namespace Drawer.Infrastructure.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<Guid>("AuditId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("CompanyId")
                         .IsRequired()
                         .HasColumnType("text");
@@ -281,9 +271,6 @@ namespace Drawer.Infrastructure.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<Guid>("AuditId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("CompanyId")
                         .IsRequired()
                         .HasColumnType("text");
@@ -326,9 +313,6 @@ namespace Drawer.Infrastructure.Data.Migrations
                         .HasColumnType("bigint");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<Guid>("AuditId")
-                        .HasColumnType("uuid");
 
                     b.Property<string>("CompanyId")
                         .IsRequired()
@@ -375,9 +359,6 @@ namespace Drawer.Infrastructure.Data.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<Guid>("AuditId")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -423,9 +404,6 @@ namespace Drawer.Infrastructure.Data.Migrations
                         .HasColumnType("bigint");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<Guid>("AuditId")
-                        .HasColumnType("uuid");
 
                     b.Property<string>("CompanyId")
                         .IsRequired()
@@ -498,7 +476,7 @@ namespace Drawer.Infrastructure.Data.Migrations
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("EntityAuditId")
+                    b.Property<string>("EntityId")
                         .IsRequired()
                         .HasColumnType("text");
 

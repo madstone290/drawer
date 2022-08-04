@@ -12,6 +12,8 @@ namespace Drawer.Domain.Models
     /// <typeparam name="TId"></typeparam>
     public class AuditableEntity<TId> : Entity<TId>, IAuditable, ISoftDelete
     {
+        public Guid AuditId { get; set; } = Guid.NewGuid();
+
         public DateTime CreatedAt { get; set; }
 
         public string CreatedBy { get; set; } = default!;

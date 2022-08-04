@@ -11,6 +11,8 @@ namespace Drawer.Domain.Models
     /// </summary>
     public interface IAuditable
     {
+        Guid AuditId { get; set; }
+
         DateTime CreatedAt { get; set; }
 
         string CreatedBy { get; set; }
