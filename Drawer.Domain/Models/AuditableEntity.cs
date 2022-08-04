@@ -10,20 +10,8 @@ namespace Drawer.Domain.Models
     /// 감사기능이 포함된 엔티티
     /// </summary>
     /// <typeparam name="TId"></typeparam>
-    public class AuditableEntity<TId> : Entity<TId>, IAuditable, ISoftDelete
+    public class AuditableEntity<TId> : Entity<TId>, IAuditable
     {
         public Guid AuditId { get; set; } = Guid.NewGuid();
-
-        public DateTime CreatedAt { get; set; }
-
-        public string CreatedBy { get; set; } = default!;
-
-        public DateTime? LastModifiedAt { get; set; }
-
-        public string? LastModifiedBy { get; set; }
-
-        public DateTime? DeletedAt { get; set; }
-
-        public string? DeletedBy { get; set; }
     }
 }

@@ -63,7 +63,6 @@ namespace Drawer.Infrastructure.Data
 
 
             builder.AddQueryFilterToAllEntitiesAssignableFrom<ICompanyResource>(e => e.CompanyId == _companyIdProvider.GetCompanyId());
-            builder.AddQueryFilterToAllEntitiesAssignableFrom<ISoftDelete>(e => e.DeletedAt == null);
         }
 
         public override int SaveChanges()
@@ -75,7 +74,6 @@ namespace Drawer.Infrastructure.Data
         {
             ApplyCompanyIdToCompanyResource();
             ApplyAuditTrail();
-            ApplySoftDelete();
             return base.SaveChanges(acceptAllChangesOnSuccess);
         }
 
@@ -89,7 +87,6 @@ namespace Drawer.Infrastructure.Data
         {
             ApplyCompanyIdToCompanyResource();
             ApplyAuditTrail();
-            ApplySoftDelete();
             return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         }
 
@@ -138,45 +135,6 @@ namespace Drawer.Infrastructure.Data
                     var auditEvent = new AuditEvent(eventType, entity.GetType().Name, entity.AuditId.ToString(), userId, null);
                     AuditEvents.Add(auditEvent);
                 }
-            }
-
-            var addedEntries = ChangeTracker.Entries<IAuditable>()
-                .Where(p => p.State == EntityState.Added);
-
-            var modifiedEntries = ChangeTracker.Entries<IAuditable>()
-              .Where(p => p.State == EntityState.Modified);
-
-
-            var now = DateTime.UtcNow;
-            foreach (var entry in addedEntries)
-            {
-                entry.Entity.CreatedAt = now;
-                entry.Entity.CreatedBy = _userIdProvider.GetUserId()
-                    ?? throw new Exception("유효하지 않는 사용자Id입니다");
-            }
-
-            foreach (var entry in modifiedEntries)
-            {
-                entry.Entity.LastModifiedAt = now;
-                entry.Entity.LastModifiedBy = _userIdProvider.GetUserId()
-                    ?? throw new Exception("유효하지 않는 사용자Id입니다");
-            }
-        }
-
-        /// <summary>
-        /// 소프트 삭제를 적용한다.
-        /// </summary>
-        void ApplySoftDelete()
-        {
-            var deleteEntries = ChangeTracker.Entries<ISoftDelete>()
-              .Where(p => p.State == EntityState.Deleted);
-
-            foreach (var entry in deleteEntries)
-            {
-                entry.State = EntityState.Modified;
-                entry.Entity.DeletedAt = DateTime.UtcNow;
-                entry.Entity.DeletedBy = _userIdProvider.GetUserId()
-                    ?? throw new Exception("유효하지 않는 사용자Id입니다");
             }
         }
 

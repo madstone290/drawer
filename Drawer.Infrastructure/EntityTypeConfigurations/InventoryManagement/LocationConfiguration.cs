@@ -13,14 +13,11 @@ namespace Drawer.Infrastructure.EntityTypeConfigurations.InventoryManagement
     {
         public void Configure(EntityTypeBuilder<Location> builder)
         {
-            builder.Property(x => x.DeletedAt).HasColumnName("deleted_at");
             builder.HasIndex(x => new
             {
                 x.Name,
                 x.CompanyId,
-            })
-                .HasFilter("deleted_at IS NULL")
-                .IsUnique();
+            }).IsUnique();
 
             builder.Property(x => x.UpperLocationId).IsRequired(false);
 

@@ -12,13 +12,5 @@ namespace Drawer.Domain.Models
     public interface IAuditable
     {
         Guid AuditId { get; set; }
-
-        DateTime CreatedAt { get; set; }
-
-        string CreatedBy { get; set; }
-
-        DateTime? LastModifiedAt { get; set; }
-
-        string? LastModifiedBy { get; set; }
     }
 }
