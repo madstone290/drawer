@@ -29,6 +29,9 @@ namespace Drawer.Application.Services.InventoryManagement.Commands
 
         public async Task<CreateItemResult> Handle(CreateItemCommand command, CancellationToken cancellationToken)
         {
+            if (await _itemRepository.ExistByName(command.Name))
+                throw new AppException($"아이템 이름 중복 {command.Name}");
+
             var item = new Item(command.Name);
             item.SetCode(command.Code);
             item.SetNumber(command.Number);

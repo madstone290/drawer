@@ -10,5 +10,7 @@ namespace Drawer.Application.Services.InventoryManagement.Repos
     public interface IItemRepository : IRepository<Item, long>
     {
         Task<IList<Item>> FindAll();
+
+        Task<bool> ExistByName(string name);
     }
 }

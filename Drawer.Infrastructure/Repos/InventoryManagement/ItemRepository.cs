@@ -16,6 +16,11 @@ namespace Drawer.Infrastructure.Repos.InventoryManagement
         {
         }
 
+        public async Task<bool> ExistByName(string name)
+        {
+            return await _dbContext.Items.AnyAsync(x=> x.Name == name);
+        }
+
         public async Task<IList<Item>> FindAll()
         {
             return await _dbContext.Items.ToListAsync();
