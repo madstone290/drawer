@@ -7,6 +7,7 @@
 @using Drawer.Web.Shared.Dialogs
 @using Drawer.Web.Utils
 @using System.Reflection
+@implements IValidationContainer
 
 <ContentTitle Text="@TitleText" />
 <AuthorizeView Context="AuthorizeView" Policy="@Policies.CompanyMember">
@@ -15,6 +16,7 @@
     </NotAuthorized>
 
     <Authorized>
+
         <AidToolBar>
             <AidButton Color="Color.Error"
                        StartIcon="@Icons.Material.Filled.ArrowBack"
@@ -59,8 +61,12 @@
                 </MudTHeadRow>
             </HeaderContent>
             <RowTemplate>
-                @if(BodyRow != null)
-                    @BodyRow(context)
+                <CascadingValue IsFixed="true" Value="this">
+                    @if (BodyRow != null)
+                    {
+                        @BodyRow(context)
+                    }
+                </CascadingValue>
             </RowTemplate>
 
             <FooterContent>
@@ -70,11 +76,10 @@
             </FooterContent>
 
         </AidTable>
-
     </Authorized>
 </AuthorizeView>
 
-    @code {
+@code {
 
     private readonly List<TModel> _modelList = new List<TModel>();
 
@@ -114,6 +119,7 @@
     /// 바디로우 렌더링 요소
     /// </summary>
     [Parameter] public RenderFragment<TModel>? BodyRow { get; set; }
+
     [Parameter] public EditMode ActionMode { get; set; }
     /// <summary>
     /// 데이터를 저장하고 결과를 반환하는 함수를 지정한다.
@@ -167,6 +173,14 @@
 
     private async Task Save_Click()
     {
+        foreach (var v in _validations)
+        {
+            var result = await v.ValidateAsync();
+            if (result != null)
+                Snackbar.Add(result, Severity.Warning);
+        }
+
+        return;
         if (!IsDataValid)
         {
             Snackbar.Add("데이터가 유효하지 않습니다");
@@ -174,8 +188,19 @@
         }
 
         var success = await SaveAsyncFunc.Invoke(_modelList);
-        if(success)
+        if (success)
             NavManager.NavigateTo(HomePath);
+    }
+
+    private readonly List<IValidation> _validations = new List<IValidation>();
+    void IValidationContainer.AddValidation(IValidation validation)
+    {
+        _validations.Add(validation);
+    }
+
+     void IValidationContainer.RemoveValidation(IValidation validation)
+    {
+        _validations.Remove(validation);
     }
 }
 

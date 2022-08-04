@@ -27,15 +27,15 @@
     </HeadRow>
     <BodyRow>
         <AidInputCell @bind-Value="context.Name"
-                      Validate="((_) => ValidateProperty(context, x => x.Name))" />
+                      Validation="((_) => ValidateProperty(context, x => x.Name))" />
         <AidInputCell @bind-Value="context.Code"
-                      Validate="((_) => ValidateProperty(context, x => x.Code))" />
+                      Validation="((_) => ValidateProperty(context, x => x.Code))" />
         <AidInputCell @bind-Value="context.Number"
-                      Validate="((_) => ValidateProperty(context, x => x.Number))" />
+                      Validation="((_) => ValidateProperty(context, x => x.Number))" />
         <AidInputCell @bind-Value="context.Sku"
-                      Validate="((_) => ValidateProperty(context, x => x.Sku))" />
+                      Validation="((_) => ValidateProperty(context, x => x.Sku))" />
         <AidInputCell @bind-Value="context.QuantityUnit"
-                      Validate="((_) => ValidateProperty(context, x => x.QuantityUnit))" />
+                      Validation="((_) => ValidateProperty(context, x => x.QuantityUnit))" />
     </BodyRow>
 </BatchEdit>
 

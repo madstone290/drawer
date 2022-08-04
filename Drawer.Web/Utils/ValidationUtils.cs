@@ -41,7 +41,7 @@ namespace Drawer.Web.Utils
             var context = ValidationContext<TModel>.CreateWithOptions(instance, options => options.IncludeProperties(property));
             var result = validator.Validate(context);
             if (result.IsValid)
-                return string.Empty;
+                return null;
             return result.Errors.First().ErrorMessage;
         }
     }

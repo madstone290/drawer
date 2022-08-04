@@ -1,11 +1,13 @@
 ﻿@typeparam T
+
 <MudTd>
     <AidInput T="@T"
               @bind-Value="@Value"
-              Validate="@Validate" />
+              Validation="@Validation" />
 </MudTd>
 
 @code {
+
     private T? _value;
     [Parameter]
     public T? Value
@@ -25,5 +27,8 @@
     /// <summary>
     /// 값 유효성을 검사한다.
     /// </summary>
-    [Parameter] public Func<T?, string>? Validate { get; set; }
+    [Parameter] public Func<T?, string>? Validation { get; set; }
+
+
+    
 }

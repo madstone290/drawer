@@ -1,11 +1,13 @@
 ﻿@typeparam TKey
 @using System.Linq.Expressions
+@implements IValidation
+@implements IAsyncDisposable
 
 <div style="display:flex; flex-direction:column;">
     <MudTextField @ref="_textFieldReference"
+                  @attributes="Attributes"
                   T="string"
                   Immediate="true"
-                  Validation="@Validation"
                   Label="@Label"
                   DisableUnderLine="@(DisableUnderLine && !_isInputFocused)"
                   Value="@Value"
@@ -14,6 +16,7 @@
                   OnKeyUp="TextField_KeyUp"
                   @onblur="@TextField_Blur"
                   @onfocus="@TextField_Focus">
+
     </MudTextField>
     <MudPopover RelativeWidth="true"
                 Open="@_isOpen"
@@ -86,22 +89,50 @@
     /// </summary>
     private List<string>? _filteredItemValues;
 
+    private Dictionary<string, object> Attributes
+    {
+        get
+        {
+            Dictionary<string, object> _attributes = new();
+            if (For != null)
+                _attributes.Add("For", For);
+            else if (Validation != null)
+                _attributes.Add("Validation", Validation);
+            return _attributes;
+        }
+    }
+
+
     [Inject] public IScrollManager ScrollManager { get; set; } = null!;
+
+    [CascadingParameter] public IValidationContainer? ValidationContainer { get; set; }
+
     [Parameter] public bool DisableUnderLine { get; set; }
     [Parameter] public Func<string, string>? Validation { get; set; }
     [Parameter] public string? Label { get; set; }
     [Parameter] public int MaxHeight { get; set; } = 200;
+    [Parameter] public Expression<Func<string>>? For { get; set; }
+
     /// <summary>
     /// 메뉴리스트 아이템 값 목록
     /// </summary>
     [Parameter] public List<string>? ItemValues { get; set; }
 
+    /// <summary>
+    /// Value -> Key 변환 함수
+    /// </summary>
     [Parameter] public Func<string, TKey?>? KeyFunc { get; set; }
 
     [Parameter] public TKey? Key { get; set; }
     [Parameter] public string? Value { get; set; }
     [Parameter] public EventCallback<TKey?> KeyChanged { get; set; }
     [Parameter] public EventCallback<string?> ValueChanged { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (ValidationContainer != null)
+            ValidationContainer.AddValidation(this);
+    }
 
     private int RenderCount = 1;
     protected override void OnAfterRender(bool firstRender)
@@ -310,4 +341,18 @@
 #endif
     }
 
+    async Task<string?> IValidation.ValidateAsync()
+    {
+        // TextField 객체의 Validation을 실행하고 에러를 반환한다.
+        await _textFieldReference.Validate();
+        return _textFieldReference.GetErrorText();
+    }
+
+    ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (ValidationContainer != null)
+            ValidationContainer.RemoveValidation(this);
+
+        return ValueTask.CompletedTask;
+    }
 }

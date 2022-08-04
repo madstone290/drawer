@@ -23,14 +23,9 @@
     </HeadRow>
     <BodyRow>
         <AidInputCell @bind-Value="context.Name"
-                      Validate="@((_) => ValidateProperty(context, nameof(ZoneModel.Name)))" />
+                      Validation="@((_) => ValidateProperty(context, nameof(ZoneModel.Name)))" />
         <AidInputCell @bind-Value="context.Note"
-                      Validate="@((_) => ValidateProperty(context, nameof(ZoneModel.Note)))" />
-        <AidCompleteInputCell TValue="long"
-                          ItemDictFunc="GetWorkplaces"
-                          Validate="@((_) => ValidateProperty(context, nameof(ZoneModel.WorkplaceId)))"
-                          @bind-Text="context.WorkplaceName"
-                          @bind-Value="context.WorkplaceId" />
+                      Validation="@((_) => ValidateProperty(context, nameof(ZoneModel.Note)))" />
     </BodyRow>
 </BatchEdit>
 

@@ -1,9 +1,6 @@
 ﻿using Drawer.Contract.InventoryManagement;
-using Drawer.Contract.Locations;
 using Drawer.Web.Api.InventoryManagement;
-using Drawer.Web.Api.Locations;
 using Drawer.Web.Pages.Location.Models;
-using Drawer.Web.Services;
 using Drawer.Web.Utils;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -46,6 +43,8 @@ namespace Drawer.Web.Pages.Location
             {
                 _locations.Clear();
                 _locations.AddRange(response.Data.Locations);
+
+                _validator.LocationNames = _locations.Select(x => x.Name).ToList();
             }
 
 
@@ -89,7 +88,6 @@ namespace Drawer.Web.Pages.Location
                         NavManager.NavigateTo(Paths.LocationHome);
                     }
                 }
-
             }
         }
 
@@ -103,7 +101,12 @@ namespace Drawer.Web.Pages.Location
                 return "잘못된 위치입니다";
         }
 
-        
-      
+
+        Task<Dictionary<string, long>> GetDict()
+        {
+            return Task.FromResult(_locations.ToDictionary(x => x.Name, x => x.Id));
+        } 
+
+
     }
 }

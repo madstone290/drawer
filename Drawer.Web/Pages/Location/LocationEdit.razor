@@ -32,8 +32,8 @@
                               ItemValues="@(_locations.Select(x=> x.Name).ToList())"
                               @bind-Key="_location.UpperLocationId"
                               @bind-Value="_location.UpperLocationName"
-                              KeyFunc="@((value) => _locations.FirstOrDefault(x=> x.Name == value)?.Id ?? 0)"
-                              Validation="@((_) => ValidateUpperLocation(_location))" />
+                              For="()=>_location.UpperLocationName"
+                              KeyFunc="@((value) => _locations.FirstOrDefault(x=> x.Name == value)?.Id ?? 0)" />
         </MudItem>
         <MudItem xs="12" sm="12">
             <MudTextField @bind-Value="_location.Note"

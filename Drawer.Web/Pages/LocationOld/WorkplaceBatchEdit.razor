@@ -20,9 +20,9 @@
     </HeadRow>
     <BodyRow>
         <AidInputCell @bind-Value="context.Name"
-                      Validate="@((value) => ValidateProperty(context, nameof(ZoneModel.Name)))" />
+                      Validation="@((value) => ValidateProperty(context, nameof(ZoneModel.Name)))" />
         <AidInputCell @bind-Value="context.Note"
-                      Validate="@((value) => ValidateProperty(context, nameof(ZoneModel.Note)))" />
+                      Validation="@((value) => ValidateProperty(context, nameof(ZoneModel.Note)))" />
     </BodyRow>
 </BatchEdit>
 

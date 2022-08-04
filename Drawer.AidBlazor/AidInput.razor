@@ -1,26 +1,29 @@
 ﻿@typeparam T
+@implements IValidation
+@implements IAsyncDisposable
 
-<div>
-    <div style="display:flex; flex-direction:column;">
-        <MudInput T="@T"
-                  Immediate="false"
-                  InputType="InputType.Text"
-                  @bind-Value="@Value"
-                  @onfocus="OnFocus"
-                  @onblur="OnBlur"
-                  DisableUnderLine="!showUnderline">
-              
-        </MudInput>
-    </div>
+<div style="display:flex; flex-direction:column;">
+    <MudInput @ref="inputReference"
+              T="@T"
+              Immediate="false"
+              InputType="InputType.Text"
+              Validation="@Validation"
+              @bind-Value="@Value"
+              @onfocus="OnFocus"
+              @onblur="OnBlur"
+              DisableUnderLine="!showUnderline">
+    </MudInput>
     <MudText Color="Color.Error" Typo="Typo.overline">@_error</MudText>
 </div>
 
 
 @code {
+    private MudInput<T> inputReference = null!;
     private T? _value;
     private string? _error;
     private bool showUnderline;
 
+    [CascadingParameter] public IValidationContainer? ValidationContainer { get; set; }
     [Parameter]
     public T? Value
     {
@@ -31,8 +34,7 @@
                 return;
             _value = value;
             ValueChanged.InvokeAsync(value);
-
-            _error = Validate?.Invoke(value);
+            _error = Validation?.Invoke(value);
         }
     }
 
@@ -41,18 +43,16 @@
     /// <summary>
     /// 값 유효성을 검사한다.
     /// </summary>
-    [Parameter] public Func<T?, string>? Validate { get; set; }
+    [Parameter] public Func<T?, string>? Validation { get; set; }
 
     [Parameter] public bool Visible { get; set; } = true;
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override void OnInitialized()
     {
-        if (firstRender)
+        if (ValidationContainer != null)
         {
-            _error = Validate?.Invoke(Value);
-            StateHasChanged();
+            ValidationContainer.AddValidation(this);
         }
-
     }
 
     private void OnFocus()
@@ -63,5 +63,20 @@
     private void OnBlur()
     {
         showUnderline = false;
+    }
+
+    async Task<string?> IValidation.ValidateAsync()
+    {
+        //MudInput은 에러 출력기능을 제공하지 않는다.
+        var error = await Task.Run(() => Validation?.Invoke(Value));
+        return _error;
+    }
+
+    ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (ValidationContainer != null)
+            ValidationContainer.RemoveValidation(this);
+
+        return ValueTask.CompletedTask;
     }
 }

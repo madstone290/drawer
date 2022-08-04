@@ -23,15 +23,13 @@
     </HeadRow>
     <BodyRow>
         <AidInputCell @bind-Value="context.Name"
-                      Validate="@((_) => ValidateProperty(context, nameof(SpotModel.Name)))" />
+                      Validation="@((_) => ValidateProperty(context, nameof(SpotModel.Name)))" />
 
         <AidInputCell @bind-Value="context.Note"
-                      Validate="@((_) => ValidateProperty(context, nameof(SpotModel.Note)))" />
-        <AidCompleteInputCell TValue="long"
-                              ItemDictFunc="GetZones"
-                              Validate="@((_) => ValidateProperty(context, nameof(SpotModel.ZoneId)))"
-                              @bind-Text="context.ZoneName"
-                              @bind-Value="context.ZoneId" />
+                      Validation="@((_) => ValidateProperty(context, nameof(SpotModel.Note)))" />
+                      <MudTd>
+
+                      </MudTd>
     </BodyRow>
 </BatchEdit>
 

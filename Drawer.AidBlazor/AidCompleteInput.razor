@@ -1,47 +1,55 @@
-﻿@using System.Linq.Expressions
-@typeparam TValue
-<div>
-    <div style="display:flex; flex-direction:column;">
-        <MudInput @ref="_inputReference"
-                  @onkeydown="Input_KeyDown"
-                  @onkeyup="Input_KeyUp"
-                  @onfocus="Input_Focus"
-                  @onblur="Input_Blur"
-                  Immediate="true"
-                  FullWidth="true"
-                  T="string"
-                  Value="_text"
-                  For="@For"
-                  DisableUnderLine="@(!showUnderline)"
-                  ValueChanged="@Input_ValueChanged" />
+﻿@typeparam TKey
+@using System.Linq.Expressions
+@implements IValidation
+@implements IAsyncDisposable
 
-        <MudPopover RelativeWidth="true"
-                    Open="@_isOpen"
-                    Fixed="true"
-                    MaxHeight="@MaxHeight"
-                    AnchorOrigin="Origin.BottomCenter"
-                    TransformOrigin="Origin.TopCenter">
-            <MudList Clickable="true"
-                     @bind-SelectedValue="_selectedItem">
-                @{
+<div style="display:flex; flex-direction:column;">
+    <MudInput @ref="_inputReference"
+              @attributes="Attributes"
+              T="string"
+              Immediate="true"
+              Label="@Label"
+              DisableUnderLine="@(DisableUnderLine && !_isInputFocused)"
+              Value="@Value"
+              ValueChanged="@TextField_ValueChanged"
+              OnKeyDown="TextField_KeyDown"
+              OnKeyUp="TextField_KeyUp"
+              @onblur="@TextField_Blur"
+              @onfocus="@TextField_Focus">
+    </MudInput>
+    <MudText Color="Color.Error" Typo="Typo.overline">@_error</MudText>
+    <MudPopover RelativeWidth="true"
+                Open="@_isOpen"
+                Fixed="true"
+                MaxHeight="@MaxHeight"
+                AnchorOrigin="Origin.BottomCenter"
+                TransformOrigin="Origin.TopCenter">
+        <MudList Clickable="true" @bind-SelectedValue="_selectedListItemValue">
+            @{
+                if (_filteredItemValues != null)
+                {
                     int index = 0;
-                    foreach (var item in _filteredItemList)
+                    foreach (var item in _filteredItemValues)
                     {
+                        Debug($"Creating item {item}");
                         <MudListItem id="@GetListItemId(index)" Text="@item" Value="@item" OnClick="@ListItem_Click" />
                         index++;
                     }
                 }
-            </MudList>
-        </MudPopover>
-        <MudOverlay @bind-Visible="_isOpen" AutoClose="true" />
-    </div>
-    <MudText Color="Color.Error" Typo="Typo.overline">@_error</MudText>
+            }
+        </MudList>
+    </MudPopover>
+    <MudOverlay AutoClose="true" @bind-Visible="_isOpen" />
 </div>
-
 
 @code {
 
-    private bool showUnderline;
+    private MudInput<string> _inputReference = null!;
+
+    /// <summary>
+    /// 에러메시지
+    /// </summary>
+    private string? _error;
 
     /// <summary>
     /// 컴포넌트 식별용 아이디
@@ -49,212 +57,141 @@
     private readonly string _componentId = Guid.NewGuid().ToString();
 
     /// <summary>
-    /// Input 엘리먼트
+    /// 인풋 포커스 여부
     /// </summary>
-    private MudInput<string> _inputReference = null!;
+    private bool _isInputFocused;
 
     /// <summary>
-    /// 필터링된 아이템 목록. 드랍다운에 표시된다.
+    /// 리스트 렌더링 여부
     /// </summary>
-    private List<string> _filteredItemList = new();
+    private bool _isListRendering;
 
     /// <summary>
-    /// 전체 아이템 목록
-    /// </summary>
-    private List<string> _itemList = new();
-
-    /// <summary>
-    /// 전체 아이템 사전
-    /// </summary>
-    private Dictionary<string, TValue> _itemDict { get; set; } = new();
-
-    /// <summary>
-    /// 드랍다운 열림 상태
+    /// 메뉴 오픈 여부
     /// </summary>
     private bool _isOpen;
 
     /// <summary>
-    /// 값 유효하지 않을 때의 에러메시지
+    /// 리스트 아이템 선택여부.
+    /// 엔터키 혹은 마우스클릭을 통해 변경된다.
     /// </summary>
-    private string? _error;
+    private bool _isItemChosen;
 
     /// <summary>
-    /// 리스트 엘리먼트의 렌더링 여부
+    /// 리스트에서 선택된 아이템 인덱스.
+    /// 인덱스를 지정하고 메뉴 재렌더링 후에 해당 인덱스에 해당하는 아이템 값을 선택한다.
     /// </summary>
-    private bool _isListRendering = false;
+    private int _selectedListItemIndex;
 
     /// <summary>
-    /// 드랍다운에서 선택된 아이템 인덱스. 드랍다운 리스트 렌더링 후 아이템 선택에 사용한다.
+    /// 리스트에서 선택된 아이템 값
     /// </summary>
-    private int _selectedItemIndex;
+    private object? _selectedListItemValue;
 
     /// <summary>
-    /// 드랍다운에서 선택된 아이템
+    /// 메뉴리스트에서 필터링된 아이템 값 목록
     /// </summary>
-    private object? _selectedItem;
+    private List<string>? _filteredItemValues;
+
+    private Dictionary<string, object> Attributes
+    {
+        get
+        {
+            Dictionary<string, object> _attributes = new();
+            if (For != null)
+                _attributes.Add("For", For);
+            else if (Validation != null)
+                _attributes.Add("Validation", Validation);
+            return _attributes;
+        }
+    }
+
 
     [Inject] public IScrollManager ScrollManager { get; set; } = null!;
 
+    [CascadingParameter] public IValidationContainer? ValidationContainer { get; set; }
 
-    /// <summary>
-    /// 아이템 사전을 불러온다.
-    /// </summary>
-    [Parameter] public Func<Task<Dictionary<string, TValue>>>? ItemDictFunc { get; set; }
-
-    /// <summary>
-    /// 값 유효성을 검사한다.
-    /// </summary>
-    [Parameter] public Func<TValue?, string?>? Validate { get; set; }
-
-    private TValue? _value;
-    [Parameter]
-    public TValue? Value
-    {
-        get => _value;
-        set
-        {
-            if (EqualityComparer<TValue>.Default.Equals(_value, value))
-                return;
-            _value = value;
-            ValueChanged.InvokeAsync(value);
-
-            if (Validate != null)
-                _error = Validate(value);
-        }
-    }
-
-    private string? _text;
-    [Parameter]
-    public string? Text
-    {
-        get => _text;
-        set
-        {
-            if (EqualityComparer<string>.Default.Equals(_text, value))
-                return;
-            _text = value;
-
-            TextChanged.InvokeAsync(value);
-
-            RefreshValue();
-        }
-    }
-
-    [Parameter] public EventCallback<TValue?> ValueChanged { get; set; }
-    [Parameter] public EventCallback<string?> TextChanged { get; set; }
-
-    /// <summary>
-    /// 드랍다운 높이
-    /// </summary>
+    [Parameter] public bool DisableUnderLine { get; set; }
+    [Parameter] public Func<string?, string?>? Validation { get; set; }
+    [Parameter] public string? Label { get; set; }
     [Parameter] public int MaxHeight { get; set; } = 200;
+    [Parameter] public Expression<Func<string>>? For { get; set; }
+
     /// <summary>
-    /// 임의값 허용 여부. 리스트에 없는 아이템도 유효한지 설정한다.
+    /// 메뉴리스트 아이템 값 목록
     /// </summary>
-    [Parameter] public bool AllowArbitraryText { get; set; } = false;
+    [Parameter] public List<string>? ItemValues { get; set; }
 
-    [Parameter] public Expression<Func<string>>? For { get; set; } 
+    /// <summary>
+    /// Value -> Key 변환 함수
+    /// </summary>
+    [Parameter] public Func<string, TKey?>? KeyFunc { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    [Parameter] public TKey? Key { get; set; }
+    [Parameter] public string? Value { get; set; }
+    [Parameter] public EventCallback<TKey?> KeyChanged { get; set; }
+    [Parameter] public EventCallback<string?> ValueChanged { get; set; }
+
+    protected override void OnInitialized()
     {
-        if (ItemDictFunc != null)
-        {
-            _itemDict = await ItemDictFunc.Invoke();
-            _itemList = _itemDict.Select(x => x.Key).ToList();
+        if (ValidationContainer != null)
+            ValidationContainer.AddValidation(this);
 
-            RefreshValue();
-        }
+        _error = Validation?.Invoke(Value);
     }
 
+    private int RenderCount = 1;
     protected override void OnAfterRender(bool firstRender)
     {
-        if (firstRender)
-        {
-            _error = Validate?.Invoke(Value);
-            StateHasChanged();
-        }
-
+        Debug($"{RenderCount++} OnAfterRender");
         if (_isListRendering)
         {
-            // 리스트 아이템목록 렌더링이 완료된 후 선택된 아이템을 렌더링한다.
-            if (_filteredItemList.Any())
+            Debug($"_isListRendering");
+            // 아이템 목록이 갱신된 후 아이템을 선택한다.
+            if (_filteredItemValues != null && _selectedListItemIndex < _filteredItemValues.Count)
             {
-                _selectedItem = _filteredItemList[_selectedItemIndex];
-                ScrollToListItem(_selectedItemIndex);
+                Debug($"_filteredItemValues != null");
+                _selectedListItemValue = _filteredItemValues[_selectedListItemIndex];
+                ScrollToListItem(_selectedListItemIndex);
             }
-            else
-            {
-                _selectedItem = null;
-            }
-            // 중요!!. 아이템을 선택하고 다시 렌더링해야한다.
-            StateHasChanged();
             _isListRendering = false;
         }
+
     }
 
-    /// <summary>
-    /// 아이템사전에서 Text를 찾아 Value를 갱신한다.
-    /// </summary>
-    private void RefreshValue()
+    private void TextField_Blur()
     {
-        if (Text != null)
-            Value = _itemDict.ContainsKey(Text) ? _itemDict[Text] : default;
+        _isInputFocused = false;
     }
 
-    private void Input_Focus()
+    private void TextField_Focus()
     {
-        Input_ValueChanged(_inputReference.Value);
-        showUnderline = true;
+        _isInputFocused = true;
+        ShowMenu();
     }
 
-    private void Input_Blur()
+    private async void ListItem_Click()
     {
-        showUnderline = false;
-    }
-
-    private void Input_ValueChanged(string value)
-    {
-        // TODO 사용자입력 <-> 아이템클릭, 엔터입력 구분할 것
-        // 사용자 입력인 경우에만 리스트 아이템 변경
-
-        Text = value;
-
-        if (!_isOpen)
-            _isOpen = true;
-
-        if (AllowArbitraryText == false)
-            _error = IsContained(value);
-
-        // 1. 아이템을 필터링. 선택할 아이템 인덱스 지정.
-        // 2. 아이템 목록 렌더링
-        // 3. 아이템 목록 렌더링이 완료되면 선택할 아이템 인덱스를 이용해서 다시 한번 렌더링
-
-        _filteredItemList.Clear();
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            _filteredItemList.AddRange(_itemList);
-        }
-        else
-        {
-            _filteredItemList.AddRange(_itemList.Where(item =>
-                item.Contains(value, StringComparison.OrdinalIgnoreCase)));
-        }
-
-        // 값이 변하는 경우 항상 첫번째 아이템을 선택한다.
-        _selectedItemIndex = _filteredItemList.Any() ? 0 : -1;
-
-        // 리스트 요소가 렌더링되는지 식별한다.
-        _isListRendering = true;
-
-        StateHasChanged();
-    }
-
-    private void ListItem_Click()
-    {
-        _inputReference.SetText(Convert.ToString(_selectedItem)).AndForget();
+        _isItemChosen = true;
+        await _inputReference.SetText(Convert.ToString(_selectedListItemValue));
         _isOpen = false;
     }
 
-    private void Input_KeyDown(KeyboardEventArgs e)
+    private async Task TextField_ValueChanged(string value)
+    {
+        await SetValueAsync(value);
+
+        if (_isItemChosen)
+        {
+            _isItemChosen = false;
+        }
+        else
+        {
+            ShowMenu();
+        }
+    }
+
+    private void TextField_KeyDown(KeyboardEventArgs e)
     {
         // 탭이 포커스 이동하기 전에 이벤트를 처리한다
         if (e.Key == "Tab")
@@ -263,56 +200,124 @@
         }
     }
 
-    void Input_KeyUp(KeyboardEventArgs e)
+    private void TextField_KeyUp(KeyboardEventArgs e)
     {
         if (e.Key == "Enter")
         {
-            Input_KeyUp_Enter();
+            TextField_KeyUp_Enter();
         }
         else if (e.Key == "ArrowUp")
         {
-            Input_KeyUp_ArrowUp();
+            TextField_KeyUp_ArrowUp();
 
         }
         else if (e.Key == "ArrowDown")
         {
-            Input_KeyUp_ArrowDown();
+            TextField_KeyUp_ArrowDown();
         }
     }
 
-    private void Input_KeyUp_Enter()
+    private async void TextField_KeyUp_Enter()
     {
         // 드랍다운이 닫힌 경우 새로 연다.
         // 드랍다운이 열린 경우 선택된 아이템으로 텍스트를 변경한다.
 
         if (!_isOpen)
         {
-            _isOpen = true;
+            ShowMenu();
             return;
         }
 
-        if (_selectedItem != null)
+        if (_selectedListItemValue != null)
         {
-            _inputReference.SetText(Convert.ToString(_selectedItem)).AndForget();
+            _isItemChosen = true;
+            await _inputReference.SetText(Convert.ToString(_selectedListItemValue));
+            _isOpen = false;
         }
+    }
+
+    private void TextField_KeyUp_ArrowUp()
+    {
+        if (!_isOpen || _filteredItemValues == null)
+            return;
+
+        _selectedListItemIndex--;
+        if (_selectedListItemIndex < 0)
+            _selectedListItemIndex = _filteredItemValues.Count - 1;
+
+        _selectedListItemValue = _filteredItemValues[_selectedListItemIndex];
+        ScrollToListItem(_selectedListItemIndex);
+    }
+
+    private void TextField_KeyUp_ArrowDown()
+    {
+        if (!_isOpen || _filteredItemValues == null)
+            return;
+
+        _selectedListItemIndex++;
+        if (_filteredItemValues.Count <= _selectedListItemIndex)
+            _selectedListItemIndex = 0;
+
+        _selectedListItemValue = _filteredItemValues[_selectedListItemIndex];
+        ScrollToListItem(_selectedListItemIndex);
+    }
+
+    private async Task SetKeyAsync(TKey? key)
+    {
+        if (EqualityComparer<TKey>.Default.Equals(Key, key))
+            return;
+        Key = key;
+        if (KeyChanged.HasDelegate)
+            await KeyChanged.InvokeAsync(key);
+    }
+
+    private async Task SetValueAsync(string value)
+    {
+        if (EqualityComparer<string>.Default.Equals(Value, value))
+            return;
+        Value = value;
+        await RefreshKeyAsync();
+        if (ValueChanged.HasDelegate)
+            await ValueChanged.InvokeAsync(value);
+
+        _error = Validation?.Invoke(value);
+    }
+
+    /// <summary>
+    /// 입력에 맞는 메뉴를 보여준다
+    /// </summary>
+    private void ShowMenu()
+    {
+        // 1. 아이템을 필터링. 선택할 아이템 인덱스 지정.
+        // 2. 아이템 목록 렌더링
+        // 3. 아이템 목록 렌더링이 완료되면 선택할 아이템 인덱스를 이용해서 다시 한번 렌더링
+
+        if (ItemValues == null)
+            return;
+        Debug("ShowMenu");
+        if (string.IsNullOrWhiteSpace(Value))
+        {
+            Debug("Value is null");
+            _filteredItemValues = ItemValues.ToList();
+        }
+        else
+        {
+            Debug("Value is not null");
+            _filteredItemValues = ItemValues.Where(item =>
+                item.Contains(Value, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+        Debug($"FilteredItem Count: {_filteredItemValues?.Count}");
         _isOpen = false;
-    }
+        _isOpen = 0 < _filteredItemValues?.Count;
 
-    private void Input_KeyUp_ArrowUp()
-    {
-        if (0 < _selectedItemIndex)
-            _selectedItemIndex--;
 
+        // 첫번재 아이템을 선택한다
+        _selectedListItemIndex = 0;
+
+        // 리스트 요소가 렌더링되는지 식별한다
         _isListRendering = true;
-        StateHasChanged();
-    }
 
-    private void Input_KeyUp_ArrowDown()
-    {
-        if (_selectedItemIndex < _filteredItemList.Count - 1)
-            _selectedItemIndex++;
-
-        _isListRendering = true;
+        // 변경된 리스트아이템을 렌더링한다
         StateHasChanged();
     }
 
@@ -328,13 +333,34 @@
         return $"{_componentId}_item_{index}";
     }
 
-    private string? IsContained(string value)
+    private async Task RefreshKeyAsync()
     {
-        if (!_itemList.Contains(value))
-            return "리스트에 포함되지 않는 문자열입니다";
-        return null;
+        if (Value != null && KeyFunc != null)
+        {
+            var key = KeyFunc.Invoke(Value);
+            await SetKeyAsync(key);
+        }
     }
 
+    private void Debug(string message)
+    {
+#if DEBUG
+    Console.WriteLine(message);
+#endif
+    }
 
+    async Task<string?> IValidation.ValidateAsync()
+    {
+        //MudInput은 에러 출력기능을 제공하지 않는다.
+        _error = Validation?.Invoke(Value);
+        return _error;
+    }
 
+    ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (ValidationContainer != null)
+            ValidationContainer.RemoveValidation(this);
+
+        return ValueTask.CompletedTask;
+    }
 }

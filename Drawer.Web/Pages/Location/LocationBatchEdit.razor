@@ -9,32 +9,41 @@
 
 @attribute [Route(Paths.LocationBatchEdit)]
 
-<BatchEdit TitleText="위치 일괄 추가"
-           TModel="LocationModel"
-           HomePath="@Paths.LocationHome"
-           ExcelFormName="위치-양식"
-           SaveAsyncFunc="@Save"
-           ExcelOptions="@_excelOptions"
-           Validate="@Validate">
-
-    <HeadRow>
-        <MudTh Style="min-width:100px;">이름</MudTh>
-        <MudTh Style="min-width:100px;">비고</MudTh>
-        <MudTh Style="min-width:100px;">상위 위치</MudTh>
-    </HeadRow>
-    <BodyRow>
-        <AidInputCell @bind-Value="context.Name"
-                      Validate="@((_) => ValidateProperty(context, nameof(LocationModel.Name)))" />
-        <AidInputCell @bind-Value="context.Note"
-                      Validate="@((_) => ValidateProperty(context, nameof(LocationModel.Note)))" />
-        <AidCompleteInputCell TValue="long"
-                          ItemDictFunc="GetLocations"
-                          Validate="@((_) => ValidateProperty(context, nameof(LocationModel.UpperLocationName)))"
-                          @bind-Text="context.UpperLocationName"
-                          @bind-Value="context.UpperLocationId" />
-    </BodyRow>
-</BatchEdit>
-
+<CascadingValue IsFixed="true" Value="this">
+    <BatchEdit TitleText="위치 일괄 추가"
+               TModel="LocationModel"
+               HomePath="@Paths.LocationHome"
+               ExcelFormName="위치-양식"
+               SaveAsyncFunc="@Save"
+               ExcelOptions="@_excelOptions"
+               Validate="@Validate">
+        <HeadRow>
+            <MudTh Style="min-width:100px;">이름</MudTh>
+            <MudTh Style="min-width:100px;">비고</MudTh>
+            <MudTh Style="min-width:100px;">상위 위치</MudTh>
+            
+        </HeadRow>
+        <BodyRow>
+            <MudTd>
+                <AidInput @bind-Value="context.Name"
+                          Validation="@((_) => ValidateProperty(context, nameof(LocationModel.Name)))" />
+            </MudTd>
+            <MudTd>
+                <AidInput @bind-Value="context.Note"
+                          Validation="@((_) => ValidateProperty(context, nameof(LocationModel.Note)))" />
+            </MudTd>
+            <MudTd>
+                <AidCompleteInput TKey="long"
+                                  DisableUnderLine="true"
+                                  ItemValues="@(_locations.Select(x=> x.Name).ToList())"
+                                  @bind-Key="context.UpperLocationId"
+                                  @bind-Value="context.UpperLocationName"
+                                  KeyFunc="@((value) => _locations.FirstOrDefault(x=> x.Name == value)?.Id ?? 0)"
+                                  Validation="@((_) => ValidateProperty(context, nameof(LocationModel.UpperLocationName)))" />
+            </MudTd>
+        </BodyRow>
+    </BatchEdit>
+</CascadingValue>
 @code {
     private readonly LocationModelValidator _validator = new();
     private readonly ExcelOptions _excelOptions = new ExcelOptionsBuilder()
@@ -46,9 +55,17 @@
     [Inject] public LocationApiClient LocationApiClient { get; set; } = null!;
     [Inject] public ILockService LockService { get; set; } = null!;
 
+    private List<GetLocationsResponse.Location> _locations = new List<GetLocationsResponse.Location>();
+
     protected override async Task OnInitializedAsync()
     {
         await GetLocations();
+    }
+
+    private List<IValidation> validations = new();
+    internal void AddValidation(IValidation validation)
+    {
+        validations.Add(validation);
     }
 
     private async Task<Dictionary<string, long>> GetLocations()
@@ -60,6 +77,9 @@
             var locationDict = new Dictionary<string, long>();
             if (Snackbar.CheckFail(response))
             {
+                _locations.AddRange(response.Data.Locations.ToList());
+                _validator.LocationNames = _locations.Select(x => x.Name).ToList();
+
                 foreach (var location in response.Data.Locations)
                     locationDict[location.Name] = location.Id;
             }
@@ -73,7 +93,7 @@
     {
         var content = new BatchCreateLocationRequest(locations.Select(x =>
             new BatchCreateLocationRequest.Location(x.UpperLocationId, x.Name!, x.Note)).ToList());
-        
+
         var response = await LocationApiClient.BatchAddLocation(content);
 
         return Snackbar.CheckSuccessFail(response);
