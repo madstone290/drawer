@@ -1,28 +1,37 @@
 ﻿@using MudBlazor.Services
-@inherits MudButton
 @implements IAsyncDisposable
-@{
-    if (!Visible)
-        return;
 
-    base.BuildRenderTree(__builder);
-}
+@if (!Visible)
+    return;
+
+<MudButton Variant="@Variant.Filled"
+           IconColor="@Color.Surface"
+           Size="@Size"
+           Color="@Color"
+           Href="@Href"
+           Disabled="@(!Enabled)"
+           StartIcon="@StartIcon"
+           OnClick="@OnClick"
+           DisableElevation="@true">
+    @ChildContent
+</MudButton>
 
 @code {
-
-    public AidButton()
-    {
-        Variant = Variant.Filled;
-        IconColor = Color.Surface;
-        Size = Size.Medium;
-        DisableElevation = true;
-    }
-
-    [Parameter]
-    public bool Visible { get; set; } = true;
-
-    [Parameter]
-    public bool AutoResize { get; set; } = true;
+    [Parameter] public bool Visible { get; set; } = true;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    /// <summary>
+    /// 화면 크기에 맞춰 사이즈 변경 여부
+    /// </summary>
+    [Parameter] public bool AutoResize { get; set; } = true;
+    /// <summary>
+    /// 버튼 활성화 상태
+    /// </summary>
+    [Parameter] public bool Enabled { get; set; } = true;
+    [Parameter] public Color Color { get; set; }
+    [Parameter] public Size Size { get; set; } = Size.Medium;
+    [Parameter] public string? StartIcon { get; set; }
+    [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
+    [Parameter] public string? Href { get; set; }
 
     [Parameter]
     public Func<Breakpoint, Size> SizeFunc { get; set; } = new Func<Breakpoint, Size>((bp) =>
@@ -43,7 +52,7 @@
 
     [Inject]
     public IBreakpointService BreakpointListener { get; set; } = null!;
-    
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && AutoResize)

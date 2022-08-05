@@ -1,23 +1,11 @@
-﻿@inherits MudContainer
-@{
-    if (Class == null || !Class.Contains(AdditionalClass))
-    {
-        Class = string.Join(" ", Class, AdditionalClass);
-    }
-
-    base.BuildRenderTree(__builder);
-}
+﻿<MudContainer Class="@BaseClass"
+              MaxWidth="MaxWidth.False">
+    @ChildContent
+</MudContainer>
 
 @code {
+    private const string BaseClass = "aid-container";
 
-    public AidContainer()
-    {
-        Class = "aid-container";
-        MaxWidth = MaxWidth.False;
-    }
-
-    [Parameter]
-    public string AdditionalClass { get; set; } = string.Empty;
-
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 }
 

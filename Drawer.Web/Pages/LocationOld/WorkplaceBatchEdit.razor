@@ -19,9 +19,9 @@
         <MudTh Style="min-width:100px;">비고</MudTh>
     </HeadRow>
     <BodyRow>
-        <AidInputCell @bind-Value="context.Name"
+        <AidInput @bind-Value="context.Name"
                       Validation="@((value) => ValidateProperty(context, nameof(ZoneModel.Name)))" />
-        <AidInputCell @bind-Value="context.Note"
+        <AidInput @bind-Value="context.Note"
                       Validation="@((value) => ValidateProperty(context, nameof(ZoneModel.Note)))" />
     </BodyRow>
 </BatchEdit>

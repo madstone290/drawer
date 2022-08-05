@@ -1,31 +1,38 @@
-﻿@using MudBlazor
-@typeparam T
-@inherits MudInput<T>
+﻿@typeparam T
 
 @{
     if (!Visible)
         return;
- 
-    base.BuildRenderTree(__builder);
 }
+<MudInput T="@T"
+          Disabled="@(!Enabled)"
+          Placeholder="@BasePlaceholder"
+          @bind-Value="@Value"
+          Adornment="@Adornment.Start"
+          AdornmentIcon="@Icons.Material.Filled.Search"
+          IconSize="@Size.Medium"
+          Immediate="@true" />
 
 @code {
-    public AidSearchInput()
+    private const string BasePlaceholder = "검색";
+
+    private T? _value;
+
+    [Parameter] public bool Visible { get; set; } = true;
+    [Parameter] public bool Enabled { get; set; } = true;
+    [Parameter] public EventCallback<T?> ValueChanged { get; set; }
+    
+    [Parameter]
+    public T? Value
     {
-        Placeholder = "검색";
-        Adornment = Adornment.Start;
-        AdornmentIcon = Icons.Material.Filled.Search;
-        IconSize = Size.Medium;
-        Immediate = true;
-
-        if (!Disabled)
-            Disabled = !Enabled;
+        get => _value;
+        set
+        {
+            if (EqualityComparer<T>.Default.Equals(_value, value))
+                return;
+            _value = value;
+            ValueChanged.InvokeAsync(value);
+        }
     }
-
-    [Parameter]
-    public bool Visible { get; set; } = true;
-
-    [Parameter]
-    public bool Enabled { get; set; } = true;
 }
 

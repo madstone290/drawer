@@ -10,37 +10,37 @@
     <Authorized>
 
         <AidToolBar>
-            <AidButton Disabled="@(!canRead)"
+            <AidButton Enabled="@(canRead)"
                        Color="Color.Secondary"
                        StartIcon="@Icons.Material.Filled.Refresh"
                        OnClick=@(() => Load_Click())>
                 조회
             </AidButton>
-            <AidButton Disabled="@(!canCreate)"
+            <AidButton Enabled="@(canCreate)"
                        Color="Color.Primary"
                        StartIcon="@Icons.Material.Filled.Add"
                        OnClick=@(() => Add_Click())>
                 추가
             </AidButton>
-            <AidButton Disabled="@(!canUpdate)"
+            <AidButton Enabled="@(canUpdate)"
                        Color="Color.Primary"
                        StartIcon="@Icons.Material.Filled.Update"
                        OnClick=@(() => Update_Click())>
                 수정
             </AidButton>
-            <AidButton Disabled="@(!canDelete)"
+            <AidButton Enabled="@(canDelete)"
                        Color="Color.Warning"
                        StartIcon="@Icons.Material.Filled.Delete"
                        OnClick=@(() => Delete_Click())>
                 삭제
             </AidButton>
-            <AidButton Disabled="@(!canCreate)"
+            <AidButton Enabled="@(canCreate)"
                        Color="Color.Info"
                        StartIcon="@Icons.Material.Filled.Queue"
                        OnClick=@(() => BatchEdit_Click())>
                 일괄 추가
             </AidButton>
-            <AidButton Disabled="@(!canRead)"
+            <AidButton Enabled="@(canRead)"
                        Color="Color.Info"
                        StartIcon="@Icons.Material.Filled.Download"
                        OnClick=@(() => Download_ClickAsync())>

@@ -1,31 +1,20 @@
-﻿@using MudBlazor
-@typeparam T
-@inherits MudTextField<T>
+﻿@typeparam T
 
 @{
     if (!Visible)
         return;
- 
-    base.BuildRenderTree(__builder);
 }
+<MudTextField T="@T"
+          Disabled="@(!Enabled)"
+          Placeholder="@BasePlaceholder"
+          Adornment="@Adornment.Start"
+          AdornmentIcon="@Icons.Material.Filled.Search"
+          IconSize="@Size.Medium"
+          Immediate="@true" />
 
 @code {
-    public AidSearchField()
-    {
-        Placeholder = "검색";
-        Adornment = Adornment.Start;
-        AdornmentIcon = Icons.Material.Filled.Search;
-        IconSize = Size.Medium;
-        Immediate = true;
+    private const string BasePlaceholder = "검색";
 
-        if (!Disabled)
-            Disabled = !Enabled;
-    }
-
-    [Parameter]
-    public bool Visible { get; set; } = true;
-
-    [Parameter]
-    public bool Enabled { get; set; } = true;
+    [Parameter] public bool Visible { get; set; } = true;
+    [Parameter] public bool Enabled { get; set; } = true;
 }
-

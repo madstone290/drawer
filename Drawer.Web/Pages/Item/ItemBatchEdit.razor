@@ -4,7 +4,6 @@
 @using Drawer.Web.Api.InventoryManagement
 @using Drawer.Web.Api.Locations
 @using Drawer.Web.Pages.Item.Models
-@using Drawer.Web.Pages.LocationOld.Models
 @using Drawer.Web.Services
 @using Drawer.Web.Utils
 @using System.Linq.Expressions
@@ -15,27 +14,36 @@
            HomePath="@Paths.ItemHome"
            ExcelFormName="아이템-양식"
            SaveAsyncFunc="@Save"
-           Validate="@Validate"
-           ExcelOptions="_excelOptions" >
+           ExcelOptions="_excelOptions">
 
-    <HeadRow>
+    <HeaderRow>
         <MudTh Style="min-width:100px;">이름</MudTh>
         <MudTh Style="min-width:100px;">코드</MudTh>
         <MudTh Style="min-width:100px;">번호</MudTh>
         <MudTh Style="min-width:100px;">Sku</MudTh>
         <MudTh Style="min-width:100px;">계량 단위</MudTh>
-    </HeadRow>
+    </HeaderRow>
     <BodyRow>
-        <AidInputCell @bind-Value="context.Name"
+        <MudTd>
+            <AidInput @bind-Value="context.Name"
                       Validation="((_) => ValidateProperty(context, x => x.Name))" />
-        <AidInputCell @bind-Value="context.Code"
+        </MudTd>
+        <MudTd>
+            <AidInput @bind-Value="context.Code"
                       Validation="((_) => ValidateProperty(context, x => x.Code))" />
-        <AidInputCell @bind-Value="context.Number"
+        </MudTd>
+        <MudTd>
+            <AidInput @bind-Value="context.Number"
                       Validation="((_) => ValidateProperty(context, x => x.Number))" />
-        <AidInputCell @bind-Value="context.Sku"
+        </MudTd>
+        <MudTd>
+            <AidInput @bind-Value="context.Sku"
                       Validation="((_) => ValidateProperty(context, x => x.Sku))" />
-        <AidInputCell @bind-Value="context.QuantityUnit"
+        </MudTd>
+        <MudTd>
+            <AidInput @bind-Value="context.QuantityUnit"
                       Validation="((_) => ValidateProperty(context, x => x.QuantityUnit))" />
+        </MudTd>
     </BodyRow>
 </BatchEdit>
 
@@ -55,20 +63,14 @@
     private async Task<bool> Save(IEnumerable<ItemModel> items)
     {
         var content = new BatchCreateItemRequest(items.Select(item =>
-              new BatchCreateItemRequest.Item(item.Name, item.Code, item.Number, item.Sku, item.QuantityUnit)).ToList());
+              new BatchCreateItemRequest.Item(item.Name!, item.Code, item.Number, item.Sku, item.QuantityUnit)).ToList());
 
         var response = await ItemApiClient.BatchAddItem(content);
 
         return Snackbar.CheckSuccessFail(response);
     }
 
-    private bool Validate(ItemModel instance)
-    {
-        var result = _validator.Validate(instance);
-        return result.IsValid;
-    }
-
-    private string ValidateProperty(ItemModel item, Expression<Func<ItemModel, object>> expression)
+    private string? ValidateProperty(ItemModel item, Expression<Func<ItemModel, object?>> expression)
     {
         return _validator.ValidateProperty(item, expression);
     }

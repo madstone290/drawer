@@ -55,25 +55,25 @@
                   UseRowSelection="false"
                   Items="@_modelList">
 
-            <HeaderContent>
+            <Header>
                 <MudTHeadRow>
-                    @HeadRow
+                    @HeaderRow
                 </MudTHeadRow>
-            </HeaderContent>
-            <RowTemplate>
+            </Header>
+            <Row>
                 <CascadingValue IsFixed="true" Value="this">
                     @if (BodyRow != null)
                     {
                         @BodyRow(context)
                     }
                 </CascadingValue>
-            </RowTemplate>
+            </Row>
 
-            <FooterContent>
+            <Footer>
                 <MudTFootRow>
                     <MudTd colSpan="100">총 @(TotalRowCount)개의 행</MudTd>
                 </MudTFootRow>
-            </FooterContent>
+            </Footer>
 
         </AidTable>
     </Authorized>
@@ -84,13 +84,6 @@
     private readonly List<TModel> _modelList = new List<TModel>();
 
     public int TotalRowCount => _modelList.Count;
-
-    public bool IsDataValid => _modelList.All(instance =>
-    {
-        if (Validate == null)
-            return true;
-        return Validate(instance);
-    });
 
     public string ExcelFormFileName => ExcelFormName + ".xlsx";
 
@@ -114,7 +107,7 @@
     /// <summary>
     /// 헤드로우 렌더링요소
     /// </summary>
-    [Parameter] public RenderFragment? HeadRow { get; set; }
+    [Parameter] public RenderFragment? HeaderRow { get; set; }
     /// <summary>
     /// 바디로우 렌더링 요소
     /// </summary>
@@ -126,11 +119,6 @@
     /// 종료 여부를 반환한다.
     /// </summary>
     [Parameter] public Func<IEnumerable<TModel>, Task<bool>> SaveAsyncFunc { get; set; } = null!;
-    /// <summary>
-    /// 모델 속성값을 검사한다.
-    /// 속성이 유효한 경우 null을 반환하고 유효하지 않은 경우 에러메시지를 반환한다.
-    /// </summary>
-    [Parameter] public Func<TModel, bool>? Validate { get; set; }
 
     /// <summary>
     /// 엑셀 읽기/쓰기에 사용할 옵션
@@ -173,15 +161,17 @@
 
     private async Task Save_Click()
     {
+        if (_modelList.Count == 0)
+            return;
+
+        bool isDataValid = true;
         foreach (var v in _validations)
         {
             var result = await v.ValidateAsync();
-            if (result != null)
-                Snackbar.Add(result, Severity.Warning);
+            isDataValid &= result == null;
         }
 
-        return;
-        if (!IsDataValid)
+        if (!isDataValid)
         {
             Snackbar.Add("데이터가 유효하지 않습니다");
             return;

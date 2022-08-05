@@ -15,9 +15,13 @@
 
 	<ItemGroup>
 		<Compile Remove="Data\**" />
+		<Compile Remove="Pages\LocationOld\**" />
 		<Content Remove="Data\**" />
+		<Content Remove="Pages\LocationOld\**" />
 		<EmbeddedResource Remove="Data\**" />
+		<EmbeddedResource Remove="Pages\LocationOld\**" />
 		<None Remove="Data\**" />
+		<None Remove="Pages\LocationOld\**" />
 	</ItemGroup>
 
 	<ItemGroup>

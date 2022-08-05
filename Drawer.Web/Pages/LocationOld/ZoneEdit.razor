@@ -1,13 +1,11 @@
 ﻿@using Drawer.Web.Utils
 <ContentTitle Text="@TitleText" />
 <AidToolBar>
-    <AidButton DisableElevation
-               Color="Color.Error"
+    <AidButton Color="Color.Error"
                OnClick="Back_Click">
         뒤로
     </AidButton>
-    <AidButton DisableElevation
-               Disabled="IsViewMode || !_isFormValid"
+    <AidButton Enabled="@(!IsViewMode && _isFormValid)"
                Color="Color.Primary"
                OnClick="Save_Click">
         저장

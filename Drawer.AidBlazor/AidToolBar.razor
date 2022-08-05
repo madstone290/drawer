@@ -1,29 +1,17 @@
-﻿@inherits MudToolBar
+﻿@if (!Visible)
+    return;
 
-@{
-    if (!Visible)
-        return;
-    
-       
-    if (Class == null || !Class.Contains(FlexSpace.Class))
-    {
-        Class = string.Join(" ", Class, FlexSpace.Class);
-    }
-
-    base.BuildRenderTree(__builder);
-}
+<MudToolBar Class="@Class"
+            DisableGutters="true">
+            @ChildContent
+</MudToolBar>
 
 @code {
-    public AidToolBar()
-    {
-        DisableGutters = true;
-        Class = "aid-toolbar";
-    }
+    private const string BaseClass = "aid-toolbar";
+    public string Class { get => string.Join(" ", BaseClass, FlexSpace.Class); }
 
-    [Parameter]
-    public bool Visible { get; set; } = true;
-
-    [Parameter]
-    public FlexSpace FlexSpace { get; set; } = FlexSpace.Stay;
+    [Parameter] public bool Visible { get; set; } = true;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public FlexSpace FlexSpace { get; set; } = FlexSpace.Stay;
 
 }

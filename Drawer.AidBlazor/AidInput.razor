@@ -47,11 +47,20 @@
 
     [Parameter] public bool Visible { get; set; } = true;
 
+    /// <summary>
+    /// 컴포넌트 생성후 유효성검사를 실행할 것인가?
+    /// </summary>
+    [Parameter] public bool ExecuteInitialValidation { get; set; } = true;
+
     protected override void OnInitialized()
     {
         if (ValidationContainer != null)
         {
             ValidationContainer.AddValidation(this);
+        }
+        if(ExecuteInitialValidation)
+        {
+            _error = Validation?.Invoke(Value);
         }
     }
 
@@ -68,7 +77,7 @@
     async Task<string?> IValidation.ValidateAsync()
     {
         //MudInput은 에러 출력기능을 제공하지 않는다.
-        var error = await Task.Run(() => Validation?.Invoke(Value));
+        _error = await Task.Run(() => Validation?.Invoke(Value));
         return _error;
     }
 

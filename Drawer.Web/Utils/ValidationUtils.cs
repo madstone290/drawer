@@ -25,7 +25,7 @@ namespace Drawer.Web.Utils
             };
         }
 
-        public static string ValidateProperty<TModel>(this AbstractValidator<TModel> validator, TModel instance, Expression<Func<TModel, object>> expression)
+        public static string? ValidateProperty<TModel>(this AbstractValidator<TModel> validator, TModel instance, Expression<Func<TModel, object?>> expression)
         {
             var property = string.Empty;
             if (expression.Body is MemberExpression m)
@@ -36,7 +36,7 @@ namespace Drawer.Web.Utils
             return ValidateProperty(validator, instance, property);
         }
 
-        public static string ValidateProperty<TModel>(this AbstractValidator<TModel> validator, TModel instance, string property)
+        public static string? ValidateProperty<TModel>(this AbstractValidator<TModel> validator, TModel instance, string property)
         {
             var context = ValidationContext<TModel>.CreateWithOptions(instance, options => options.IncludeProperties(property));
             var result = validator.Validate(context);

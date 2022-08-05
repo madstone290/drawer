@@ -22,14 +22,15 @@
         <MudTh Style="min-width:100px;">구역</MudTh>
     </HeadRow>
     <BodyRow>
-        <AidInputCell @bind-Value="context.Name"
+        <MudTd>
+            <AidInput @bind-Value="context.Name"
                       Validation="@((_) => ValidateProperty(context, nameof(SpotModel.Name)))" />
+        </MudTd>
+        <MudTd>
 
-        <AidInputCell @bind-Value="context.Note"
+        <AidInput @bind-Value="context.Note"
                       Validation="@((_) => ValidateProperty(context, nameof(SpotModel.Note)))" />
-                      <MudTd>
-
-                      </MudTd>
+        </MudTd>
     </BodyRow>
 </BatchEdit>
 

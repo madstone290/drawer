@@ -9,55 +9,54 @@
     </NotAuthorized>
     <Authorized>
         <AidToolBar FlexSpace="FlexSpace.Stay">
-            <AidButton Disabled="@(!canRead)"
-                        Color="Color.Secondary"
-                        StartIcon="@Icons.Material.Filled.Refresh"
-                        OnClick=@(() => Load_Click())>
+            <AidButton Enabled="@(canRead)"
+                       Color="Color.Secondary"
+                       StartIcon="@Icons.Material.Filled.Refresh"
+                       OnClick=@(() => Load_Click())>
                 조회
             </AidButton>
-            <AidButton Disabled="@(!canCreate)"
-                        Color="Color.Primary"
-                        StartIcon="@Icons.Material.Filled.Add"
-                        OnClick=@(() => Add_Click())>
+            <AidButton Enabled="@(canCreate)"
+                       Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.Add"
+                       OnClick=@(() => Add_Click())>
                 추가
             </AidButton>
-            <AidButton Disabled="@(!canUpdate)"
-                        Color="Color.Primary"
-                        StartIcon="@Icons.Material.Filled.Update"
-                        OnClick=@(() => Update_Click())>
+            <AidButton Enabled="@(canUpdate)"
+                       Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.Update"
+                       OnClick=@(() => Update_Click())>
                 수정
             </AidButton>
-            <AidButton Disabled="@(!canDelete)"
-                        Color="Color.Warning"
-                        StartIcon="@Icons.Material.Filled.Delete"
-                        OnClick=@(() => Delete_Click())>
+            <AidButton Enabled="@(canDelete)"
+                       Color="Color.Warning"
+                       StartIcon="@Icons.Material.Filled.Delete"
+                       OnClick=@(() => Delete_Click())>
                 삭제
             </AidButton>
-             <AidButton Disabled="@(!canCreate)"
-                        Color="Color.Info"
-                        StartIcon="@Icons.Material.Filled.Queue"
-                        OnClick=@(() => BatchEdit_Click())>
+            <AidButton Enabled="@(canCreate)"
+                       Color="Color.Info"
+                       StartIcon="@Icons.Material.Filled.Queue"
+                       OnClick=@(() => BatchEdit_Click())>
                 일괄 추가
             </AidButton>
-            <AidButton Disabled="@(!canRead)"
-                        Color="Color.Info"
-                        StartIcon="@Icons.Material.Filled.Download"
-                        OnClick=@(() => Download_ClickAsync())>
+            <AidButton Enabled="@(canRead)"
+                       Color="Color.Info"
+                       StartIcon="@Icons.Material.Filled.Download"
+                       OnClick=@(() => Download_ClickAsync())>
                 엑셀 다운로드
             </AidButton>
-            
+
             <MudSpacer />
 
             <AidSearchInput @bind-Value="@searchText" />
         </AidToolBar>
-        
+
         <AidTable @ref="table"
-                    FlexSpace="FlexSpace.ColumnFill"
-                   Loading="@IsTableLoading"
-                   T="@ItemTableModel"
-                   Items="@ItemList"
-                   Filter="@(new Func<ItemTableModel, bool>(Filter))">
-            <HeaderContent>
+                  Loading="@IsTableLoading"
+                  T="@ItemTableModel"
+                  Items="@ItemList"
+                  Filter="@(new Func<ItemTableModel, bool>(Filter))">
+            <Header>
                 <MudTHeadRow>
                     <MudTh>
                         <MudTableSortLabel SortBy="@(new Func<ItemTableModel, object>(x => x.Name))">이름</MudTableSortLabel>
@@ -75,9 +74,9 @@
                         <MudTableSortLabel SortBy="@(new Func<ItemTableModel, object>(x => x.QuantityUnit))">계량 단위</MudTableSortLabel>
                     </MudTh>
                 </MudTHeadRow>
-            </HeaderContent>
+            </Header>
 
-            <RowTemplate>
+            <Row>
                 <MudTd DataLabel="이름">
                     <MudHighlighter Text="@context.Name" HighlightedText="@searchText" />
                 </MudTd>
@@ -93,13 +92,12 @@
                 <MudTd DataLabel="계량 단위">
                     <MudHighlighter Text="@context.QuantityUnit" HighlightedText="@searchText" />
                 </MudTd>
-            </RowTemplate>
-
-            <FooterContent>
+            </Row>
+            <Footer>
                 <MudTFootRow>
                     <MudTd colSpan="100">총 @(TotalRowCount)개의 행</MudTd>
                 </MudTFootRow>
-            </FooterContent>
+            </Footer>
         </AidTable>
     </Authorized>
 </AuthorizeView>

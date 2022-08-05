@@ -21,7 +21,6 @@
 	  <Resource Include="AidInput.razor" />
 	  <Resource Include="AidMainContent.razor" />
 	  <Resource Include="AidTable.razor" />
-	  <Resource Include="AidTextField.razor" />
 	  <Resource Include="AidToolBar.razor" />
 	  <Resource Include="wwwroot\AidBlazor\AidBlazor.css">
 	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>

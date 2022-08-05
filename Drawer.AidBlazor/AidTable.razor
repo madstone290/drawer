@@ -1,73 +1,107 @@
 ﻿@typeparam T
-@inherits MudTable<T>
 
 @{
     if (!Visible)
         return;
-
-    /* 기본 스타일 설정 */
-    <style>
-        .selected-row {
-            background-color: skyblue
-        }
-    </style>
-
-    if (Class == null || !Class.Contains(FlexSpace.Class))
-    {
-        Class = string.Join(" ", Class, FlexSpace.Class);
-    }
-
-    if (UseRowSelection)
-    {
-        // RowClassFunc 호출을 위해 필요하다.
-        OnRowClick = new EventCallback<TableRowClickEventArgs<T>>(this, Row_Click);
-        RowClassFunc = GetRowClass;
-    }
-
-    base.BuildRenderTree(__builder);
 }
 
+<style>
+    .selected-row {
+        background-color: skyblue
+    }
+</style>
+
+<MudTable @attributes="@Attributes"
+          T="@T"
+          Items="@Items"
+          Class="@Class"
+          Height="@BaseHeight"
+          @bind-SelectedItem="@_selectedItem"
+          @bind-SelectedItems="@_selectedItems"
+          MultiSelection="@MultiSelection"
+          Loading="@Loading"
+          ReadOnly="@ReadOnly"
+          HorizontalScrollbar="@true"
+          LoadingProgressColor="@Color.Info"
+          Dense="@true"
+          Bordered="@true"
+          FixedHeader="@true"
+          FixedFooter="@true"
+          Breakpoint="@Breakpoint.None"
+          CustomHeader="@true"
+          CustomFooter="@true">
+    <HeaderContent>
+        @Header
+    </HeaderContent>
+    <RowTemplate>
+        @if (Row != null)
+        {
+            @Row(context)
+        }
+    </RowTemplate>
+    <FooterContent>
+        @Footer
+    </FooterContent>
+</MudTable>
+
 @code {
-    public AidTable()
+    private const string BaseHeight = "100%";
+
+    private int _lastClickedRowNumber = -1;
+    private T? _selectedItem;
+    private HashSet<T>? _selectedItems;
+
+    public string Class { get => FlexSpace.Class; }
+
+    private Dictionary<string, object> Attributes
     {
-        Height = "100%";
-        Breakpoint = Breakpoint.None;
-        Dense = true;
-        Bordered = true;
-        FixedHeader = true;
-        FixedFooter = true;
-        ReadOnly = true;
-        HorizontalScrollbar = true;
-        LoadingProgressColor = Color.Info;
-        CustomFooter = true;
-        CustomHeader = true;
+        get
+        {
+            Dictionary<string, object> attributes = new();
+            if (UseRowSelection)
+            {
+                attributes.Add(nameof(MudTable<T>.OnRowClick), new EventCallback<TableRowClickEventArgs<T>>(this, Row_Click));
+                attributes.Add(nameof(MudTable<T>.RowClassFunc), new Func<T, int, string>(GetRowClass));
+            }
+
+            if (Filter != null)
+                attributes.Add(nameof(MudTable<T>.Filter), Filter);
+            return attributes;
+        }
     }
 
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? Header { get; set; }
+    [Parameter] public RenderFragment<T>? Row { get; set; }
+    [Parameter] public RenderFragment? Footer { get; set; }
+
     [Parameter] public bool Visible { get; set; } = true;
+    [Parameter] public bool ReadOnly { get; set; } = true;
+    [Parameter] public IEnumerable<T>? Items { get; set; }
+    [Parameter] public Func<T, bool>? Filter { get; set; }
+    /// <summary>
+    /// 로딩상태
+    /// </summary>
+    [Parameter] public bool Loading { get; set; }
     [Parameter] public FlexSpace FlexSpace { get; set; } = FlexSpace.ColumnFill;
     [Parameter] public bool UseRowSelection { get; set; } = true;
-
-
+    [Parameter] public bool MultiSelection { get; set; }
 
     /// <summary>
     /// 현재 선택된 아이템.
     /// SelectedItem속성은 마지막 클릭 로우를 제공하고 선택 취소된 아이템을 판단하지 못한다.
     /// </summary>
-    public T? FocusedItem => lastClickedRowNumber == -1 ? default : SelectedItem;
+    public T? FocusedItem { get => _lastClickedRowNumber == -1 ? default : _selectedItem; }
 
-    [Parameter]
-    public EventCallback<T?> FocusedItemChanged { get; set; }
 
-    void Row_Click(TableRowClickEventArgs<T> model)
-    {
-    }
 
-    int lastClickedRowNumber = -1;
+    void Row_Click(TableRowClickEventArgs<T> model) { }
+
     private string GetRowClass(T model, int rowNumber)
     {
         if (MultiSelection)
         {
-            if (SelectedItems.Any(x => x.Equals(model)))
+            if (_selectedItems != null && _selectedItems.Any(x => x.Equals(model)))
             {
                 return "selected-row";
             }
@@ -79,15 +113,15 @@
         else
         {
             // deselect row
-            if (lastClickedRowNumber == rowNumber)
+            if (_lastClickedRowNumber == rowNumber)
             {
-                lastClickedRowNumber = -1;
+                _lastClickedRowNumber = -1;
                 return string.Empty;
             }
             // select row
-            else if (SelectedItem != null && SelectedItem.Equals(model))
+            else if (_selectedItem != null && _selectedItem.Equals(model))
             {
-                lastClickedRowNumber = rowNumber;
+                _lastClickedRowNumber = rowNumber;
                 return "selected-row";
             }
             // not-selected

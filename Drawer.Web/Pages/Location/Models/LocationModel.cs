@@ -24,6 +24,7 @@ namespace Drawer.Web.Pages.Location.Models
             RuleFor(x => x.Name)
                  .NotEmpty()
                  .WithMessage("* 필수");
+
             RuleFor(x => x.UpperLocationName)
                 .Custom((value, context) =>
                 {

@@ -22,10 +22,15 @@
         <MudTh Style="min-width:100px;">작업장</MudTh>
     </HeadRow>
     <BodyRow>
-        <AidInputCell @bind-Value="context.Name"
+          <MudTd>
+            <AidInput @bind-Value="context.Name"
                       Validation="@((_) => ValidateProperty(context, nameof(ZoneModel.Name)))" />
-        <AidInputCell @bind-Value="context.Note"
+        </MudTd>
+        <MudTd>
+
+        <AidInput @bind-Value="context.Note"
                       Validation="@((_) => ValidateProperty(context, nameof(ZoneModel.Note)))" />
+        </MudTd>
     </BodyRow>
 </BatchEdit>
 

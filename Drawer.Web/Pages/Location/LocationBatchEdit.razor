@@ -15,17 +15,16 @@
                HomePath="@Paths.LocationHome"
                ExcelFormName="위치-양식"
                SaveAsyncFunc="@Save"
-               ExcelOptions="@_excelOptions"
-               Validate="@Validate">
-        <HeadRow>
+               ExcelOptions="@_excelOptions" >
+        <HeaderRow>
             <MudTh Style="min-width:100px;">이름</MudTh>
             <MudTh Style="min-width:100px;">비고</MudTh>
             <MudTh Style="min-width:100px;">상위 위치</MudTh>
-            
-        </HeadRow>
+        </HeaderRow>
         <BodyRow>
             <MudTd>
                 <AidInput @bind-Value="context.Name"
+                          ExecuteInitialValidation="true"
                           Validation="@((_) => ValidateProperty(context, nameof(LocationModel.Name)))" />
             </MudTd>
             <MudTd>
@@ -97,12 +96,6 @@
         var response = await LocationApiClient.BatchAddLocation(content);
 
         return Snackbar.CheckSuccessFail(response);
-    }
-
-    private bool Validate(LocationModel instance)
-    {
-        var result = _validator.Validate(instance);
-        return result.IsValid;
     }
 
     private string? ValidateProperty(LocationModel instance, string property)
