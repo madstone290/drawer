@@ -30,7 +30,7 @@ namespace Drawer.Application.Services.InventoryManagement.Commands
         public async Task<CreateItemResult> Handle(CreateItemCommand command, CancellationToken cancellationToken)
         {
             if (await _itemRepository.ExistByName(command.Name))
-                throw new AppException($"아이템 이름 중복 {command.Name}");
+                throw new AppException($"동일한 이름이 존재합니다. {command.Name}");
 
             var item = new Item(command.Name);
             item.SetCode(command.Code);

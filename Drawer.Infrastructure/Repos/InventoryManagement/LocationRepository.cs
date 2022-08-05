@@ -21,6 +21,11 @@ namespace Drawer.Infrastructure.Repos.InventoryManagement
             return await _dbContext.Locations.AnyAsync(x => x.Name == name);
         }
 
+        public async Task<bool> ExistByUpperLocationId(long locationId)
+        {
+            return await _dbContext.Locations.AnyAsync(x => x.UpperLocationId == locationId);
+        }
+
         public async Task<IList<Location>> FindAll()
         {
             return await _dbContext.Locations.ToListAsync();

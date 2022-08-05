@@ -25,7 +25,7 @@ namespace Drawer.Application.Services.InventoryManagement.Commands
         public async Task<CreateLocationResult> Handle(CreateLocationCommand command, CancellationToken cancellationToken)
         {
             if (await _locationRepository.ExistByName(command.Name))
-                throw new AppException($"위치 이름 중복 {command.Name}");
+                throw new AppException($"동일한 이름이 존재합니다. {command.Name}");
 
             var upperLocation = command.UpperLocationId.HasValue
                 ? await _locationRepository.FindByIdAsync(command.UpperLocationId.Value)

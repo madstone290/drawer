@@ -12,5 +12,7 @@ namespace Drawer.Application.Services.InventoryManagement.Repos
         Task<IList<Location>> FindAll();
 
         Task<bool> ExistByName(string name);
+
+        Task<bool> ExistByUpperLocationId(long locationId);
     }
 }
