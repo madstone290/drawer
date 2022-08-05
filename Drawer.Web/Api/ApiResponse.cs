@@ -1,25 +1,37 @@
 ﻿namespace Drawer.Web.Api
 {
-    public class ApiResponse<TData> 
+    public interface IApiResponse
     {
         /// <summary>
         /// 요청 성공여부
         /// </summary>
-        public bool IsSuccessful { get; set; }
+        bool IsSuccessful { get; set; }
 
         /// <summary>
         /// 요청에 대한 권한 여부
         /// </summary>
-        public bool IsUnauthorized { get; set; }
+        bool IsUnauthorized { get; set; }
 
         /// <summary>
         /// 에러 식별 코드
         /// </summary>
-        public string? ErrorCode { get; set; }
+        string? ErrorCode { get; set; }
 
         /// <summary>
         /// 에러 메시지
         /// </summary>
+        string? ErrorMessage { get; set; }
+
+    }
+
+    public class ApiResponse<TData> : IApiResponse
+    {
+        public bool IsSuccessful { get; set; }
+
+        public bool IsUnauthorized { get; set; }
+
+        public string? ErrorCode { get; set; }
+
         public string? ErrorMessage { get; set; }
 
         /// <summary>

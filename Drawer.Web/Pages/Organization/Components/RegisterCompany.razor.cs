@@ -26,9 +26,9 @@ namespace Drawer.Web.Pages.Organization.Components
             {
                 // 쿠키 및 JWT 인증상태 갱신
                 var navigationUri = Paths.Account.Refresh
-                    .AddQueryParam("redirectUri", NavManager.Uri)
-                    .AddQueryParam("isCompanyMember", true.ToString())
-                    .AddQueryParam("isCompanyOwner", true.ToString());
+                    .AddQuery("redirectUri", NavManager.Uri)
+                    .AddQuery("isCompanyMember", true.ToString())
+                    .AddQuery("isCompanyOwner", true.ToString());
 
                 NavManager.NavigateTo(navigationUri, true);
             }

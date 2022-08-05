@@ -19,15 +19,15 @@ namespace Drawer.Web.Pages.Account
             var loginResult = await _authenticationManager.LoginAsync(email, password);
             if (loginResult.IsSuccessful)
             {
-                return Redirect(Paths.Account.LoginCallback.AddQueryParam("redirectUri", redirectUri));
+                return Redirect(Paths.Account.LoginCallback.AddQuery("redirectUri", redirectUri));
             }
             else if (loginResult.IsUnconfirmedEmail)
             {
-                return Redirect(Paths.Account.ConfirmEmail.AddQueryParam("email", email));
+                return Redirect(Paths.Account.ConfirmEmail.AddQuery("email", email));
             }
             else
             {
-                return Redirect(Paths.Account.Login.AddQueryParam("error", loginResult!.ErrorMessage));
+                return Redirect(Paths.Account.Login.AddQuery("error", loginResult!.ErrorMessage));
             }
         }
 

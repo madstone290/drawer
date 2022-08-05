@@ -26,9 +26,9 @@ namespace Drawer.Web.Pages.Account
             {
                 // 회원가입 진행
                 var navigationUri = Paths.Account.RegisterHandler
-                    .AddQueryParam("displayName", Model.DisplayName!)
-                    .AddQueryParam("email", Model.Email!)
-                    .AddQueryParam("password", Model.Password!);
+                    .AddQuery("displayName", Model.DisplayName!)
+                    .AddQuery("email", Model.Email!)
+                    .AddQuery("password", Model.Password!);
 
                 NavigationManager.NavigateTo(navigationUri, true);
             }

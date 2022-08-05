@@ -1,9 +1,10 @@
 ﻿@using Drawer.Web.Authentication
+@using Drawer.Web.Pages.Inventory.Models
 @using Pages.Location.Models
 
-@attribute [Route(Paths.LocationHome)]
+@attribute [Route(Paths.LocationItemInventoryHome)]
 
-<ContentTitle Text="위치" />
+<ContentTitle Text="위치-아이템 재고" />
 <AuthorizeView Context="AuthorizeView" Policy="@Policies.CompanyMember">
     <NotAuthorized>
         <NeedCompany />
@@ -19,26 +20,20 @@
             <AidButton Enabled="@(canCreate)"
                        Color="Color.Primary"
                        StartIcon="@Icons.Material.Filled.Add"
-                       OnClick=@(() => Add_Click())>
-                추가
+                       OnClick=@(() => Receipt_Click())>
+                입고
             </AidButton>
             <AidButton Enabled="@(canUpdate)"
                        Color="Color.Primary"
                        StartIcon="@Icons.Material.Filled.Update"
-                       OnClick=@(() => Update_Click())>
-                수정
+                       OnClick=@(() => Issue_Click())>
+                출고
             </AidButton>
             <AidButton Enabled="@(canDelete)"
                        Color="Color.Warning"
                        StartIcon="@Icons.Material.Filled.Delete"
-                       OnClick=@(() => Delete_Click())>
-                삭제
-            </AidButton>
-            <AidButton Enabled="@(canCreate)"
-                       Color="Color.Info"
-                       StartIcon="@Icons.Material.Filled.Queue"
-                       OnClick=@(() => BatchEdit_Click())>
-                일괄 추가
+                       OnClick=@(() => Transfer_Click())>
+                이동
             </AidButton>
             <AidButton Enabled="@(canRead)"
                        Color="Color.Info"
@@ -51,41 +46,41 @@
 
             <AidSearchInput @bind-Value="@searchText" />
         </AidToolBar>
-
-        <AidTable @ref="table"
-                  Loading="@_isTableLoading"
-                  T="@LocationModel"
-                  Items="@_locations"
-                  Filter="@(new Func<LocationModel,bool>(FilterLocations))">
+        <AidToolBar>
+            <AidCompleteField Label="컨테이너 위치"
+                              TKey="long"
+                              KeyChanged="@Field_KeyChanged"
+                              KeyFunc="@((name) => _locations.FirstOrDefault(x=> x.Name == name)?.Id ?? 0)"
+                              ItemValues="@(_locations.Select(x=> x.Name).ToList())" />
+        </AidToolBar>
+        <AidTable Loading="@_isTableLoading"
+                  T="@ItemLocationInventoryModel"
+                  UseRowSelection="@false"
+                  Items="@_modelList"
+                  Filter="@(new Func<ItemLocationInventoryModel,bool>(FilterInventoryDetails))">
             <Header>
                 <MudTHeadRow>
                     <MudTh>
-                        <MudTableSortLabel T="LocationModel" SortBy="x => x.Name">이름</MudTableSortLabel>
+                        <MudTableSortLabel T="ItemLocationInventoryModel" SortBy="x => x.ItemName">아이템</MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel T="LocationModel" SortBy="x => x.Note">비고</MudTableSortLabel>
+                        <MudTableSortLabel T="ItemLocationInventoryModel" SortBy="x => x.LocationName">위치</MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel T="LocationModel" SortBy="x => x.UpperLocationName">상위 위치</MudTableSortLabel>
-                    </MudTh>
-                    <MudTh>
-                        계층 레벨
+                        <MudTableSortLabel T="ItemLocationInventoryModel" SortBy="x => x.Quantity">수량</MudTableSortLabel>
                     </MudTh>
                 </MudTHeadRow>
             </Header>
 
             <Row>
-                <MudTd DataLabel="이름">
-                    <MudHighlighter Text="@context.Name" HighlightedText="@searchText" />
+                <MudTd>
+                    <MudHighlighter Text="@context.ItemName" HighlightedText="@searchText" />
                 </MudTd>
-                <MudTd DataLabel="비고">
-                    <MudHighlighter Text="@context.Note" HighlightedText="@searchText" />
+                <MudTd>
+                    <MudHighlighter Text="@context.LocationName" HighlightedText="@searchText" />
                 </MudTd>
-                <MudTd DataLabel="상위 위치">
-                    <MudHighlighter Text="@context.UpperLocationName" HighlightedText="@searchText" />
-                </MudTd>
-                <MudTd DataLabel="계층 레벨">
-                    <MudHighlighter Text="@context.HierarchyLevel.ToString()" HighlightedText="@searchText" />
+                <MudTd>
+                    <MudHighlighter Text="@context.Quantity.ToString()" HighlightedText="@searchText" />
                 </MudTd>
             </Row>
 

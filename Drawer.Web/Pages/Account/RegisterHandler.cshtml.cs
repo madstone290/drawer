@@ -33,10 +33,10 @@ namespace Drawer.Web.Pages.Account
 			if (!registerResponseMessage.IsSuccessStatusCode)
 			{
 				var error = await registerResponseMessage.Content.ReadFromJsonAsync<ErrorResponse>();
-				return Redirect(Paths.Account.Register.AddQueryParam("error", error!.Message));
+				return Redirect(Paths.Account.Register.AddQuery("error", error!.Message));
 			}
 
-            return Redirect(Paths.Account.ConfirmEmail.AddQueryParam("email", email));
+            return Redirect(Paths.Account.ConfirmEmail.AddQuery("email", email));
 
 		}
     }

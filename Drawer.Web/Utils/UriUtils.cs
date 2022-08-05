@@ -10,7 +10,7 @@
         /// <param name="name">변수명</param>
         /// <param name="value">변수값</param>
         /// <returns></returns>
-        public static string AddQueryParam(this string uri, string? name, string? value)
+        public static string AddQuery(this string uri, string? name, string? value)
         {
             if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(value))
                 return uri;

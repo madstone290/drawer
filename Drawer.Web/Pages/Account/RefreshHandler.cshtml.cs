@@ -28,7 +28,7 @@ namespace Drawer.Web.Pages.Account
         public async Task<IActionResult> OnGetAsync(string redirectUri, bool isCompanyMember, bool isCompanyOwner)
         {
             await _authenticationManager.RefreshAsync(isCompanyMember, isCompanyOwner);
-            return Redirect(Paths.Account.LoginCallback.AddQueryParam("redirectUri", redirectUri));
+            return Redirect(Paths.Account.LoginCallback.AddQuery("redirectUri", redirectUri));
         }
         
     }

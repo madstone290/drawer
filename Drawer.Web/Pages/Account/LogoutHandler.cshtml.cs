@@ -19,7 +19,7 @@ namespace Drawer.Web.Pages.Account
         {
             await _authenticationManager.LogoutAsync();
 
-            return Redirect(Paths.Account.LogoutCallback.AddQueryParam("redirectUri", redirectUri));
+            return Redirect(Paths.Account.LogoutCallback.AddQuery("redirectUri", redirectUri));
         }
     }
 }

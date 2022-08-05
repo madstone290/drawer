@@ -33,27 +33,6 @@
             public const string Company = "/Organization/Company";
         }
 
-        public const string WorkplaceHome = "/Workplace";
-        public const string WorkplaceBatchEdit = "/Workplace/BatchEdit";
-        public const string WorkplaceAdd = "/Workplace/Add";
-        public const string WorkplaceUpdate = "/Workplace/Update/{id}";
-        public const string WorkplaceView = "/Workplace/View/{id}";
-        public const string WorkplaceEdit = "/Workplace/Edit/{id}";
-
-        public const string ZoneHome = "/Zone/Home";
-        public const string ZoneBatchEdit = "/Zone/BatchEdit";
-        public const string ZoneAdd = "/Zone/Add";
-        public const string ZoneUpdate = "/Zone/Update/{id}";
-        public const string ZoneView = "/Zone/View/{id}";
-        public const string ZoneEdit = "/Zone/Edit/{id}";
-
-        public const string SpotHome = "/Spot/Home";
-        public const string SpotBatchEdit = "/Spot/BatchEdit";
-        public const string SpotAdd = "/Spot/Add";
-        public const string SpotUpdate = "/Spot/Update/{id}";
-        public const string SpotView = "/Spot/View/{id}";
-        public const string SpotEdit = "/Spot/Edit/{id}";
-
         public const string ItemHome = "/Item";
         public const string ItemBatchEdit = "/Item/BatchEdit";
         public const string ItemAdd = "/Item/Add";
@@ -67,6 +46,14 @@
         public const string LocationUpdate = "/Location/Update/{id}";
         public const string LocationView = "/Location/View/{id}";
         public const string LocationEdit = "/Location/Edit/{id}";
+
+        public const string ItemInventoryHome = "/ItemInventoryHome";
+        public const string ItemLocationInventoryHome = "/ItemLocationInventoryHome";
+        public const string LocationItemInventoryHome = "/LocationItemInventoryHome";
+
+        public const string GoodsReceiptHome = "/GoodsReceipt";
+        public const string GoodsIssueHome = "/GoodsIssue";
+        public const string GoodsTransferHome = "/GoodsTransfer";
 
     }
 }

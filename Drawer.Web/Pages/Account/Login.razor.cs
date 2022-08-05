@@ -63,9 +63,9 @@ namespace Drawer.Web.Pages.Account
 
                 // 로그인 진행
                 var navigationUri = Paths.Account.LoginHandler
-                    .AddQueryParam("email", Model.Email!)
-                    .AddQueryParam("password", Model.Password!)
-                    .AddQueryParam("redirectUri", RedirectUri);
+                    .AddQuery("email", Model.Email!)
+                    .AddQuery("password", Model.Password!)
+                    .AddQuery("redirectUri", RedirectUri);
 
                 NavManager.NavigateTo(navigationUri, true);
             }
