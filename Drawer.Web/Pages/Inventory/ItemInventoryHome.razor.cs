@@ -82,7 +82,7 @@ namespace Drawer.Web.Pages.Inventory
             // 서버의 수량정보를 적용한다.
             foreach (var inventoryDetail in _inventoryItems)
             {
-                inventoryDetail.Quantity = inventoryResponse.Data.InventoryDetails
+                inventoryDetail.Quantity = inventoryResponse.Data.InventoryItems
                     .Where(x => x.ItemId == inventoryDetail.ItemId)
                     .Sum(x => x.Quantity);
             }

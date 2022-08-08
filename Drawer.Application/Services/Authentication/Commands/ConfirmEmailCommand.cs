@@ -53,8 +53,8 @@ namespace Drawer.Application.Services.Authentication.Commands
 
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             var linkUri = request.ReturnUri
-                .AddQueryParam("token", Uri.EscapeDataString(token))
-                .AddQueryParam("email", user.Email);
+                .AddQuery("token", Uri.EscapeDataString(token))
+                .AddQuery("email", user.Email);
 
             string mailText = $"<a href=\"{linkUri}\">{Messages.ConfirmationEmailText}</a>";
 

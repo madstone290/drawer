@@ -51,7 +51,7 @@ namespace Drawer.Infrastructure.Data.Migrations
                     b.ToTable("RefreshTokens");
                 });
 
-            modelBuilder.Entity("Drawer.Domain.Models.InventoryManagement.InventoryDetail", b =>
+            modelBuilder.Entity("Drawer.Domain.Models.Inventory.InventoryItem", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -81,10 +81,49 @@ namespace Drawer.Infrastructure.Data.Migrations
 
                     b.HasIndex("LocationId");
 
-                    b.ToTable("InventoryDetails");
+                    b.ToTable("InventoryItems");
                 });
 
-            modelBuilder.Entity("Drawer.Domain.Models.InventoryManagement.Item", b =>
+            modelBuilder.Entity("Drawer.Domain.Models.Inventory.Issue", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<Guid>("AuditId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Buyer")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CompanyId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("IssueTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("ItemId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("LocationId")
+                        .HasColumnType("bigint");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("LocationId");
+
+                    b.ToTable("Issues");
+                });
+
+            modelBuilder.Entity("Drawer.Domain.Models.Inventory.Item", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -123,7 +162,7 @@ namespace Drawer.Infrastructure.Data.Migrations
                     b.ToTable("Items");
                 });
 
-            modelBuilder.Entity("Drawer.Domain.Models.InventoryManagement.Location", b =>
+            modelBuilder.Entity("Drawer.Domain.Models.Inventory.Location", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -141,6 +180,9 @@ namespace Drawer.Infrastructure.Data.Migrations
                     b.Property<int>("HierarchyLevel")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("IsGroup")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -148,17 +190,56 @@ namespace Drawer.Infrastructure.Data.Migrations
                     b.Property<string>("Note")
                         .HasColumnType("text");
 
-                    b.Property<long?>("UpperLocationId")
+                    b.Property<long?>("ParentGroupId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UpperLocationId");
+                    b.HasIndex("ParentGroupId");
 
                     b.HasIndex("Name", "CompanyId")
                         .IsUnique();
 
                     b.ToTable("Locations");
+                });
+
+            modelBuilder.Entity("Drawer.Domain.Models.Inventory.Receipt", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<Guid>("AuditId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CompanyId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("ItemId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("LocationId")
+                        .HasColumnType("bigint");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime>("ReceiptTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Seller")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("LocationId");
+
+                    b.ToTable("Receipts");
                 });
 
             modelBuilder.Entity("Drawer.Domain.Models.Locations.Spot", b =>
@@ -571,33 +652,59 @@ namespace Drawer.Infrastructure.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Drawer.Domain.Models.InventoryManagement.InventoryDetail", b =>
+            modelBuilder.Entity("Drawer.Domain.Models.Inventory.InventoryItem", b =>
                 {
-                    b.HasOne("Drawer.Domain.Models.InventoryManagement.Item", "Item")
+                    b.HasOne("Drawer.Domain.Models.Inventory.Item", null)
                         .WithMany()
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Drawer.Domain.Models.InventoryManagement.Location", "Location")
+                    b.HasOne("Drawer.Domain.Models.Inventory.Location", null)
                         .WithMany()
                         .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("Item");
-
-                    b.Navigation("Location");
                 });
 
-            modelBuilder.Entity("Drawer.Domain.Models.InventoryManagement.Location", b =>
+            modelBuilder.Entity("Drawer.Domain.Models.Inventory.Issue", b =>
                 {
-                    b.HasOne("Drawer.Domain.Models.InventoryManagement.Location", "UpperLocation")
+                    b.HasOne("Drawer.Domain.Models.Inventory.Item", null)
                         .WithMany()
-                        .HasForeignKey("UpperLocationId")
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Drawer.Domain.Models.Inventory.Location", null)
+                        .WithMany()
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Drawer.Domain.Models.Inventory.Location", b =>
+                {
+                    b.HasOne("Drawer.Domain.Models.Inventory.Location", "ParentGroup")
+                        .WithMany()
+                        .HasForeignKey("ParentGroupId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.Navigation("UpperLocation");
+                    b.Navigation("ParentGroup");
+                });
+
+            modelBuilder.Entity("Drawer.Domain.Models.Inventory.Receipt", b =>
+                {
+                    b.HasOne("Drawer.Domain.Models.Inventory.Item", null)
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Drawer.Domain.Models.Inventory.Location", null)
+                        .WithMany()
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Drawer.Domain.Models.Locations.Spot", b =>

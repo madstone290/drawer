@@ -1,4 +1,4 @@
-﻿using Drawer.Contract.InventoryManagement;
+﻿using Drawer.Contract.Inventory;
 using Drawer.Web.Api.InventoryManagement;
 using Drawer.Web.Pages.Location.Models;
 using Drawer.Web.Utils;
@@ -14,6 +14,7 @@ namespace Drawer.Web.Pages.Location
         private readonly LocationModel _location = new();
         private readonly LocationModelValidator _validator = new();
         private readonly List<GetLocationsResponse.Location> _locations = new();
+        private readonly List<GetLocationsResponse.Location> _locationGroups = new();
 
         public string TitleText
         {
@@ -44,7 +45,10 @@ namespace Drawer.Web.Pages.Location
                 _locations.Clear();
                 _locations.AddRange(response.Data.Locations);
 
-                _validator.LocationNames = _locations.Select(x => x.Name).ToList();
+                _locationGroups.Clear();
+                _locationGroups.AddRange(_locations.Where(x => x.IsGroup));
+
+                _validator.LocationNames = _locationGroups.Select(x => x.Name).ToList();
             }
 
 
@@ -56,7 +60,7 @@ namespace Drawer.Web.Pages.Location
                 _location.Id = location.Id;
                 _location.Name = location.Name;
                 _location.Note = location.Note;
-                _location.UpperLocationId = location.UpperLocationId ?? 0;
+                _location.ParentGroupId = location.UpperLocationId ?? 0;
             }
         }
 
@@ -72,7 +76,7 @@ namespace Drawer.Web.Pages.Location
             {
                 if (EditMode == EditMode.Add)
                 {
-                    var content = new CreateLocationRequest(_location.UpperLocationId, _location.Name!, _location.Note);
+                    var content = new CreateLocationRequest(_location.ParentGroupId, _location.Name!, _location.Note, _location.IsGroup);
                     var response = await LocationApiClient.AddLocation(content);
                     if (Snackbar.CheckSuccessFail(response))
                     {
@@ -93,9 +97,9 @@ namespace Drawer.Web.Pages.Location
 
         private string? ValidateUpperLocation(LocationModel location)
         {
-            if (string.IsNullOrWhiteSpace(location.UpperLocationName))
+            if (string.IsNullOrWhiteSpace(location.ParentGroupName))
                 return null;
-            if (_locations.Any(l => string.Equals(l.Name, location.UpperLocationName, StringComparison.OrdinalIgnoreCase)))
+            if (_locations.Any(l => string.Equals(l.Name, location.ParentGroupName, StringComparison.OrdinalIgnoreCase)))
                 return null;
             else
                 return "잘못된 위치입니다";

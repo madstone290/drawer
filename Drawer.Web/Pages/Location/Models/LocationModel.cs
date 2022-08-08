@@ -7,9 +7,10 @@ namespace Drawer.Web.Pages.Location.Models
         public long Id { get; set; }
         public string? Name { get; set; }
         public string? Note { get; set; }
-        public long UpperLocationId { get; set; }
-        public string? UpperLocationName { get; set; }
+        public long ParentGroupId { get; set; }
+        public string? ParentGroupName { get; set; }
         public int HierarchyLevel { get; set; }
+        public bool IsGroup { get; set; }
     }
 
     public class LocationModelValidator : AbstractValidator<LocationModel>
@@ -25,7 +26,7 @@ namespace Drawer.Web.Pages.Location.Models
                  .NotEmpty()
                  .WithMessage("* 필수");
 
-            RuleFor(x => x.UpperLocationName)
+            RuleFor(x => x.ParentGroupName)
                 .Custom((value, context) =>
                 {
                     if(LocationNames == null)

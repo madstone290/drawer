@@ -38,5 +38,22 @@ namespace Drawer.IntergrationTest
             request.Headers.Add("Authorization", $"bearer {token}");
         }
 
+        /// <summary>
+        /// 두 시간이 주어진 정확도만큼 근접한지 확인한다.
+        /// </summary>
+        /// <param name="time1"></param>
+        /// <param name="time2"></param>
+        /// <param name="precision"></param>
+        /// <returns></returns>
+        public static bool IsCloseTo(this DateTime time1, DateTime time2, TimeSpan precision)
+        {
+            return time1.Subtract(time2).Duration() <= precision;
+        }
+
+        public static string ToDateFormat(this DateTime time)
+        {
+            return time.ToString("yyyy-MM-dd");
+        }
+
     }
 }

@@ -60,32 +60,39 @@
             <Header>
                 <MudTHeadRow>
                     <MudTh>
+                        <MudTableSortLabel T="LocationModel" SortBy="x => x.ParentGroupName">상위 그룹</MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
                         <MudTableSortLabel T="LocationModel" SortBy="x => x.Name">이름</MudTableSortLabel>
                     </MudTh>
                     <MudTh>
                         <MudTableSortLabel T="LocationModel" SortBy="x => x.Note">비고</MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel T="LocationModel" SortBy="x => x.UpperLocationName">상위 위치</MudTableSortLabel>
+                        <MudTableSortLabel T="LocationModel" SortBy="x => x.HierarchyLevel">계층 레벨</MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        계층 레벨
+                        그룹 구분
                     </MudTh>
                 </MudTHeadRow>
             </Header>
 
             <Row>
-                <MudTd DataLabel="이름">
+                <MudTd>
+                    <MudHighlighter Text="@context.ParentGroupName" HighlightedText="@searchText" />
+                </MudTd>
+                <MudTd>
                     <MudHighlighter Text="@context.Name" HighlightedText="@searchText" />
                 </MudTd>
-                <MudTd DataLabel="비고">
+                <MudTd>
                     <MudHighlighter Text="@context.Note" HighlightedText="@searchText" />
                 </MudTd>
-                <MudTd DataLabel="상위 위치">
-                    <MudHighlighter Text="@context.UpperLocationName" HighlightedText="@searchText" />
-                </MudTd>
-                <MudTd DataLabel="계층 레벨">
+
+                <MudTd>
                     <MudHighlighter Text="@context.HierarchyLevel.ToString()" HighlightedText="@searchText" />
+                </MudTd>
+                <MudTd>
+                    <MudCheckBox Checked="@context.IsGroup" ReadOnly="@true" />
                 </MudTd>
             </Row>
 

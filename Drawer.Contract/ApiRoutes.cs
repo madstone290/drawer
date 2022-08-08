@@ -110,13 +110,30 @@ namespace Drawer.Contract
             public const string BatchCreate = "/Api/Locations/Batch";
         }
 
-        public static class Inventory
+        public static class InventoryItems
         {
-            public const string Get = "/Api/Inventory";
+            public const string Get = "/Api/InventoryItems";
 
-            public const string BatchUpdate = "/Api/Inventory/Batch";
-            public const string Update = "/Api/Inventory";
-            
+            public const string BatchUpdate = "/Api/InventoryItems/Batch";
+            public const string Update = "/Api/InventoryItems";
+        }
+
+        public static class Receipts
+        {
+            public const string Create = "/Api/Receipts";
+            public const string Update = "/Api/Receipts/{id}";
+            public const string Delete = "/Api/Receipts/{id}";
+            public const string Get = "/Api/Receipts/{id}";
+            public const string GetList = "/Api/Receipts";
+        }
+
+        public static class Issues
+        {
+            public const string Create = "/Api/Issues";
+            public const string Update = "/Api/Issues/{id}";
+            public const string Delete = "/Api/Issues/{id}";
+            public const string Get = "/Api/Issues/{id}";
+            public const string GetList = "/Api/Issues";
         }
     }
 }

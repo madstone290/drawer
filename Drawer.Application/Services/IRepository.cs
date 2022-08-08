@@ -21,5 +21,7 @@ namespace Drawer.Application.Services
         where TEntity : Entity<TId>
     {
         Task<TEntity?> FindByIdAsync(TId id);
+
+        Task<bool> ExistByIdAsync(TId id);
     }
 }

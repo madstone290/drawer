@@ -1,5 +1,5 @@
 ﻿using Drawer.Contract;
-using Drawer.Contract.InventoryManagement;
+using Drawer.Contract.Inventory;
 using Drawer.Web.Authentication;
 
 namespace Drawer.Web.Api.InventoryManagement

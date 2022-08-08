@@ -17,26 +17,35 @@
          @bind-IsValid="_isFormValid"
          Model="_location" ValidationDelay="0" Validation="@_validator.ValidateValue()">
     <MudGrid>
-
-        <MudItem xs="12" sm="6">
+        <MudItem xs="6" sm="3">
+            <AidCompleteField TKey="long"
+                              Label="상위 그룹"
+                              @bind-Key="_location.ParentGroupId"
+                              @bind-Value="_location.ParentGroupName"
+                              For="()=>_location.ParentGroupName"
+                              ItemValues="@(_locationGroups.Select(x=> x.Name).ToList())"
+                              KeyFunc="@((value) => _locationGroups.FirstOrDefault(x=> x.Name == value)?.Id ?? 0)" />
+        </MudItem>
+        <MudItem xs="6" sm="3">
             <MudTextField @bind-Value="_location.Name"
                           For="@(() => _location.Name)"
                           Label="이름"
                           AutoFocus="true" />
         </MudItem>
-        <MudItem xs="12" sm="6">
-            <AidCompleteField TKey="long"
-                              Label="상위 위치"
-                              ItemValues="@(_locations.Select(x=> x.Name).ToList())"
-                              @bind-Key="_location.UpperLocationId"
-                              @bind-Value="_location.UpperLocationName"
-                              For="()=>_location.UpperLocationName"
-                              KeyFunc="@((value) => _locations.FirstOrDefault(x=> x.Name == value)?.Id ?? 0)" />
+        <MudItem xs="0" sm="6">
         </MudItem>
-        <MudItem xs="12" sm="12">
+        <MudItem xs="6" sm="3">
+            <MudCheckBox @bind-Checked="_location.IsGroup"
+                         For="@(() => _location.IsGroup)"
+                         Label="그룹 구분" />
+        </MudItem>
+        <MudItem xs="0" sm="9">
+        </MudItem>
+        <MudItem xs="12" sm="6">
             <MudTextField @bind-Value="_location.Note"
                           For="@(() => _location.Note)"
                           Label="비고" />
         </MudItem>
+
     </MudGrid>
 </MudForm>

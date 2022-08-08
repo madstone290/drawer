@@ -1,7 +1,9 @@
 ﻿using Drawer.Application.Services;
 using Drawer.Domain.Models;
 using Drawer.Infrastructure.Data;
-
+using Drawer.Infrastructure.Utils;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Drawer.Infrastructure.Repos
 {
@@ -37,6 +39,12 @@ namespace Drawer.Infrastructure.Repos
     {
         public Repository(DrawerDbContext dbContext) : base(dbContext)
         {
+        }
+
+        public async Task<bool> ExistByIdAsync(TId id)
+        {
+            var lambda = ExpressionUtil.GenericIdEqualExpression<TEntity, TId>(x => x.Id, id);
+            return await _dbContext.Set<TEntity>().AnyAsync(lambda);
         }
 
         public async Task<TEntity?> FindByIdAsync(TId id)

@@ -1,4 +1,4 @@
-﻿@using Drawer.Contract.InventoryManagement
+﻿@using Drawer.Contract.Inventory
 @using Drawer.Contract.Locations
 @using Drawer.Web.Api.InventoryManagement
 @using Drawer.Web.Authentication
@@ -15,13 +15,23 @@
                HomePath="@Paths.LocationHome"
                ExcelFormName="위치-양식"
                SaveAsyncFunc="@Save"
-               ExcelOptions="@_excelOptions" >
+               ExcelOptions="@_excelOptions">
         <HeaderRow>
+            <MudTh Style="min-width:100px;">상위 그룹</MudTh>
             <MudTh Style="min-width:100px;">이름</MudTh>
             <MudTh Style="min-width:100px;">비고</MudTh>
-            <MudTh Style="min-width:100px;">상위 위치</MudTh>
+            <MudTh Style="min-width:100px;">그룹 구분</MudTh>
         </HeaderRow>
         <BodyRow>
+            <MudTd>
+                <AidCompleteInput TKey="long"
+                                  DisableUnderLine="true"
+                                  @bind-Key="context.ParentGroupId"
+                                  @bind-Value="context.ParentGroupName"
+                                  ItemValues="@(_locationGroups.Select(x=> x.Name).ToList())"
+                                  KeyFunc="@((value) => _locationGroups.FirstOrDefault(x=> x.Name == value)?.Id ?? 0)"
+                                  Validation="@((_) => ValidateProperty(context, nameof(LocationModel.ParentGroupName)))" />
+            </MudTd>
             <MudTd>
                 <AidInput @bind-Value="context.Name"
                           ExecuteInitialValidation="true"
@@ -32,13 +42,7 @@
                           Validation="@((_) => ValidateProperty(context, nameof(LocationModel.Note)))" />
             </MudTd>
             <MudTd>
-                <AidCompleteInput TKey="long"
-                                  DisableUnderLine="true"
-                                  ItemValues="@(_locations.Select(x=> x.Name).ToList())"
-                                  @bind-Key="context.UpperLocationId"
-                                  @bind-Value="context.UpperLocationName"
-                                  KeyFunc="@((value) => _locations.FirstOrDefault(x=> x.Name == value)?.Id ?? 0)"
-                                  Validation="@((_) => ValidateProperty(context, nameof(LocationModel.UpperLocationName)))" />
+                <MudCheckBox @bind-Checked="context.IsGroup" />
             </MudTd>
         </BodyRow>
     </BatchEdit>
@@ -46,15 +50,17 @@
 @code {
     private readonly LocationModelValidator _validator = new();
     private readonly ExcelOptions _excelOptions = new ExcelOptionsBuilder()
+        .AddColumn(nameof(LocationModel.ParentGroupName), "상위 그룹")
         .AddColumn(nameof(LocationModel.Name), "이름")
         .AddColumn(nameof(LocationModel.Note), "비고")
-        .AddColumn(nameof(LocationModel.UpperLocationName), "상위 위치")
+        .AddColumn(nameof(LocationModel.IsGroup), "그룹 구분")
         .Build();
 
     [Inject] public LocationApiClient LocationApiClient { get; set; } = null!;
     [Inject] public ILockService LockService { get; set; } = null!;
 
-    private List<GetLocationsResponse.Location> _locations = new List<GetLocationsResponse.Location>();
+    private List<GetLocationsResponse.Location> _locations = new();
+    private List<GetLocationsResponse.Location> _locationGroups = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -67,31 +73,29 @@
         validations.Add(validation);
     }
 
-    private async Task<Dictionary<string, long>> GetLocations()
+    private async Task GetLocations()
     {
-        var dict = await LockService.DoAsync<Dictionary<string, long>>(async () =>
+        await LockService.DoAsync<bool>(async () =>
         {
             var response = await LocationApiClient.GetLocations();
 
-            var locationDict = new Dictionary<string, long>();
             if (Snackbar.CheckFail(response))
             {
                 _locations.AddRange(response.Data.Locations.ToList());
-                _validator.LocationNames = _locations.Select(x => x.Name).ToList();
+                _locationGroups.AddRange(_locations.Where(x => x.IsGroup));
 
-                foreach (var location in response.Data.Locations)
-                    locationDict[location.Name] = location.Id;
+                _validator.LocationNames = _locationGroups.Select(x => x.Name).ToList();
             }
-            return locationDict;
+
+            return true;
         });
-        return dict;
     }
 
 
     private async Task<bool> Save(IEnumerable<LocationModel> locations)
     {
         var content = new BatchCreateLocationRequest(locations.Select(x =>
-            new BatchCreateLocationRequest.Location(x.UpperLocationId, x.Name!, x.Note)).ToList());
+            new BatchCreateLocationRequest.Location(x.ParentGroupId, x.Name!, x.Note, x.IsGroup)).ToList());
 
         var response = await LocationApiClient.BatchAddLocation(content);
 

@@ -15,7 +15,7 @@ namespace Drawer.Application.Helpers
         /// <param name="name"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static string AddQueryParam(this string uri, string name, string value)
+        public static string AddQuery(this string uri, string name, string value)
         {
             bool hasQuery = uri.Contains("?");
 

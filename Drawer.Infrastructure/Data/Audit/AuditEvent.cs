@@ -15,13 +15,13 @@ namespace Drawer.Infrastructure.Data.Audit
         /// <summary>
         /// Insert/Update/Delete
         /// </summary>
-        public string EventType { get; private set; }
+        public string EventType { get; private set; } = null!;
 
-        public string EntityType { get; private set; } 
+        public string EntityType { get; private set; } = null!;
 
-        public string EntityAuditId { get; private set; }
+        public string EntityAuditId { get; private set; } = null!;
 
-        public string UserId { get; private set; }
+        public string UserId { get; private set; } = null!;
 
         public string? Payload { get; private set; }
 

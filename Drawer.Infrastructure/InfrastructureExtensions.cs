@@ -1,6 +1,6 @@
 ﻿using Drawer.Application.Services.Authentication;
 using Drawer.Application.Services.Authentication.Repos;
-using Drawer.Application.Services.InventoryManagement.Repos;
+using Drawer.Application.Services.Inventory.Repos;
 using Drawer.Application.Services.Locations.Repos;
 using Drawer.Application.Services.Organization;
 using Drawer.Application.Services.Organization.Repos;
@@ -8,7 +8,7 @@ using Drawer.Application.Services.UserInformation.Repos;
 using Drawer.Domain.Models.Authentication;
 using Drawer.Infrastructure.Data;
 using Drawer.Infrastructure.Repos.Authentication;
-using Drawer.Infrastructure.Repos.InventoryManagement;
+using Drawer.Infrastructure.Repos.Inventory;
 using Drawer.Infrastructure.Repos.Locations;
 using Drawer.Infrastructure.Repos.Organization;
 using Drawer.Infrastructure.Repos.UserInformation;
@@ -120,9 +120,14 @@ namespace Drawer.Infrastructure
             services.AddScoped<IWorkplaceRepository, WorkPlaceRepository>();
             services.AddScoped<IZoneRepository, ZoneRepository>();
 
+
+            services.AddScoped<IInventoryUnitOfWork, InventoryUnitOfWork>();
             services.AddScoped<IItemRepository, ItemRepository>();
             services.AddScoped<ILocationRepository, LocationRepository>();
-            services.AddScoped<IInventoryDetailRepository, InventoryDetailRepository>();
+            services.AddScoped<IInventoryItemRepository, InventoryItemRepository>();
+            services.AddScoped<IReceiptRepository, ReceiptRepository>();
+            services.AddScoped<IIssueRepository, IssueRepository>();
+            
         }
     }
 }

@@ -10,13 +10,26 @@ namespace Drawer.Web.Pages.Inventory
 {
     public partial class ItemLocationInventoryHome
     {
-        private readonly List<ItemLocationInventoryModel> _modelList = new();
         private readonly ExcelOptions _excelOptions = new ExcelOptionsBuilder()
             .AddColumn(nameof(ItemLocationInventoryModel.ItemName), "아이템")
             .AddColumn(nameof(ItemLocationInventoryModel.LocationName), "위치")
             .AddColumn(nameof(ItemLocationInventoryModel.Quantity), "수량")
             .Build();
 
+        /// <summary>
+        /// 전체 재고 정보
+        /// </summary>
+        private readonly List<ItemLocationInventoryModel> _modelList = new();
+
+        /// <summary>
+        /// 화면에 표시할 재고 정보
+        /// </summary>
+        private readonly List<ItemLocationInventoryModel> _displayModelList = new();
+
+
+        private AidTable<ItemLocationInventoryModel> _table = null!;
+
+        private bool _hideZeroQuantity;
         private bool _isTableLoading;
         private bool canCreate = false;
         private bool canRead = false;
@@ -31,7 +44,24 @@ namespace Drawer.Web.Pages.Inventory
         [Inject] public IDialogService DialogService { get; set; } = null!;
         [Inject] public IExcelFileService ExcelFileService { get; set; } = null!;
 
-        public int TotalRowCount => _modelList.Count;
+        public int TotalRowCount => _displayModelList.Count;
+
+        public bool HideZeroQuantity
+        {
+            get => _hideZeroQuantity;
+            set
+            {
+                if (_hideZeroQuantity == value)
+                    return;
+                _hideZeroQuantity = value;
+                
+                _displayModelList.Clear();
+                if(_hideZeroQuantity)
+                    _displayModelList.AddRange(_modelList.Where(x => 0 < x.Quantity));
+                else
+                    _displayModelList.AddRange(_modelList);
+            }
+        }
 
 
         protected override async Task OnInitializedAsync()
@@ -75,8 +105,14 @@ namespace Drawer.Web.Pages.Inventory
             _modelList.Clear();
             foreach (var item in itemResponse.Data.Items)
             {
-                foreach(var location in locationResponse.Data.Locations)
+                foreach (var location in locationResponse.Data.Locations)
                 {
+                    if (location.IsGroup)
+                        continue;
+
+                    var quantity = inventoryResponse.Data.InventoryItems
+                        .Where(x => x.ItemId == item.Id && x.LocationId == location.Id)
+                        .Sum(x => x.Quantity);
                     var inventoryItemLocation = new ItemLocationInventoryModel()
                     {
                         ItemId = item.Id,
@@ -88,13 +124,7 @@ namespace Drawer.Web.Pages.Inventory
                 }
             }
 
-            // 서버의 수량정보를 적용한다.
-            foreach (var inventoryItemLocation in _modelList)
-            {
-                inventoryItemLocation.Quantity = inventoryResponse.Data.InventoryDetails
-                    .Where(x => x.ItemId == inventoryItemLocation.ItemId && x.LocationId ==  inventoryItemLocation.LocationId)
-                    .Sum(x => x.Quantity);
-            }
+            _displayModelList.AddRange(_modelList);
 
             _isTableLoading = false;
         }

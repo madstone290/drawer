@@ -1,5 +1,5 @@
 ﻿using Drawer.AidBlazor;
-using Drawer.Contract.InventoryManagement;
+using Drawer.Contract.Inventory;
 using Drawer.Web.Api.InventoryManagement;
 using Drawer.Web.Pages.Inventory.Models;
 using Drawer.Web.Services;
@@ -21,7 +21,7 @@ namespace Drawer.Web.Pages.Inventory
 
         private readonly List<GetLocationsResponse.Location> _locations = new();
         private readonly List<GetItemsResponse.Item> _items = new();
-        private readonly List<GetInventoryResponse.InventoryDetail> _inventoryDetails = new();
+        private readonly List<GetInventoryItemsResponse.InventoryItem> _inventoryItems = new();
 
         private bool _isTableLoading;
         private bool canCreate = false;
@@ -83,8 +83,8 @@ namespace Drawer.Web.Pages.Inventory
             _locations.Clear();
             _locations.AddRange(locationResponse.Data.Locations);
 
-            _inventoryDetails.Clear();
-            _inventoryDetails.AddRange(inventoryResponse.Data.InventoryDetails);
+            _inventoryItems.Clear();
+            _inventoryItems.AddRange(inventoryResponse.Data.InventoryItems);
 
             _isTableLoading = false;
         }

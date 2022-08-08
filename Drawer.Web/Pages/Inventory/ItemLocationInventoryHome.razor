@@ -46,11 +46,15 @@
 
             <AidSearchInput @bind-Value="@searchText" />
         </AidToolBar>
+         <AidToolBar>
+             <MudSwitch @bind-Checked="@HideZeroQuantity" Color="@Color.Primary">재고없음 숨기기</MudSwitch>
+        </AidToolBar>
 
-        <AidTable Loading="@_isTableLoading"
+        <AidTable @ref="@_table"
+                  Loading="@_isTableLoading"
                   T="@ItemLocationInventoryModel"
                   UseRowSelection="@false"
-                  Items="@_modelList"
+                  Items="@_displayModelList"
                   Filter="@(new Func<ItemLocationInventoryModel,bool>(FilterInventoryDetails))">
             <Header>
                 <MudTHeadRow>

@@ -42,6 +42,12 @@ namespace Drawer.IntergrationTest
             dbContext.Zones.Truncate();
             dbContext.WorkPlaces.Truncate();
 
+            dbContext.Items.Truncate();
+            dbContext.Locations.Truncate();
+            dbContext.InventoryItems.Truncate();
+            dbContext.Receipts.Truncate();
+            dbContext.Issues.Truncate();
+
             await dbContext.SaveChangesAsync();
         }
 
