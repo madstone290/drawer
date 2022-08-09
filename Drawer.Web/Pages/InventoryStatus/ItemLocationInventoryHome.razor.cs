@@ -1,12 +1,12 @@
 ﻿using Drawer.AidBlazor;
-using Drawer.Web.Api.InventoryManagement;
-using Drawer.Web.Pages.Inventory.Models;
+using Drawer.Web.Api.Inventory;
+using Drawer.Web.Pages.InventoryStatus.Models;
 using Drawer.Web.Services;
 using Drawer.Web.Utils;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace Drawer.Web.Pages.Inventory
+namespace Drawer.Web.Pages.InventoryStatus
 {
     public partial class ItemLocationInventoryHome
     {
@@ -40,7 +40,7 @@ namespace Drawer.Web.Pages.Inventory
 
         [Inject] public ItemApiClient ItemApiClient { get; set; } = null!;
         [Inject] public LocationApiClient LocationApiClient { get; set; } = null!;
-        [Inject] public InventoryApiClient InventoryApiClient { get; set; } = null!;
+        [Inject] public InventoryItemApiClient InventoryApiClient { get; set; } = null!;
         [Inject] public IDialogService DialogService { get; set; } = null!;
         [Inject] public IExcelFileService ExcelFileService { get; set; } = null!;
 
@@ -119,6 +119,7 @@ namespace Drawer.Web.Pages.Inventory
                         ItemName = item.Name,
                         LocationId = location.Id,
                         LocationName = location.Name,
+                        Quantity = quantity
                     };
                     _modelList.Add(inventoryItemLocation);
                 }
@@ -131,17 +132,17 @@ namespace Drawer.Web.Pages.Inventory
 
         private void Receipt_Click()
         {
-            NavManager.NavigateTo(Paths.GoodsReceiptHome);
+            NavManager.NavigateTo(Paths.ReceiptHome);
         }
 
         private void Issue_Click()
         {
-            NavManager.NavigateTo(Paths.GoodsIssueHome);
+            NavManager.NavigateTo(Paths.IssueHome);
         }
 
         private void Transfer_Click()
         {
-            NavManager.NavigateTo(Paths.GoodsIssueHome);
+            NavManager.NavigateTo(Paths.IssueHome);
         }
 
         private async Task Download_ClickAsync()

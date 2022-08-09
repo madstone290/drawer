@@ -1,4 +1,4 @@
-﻿namespace Drawer.Web.Pages.Inventory.Models
+﻿namespace Drawer.Web.Pages.InventoryStatus.Models
 {
     /// <summary>
     /// 아이템 및 수량

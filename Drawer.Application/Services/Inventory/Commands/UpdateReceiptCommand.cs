@@ -10,7 +10,8 @@ using System.Threading.Tasks;
 
 namespace Drawer.Application.Services.Inventory.Commands
 {
-    public record UpdateReceiptCommand(long Id, long ItemId, long LocationId, decimal Quantity, DateTime ReceiptTime, string? Seller) : ICommand<UpdateReceiptResult>;
+    public record UpdateReceiptCommand(long Id, DateTime ReceiptDateTime, long ItemId, long LocationId, decimal Quantity, string? Seller) 
+        : ICommand<UpdateReceiptResult>;
 
     public record UpdateReceiptResult;
 
@@ -51,7 +52,7 @@ namespace Drawer.Application.Services.Inventory.Commands
                     throw new AppException("재고수량이 부족하여 입고내역을 수정할 수 없습니다");
 
                 receipt.SetQuantity(command.Quantity);
-                receipt.SetReceiptTime(command.ReceiptTime);
+                receipt.SetReceiptDateTime(command.ReceiptDateTime);
                 receipt.SetSeller(command.Seller);
 
                 inventoryItem.Add(quantityDiff);
@@ -78,7 +79,7 @@ namespace Drawer.Application.Services.Inventory.Commands
                 var quantityBefore = receipt.Quantity;
        
                 receipt.SetInventoryInfo(command.ItemId, command.LocationId, command.Quantity);
-                receipt.SetReceiptTime(command.ReceiptTime);
+                receipt.SetReceiptDateTime(command.ReceiptDateTime);
                 receipt.SetSeller(command.Seller);
 
                 // 이전 재고 감소

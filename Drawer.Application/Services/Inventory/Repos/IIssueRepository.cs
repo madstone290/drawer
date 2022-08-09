@@ -9,6 +9,6 @@ namespace Drawer.Application.Services.Inventory.Repos
 {
     public interface IIssueRepository : IRepository<Issue, long>
     {
-        Task<IList<Issue>> FindByIssueDateBetween(DateTime from, DateTime to);
+        Task<List<Issue>> FindByIssueDateBetween(DateTime from, DateTime to);
     }
 }

@@ -1,0 +1,8 @@
+﻿@attribute [Route(Paths.IssueUpdate)]
+
+<IssueEdit EditMode="EditMode.Update" IssueId="Convert.ToInt64(Id)" />
+
+@code{
+    [Parameter]
+    public string? Id { get; set; }
+}

@@ -1,5 +1,5 @@
 ﻿using Drawer.Contract.Inventory;
-using Drawer.Web.Api.InventoryManagement;
+using Drawer.Web.Api.Inventory;
 using Drawer.Web.Pages.Location.Models;
 using Drawer.Web.Utils;
 using Microsoft.AspNetCore.Components;
@@ -94,23 +94,6 @@ namespace Drawer.Web.Pages.Location
                 }
             }
         }
-
-        private string? ValidateUpperLocation(LocationModel location)
-        {
-            if (string.IsNullOrWhiteSpace(location.ParentGroupName))
-                return null;
-            if (_locations.Any(l => string.Equals(l.Name, location.ParentGroupName, StringComparison.OrdinalIgnoreCase)))
-                return null;
-            else
-                return "잘못된 위치입니다";
-        }
-
-
-        Task<Dictionary<string, long>> GetDict()
-        {
-            return Task.FromResult(_locations.ToDictionary(x => x.Name, x => x.Id));
-        } 
-
 
     }
 }

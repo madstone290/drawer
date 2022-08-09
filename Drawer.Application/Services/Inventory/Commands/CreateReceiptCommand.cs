@@ -10,10 +10,10 @@ using System.Threading.Tasks;
 
 namespace Drawer.Application.Services.Inventory.Commands
 {
-    public record CreateReceiptCommand(long ItemId, long LocationId, decimal Quantity, DateTime When, string? Seller) 
+    public record CreateReceiptCommand(DateTime ReceiptDateTime, long ItemId, long LocationId, decimal Quantity, string? Seller) 
         : ICommand<CreateReceiptResult>;
 
-    public record CreateReceiptResult(long Id);
+    public record CreateReceiptResult(long Id, string TransactionNumber);
 
     public class CreateReceiptCommandHandler : ICommandHandler<CreateReceiptCommand, CreateReceiptResult>
     {
@@ -40,8 +40,9 @@ namespace Drawer.Application.Services.Inventory.Commands
             if (!await _locationRepository.ExistByIdAsync(command.LocationId))
                 throw new EntityNotFoundException<Location>(command.LocationId);
 
-            var receipt = new Receipt(command.ItemId, command.LocationId, command.Quantity);
-            receipt.SetReceiptTime(command.When);
+            var transactionNumber = Guid.NewGuid().ToString();
+            var receipt = new Receipt(transactionNumber, command.ItemId, command.LocationId, command.Quantity);
+            receipt.SetReceiptDateTime(command.ReceiptDateTime);
             receipt.SetSeller(command.Seller);
 
             await _inventoryUnitOfWork.ReceiptRepository.AddAsync(receipt);
@@ -60,7 +61,7 @@ namespace Drawer.Application.Services.Inventory.Commands
             }
 
             await _inventoryUnitOfWork.SaveChangesAsync();
-            return new CreateReceiptResult(receipt.Id);
+            return new CreateReceiptResult(receipt.Id, receipt.TransactionNumber);
         }
     }
 }

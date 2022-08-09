@@ -57,7 +57,7 @@ namespace Drawer.IntergrationTest.Inventory
 
         async Task<long> CreateReceipt(long itemId, long locationId, decimal quantity)
         {
-            var requestContent = new CreateReceiptRequest(itemId, locationId, quantity, DateTime.Now, null);
+            var requestContent = new CreateReceiptRequest(DateTime.Now, itemId, locationId, quantity, null);
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Receipts.Create);
             requestMessage.Content = JsonContent.Create(requestContent);
             var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
@@ -65,9 +65,9 @@ namespace Drawer.IntergrationTest.Inventory
             return response.Id;
         }
 
-        async Task<long> CreateIssue(long itemId, long locationId, decimal quantity, DateTime issueTime, string? buyer)
+        async Task<long> CreateIssue(DateTime issueDateTime, long itemId, long locationId, decimal quantity, string? buyer)
         {
-            var requestContent = new CreateIssueRequest(itemId, locationId, quantity, issueTime, buyer);
+            var requestContent = new CreateIssueRequest(issueDateTime, itemId, locationId, quantity, buyer);
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Issues.Create);
             requestMessage.Content = JsonContent.Create(requestContent);
             var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
@@ -75,11 +75,12 @@ namespace Drawer.IntergrationTest.Inventory
             return response.Id;
         }
 
-        async Task<GetIssueResponse> GetIssue(long issueId)
+        async Task<IssueContracts.Issue> GetIssue(long issueId)
         {
             var requestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.Issues.Get.Replace("{id}", $"{issueId}"));
             var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
-            return await responseMessage.Content.ReadFromJsonAsync<GetIssueResponse>() ?? default!;
+            var responseContent = await responseMessage.Content.ReadFromJsonAsync<GetIssueResponse>() ?? default!;
+            return responseContent.Issue;
         }
 
         [Fact]
@@ -89,13 +90,13 @@ namespace Drawer.IntergrationTest.Inventory
             var itemId = await CreateItem();
             var locationId = await CreateLocation();
             var quantity = 30;
-            var issueTime = DateTime.Now;
+            var issueDateTime = DateTime.Now;
             var buyer = Guid.NewGuid().ToString();
 
             await CreateReceipt(itemId, locationId, quantity);
 
             // Act
-            var requestContent = new CreateIssueRequest(itemId, locationId, quantity, issueTime, buyer);
+            var requestContent = new CreateIssueRequest(issueDateTime, itemId, locationId, quantity,  buyer);
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Issues.Create);
             requestMessage.Content = JsonContent.Create(requestContent);
             var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
@@ -111,7 +112,7 @@ namespace Drawer.IntergrationTest.Inventory
             issue.ItemId.Should().Be(itemId);
             issue.LocationId.Should().Be(locationId);
             issue.Quantity.Should().Be(quantity);
-            issue.IssueTime.Should().BeCloseTo(issueTime, TimeSpan.FromTicks(10));
+            issue.IssueDateTime.Should().BeCloseTo(issueDateTime, TimeSpan.FromTicks(10));
             issue.Buyer.Should().Be(buyer);
         }
 
@@ -122,14 +123,14 @@ namespace Drawer.IntergrationTest.Inventory
             var itemId = await CreateItem();
             var locationId = await CreateLocation();
             var quantity = 30;
-            var issueTime = DateTime.Now;
+            var issueDateTime = DateTime.Now;
             var buyer = Guid.NewGuid().ToString();
 
             await CreateReceipt(itemId, locationId, quantity);
             var beforeQuantity = await GetInventoryItemQuantity(itemId, locationId);
 
             // Act
-            var requestContent = new CreateIssueRequest(itemId, locationId, quantity, issueTime, buyer);
+            var requestContent = new CreateIssueRequest(issueDateTime, itemId, locationId, quantity,  buyer);
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Issues.Create);
             requestMessage.Content = JsonContent.Create(requestContent);
             var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
@@ -147,23 +148,23 @@ namespace Drawer.IntergrationTest.Inventory
             var itemId = await CreateItem();
             var locationId = await CreateLocation();
             var quantity = 30;
-            var issueTime = DateTime.Now;
+            var issueDateTime = DateTime.Now;
             var buyer = Guid.NewGuid().ToString();
 
             await CreateReceipt(itemId, locationId, quantity);
-            var issueId = await CreateIssue(itemId, locationId, quantity, issueTime, buyer);
+            var issueId = await CreateIssue(issueDateTime, itemId, locationId, quantity,  buyer);
 
             itemId = await CreateItem();
             locationId = await CreateLocation();
             quantity = 50;
-            issueTime = DateTime.Now.AddSeconds(10);
+            issueDateTime = DateTime.Now.AddSeconds(10);
             buyer = Guid.NewGuid().ToString();
 
             // 재고 보충
             await CreateReceipt(itemId, locationId, quantity);
 
             // Act
-            var requestContent = new UpdateIssueRequest(itemId, locationId, quantity, issueTime, buyer);
+            var requestContent = new UpdateIssueRequest(issueDateTime, itemId, locationId, quantity,  buyer);
             var requestMessage = new HttpRequestMessage(HttpMethod.Put,
                 ApiRoutes.Issues.Update.Replace("{id}", $"{issueId}"));
             requestMessage.Content = JsonContent.Create(requestContent);
@@ -177,7 +178,7 @@ namespace Drawer.IntergrationTest.Inventory
             issue.ItemId.Should().Be(itemId);
             issue.LocationId.Should().Be(locationId);
             issue.Quantity.Should().Be(quantity);
-            issue.IssueTime.Should().BeCloseTo(issueTime, TimeSpan.FromTicks(10));
+            issue.IssueDateTime.Should().BeCloseTo(issueDateTime, TimeSpan.FromTicks(10));
             issue.Buyer.Should().Be(buyer);
         }
 
@@ -187,18 +188,18 @@ namespace Drawer.IntergrationTest.Inventory
             // Arrange
             var itemId = await CreateItem();
             var locationId = await CreateLocation();
-            var issueTime = DateTime.Now;
+            var issueDateTime = DateTime.Now;
             var buyer = Guid.NewGuid().ToString();
             var quantityBefore = 50;
             var quantityAfter = 80;
 
             await CreateReceipt(itemId, locationId, quantityBefore + quantityAfter);
-            var issueId = await CreateIssue(itemId, locationId, quantityBefore, issueTime, buyer);
+            var issueId = await CreateIssue(issueDateTime, itemId, locationId, quantityBefore, buyer);
 
             var inventoryQuantityBefore = await GetInventoryItemQuantity(itemId, locationId);
 
             // Act
-            var requestContent = new UpdateIssueRequest(itemId, locationId, quantityAfter, issueTime, buyer);
+            var requestContent = new UpdateIssueRequest(issueDateTime, itemId, locationId, quantityAfter, buyer);
             var requestMessage = new HttpRequestMessage(HttpMethod.Put,
                 ApiRoutes.Issues.Update.Replace("{id}", $"{issueId}"));
             requestMessage.Content = JsonContent.Create(requestContent);
@@ -226,15 +227,15 @@ namespace Drawer.IntergrationTest.Inventory
             await CreateReceipt(itemId1, locationId1, quantity1);
             await CreateReceipt(itemId2, locationId2, quantity2);
 
-            var issueTime = DateTime.Now;
+            var issueDateTime = DateTime.Now;
             var buyer = Guid.NewGuid().ToString();
-            var issueId = await CreateIssue(itemId1, locationId1, quantity1, issueTime, buyer);
+            var issueId = await CreateIssue(issueDateTime, itemId1, locationId1, quantity1, buyer);
 
             var inventoryQuantity1Before = await GetInventoryItemQuantity(itemId1, locationId1);
             var inventoryQuantity2Before = await GetInventoryItemQuantity(itemId2, locationId2);
 
             // Act
-            var requestContent = new UpdateIssueRequest(itemId2, locationId2, quantity2, issueTime, buyer);
+            var requestContent = new UpdateIssueRequest(issueDateTime, itemId2, locationId2, quantity2, buyer);
             var requestMessage = new HttpRequestMessage(HttpMethod.Put,
                 ApiRoutes.Issues.Update.Replace("{id}", $"{issueId}"));
             requestMessage.Content = JsonContent.Create(requestContent);
@@ -256,11 +257,11 @@ namespace Drawer.IntergrationTest.Inventory
             var itemId = await CreateItem();
             var locationId = await CreateLocation();
             var quantity = 30;
-            var issueTime = DateTime.Now;
+            var issueDateTime = DateTime.Now;
             var buyer = Guid.NewGuid().ToString();
 
             await CreateReceipt(itemId, locationId, quantity);
-            var issueId = await CreateIssue(itemId, locationId, quantity, issueTime, buyer);
+            var issueId = await CreateIssue(issueDateTime, itemId, locationId, quantity,  buyer);
 
             // Act
             var requestMessage = new HttpRequestMessage(HttpMethod.Delete,
@@ -282,11 +283,11 @@ namespace Drawer.IntergrationTest.Inventory
             var itemId = await CreateItem();
             var locationId = await CreateLocation();
             var quantity = 30;
-            var issueTime = DateTime.Now;
+            var issueDateTime = DateTime.Now;
             var buyer = Guid.NewGuid().ToString();
 
             await CreateReceipt(itemId, locationId, quantity);
-            var issueId = await CreateIssue(itemId, locationId, quantity, issueTime, buyer);
+            var issueId = await CreateIssue(issueDateTime, itemId, locationId, quantity,  buyer);
             var inventoryQuantityBefore = await GetInventoryItemQuantity(itemId, locationId);
 
             // Act
@@ -306,11 +307,11 @@ namespace Drawer.IntergrationTest.Inventory
             var itemId = await CreateItem();
             var locationId = await CreateLocation();
             var quantity = 30;
-            var issueTime = DateTime.Now;
+            var issueDateTime = DateTime.Now;
             var buyer = Guid.NewGuid().ToString();
 
             await CreateReceipt(itemId, locationId, quantity);
-            var issueId = await CreateIssue(itemId, locationId, quantity, issueTime, buyer);
+            var issueId = await CreateIssue(issueDateTime, itemId, locationId, quantity,  buyer);
 
             // Act
             var requestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.Issues.Get.Replace("{id}", $"{issueId}"));
@@ -318,44 +319,45 @@ namespace Drawer.IntergrationTest.Inventory
 
             // Assert
             responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var response = await responseMessage.Content.ReadFromJsonAsync<GetIssueResponse>() ?? default!;
-            response.Should().NotBeNull();
-            response.Id.Should().Be(issueId);
-            response.ItemId.Should().Be(itemId);
-            response.LocationId.Should().Be(locationId);
-            response.Quantity.Should().Be(quantity);
-            response.IssueTime.Should().BeCloseTo(issueTime, TimeSpan.FromTicks(10));
-            response.Buyer.Should().Be(buyer);
+            var responseContent = await responseMessage.Content.ReadFromJsonAsync<GetIssueResponse>() ?? default!;
+            responseContent.Should().NotBeNull();
+            var issue = responseContent.Issue;
+            issue.Id.Should().Be(issueId);
+            issue.ItemId.Should().Be(itemId);
+            issue.LocationId.Should().Be(locationId);
+            issue.Quantity.Should().Be(quantity);
+            issue.IssueDateTime.Should().BeCloseTo(issueDateTime, TimeSpan.FromTicks(10));
+            issue.Buyer.Should().Be(buyer);
         }
 
         [Fact]
         public async Task Get_Issues_Will_Return_Created_Issues()
         {
-            var issueTime = DateTime.Now;
+            var issueDateTime = DateTime.Now;
 
             var itemId1 = await CreateItem();
             var locationId1 = await CreateLocation();
             var quantity1 = 30;
-            var issueTime1 = issueTime;
+            var issueDateTime1 = issueDateTime;
             var buyer1 = Guid.NewGuid().ToString();
 
             await CreateReceipt(itemId1, locationId1, quantity1);
-            var issueId1 = await CreateIssue(itemId1, locationId1, quantity1, issueTime1, buyer1);
+            var issueId1 = await CreateIssue(issueDateTime1, itemId1, locationId1, quantity1, buyer1);
 
             var itemId2 = await CreateItem();
             var locationId2 = await CreateLocation();
             var quantity2 = 30;
-            var issueTime2 = issueTime;
+            var issueDateTime2 = issueDateTime;
             var buyer2 = Guid.NewGuid().ToString();
 
             await CreateReceipt(itemId2, locationId2, quantity2);
-            var issueId2 = await CreateIssue(itemId2, locationId2, quantity2, issueTime2, buyer2);
+            var issueId2 = await CreateIssue(issueDateTime2, itemId2, locationId2, quantity2, buyer2);
 
 
             // Act
             var requestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.Issues.GetList
-                .AddQuery("From", issueTime.Date.ToDateFormat())
-                .AddQuery("To", issueTime.Date.ToDateFormat()));
+                .AddQuery("From", issueDateTime.Date.ToDateFormat())
+                .AddQuery("To", issueDateTime.Date.ToDateFormat()));
             var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
 
             // Assert
@@ -367,14 +369,14 @@ namespace Drawer.IntergrationTest.Inventory
                 x.ItemId == itemId1 &&
                 x.LocationId == locationId1 &&
                 x.Quantity == quantity1 &&
-                x.IssueTime.IsCloseTo(issueTime1, TimeSpan.FromTicks(10)) &&
+                x.IssueDateTime.IsCloseTo(issueDateTime1, TimeSpan.FromTicks(10)) &&
                 x.Buyer == buyer1);
             response.Issues.Should().Contain(x =>
                 x.Id == issueId2 &&
                 x.ItemId == itemId2 &&
                 x.LocationId == locationId2 &&
                 x.Quantity == quantity2 &&
-                x.IssueTime.IsCloseTo(issueTime2, TimeSpan.FromTicks(10)) &&
+                x.IssueDateTime.IsCloseTo(issueDateTime2, TimeSpan.FromTicks(10)) &&
                 x.Buyer == buyer2);
 
 

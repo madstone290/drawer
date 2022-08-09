@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Drawer.Application.Services.Inventory.Commands
 {
-    public record UpdateIssueCommand(long Id, long ItemId, long LocationId, decimal Quantity, DateTime IssueTime, string? Buyer) : ICommand<UpdateIssueResult>;
+    public record UpdateIssueCommand(long Id, DateTime IssueDateTime, long ItemId, long LocationId, decimal Quantity, string? Buyer) : ICommand<UpdateIssueResult>;
 
     public record UpdateIssueResult;
 
@@ -54,7 +54,7 @@ namespace Drawer.Application.Services.Inventory.Commands
                 var quantityBefore = issue.Quantity;
 
                 issue.SetQuantity(command.Quantity);
-                issue.SetIssueTime(command.IssueTime);
+                issue.SetIssueTime(command.IssueDateTime);
                 issue.SetBuyer(command.Buyer);
 
                 // 재고 수정
@@ -85,7 +85,7 @@ namespace Drawer.Application.Services.Inventory.Commands
                 var quantityBefore = issue.Quantity;
 
                 issue.SetInventoryInfo(command.ItemId, command.LocationId, command.Quantity);
-                issue.SetIssueTime(command.IssueTime);
+                issue.SetIssueTime(command.IssueDateTime);
                 issue.SetBuyer(command.Buyer);
 
                 // 이전 재고 증가

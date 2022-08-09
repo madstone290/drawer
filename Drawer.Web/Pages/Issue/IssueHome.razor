@@ -1,14 +1,15 @@
 ﻿@using Drawer.Web.Authentication
-@using Drawer.Web.Pages.Item.Models
-@attribute [Route(Paths.ItemHome)]
+@using Pages.Issue.Models
 
-<ContentTitle Text="아이템" />
+@attribute [Route(Paths.IssueHome)]
+
+<ContentTitle Text="출고" />
 <AuthorizeView Context="AuthorizeView" Policy="@Policies.CompanyMember">
     <NotAuthorized>
         <NeedCompany />
     </NotAuthorized>
     <Authorized>
-        <AidToolBar FlexSpace="FlexSpace.Stay">
+        <AidToolBar>
             <AidButton Enabled="@(canRead)"
                        Color="Color.Secondary"
                        StartIcon="@Icons.Material.Filled.Refresh"
@@ -45,10 +46,17 @@
                        OnClick=@(() => Download_ClickAsync())>
                 엑셀 다운로드
             </AidButton>
+
         </AidToolBar>
 
         <AidToolBar>
             <MudGrid>
+                <MudItem xs="4" sm="4" md="3" lg="2">
+                    <AidDatePicker Label="조회 시작일" @bind-Date="@_issueDateFrom" />
+                </MudItem>
+                <MudItem xs="4" sm="4" md="3" lg="2">
+                    <AidDatePicker Label="조회 종료일" @bind-Date="@_issueDateTo" />
+                </MudItem>
                 <MudItem xs="4" sm="4" md="3" lg="2">
                     <AidSearchField T="@string" @bind-Value="@searchText" />
                 </MudItem>
@@ -56,47 +64,60 @@
         </AidToolBar>
 
         <AidTable @ref="table"
-                  Loading="@IsTableLoading"
-                  T="@ItemTableModel"
-                  Items="@ItemList"
-                  Filter="@(new Func<ItemTableModel, bool>(Filter))">
+                  Loading="@_isTableLoading"
+                  T="@IssueTableModel"
+                  Items="@_issueList"
+                  Filter="@(new Func<IssueTableModel,bool>(FilterIssues))">
             <Header>
                 <MudTHeadRow>
                     <MudTh>
-                        <MudTableSortLabel SortBy="@(new Func<ItemTableModel, object>(x => x.Name))">이름</MudTableSortLabel>
+                        <MudTableSortLabel T="IssueTableModel" SortBy="x => x.TransactionNumber">출고번호</MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="@(new Func<ItemTableModel, object>(x => x.Code))">코드</MudTableSortLabel>
+                        <MudTableSortLabel T="IssueTableModel" SortBy="x => x.IssueDateString">출고일자</MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="@(new Func<ItemTableModel, object>(x => x.Number))">번호</MudTableSortLabel>
+                        <MudTableSortLabel T="IssueTableModel" SortBy="x => x.IssueTimeString">출고시간</MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="@(new Func<ItemTableModel, object>(x => x.Sku))">Sku</MudTableSortLabel>
+                        <MudTableSortLabel T="IssueTableModel" SortBy="x => x.ItemName">아이템</MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="@(new Func<ItemTableModel, object>(x => x.QuantityUnit))">계량 단위</MudTableSortLabel>
+                        <MudTableSortLabel T="IssueTableModel" SortBy="x => x.LocationName">위치</MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel T="IssueTableModel" SortBy="x => x.QuantityString">수량</MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel T="IssueTableModel" SortBy="x => x.Buyer">구매자</MudTableSortLabel>
                     </MudTh>
                 </MudTHeadRow>
             </Header>
 
             <Row>
-                <MudTd DataLabel="이름">
-                    <MudHighlighter Text="@context.Name" HighlightedText="@searchText" />
+                <MudTd>
+                    <MudHighlighter Text="@context.TransactionNumber" HighlightedText="@searchText" />
                 </MudTd>
-                <MudTd DataLabel="코드">
-                    <MudHighlighter Text="@context.Code" HighlightedText="@searchText" />
+                <MudTd>
+                    <MudHighlighter Text="@context.IssueDateString" HighlightedText="@searchText" />
                 </MudTd>
-                <MudTd DataLabel="번호">
-                    <MudHighlighter Text="@context.Number" HighlightedText="@searchText" />
+                <MudTd>
+                    <MudHighlighter Text="@context.IssueTimeString" HighlightedText="@searchText" />
                 </MudTd>
-                <MudTd DataLabel="Sku">
-                    <MudHighlighter Text="@context.Sku" HighlightedText="@searchText" />
+                <MudTd>
+                    <MudHighlighter Text="@context.ItemName" HighlightedText="@searchText" />
                 </MudTd>
-                <MudTd DataLabel="계량 단위">
-                    <MudHighlighter Text="@context.QuantityUnit" HighlightedText="@searchText" />
+                <MudTd>
+                    <MudHighlighter Text="@context.LocationName" HighlightedText="@searchText" />
+                </MudTd>
+                <MudTd>
+                    <MudHighlighter Text="@context.QuantityString" HighlightedText="@searchText" />
+                </MudTd>
+                <MudTd>
+                    <MudHighlighter Text="@context.Buyer" HighlightedText="@searchText" />
                 </MudTd>
             </Row>
+
             <Footer>
                 <MudTFootRow>
                     <MudTd colSpan="100">총 @(TotalRowCount)개의 행</MudTd>
@@ -105,3 +126,4 @@
         </AidTable>
     </Authorized>
 </AuthorizeView>
+

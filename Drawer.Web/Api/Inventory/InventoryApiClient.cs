@@ -3,11 +3,11 @@ using Drawer.Contract.Inventory;
 using Drawer.Web.Authentication;
 using Drawer.Web.Utils;
 
-namespace Drawer.Web.Api.InventoryManagement
+namespace Drawer.Web.Api.Inventory
 {
-    public class InventoryApiClient : ApiClient
+    public class InventoryItemApiClient : ApiClient
     {
-        public InventoryApiClient(HttpClient httpClient, ITokenManager tokenManager) : base(httpClient, tokenManager)
+        public InventoryItemApiClient(HttpClient httpClient, ITokenManager tokenManager) : base(httpClient, tokenManager)
         {
         }
 

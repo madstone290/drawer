@@ -21,13 +21,19 @@ namespace Drawer.Api.Controllers.InventoryManagement
         [ProducesResponseType(typeof(GetReceiptsResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetReceipts(DateTime? from, DateTime? to)
         {
-            List<GetReceiptsResponse.Receipt> receipts;
+            List<ReceiptContracts.Receipt> receipts;
             if (from.HasValue && to.HasValue)
             {
                 var query = new GetReceiptsQuery(from.Value, to.Value);
                 var result = await _mediator.Send(query) ?? default!;
                 receipts = result.Receipts.Select(x =>
-                    new GetReceiptsResponse.Receipt(x.Id, x.ItemId, x.LocationId, x.Quantity, x.ReceiptTime, x.Seller)).ToList();
+                    new ReceiptContracts.Receipt(x.Id,
+                                                 x.TransactionNumber,
+                                                 x.ReceiptDateTimeLocal,
+                                                 x.ItemId,
+                                                 x.LocationId,
+                                                 x.Quantity,
+                                                 x.Seller)).ToList();
             }
             else
             {
@@ -43,11 +49,20 @@ namespace Drawer.Api.Controllers.InventoryManagement
         public async Task<IActionResult> GetReceipt([FromRoute] long id)
         {
             var query = new GetReceiptQuery(id);
-            var result = await _mediator.Send(query);
-            if (result == null)
+            var result = await _mediator.Send(query) ?? default!;
+            var receipt = result.Receipt;
+            if (receipt == null)
                 return NoContent();
-            else
-                return Ok(new GetReceiptResponse(result.Id, result.ItemId, result.LocationId, result.Quantity, result.ReceiptTime, result.Seller));
+
+
+            var receiptDto = new ReceiptContracts.Receipt(receipt.Id,
+                                                         receipt.TransactionNumber,
+                                                         receipt.ReceiptDateTimeLocal,
+                                                         receipt.ItemId,
+                                                         receipt.LocationId,
+                                                         receipt.Quantity,
+                                                         receipt.Seller);
+            return Ok(new GetReceiptResponse(receiptDto));
         }
 
         [HttpPost]
@@ -55,9 +70,9 @@ namespace Drawer.Api.Controllers.InventoryManagement
         [ProducesResponseType(typeof(CreateReceiptResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateReceipt([FromBody] CreateReceiptRequest request)
         {
-            var command = new CreateReceiptCommand(request.ItemId, request.LocationId, request.Quantity, request.ReceiptTime, request.Seller);
+            var command = new CreateReceiptCommand(request.ReceiptDateTime, request.ItemId, request.LocationId, request.Quantity, request.Seller);
             var result = await _mediator.Send(command);
-            return Ok(new CreateReceiptResponse(result.Id));
+            return Ok(new CreateReceiptResponse(result.Id, result.TransactionNumber));
         }
 
         [HttpPut]
@@ -65,7 +80,7 @@ namespace Drawer.Api.Controllers.InventoryManagement
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateReceipt([FromRoute] long id, [FromBody] UpdateReceiptRequest request)
         {
-            var command = new UpdateReceiptCommand(id, request.ItemId, request.LocationId, request.Quantity, request.ReceiptTime, request.Seller);
+            var command = new UpdateReceiptCommand(id, request.ReceiptDateTime, request.ItemId, request.LocationId, request.Quantity, request.Seller);
             await _mediator.Send(command);
             return Ok();
         }

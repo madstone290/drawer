@@ -47,13 +47,26 @@
         public const string LocationView = "/Location/View/{id}";
         public const string LocationEdit = "/Location/Edit/{id}";
 
-        public const string ItemInventoryHome = "/ItemInventoryHome";
+        public const string InventoryStatusHome = "/ItemInventoryHome";
         public const string ItemLocationInventoryHome = "/ItemLocationInventoryHome";
         public const string LocationItemInventoryHome = "/LocationItemInventoryHome";
 
-        public const string GoodsReceiptHome = "/GoodsReceipt";
-        public const string GoodsIssueHome = "/GoodsIssue";
-        public const string GoodsTransferHome = "/GoodsTransfer";
+        public const string ReceiptHome = "/Receipt";
+        public const string ReceiptBatchEdit = "/Receipt/BatchEdit";
+        public const string ReceiptAdd = "/Receipt/Add";
+        public const string ReceiptUpdate = "/Receipt/Update/{id}";
+        public const string ReceiptView = "/Receipt/View/{id}";
+        public const string ReceiptEdit = "/Receipt/Edit/{id}";
+
+
+        public const string IssueHome = "/Issue";
+        public const string IssueBatchEdit = "/Issue/BatchEdit";
+        public const string IssueAdd = "/Issue/Add";
+        public const string IssueUpdate = "/Issue/Update/{id}";
+        public const string IssueView = "/Issue/View/{id}";
+        public const string IssueEdit = "/Issue/Edit/{id}";
+
+        public const string TransferHome = "/Transfer";
 
     }
 }

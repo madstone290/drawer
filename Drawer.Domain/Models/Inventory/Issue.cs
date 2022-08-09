@@ -13,11 +13,27 @@ namespace Drawer.Domain.Models.Inventory
     /// </summary>
     public class Issue : CompanyResourceEntity<long>
     {
-        public Issue(long itemId, long locationId, decimal quantity)
+        public Issue(string transactionNumber, long itemId, long locationId, decimal quantity)
         {
+            TransactionNumber = transactionNumber;
             SetInventoryInfo(itemId, locationId, quantity);
             SetIssueTime(DateTime.UtcNow);
         }
+        
+        /// <summary>
+        /// 출고번호
+        /// </summary>
+        public string TransactionNumber { get; private set; }
+
+        /// <summary>
+        /// 출고시간(Utc)
+        /// </summary>
+        public DateTime IssueDateTime { get; private set; }
+
+        /// <summary>
+        /// 출고시간(Local)
+        /// </summary>
+        public DateTime IssueDateTimeLocal => IssueDateTime.ToLocalTime();
 
         public long ItemId { get; private set; }
 
@@ -26,17 +42,10 @@ namespace Drawer.Domain.Models.Inventory
         /// </summary>
         public long LocationId { get; private set; }
 
+        /// <summary>
+        /// 출고수량
+        /// </summary>
         public decimal Quantity { get; private set; }
-
-        /// <summary>
-        /// 출고시간(Utc)
-        /// </summary>
-        public DateTime IssueTime { get; private set; }
-
-        /// <summary>
-        /// 출고시간(Local)
-        /// </summary>
-        public DateTime IssueTimeLocal => IssueTime.ToLocalTime();
 
         /// <summary>
         /// 구매자
@@ -70,7 +79,7 @@ namespace Drawer.Domain.Models.Inventory
 
         public void SetIssueTime(DateTime issueTime)
         {
-            IssueTime = issueTime.ToUniversalTime();
+            IssueDateTime = issueTime.ToUniversalTime();
         }
 
         public void SetBuyer(string? buyer)

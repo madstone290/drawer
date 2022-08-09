@@ -1,0 +1,49 @@
+﻿@using System.Linq.Expressions
+<MudTimePicker @ref="_picker" @bind-Time="@Time"
+               Label="@Label"
+               For="@For"
+               Editable="@true" >
+    <PickerActions>
+        <MudButton Variant="Variant.Filled" Color="@Color.Info" OnClick="@Now_Click">지금</MudButton>
+        <MudButton Variant="Variant.Filled" Color="@Color.Secondary" OnClick="@Cancel_Click">취소</MudButton>
+        <MudButton Variant="Variant.Filled" Color="@Color.Primary" OnClick="@Ok_Click">확인</MudButton>
+    </PickerActions>
+</MudTimePicker>
+@code {
+    private MudTimePicker _picker = null!;
+
+    private TimeSpan? _time;
+
+    [Parameter]
+    public TimeSpan? Time
+    {
+        get => _time;
+        set
+        {
+            if (EqualityComparer<TimeSpan?>.Default.Equals(_time, value))
+                return;
+            _time = value;
+            TimeChanged.InvokeAsync(value);
+        }
+    }
+
+    [Parameter] public EventCallback<TimeSpan?> TimeChanged { get; set; }
+    [Parameter] public string? Label { get; set; }
+    [Parameter] public Expression<Func<TimeSpan?>>? For { get; set; }
+
+
+    private void Now_Click()
+    {
+        Time = DateTime.Now.TimeOfDay;
+    }
+
+    private void Cancel_Click()
+    {
+        _picker.Close(false);
+    }
+
+    private void Ok_Click()
+    {
+        _picker.Close();
+    }
+}

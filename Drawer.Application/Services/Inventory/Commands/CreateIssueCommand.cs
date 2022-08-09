@@ -10,10 +10,10 @@ using System.Threading.Tasks;
 
 namespace Drawer.Application.Services.Inventory.Commands
 {
-    public record CreateIssueCommand(long ItemId, long LocationId, decimal Quantity, DateTime IssueTime, string? Buyer) 
+    public record CreateIssueCommand(DateTime IssueDateTime, long ItemId, long LocationId, decimal Quantity, string? Buyer) 
         : ICommand<CreateIssueResult>;
 
-    public record CreateIssueResult(long Id);
+    public record CreateIssueResult(long Id, string TransactionNumber);
 
     public class CreateIssueCommandHandler : ICommandHandler<CreateIssueCommand, CreateIssueResult>
     {
@@ -46,8 +46,9 @@ namespace Drawer.Application.Services.Inventory.Commands
             if(!await _locationRepository.ExistByIdAsync(command.LocationId))
                 throw new EntityNotFoundException<Location>(command.LocationId);
 
-            var issue = new Issue(command.ItemId, command.LocationId, command.Quantity);
-            issue.SetIssueTime(command.IssueTime);
+            var transactionNumber = Guid.NewGuid().ToString();
+            var issue = new Issue(transactionNumber, command.ItemId, command.LocationId, command.Quantity);
+            issue.SetIssueTime(command.IssueDateTime);
             issue.SetBuyer(command.Buyer);
 
             await _inventoryUnitOfWork.IssueRepository.AddAsync(issue);
@@ -57,7 +58,7 @@ namespace Drawer.Application.Services.Inventory.Commands
 
 
             await _inventoryUnitOfWork.SaveChangesAsync();
-            return new CreateIssueResult(issue.Id);
+            return new CreateIssueResult(issue.Id, issue.TransactionNumber);
         }
     }
 }

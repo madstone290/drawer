@@ -1,0 +1,8 @@
+﻿@attribute [Route(Paths.ReceiptUpdate)]
+
+<ReceiptEdit EditMode="EditMode.Update" ReceiptId="Convert.ToInt64(Id)" />
+
+@code{
+    [Parameter]
+    public string? Id { get; set; }
+}

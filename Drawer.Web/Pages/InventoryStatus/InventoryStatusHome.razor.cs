@@ -1,27 +1,21 @@
 ﻿using Drawer.AidBlazor;
-using Drawer.Contract.Inventory;
-using Drawer.Web.Api.InventoryManagement;
-using Drawer.Web.Pages.Inventory.Models;
+using Drawer.Web.Api.Inventory;
+using Drawer.Web.Pages.InventoryStatus.Models;
 using Drawer.Web.Services;
 using Drawer.Web.Utils;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace Drawer.Web.Pages.Inventory
+namespace Drawer.Web.Pages.InventoryStatus
 {
-    public partial class LocationItemInventoryHome
+    public partial class InventoryStatusHome
     {
-
-        private readonly List<ItemLocationInventoryModel> _modelList = new();
+        private AidTable<ItemInventoryModel> table = null!;
+        private readonly List<ItemInventoryModel> _inventoryItems = new();
         private readonly ExcelOptions _excelOptions = new ExcelOptionsBuilder()
-            .AddColumn(nameof(ItemLocationInventoryModel.ItemName), "아이템")
-            .AddColumn(nameof(ItemLocationInventoryModel.LocationName), "위치")
-            .AddColumn(nameof(ItemLocationInventoryModel.Quantity), "수량")
+            .AddColumn(nameof(ItemInventoryModel.ItemName), "아이템")
+            .AddColumn(nameof(ItemInventoryModel.Quantity), "수량")
             .Build();
-
-        private readonly List<GetLocationsResponse.Location> _locations = new();
-        private readonly List<GetItemsResponse.Item> _items = new();
-        private readonly List<GetInventoryItemsResponse.InventoryItem> _inventoryItems = new();
 
         private bool _isTableLoading;
         private bool canCreate = false;
@@ -33,11 +27,11 @@ namespace Drawer.Web.Pages.Inventory
 
         [Inject] public ItemApiClient ItemApiClient { get; set; } = null!;
         [Inject] public LocationApiClient LocationApiClient { get; set; } = null!;
-        [Inject] public InventoryApiClient InventoryApiClient { get; set; } = null!;
+        [Inject] public InventoryItemApiClient InventoryApiClient { get; set; } = null!;
         [Inject] public IDialogService DialogService { get; set; } = null!;
         [Inject] public IExcelFileService ExcelFileService { get; set; } = null!;
 
-        public int TotalRowCount => _modelList.Count;
+        public int TotalRowCount => _inventoryItems.Count;
 
 
         protected override async Task OnInitializedAsync()
@@ -50,7 +44,7 @@ namespace Drawer.Web.Pages.Inventory
             await Load_Click();
         }
 
-        private bool FilterInventoryDetails(ItemLocationInventoryModel model)
+        private bool FilterInventoryDetails(ItemInventoryModel model)
         {
             if (string.IsNullOrWhiteSpace(searchText))
                 return true;
@@ -58,10 +52,7 @@ namespace Drawer.Web.Pages.Inventory
                 return false;
 
             return model.ItemName?.Contains(searchText, StringComparison.OrdinalIgnoreCase) == true ||
-                model.LocationName?.Contains(searchText, StringComparison.OrdinalIgnoreCase) == true ||
                 model.Quantity.ToString().Contains(searchText, StringComparison.OrdinalIgnoreCase) == true;
-
-
         }
 
         private async Task Load_Click()
@@ -69,7 +60,6 @@ namespace Drawer.Web.Pages.Inventory
             _isTableLoading = true;
 
             var itemResponse = await ItemApiClient.GetItems();
-            var locationResponse = await LocationApiClient.GetLocations();
             var inventoryResponse = await InventoryApiClient.GetInventoryDetails();
             if (!Snackbar.CheckFail(itemResponse, inventoryResponse))
             {
@@ -77,47 +67,48 @@ namespace Drawer.Web.Pages.Inventory
                 return;
             }
 
-            _items.Clear();
-            _items.AddRange(itemResponse.Data.Items);
-
-            _locations.Clear();
-            _locations.AddRange(locationResponse.Data.Locations);
-
+            // 모든 아이템에 대한 상세정보 생성
             _inventoryItems.Clear();
-            _inventoryItems.AddRange(inventoryResponse.Data.InventoryItems);
+            foreach (var item in itemResponse.Data.Items)
+            {
+                var inventoryDetail = new ItemInventoryModel()
+                {
+                    ItemId = item.Id,
+                    ItemName = item.Name,
+                };
+                _inventoryItems.Add(inventoryDetail);
+            }
+
+            // 서버의 수량정보를 적용한다.
+            foreach (var inventoryDetail in _inventoryItems)
+            {
+                inventoryDetail.Quantity = inventoryResponse.Data.InventoryItems
+                    .Where(x => x.ItemId == inventoryDetail.ItemId)
+                    .Sum(x => x.Quantity);
+            }
 
             _isTableLoading = false;
         }
 
         private void Receipt_Click()
         {
-            NavManager.NavigateTo(Paths.GoodsReceiptHome);
+            NavManager.NavigateTo(Paths.ReceiptHome);
         }
 
         private void Issue_Click()
         {
-            NavManager.NavigateTo(Paths.GoodsIssueHome);
+            NavManager.NavigateTo(Paths.IssueHome);
         }
 
         private void Transfer_Click()
         {
-            NavManager.NavigateTo(Paths.GoodsIssueHome);
+            NavManager.NavigateTo(Paths.IssueHome);
         }
 
         private async Task Download_ClickAsync()
         {
-            var fileName = $"위치-{DateTime.Now:yyMMdd-HHmmss}.xlsx";
-            await ExcelFileService.Download(fileName, _modelList, _excelOptions);
+            var fileName = $"재고-{DateTime.Now:yyMMdd-HHmmss}.xlsx";
+            await ExcelFileService.Download(fileName, _inventoryItems, _excelOptions);
         }
-
-        private void Field_KeyChanged(long key)
-        {
-            DisplayLocationInventory(key);
-        }
-
-        private void DisplayLocationInventory(long locationId)
-        {
-        }
-        
     }
 }

@@ -21,13 +21,19 @@ namespace Drawer.Api.Controllers.InventoryManagement
         [ProducesResponseType(typeof(GetIssuesResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetIssues(DateTime? from, DateTime? to)
         {
-            List<GetIssuesResponse.Issue> issues;
+            List<IssueContracts.Issue> issues;
             if (from.HasValue && to.HasValue)
             {
                 var query = new GetIssuesQuery(from.Value, to.Value);
                 var result = await _mediator.Send(query) ?? default!;
                 issues = result.Issues.Select(x =>
-                    new GetIssuesResponse.Issue(x.Id, x.ItemId, x.LocationId, x.Quantity, x.IssueTime, x.Buyer)).ToList();
+                    new IssueContracts.Issue(x.Id,
+                                                x.TransactionNumber,
+                                                x.IssueDateTimeLocal,
+                                                x.ItemId,
+                                                x.LocationId,
+                                                x.Quantity,
+                                                x.Buyer)).ToList();
             }
             else
             {
@@ -43,11 +49,20 @@ namespace Drawer.Api.Controllers.InventoryManagement
         public async Task<IActionResult> GetIssue([FromRoute] long id)
         {
             var query = new GetIssueQuery(id);
-            var result = await _mediator.Send(query);
-            if (result == null)
+            var result = await _mediator.Send(query) ?? default!;
+            var issue = result.Issue;
+            if (issue == null)
                 return NoContent();
-            else
-                return Ok(new GetIssueResponse(result.Id, result.ItemId, result.LocationId, result.Quantity, result.IssueTime, result.Buyer));
+
+            var issueDto = new IssueContracts.Issue(issue.Id,
+                                                    issue.TransactionNumber,
+                                                    issue.IssueDateTimeLocal,
+                                                    issue.ItemId,
+                                                    issue.LocationId,
+                                                    issue.Quantity,
+                                                    issue.Buyer);
+
+            return Ok(new GetIssueResponse(issueDto));
         }
 
         [HttpPost]
@@ -55,9 +70,9 @@ namespace Drawer.Api.Controllers.InventoryManagement
         [ProducesResponseType(typeof(CreateIssueResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateIssue([FromBody] CreateIssueRequest request)
         {
-            var command = new CreateIssueCommand(request.ItemId, request.LocationId, request.Quantity, request.IssueTime, request.Buyer);
+            var command = new CreateIssueCommand(request.IssueDateTime, request.ItemId, request.LocationId, request.Quantity, request.Buyer);
             var result = await _mediator.Send(command);
-            return Ok(new CreateIssueResponse(result.Id));
+            return Ok(new CreateIssueResponse(result.Id, result.TransactionNumber));
         }
 
         [HttpPut]
@@ -65,7 +80,7 @@ namespace Drawer.Api.Controllers.InventoryManagement
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateIssue([FromRoute] long id, [FromBody] UpdateIssueRequest request)
         {
-            var command = new UpdateIssueCommand(id, request.ItemId, request.LocationId, request.Quantity, request.IssueTime, request.Buyer);
+            var command = new UpdateIssueCommand(id, request.IssueDateTime, request.ItemId, request.LocationId, request.Quantity, request.Buyer);
             await _mediator.Send(command);
             return Ok();
         }

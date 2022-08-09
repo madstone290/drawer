@@ -1,10 +1,10 @@
 ﻿@using Drawer.Web.Authentication
-@using Drawer.Web.Pages.Inventory.Models
+@using Drawer.Web.Pages.InventoryStatus.Models
 @using Pages.Location.Models
 
-@attribute [Route(Paths.ItemLocationInventoryHome)]
+@attribute [Route(Paths.LocationItemInventoryHome)]
 
-<ContentTitle Text="아이템-위치 재고" />
+<ContentTitle Text="위치-아이템 재고" />
 <AuthorizeView Context="AuthorizeView" Policy="@Policies.CompanyMember">
     <NotAuthorized>
         <NeedCompany />
@@ -46,15 +46,17 @@
 
             <AidSearchInput @bind-Value="@searchText" />
         </AidToolBar>
-         <AidToolBar>
-             <MudSwitch @bind-Checked="@HideZeroQuantity" Color="@Color.Primary">재고없음 숨기기</MudSwitch>
+        <AidToolBar>
+            <AidCompleteField Label="컨테이너 위치"
+                              TKey="long"
+                              KeyChanged="@Field_KeyChanged"
+                              KeyFunc="@((name) => _locations.FirstOrDefault(x=> x.Name == name)?.Id ?? 0)"
+                              ItemValues="@(_locations.Select(x=> x.Name).ToList())" />
         </AidToolBar>
-
-        <AidTable @ref="@_table"
-                  Loading="@_isTableLoading"
+        <AidTable Loading="@_isTableLoading"
                   T="@ItemLocationInventoryModel"
                   UseRowSelection="@false"
-                  Items="@_displayModelList"
+                  Items="@_modelList"
                   Filter="@(new Func<ItemLocationInventoryModel,bool>(FilterInventoryDetails))">
             <Header>
                 <MudTHeadRow>

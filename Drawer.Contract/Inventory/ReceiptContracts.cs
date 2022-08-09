@@ -8,18 +8,16 @@ namespace Drawer.Contract.Inventory
 {
     public class ReceiptContracts
     {
+        public record Receipt(long Id, string TransactionNumber, DateTime ReceiptDateTime, long ItemId, long LocationId, decimal Quantity, string? Seller);
     }
 
-    public record CreateReceiptRequest(long ItemId, long LocationId, decimal Quantity, DateTime ReceiptTime, string? Seller);
+    public record CreateReceiptRequest(DateTime ReceiptDateTime, long ItemId, long LocationId, decimal Quantity, string? Seller);
 
-    public record CreateReceiptResponse(long Id);
+    public record CreateReceiptResponse(long Id, string TransactionNumber);
 
-    public record UpdateReceiptRequest(long ItemId, long LocationId, decimal Quantity, DateTime ReceiptTime, string? Seller);
+    public record UpdateReceiptRequest(DateTime ReceiptDateTime, long ItemId, long LocationId, decimal Quantity, string? Seller);
 
-    public record GetReceiptResponse(long Id, long ItemId, long LocationId, decimal Quantity, DateTime ReceiptTime, string? Seller);
+    public record GetReceiptResponse(ReceiptContracts.Receipt Receipt);
 
-    public record GetReceiptsResponse(List<GetReceiptsResponse.Receipt> Receipts)
-    {
-        public record Receipt(long Id, long ItemId, long LocationId, decimal Quantity, DateTime ReceiptTime, string? Seller);
-    }
+    public record GetReceiptsResponse(List<ReceiptContracts.Receipt> Receipts);
 }

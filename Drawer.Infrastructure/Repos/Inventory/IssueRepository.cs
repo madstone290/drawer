@@ -16,12 +16,12 @@ namespace Drawer.Infrastructure.Repos.Inventory
         {
         }
 
-        public async Task<IList<Issue>> FindByIssueDateBetween(DateTime from, DateTime to)
+        public async Task<List<Issue>> FindByIssueDateBetween(DateTime from, DateTime to)
         {
             var utcTimeFrom = from.Date.ToUniversalTime();
             var utcTimeTo = to.Date.AddDays(1).AddTicks(-1).ToUniversalTime();
             return await _dbContext.Issues
-                .Where(x => utcTimeFrom <= x.IssueTime && x.IssueTime <= utcTimeTo)
+                .Where(x => utcTimeFrom <= x.IssueDateTime && x.IssueDateTime <= utcTimeTo)
                 .ToListAsync();
         }
     }

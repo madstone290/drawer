@@ -1,10 +1,10 @@
 ﻿@using Drawer.Web.Authentication
-@using Drawer.Web.Pages.Inventory.Models
+@using Drawer.Web.Pages.InventoryStatus.Models
 @using Pages.Location.Models
 
-@attribute [Route(Paths.LocationItemInventoryHome)]
+@attribute [Route(Paths.InventoryStatusHome)]
 
-<ContentTitle Text="위치-아이템 재고" />
+<ContentTitle Text="아이템 재고" />
 <AuthorizeView Context="AuthorizeView" Policy="@Policies.CompanyMember">
     <NotAuthorized>
         <NeedCompany />
@@ -46,28 +46,20 @@
 
             <AidSearchInput @bind-Value="@searchText" />
         </AidToolBar>
-        <AidToolBar>
-            <AidCompleteField Label="컨테이너 위치"
-                              TKey="long"
-                              KeyChanged="@Field_KeyChanged"
-                              KeyFunc="@((name) => _locations.FirstOrDefault(x=> x.Name == name)?.Id ?? 0)"
-                              ItemValues="@(_locations.Select(x=> x.Name).ToList())" />
-        </AidToolBar>
-        <AidTable Loading="@_isTableLoading"
-                  T="@ItemLocationInventoryModel"
+
+        <AidTable @ref="table"
+                  Loading="@_isTableLoading"
+                  T="@ItemInventoryModel"
                   UseRowSelection="@false"
-                  Items="@_modelList"
-                  Filter="@(new Func<ItemLocationInventoryModel,bool>(FilterInventoryDetails))">
+                  Items="@_inventoryItems"
+                  Filter="@(new Func<ItemInventoryModel,bool>(FilterInventoryDetails))">
             <Header>
                 <MudTHeadRow>
                     <MudTh>
-                        <MudTableSortLabel T="ItemLocationInventoryModel" SortBy="x => x.ItemName">아이템</MudTableSortLabel>
+                        <MudTableSortLabel T="ItemInventoryModel" SortBy="x => x.ItemName">아이템</MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel T="ItemLocationInventoryModel" SortBy="x => x.LocationName">위치</MudTableSortLabel>
-                    </MudTh>
-                    <MudTh>
-                        <MudTableSortLabel T="ItemLocationInventoryModel" SortBy="x => x.Quantity">수량</MudTableSortLabel>
+                        <MudTableSortLabel T="ItemInventoryModel" SortBy="x => x.Quantity">수량</MudTableSortLabel>
                     </MudTh>
                 </MudTHeadRow>
             </Header>
@@ -75,9 +67,6 @@
             <Row>
                 <MudTd>
                     <MudHighlighter Text="@context.ItemName" HighlightedText="@searchText" />
-                </MudTd>
-                <MudTd>
-                    <MudHighlighter Text="@context.LocationName" HighlightedText="@searchText" />
                 </MudTd>
                 <MudTd>
                     <MudHighlighter Text="@context.Quantity.ToString()" HighlightedText="@searchText" />

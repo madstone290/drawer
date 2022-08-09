@@ -1,4 +1,4 @@
-﻿using Drawer.Web.Api.InventoryManagement;
+﻿using Drawer.Web.Api.Inventory;
 using Drawer.Web.Pages.Item.Models;
 using Drawer.Web.Utils;
 using Microsoft.AspNetCore.Components;

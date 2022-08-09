@@ -1,0 +1,70 @@
+﻿@using Drawer.Web.Pages.Receipt.Models
+@using Drawer.Web.Utils
+<ContentTitle Text="@TitleText" />
+<AidToolBar>
+    <AidButton Color="Color.Error"
+               OnClick="Back_Click">
+        뒤로
+    </AidButton>
+    <AidButton Enabled="@(!IsViewMode && _isFormValid)"
+               Color="Color.Primary"
+               OnClick="Save_Click">
+        저장
+    </AidButton>
+</AidToolBar>
+
+<MudForm @ref="_form"
+         @bind-IsValid="_isFormValid"
+         Model="_receipt" ValidationDelay="0" Validation="@_validator.ValidateValue()">
+    <MudGrid>
+        <MudItem xs="6" sm="3">
+            <AidDatePicker Label="입고일자"
+                           @bind-Date="_receipt.ReceiptDate"
+                           For="@(() => _receipt.ReceiptDate)" />
+        </MudItem>
+        <MudItem xs="6" sm="3">
+            <AidTimePicker Label="입고시간"
+                           @bind-Time="_receipt.ReceiptTime"
+                           For="@(() => _receipt.ReceiptTime)">
+            </AidTimePicker>
+        </MudItem>
+        <MudItem xs="0" sm="6">
+        </MudItem>
+
+        <MudItem xs="6" sm="3">
+            <AidCompleteField TKey="long"
+                              Label="아이템"
+                              @bind-Key="_receipt.ItemId"
+                              @bind-Value="_receipt.ItemName"
+                              For="()=>_receipt.ItemName"
+                              ItemValues="@(_itemList.Select(x=> x.Name).ToList())"
+                              KeyFunc="@((value) => _itemList.FirstOrDefault(x=> x.Name == value)?.Id ?? 0)" />
+        </MudItem>
+        <MudItem xs="6" sm="3">
+            <AidCompleteField TKey="long"
+                              Label="위치"
+                              @bind-Key="_receipt.LocationId"
+                              @bind-Value="_receipt.LocationName"
+                              For="()=>_receipt.LocationName"
+                              ItemValues="@(_locationList.Select(x=> x.Name).ToList())"
+                              KeyFunc="@((value) => _locationList.FirstOrDefault(x=> x.Name == value)?.Id ?? 0)" />
+        </MudItem>
+        <MudItem xs="0" sm="6">
+        </MudItem>
+
+        <MudItem xs="6" sm="3">
+            <MudNumericField Label="수량"
+                             T="@decimal"
+                             @bind-Value="_receipt.Quantity"
+                             For="@(() => _receipt.Quantity)" />
+        </MudItem>
+        <MudItem xs="6" sm="3">
+            <MudTextField Label="판매자"
+                          @bind-Value="_receipt.Seller"
+                          For="@(() => _receipt.Seller)" />
+        </MudItem>
+
+
+
+    </MudGrid>
+</MudForm>

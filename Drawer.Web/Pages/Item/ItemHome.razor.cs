@@ -1,5 +1,5 @@
 ﻿using Drawer.AidBlazor;
-using Drawer.Web.Api.InventoryManagement;
+using Drawer.Web.Api.Inventory;
 using Drawer.Web.Pages.Item.Models;
 using Drawer.Web.Services;
 using Drawer.Web.Shared;

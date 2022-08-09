@@ -13,11 +13,27 @@ namespace Drawer.Domain.Models.Inventory
     /// </summary>
     public class Receipt : CompanyResourceEntity<long>
     {
-        public Receipt(long itemId, long locationId, decimal quantity)
+        public Receipt(string transactionNumber, long itemId, long locationId, decimal quantity)
         {
+            TransactionNumber = transactionNumber;
             SetInventoryInfo(itemId, locationId, quantity);
-            SetReceiptTime(DateTime.UtcNow);
+            SetReceiptDateTime(DateTime.UtcNow);
         }
+
+        /// <summary>
+        /// 입고번호
+        /// </summary>
+        public string TransactionNumber { get; private set; }
+
+        /// <summary>
+        /// 입고일시(UTC)
+        /// </summary>
+        public DateTime ReceiptDateTime { get; private set; }
+
+        /// <summary>
+        /// 입고일시(로컬)
+        /// </summary>
+        public DateTime ReceiptDateTimeLocal => ReceiptDateTime.ToLocalTime();
 
         /// <summary>
         /// 아이템
@@ -29,17 +45,10 @@ namespace Drawer.Domain.Models.Inventory
         /// </summary>
         public long LocationId { get; private set; }
 
+        /// <summary>
+        /// 입고수량
+        /// </summary>
         public decimal Quantity { get; private set; }
-
-        /// <summary>
-        /// 입고시간(UTC)
-        /// </summary>
-        public DateTime ReceiptTime { get; private set; }
-
-        /// <summary>
-        /// 입고시간(로컬)
-        /// </summary>
-        public DateTime ReceiptTimeLocal => ReceiptTime.ToLocalTime();
 
         /// <summary>
         /// 판매자
@@ -72,9 +81,9 @@ namespace Drawer.Domain.Models.Inventory
         }
 
 
-        public void SetReceiptTime(DateTime receiptTime)
+        public void SetReceiptDateTime(DateTime receiptDateTime)
         {
-            ReceiptTime = receiptTime.ToUniversalTime();
+            ReceiptDateTime = receiptDateTime.ToUniversalTime();
         }
 
         public void SetSeller(string? seller)

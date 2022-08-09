@@ -11,7 +11,7 @@ namespace Drawer.Application.Services.Inventory.Queries
 {
     public record GetReceiptQuery(long Id) : IQuery<GetReceiptResult?>;
 
-    public record GetReceiptResult(long Id, long ItemId, long LocationId, decimal Quantity, DateTime ReceiptTime, string? Seller);
+    public record GetReceiptResult(Receipt? Receipt);
 
     public class GetReceiptQueryHandler : IQueryHandler<GetReceiptQuery, GetReceiptResult?>
     {
@@ -25,11 +25,8 @@ namespace Drawer.Application.Services.Inventory.Queries
         public async Task<GetReceiptResult?> Handle(GetReceiptQuery query, CancellationToken cancellationToken)
         {
             var receipt = await _receiptRepository.FindByIdAsync(query.Id);
-            
-            return receipt == null
-                ? null
-                : new GetReceiptResult(receipt.Id, receipt.ItemId, receipt.LocationId, receipt.Quantity, 
-                    receipt.ReceiptTimeLocal, receipt.Seller);
+
+            return new GetReceiptResult(receipt);
         }
     }
 }

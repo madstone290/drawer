@@ -47,9 +47,14 @@
                 엑셀 다운로드
             </AidButton>
 
-            <MudSpacer />
+        </AidToolBar>
 
-            <AidSearchInput @bind-Value="@searchText" />
+        <AidToolBar>
+            <MudGrid>
+                <MudItem xs="4" sm="4" md="3" lg="2">
+                    <AidSearchField T="@string" @bind-Value="@searchText" />
+                </MudItem>
+            </MudGrid>
         </AidToolBar>
 
         <AidTable @ref="table"

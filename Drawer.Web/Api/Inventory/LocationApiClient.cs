@@ -2,7 +2,7 @@
 using Drawer.Contract.Inventory;
 using Drawer.Web.Authentication;
 
-namespace Drawer.Web.Api.InventoryManagement
+namespace Drawer.Web.Api.Inventory
 {
     public class LocationApiClient : ApiClient
     {
