@@ -1,5 +1,6 @@
-﻿using Drawer.Contract;
-using Drawer.Contract.Organization;
+﻿using Drawer.Application.Services.Organization.CommandModels;
+using Drawer.Application.Services.Organization.QueryModels;
+using Drawer.Shared;
 using Drawer.Web.Authentication;
 
 namespace Drawer.Web.Api.Organization
@@ -10,31 +11,31 @@ namespace Drawer.Web.Api.Organization
         {
         }
 
-        public async Task<ApiResponse<GetCompanyResponse>> GetCompany()
+        public async Task<ApiResponse<CompanyQueryModel>> GetCompany()
         {
-            var request = new ApiRequest<GetCompanyResponse>(
+            var request = new ApiRequest<CompanyQueryModel>(
                 HttpMethod.Get,
                 ApiRoutes.Company.Get);
 
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<CreateCompanyResponse>> CreateCompany(string name, string phoneNumber)
+        public async Task<ApiResponse<string>> CreateCompany(CompanyAddUpdateCommandModel company)
         {
-            var request = new ApiRequest<CreateCompanyResponse>(
+            var request = new ApiRequest<string>(
                    HttpMethod.Post,
                    ApiRoutes.Company.Create,
-                   new CreateCompanyRequest(name, phoneNumber));
+                   company);
 
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<Unit>> UpdateCompany(string name, string phoneNumber)
+        public async Task<ApiResponse<Unit>> UpdateCompany(CompanyAddUpdateCommandModel company)
         {
             var request = new ApiRequest(
                    HttpMethod.Put,
                    ApiRoutes.Company.Update,
-                   new UpdateCompanyRequest(name, phoneNumber));
+                   company);
 
             return await SendAsync(request);
         }

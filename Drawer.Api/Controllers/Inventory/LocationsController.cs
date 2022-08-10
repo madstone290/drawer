@@ -1,9 +1,10 @@
-﻿using Drawer.Application.Services.Inventory.Commands;
-using Drawer.Application.Services.Inventory.Queries;
-using Drawer.Contract;
-using Drawer.Contract.Inventory;
+﻿using Drawer.Shared;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Drawer.Application.Services.Inventory.Queries;
+using Drawer.Application.Services.Inventory.Commands.LocationCommands;
+using Drawer.Application.Services.Inventory.QueryModels;
+using Drawer.Application.Services.Inventory.CommandModels;
 
 namespace Drawer.Api.Controllers.InventoryManagement
 {
@@ -18,61 +19,51 @@ namespace Drawer.Api.Controllers.InventoryManagement
 
         [HttpGet]
         [Route(ApiRoutes.Locations.GetList)]
-        [ProducesResponseType(typeof(GetLocationsResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<LocationQueryModel>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetLocations()
         {
             var query = new GetLocationsQuery();
-            var result = await _mediator.Send(query);
-            return Ok(
-                new GetLocationsResponse(
-                    result.Locations.Select(x => 
-                    new GetLocationsResponse.Location(x.Id, x.UpperLocationId, x.Name, x.Note, x.HierarchyLevel, x.IsGroup)).ToList()
-                )
-            );
+            var locationList = await _mediator.Send(query);
+            return Ok(locationList);
         }
 
 
         [HttpGet]
         [Route(ApiRoutes.Locations.Get)]
-        [ProducesResponseType(typeof(GetLocationResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(LocationQueryModel), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetLocation([FromRoute] long id)
         {
-            var query = new GetLocationQuery(id);
-            var result = await _mediator.Send(query);
-            if (result == null)
-                return NoContent();
-            else
-                return Ok(new GetLocationResponse(result.Id, result.UpperLocationId, result.Name, result.Note, result.HierarchyLevel));
+            var query = new GetLocationByIdQuery(id);
+            var location = await _mediator.Send(query);
+            return Ok(location);
         }
 
         [HttpPost]
         [Route(ApiRoutes.Locations.Create)]
-        [ProducesResponseType(typeof(CreateLocationResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> CreateLocation([FromBody] CreateLocationRequest request)
+        [ProducesResponseType(typeof(long), StatusCodes.Status200OK)]
+        public async Task<IActionResult> CreateLocation([FromBody] LocationAddCommandModel location)
         {
-            var command = new CreateLocationCommand(request.ParentGroupId, request.Name, request.Note, request.IsGroup);
-            var result = await _mediator.Send(command);
-            return Ok(new CreateLocationResponse(result.Id));
+            var command = new CreateLocationCommand(location);
+            var locationId = await _mediator.Send(command);
+            return Ok(locationId);
         }
 
         [HttpPost]
         [Route(ApiRoutes.Locations.BatchCreate)]
-        [ProducesResponseType(typeof(BatchCreateLocationResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> BatchCreateItem([FromBody] BatchCreateLocationRequest request)
+        [ProducesResponseType(typeof(List<long>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> BatchCreateItem([FromBody] List<LocationAddCommandModel> locationList)
         {
-            var command = new BatchCreateLocationCommand(request.Locations.Select(x =>
-                new BatchCreateLocationCommand.Location(x.ParentGroupId, x.Name, x.Note, x.IsGroup))
-                .ToList());
-            var result = await _mediator.Send(command);
-            return Ok(new BatchCreateLocationResponse(result.IdList));
+            var command = new BatchCreateLocationCommand(locationList);
+            var locationIdList = await _mediator.Send(command);
+            return Ok(locationIdList);
         }
 
         [HttpPut]
         [Route(ApiRoutes.Locations.Update)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> UpdateLocation([FromRoute] long id, [FromBody] UpdateLocationRequest request)
+        public async Task<IActionResult> UpdateLocation([FromRoute] long id, [FromBody] LocationUpdateCommandModel location)
         {
-            var command = new UpdateLocationCommand(id, request.Name, request.Note);
+            var command = new UpdateLocationCommand(id, location);
             await _mediator.Send(command);
             return Ok();
         }

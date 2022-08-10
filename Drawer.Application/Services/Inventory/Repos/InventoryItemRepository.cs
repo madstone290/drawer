@@ -1,4 +1,5 @@
-﻿using Drawer.Domain.Models.Inventory;
+﻿using Drawer.Application.Services.Inventory.QueryModels;
+using Drawer.Domain.Models.Inventory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +12,12 @@ namespace Drawer.Application.Services.Inventory.Repos
     {
         Task<InventoryItem?> FindByItemIdAndLocationIdAsync(long itemId, long locationId);
 
-        Task<IList<InventoryItem>> FindByItemIdAsync(long itemId);
+        Task<InventoryItemQueryModel?> QueryByItemIdAndLocationId(long itemId, long locationId);
 
-        Task<IList<InventoryItem>> FindByLocationIdAsync(long locationId);
+        Task<List<InventoryItemQueryModel>> QueryAll();
 
-        Task<IList<InventoryItem>> FindAll();
-     
+        Task<List<InventoryItemQueryModel>> QueryByItemId(long itemId);
+
+        Task<List<InventoryItemQueryModel>> QueryByLocationId(long locationId);
     }
 }

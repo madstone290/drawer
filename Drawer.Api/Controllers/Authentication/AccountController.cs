@@ -1,7 +1,6 @@
-﻿using Drawer.Api.Controllers;
+﻿using Drawer.Application.Services.Authentication.CommandModels;
 using Drawer.Application.Services.Authentication.Commands;
-using Drawer.Contract;
-using Drawer.Contract.Authentication;
+using Drawer.Shared;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,38 +26,38 @@ namespace Drawer.Api.Controllers.Authentication
         [HttpPost]
         [AllowAnonymous]
         [Route(ApiRoutes.Account.Register)]
-        [ProducesResponseType(typeof(RegisterResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> RegisterAsync([FromBody] RegisterRequest request)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> RegisterAsync([FromBody] Application.Services.Authentication.CommandModels.RegisterCommandModel register)
         {
-            var command = new RegisterCommand(request.Email, request.Password, request.DisplayName);
-            var result = await _mediator.Send(command);
-            return Ok(new RegisterResponse(result.UserId, result.Email, result.DisplayName));
+            var command = new RegisterCommand(register);
+            await _mediator.Send(command);
+            return Ok();
         }
 
         /// <summary>
         /// 가입 확인 이메일을 전송한다.
         /// </summary>
-        /// <param name="request"></param>
+        /// <param name="confirmation"></param>
         /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
         [Route(ApiRoutes.Account.ConfirmEmail)]
-        public async Task<IActionResult> ConfirmEmailAsync([FromBody] ConfirmEmailRequest request)
+        public async Task<IActionResult> ConfirmEmailAsync([FromBody] EmailConfirmationCommandModel confirmation)
         {
             // 개발환경에서는 호스팅 Uri를 사용한다.
             // 운영환경에서는 Api서버의 도메인을 이용한다.
             var returnUri = string.Empty;
             if (_environment.IsDevelopment())
             {
-                returnUri = Url.RouteUrl(nameof(VerifyEmailAsync), new { request.RedirectUri }, HttpContext.Request.Scheme)!;
+                returnUri = Url.RouteUrl(nameof(VerifyEmailAsync), new { confirmation.RedirectUri }, HttpContext.Request.Scheme)!;
             }
             else
             {
                 returnUri = _configuration["DrawerApiDomain"] +
-                    ApiRoutes.Account.ConfirmEmail + $"?RedirectUri={Uri.EscapeDataString(request.RedirectUri)}";
+                    ApiRoutes.Account.ConfirmEmail + $"?RedirectUri={Uri.EscapeDataString(confirmation.RedirectUri)}";
             }
 
-            var command = new ConfirmEmailCommand(request.Email, returnUri);
+            var command = new ConfirmEmailCommand(confirmation);
             var result = await _mediator.Send(command);
             return Ok();
         }
@@ -84,23 +83,23 @@ namespace Drawer.Api.Controllers.Authentication
         [HttpPost]
         [AllowAnonymous]
         [Route(ApiRoutes.Account.Login)]
-        [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> LoginAsync([FromBody] LoginRequest request)
+        [ProducesResponseType(typeof(LoginResponseCommandModel), StatusCodes.Status200OK)]
+        public async Task<IActionResult> LoginAsync([FromBody] LoginCommandModel login)
         {
-            var command = new LoginCommand(request.Email, request.Password);
-            var result = await _mediator.Send(command);
-            return Ok(new LoginResponse(result.IsCompanyMemeber, result.IsCompanyOwner, result.AccessToken, result.RefreshToken));
+            var command = new LoginCommand(login);
+            var loginResponse = await _mediator.Send(command);
+            return Ok(loginResponse);
         }
 
         [HttpPost]
         [AllowAnonymous]
         [Route(ApiRoutes.Account.Refresh)]
-        [ProducesResponseType(typeof(RefreshResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> RefreshAsync([FromBody] RefreshRequest model)
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public async Task<IActionResult> RefreshAsync([FromBody] RefreshCommandModel refresh)
         {
-            var command = new RefreshCommand(model.Email, model.RefreshToken);
-            var result = await _mediator.Send(command);
-            return Ok(new RefreshResponse(result.AccessToken));
+            var command = new RefreshCommand(refresh);
+            var accessToken = await _mediator.Send(command);
+            return Ok(accessToken);
         }
 
         /// <summary>

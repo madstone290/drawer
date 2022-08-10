@@ -12,6 +12,5 @@
         public const string UserId = "UserId";
         public const string IsCompanyOwner = "IsCompanyOwner";
         public const string IsCompanyMember = "IsCompanyMember";
-
     }
 }

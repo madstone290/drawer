@@ -1,6 +1,6 @@
 ﻿using Drawer.Application.Config;
+using Drawer.Application.Services.Inventory.QueryModels;
 using Drawer.Application.Services.Inventory.Repos;
-using Drawer.Domain.Models.Inventory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,14 +9,9 @@ using System.Threading.Tasks;
 
 namespace Drawer.Application.Services.Inventory.Queries
 {
-    public record GetInventoryItemsQuery(long? ItemId, long? LocationId) : IQuery<GetInventoryItemsResult>;
+    public record GetInventoryItemsQuery(long? ItemId, long? LocationId) : IQuery<List<InventoryItemQueryModel>>;
 
-    public record GetInventoryItemsResult(IList<GetInventoryItemsResult.InventoryItem> InventoryItems)
-    {
-        public record InventoryItem(long ItemId, long LocationId, decimal Quantity);
-    }
-
-    public class GetInventoryItemsQueryHandler : IQueryHandler<GetInventoryItemsQuery, GetInventoryItemsResult>
+    public class GetInventoryItemsQueryHandler : IQueryHandler<GetInventoryItemsQuery, List<InventoryItemQueryModel>>
     {
         private readonly IInventoryItemRepository _inventoryItemRepository;
 
@@ -25,32 +20,31 @@ namespace Drawer.Application.Services.Inventory.Queries
             _inventoryItemRepository = inventoryItemRepository;
         }
 
-        public async Task<GetInventoryItemsResult> Handle(GetInventoryItemsQuery request, CancellationToken cancellationToken)
+        public async Task<List<InventoryItemQueryModel>> Handle(GetInventoryItemsQuery request, CancellationToken cancellationToken)
         {
-            IList<InventoryItem> inventoryItems;
+            List<InventoryItemQueryModel> inventoryItems;
             if (request.ItemId.HasValue && request.LocationId.HasValue)
             {
                 var inventoryItem = await _inventoryItemRepository
-                    .FindByItemIdAndLocationIdAsync(request.ItemId.Value, request.LocationId.Value);
+                    .QueryByItemIdAndLocationId(request.ItemId.Value, request.LocationId.Value);
                 inventoryItems = inventoryItem == null
-                    ? new List<InventoryItem>()
-                    : new List<InventoryItem> { inventoryItem };
+                    ? new List<InventoryItemQueryModel>()
+                    : new List<InventoryItemQueryModel> { inventoryItem };
             }
             else if (request.ItemId.HasValue)
             {
-                inventoryItems = await _inventoryItemRepository.FindByItemIdAsync(request.ItemId.Value);
+                inventoryItems = await _inventoryItemRepository.QueryByItemId(request.ItemId.Value);
             }
             else if (request.LocationId.HasValue)
             {
-                inventoryItems = await _inventoryItemRepository.FindByLocationIdAsync(request.LocationId.Value);
+                inventoryItems = await _inventoryItemRepository.QueryByLocationId(request.LocationId.Value);
             }
             else
             {
-                inventoryItems = await _inventoryItemRepository.FindAll();
+                inventoryItems = await _inventoryItemRepository.QueryAll();
             }
 
-            return new GetInventoryItemsResult(inventoryItems.Select(x =>
-                new GetInventoryItemsResult.InventoryItem(x.ItemId, x.LocationId, x.Quantity)).ToList());
+            return inventoryItems;
         }
     }
 }

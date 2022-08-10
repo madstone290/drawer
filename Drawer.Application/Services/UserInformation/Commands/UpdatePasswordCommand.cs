@@ -1,5 +1,6 @@
 ﻿using Drawer.Application.Config;
 using Drawer.Application.Exceptions;
+using Drawer.Application.Services.UserInformation.CommandModels;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Drawer.Application.Services.UserInformation.Commands
 {
-    public record UpdatePasswordCommand(string UserId, string Password, string NewPassword): ICommand;
+    public record UpdatePasswordCommand(string UserId, UserPasswordCommandModel UserPassword) : ICommand;
 
     public class UpdatePasswordCommandHandler : ICommandHandler<UpdatePasswordCommand>
     {
@@ -21,12 +22,14 @@ namespace Drawer.Application.Services.UserInformation.Commands
             _userManager = userManager;
         }
 
-        public async Task<Unit> Handle(UpdatePasswordCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(UpdatePasswordCommand command, CancellationToken cancellationToken)
         {
-            var user = await _userManager.FindByIdAsync(request.UserId)
+            var userPasswordDto = command.UserPassword;
+
+            var user = await _userManager.FindByIdAsync(command.UserId)
                 ?? throw new InvalidUserIdException();
 
-            var result = await _userManager.ChangePasswordAsync(user, request.Password, request.NewPassword);
+            var result = await _userManager.ChangePasswordAsync(user, userPasswordDto.Password, userPasswordDto.NewPassword);
             if (!result.Succeeded)
                 throw new IdentityErrorException(result.Errors);
 

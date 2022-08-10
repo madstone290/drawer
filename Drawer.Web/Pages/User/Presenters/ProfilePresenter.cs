@@ -1,5 +1,5 @@
-﻿using Drawer.Contract;
-using Drawer.Contract.UserInformation;
+﻿using Drawer.Application.Services.UserInformation.CommandModels;
+using Drawer.Shared;
 using Drawer.Web.Api;
 using Drawer.Web.Api.UserInformation;
 using Drawer.Web.Pages.User.Views;
@@ -32,7 +32,11 @@ namespace Drawer.Web.Pages.User.Presenters
 
         public async Task SaveUserAsync()
         {
-            var response = await _apiClient.SaveUser(View.Model.DisplayName!);
+            var userInfoDto = new UserInfoCommandModel()
+            {
+                DisplayName = View.Model.DisplayName!
+            };
+            var response = await _apiClient.SaveUser(userInfoDto);
             CheckSuccessFail(response);
         }
     }

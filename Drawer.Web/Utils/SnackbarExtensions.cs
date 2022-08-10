@@ -26,7 +26,7 @@ namespace Drawer.Web.Utils
         {
             foreach(var response in responses)
             {
-                if (!response.IsSuccessful)
+                if (!response.IsSuccessful)                
                 {
                     snackbar.Add(response.ErrorMessage, Severity.Error);
                     return false;

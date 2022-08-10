@@ -1,5 +1,5 @@
 ﻿using Drawer.AidBlazor;
-using Drawer.Contract.Inventory;
+using Drawer.Application.Services.Inventory.QueryModels;
 using Drawer.Web.Api.Inventory;
 using Drawer.Web.Pages.InventoryStatus.Models;
 using Drawer.Web.Services;
@@ -19,9 +19,9 @@ namespace Drawer.Web.Pages.InventoryStatus
             .AddColumn(nameof(ItemLocationInventoryModel.Quantity), "수량")
             .Build();
 
-        private readonly List<GetLocationsResponse.Location> _locations = new();
-        private readonly List<GetItemsResponse.Item> _items = new();
-        private readonly List<GetInventoryItemsResponse.InventoryItem> _inventoryItems = new();
+        private readonly List<LocationQueryModel> _locations = new();
+        private readonly List<ItemQueryModel> _items = new();
+        private readonly List<InventoryItemQueryModel> _inventoryItems = new();
 
         private bool _isTableLoading;
         private bool canCreate = false;
@@ -78,13 +78,13 @@ namespace Drawer.Web.Pages.InventoryStatus
             }
 
             _items.Clear();
-            _items.AddRange(itemResponse.Data.Items);
+            _items.AddRange(itemResponse.Data);
 
             _locations.Clear();
-            _locations.AddRange(locationResponse.Data.Locations);
+            _locations.AddRange(locationResponse.Data);
 
             _inventoryItems.Clear();
-            _inventoryItems.AddRange(inventoryResponse.Data.InventoryItems);
+            _inventoryItems.AddRange(inventoryResponse.Data);
 
             _isTableLoading = false;
         }

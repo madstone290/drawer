@@ -1,6 +1,6 @@
-﻿using Drawer.Contract;
-using Drawer.Contract.Authentication;
-using Drawer.Contract.Common;
+﻿using Drawer.Application.Services.Authentication.CommandModels;
+using Drawer.Shared;
+using Drawer.Shared.Contracts.Common;
 using Drawer.Web.Utils;
 using Microsoft.AspNetCore.Components;
 
@@ -34,9 +34,15 @@ namespace Drawer.Web.Pages.Account
 
         async Task Send()
         {
-            var registerCompletedUri =  NavManager.BaseUri.AddPath(Paths.Account.RegisterCompleted);
-            var confirmResponseMessage = await HttpClient.PostAsJsonAsync(ApiRoutes.Account.ConfirmEmail,
-                new ConfirmEmailRequest(Email, registerCompletedUri!));
+            var registerCompletedUri = NavManager.BaseUri.AddPath(Paths.Account.RegisterCompleted);
+            var confirmationDto = new EmailConfirmationCommandModel()
+            {
+                Email = Email,
+                RedirectUri = registerCompletedUri!
+            };
+            var confirmResponseMessage = await HttpClient.PostAsJsonAsync(
+                ApiRoutes.Account.ConfirmEmail,
+                confirmationDto);
 
             if (!confirmResponseMessage.IsSuccessStatusCode)
             {

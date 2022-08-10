@@ -27,8 +27,8 @@
 	<ItemGroup>
 		<InternalsVisibleTo Include="Drawer.IntergrationTest" />
 		<ProjectReference Include="..\Drawer.Application\Drawer.Application.csproj" />
-		<ProjectReference Include="..\Drawer.Contract\Drawer.Contract.csproj" />
 		<ProjectReference Include="..\Drawer.Infrastructure\Drawer.Infrastructure.csproj" />
+		<ProjectReference Include="..\Drawer.Shared\Drawer.Shared.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

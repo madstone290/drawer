@@ -1,10 +1,10 @@
 ﻿using Drawer.Application.Config;
-using Drawer.Contract.Common;
 using Drawer.Domain.Config;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using Drawer.Shared.Contracts.Common;
 
 namespace Drawer.Api.ActionFilters
 {

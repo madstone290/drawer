@@ -41,10 +41,6 @@ namespace Drawer.Infrastructure.Data
         public DbSet<Company> Companies { get; set; } = default!;
         public DbSet<CompanyMember> CompanyMembers { get; set; } = default!;
 
-        public DbSet<Workplace> WorkPlaces { get; set; } = default!;
-        public DbSet<Zone> Zones { get; set; } = default!;
-        public DbSet<Spot> Spots { get; set; } = default!;
-
         public DbSet<Item> Items { get; set; } = default!;
         public DbSet<Location> Locations { get; set; } = default!;
         public DbSet<InventoryItem> InventoryItems { get; set; } = default!;

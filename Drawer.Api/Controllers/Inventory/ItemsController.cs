@@ -1,9 +1,10 @@
-﻿using Drawer.Application.Services.Inventory.Commands;
-using Drawer.Application.Services.Inventory.Queries;
-using Drawer.Contract;
-using Drawer.Contract.Inventory;
+﻿using Drawer.Shared;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Drawer.Application.Services.Inventory.Queries;
+using Drawer.Application.Services.Inventory.Commands.ItemCommands;
+using Drawer.Application.Services.Inventory.QueryModels;
+using Drawer.Application.Services.Inventory.CommandModels;
 
 namespace Drawer.Api.Controllers.InventoryManagement
 {
@@ -18,65 +19,52 @@ namespace Drawer.Api.Controllers.InventoryManagement
 
         [HttpGet]
         [Route(ApiRoutes.Items.GetList)]
-        [ProducesResponseType(typeof(GetItemsResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<ItemQueryModel>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetItems()
         {
             var query = new GetItemsQuery();
-            var result = await _mediator.Send(query);
-            return Ok(
-                new GetItemsResponse(
-                    result.Items.Select(x =>
-                    new GetItemsResponse.Item(x.Id, x.Name, x.Code, x.Number, x.Sku, x.QuantityUnit)).ToList()
-                )
-            );
+            var itemList = await _mediator.Send(query);
+            return Ok(itemList);
         }
 
 
         [HttpGet]
         [Route(ApiRoutes.Items.Get)]
-        [ProducesResponseType(typeof(GetItemResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ItemQueryModel), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetItem([FromRoute] long id)
         {
-            var query = new GetItemQuery(id);
-            var result = await _mediator.Send(query);
-            if (result == null)
-                return NoContent();
-            else
-                return Ok(new GetItemResponse(result.Id, result.Name, result.Code,
-                    result.Number, result.Sku, result.QuantityUnit));
+            var query = new GetItemByIdQuery(id);
+            var item = await _mediator.Send(query);
+            return Ok(item);
         }
 
         [HttpPost]
         [Route(ApiRoutes.Items.Create)]
-        [ProducesResponseType(typeof(CreateItemResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> CreateItem([FromBody] CreateItemRequest request)
+        [ProducesResponseType(typeof(long), StatusCodes.Status200OK)]
+        public async Task<IActionResult> CreateItem([FromBody] ItemAddUpdateCommandModel item)
         {
-            var command = new CreateItemCommand(request.Name, request.Code,
-                request.Number, request.Sku, request.QuantityUnit);
-            var result = await _mediator.Send(command);
-            return Ok(new CreateItemResponse(result.Id));
+            var command = new CreateItemCommand(item);
+            var itemId = await _mediator.Send(command);
+            return Ok(itemId);
         }
 
 
         [HttpPost]
         [Route(ApiRoutes.Items.BatchCreate)]
-        [ProducesResponseType(typeof(BatchCreateItemResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> BatchCreateItem([FromBody] BatchCreateItemRequest request)
+        [ProducesResponseType(typeof(List<long>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> BatchCreateItem([FromBody] List<ItemAddUpdateCommandModel> itemList)
         {
-            var command = new BatchCreateItemCommand(request.Items.Select(x =>
-                new BatchCreateItemCommand.Item(x.Name, x.Code, x.Number, x.Sku, x.QuantityUnit))
-                .ToList());
-            var result = await _mediator.Send(command);
-            return Ok(new BatchCreateItemResponse(result.IdList));
+            var command = new BatchCreateItemCommand(itemList);
+            var itemIdList = await _mediator.Send(command);
+            return Ok(itemIdList);
         }
 
         [HttpPut]
         [Route(ApiRoutes.Items.Update)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> UpdateItem([FromRoute] long id, [FromBody] UpdateItemRequest request)
+        public async Task<IActionResult> UpdateItem([FromRoute] long id, [FromBody] ItemAddUpdateCommandModel item)
         {
-            var command = new UpdateItemCommand(id, request.Name, request.Code,
-                request.Number, request.Sku, request.QuantityUnit);
+            var command = new UpdateItemCommand(id, item);
             await _mediator.Send(command);
             return Ok();
         }

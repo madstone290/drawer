@@ -1,5 +1,4 @@
-﻿using Blazored.LocalStorage;
-using Drawer.Shared;
+﻿using Drawer.Shared;
 using Drawer.Web.Frontend;
 
 namespace Drawer.Web.Authentication

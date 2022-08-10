@@ -1,4 +1,4 @@
-﻿using Drawer.Contract.Organization;
+﻿using Drawer.Application.Services.Organization.CommandModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +9,10 @@ namespace Drawer.IntergrationTest.Seeds
 {
     public static class CompanySeeds
     {
-        public static CreateCompanyRequest MasterCompany => new("MasterCompany", "01-2345-6789");
+        public static CompanyAddUpdateCommandModel MasterCompany => new CompanyAddUpdateCommandModel()
+        {
+            Name = "MasterCompany",
+            PhoneNumber = "01-2345-6789"
+        };
     }
 }

@@ -1,4 +1,5 @@
-﻿using Drawer.Contract.Inventory;
+﻿using Drawer.Application.Services.Inventory.CommandModels;
+using Drawer.Application.Services.Inventory.QueryModels;
 using Drawer.Web.Api.Inventory;
 using Drawer.Web.Pages.Location.Models;
 using Drawer.Web.Utils;
@@ -13,8 +14,8 @@ namespace Drawer.Web.Pages.Location
         private bool _isFormValid;
         private readonly LocationModel _location = new();
         private readonly LocationModelValidator _validator = new();
-        private readonly List<GetLocationsResponse.Location> _locations = new();
-        private readonly List<GetLocationsResponse.Location> _locationGroups = new();
+        private readonly List<LocationQueryModel> _locations = new();
+        private readonly List<LocationQueryModel> _locationGroups = new();
 
         public string TitleText
         {
@@ -43,7 +44,7 @@ namespace Drawer.Web.Pages.Location
             if (Snackbar.CheckFail(response))
             {
                 _locations.Clear();
-                _locations.AddRange(response.Data.Locations);
+                _locations.AddRange(response.Data);
 
                 _locationGroups.Clear();
                 _locationGroups.AddRange(_locations.Where(x => x.IsGroup));
@@ -60,7 +61,7 @@ namespace Drawer.Web.Pages.Location
                 _location.Id = location.Id;
                 _location.Name = location.Name;
                 _location.Note = location.Note;
-                _location.ParentGroupId = location.UpperLocationId ?? 0;
+                _location.ParentGroupId = location.ParentGroupId ?? 0;
             }
         }
 
@@ -76,8 +77,14 @@ namespace Drawer.Web.Pages.Location
             {
                 if (EditMode == EditMode.Add)
                 {
-                    var content = new CreateLocationRequest(_location.ParentGroupId, _location.Name!, _location.Note, _location.IsGroup);
-                    var response = await LocationApiClient.AddLocation(content);
+                    var locationDto = new LocationAddCommandModel()
+                    {
+                        ParentGroupId = _location.ParentGroupId,
+                        Name = _location.Name!,
+                        Note = _location.Note,
+                        IsGroup = _location.IsGroup
+                    };
+                    var response = await LocationApiClient.AddLocation(locationDto);
                     if (Snackbar.CheckSuccessFail(response))
                     {
                         NavManager.NavigateTo(Paths.LocationHome);
@@ -85,8 +92,12 @@ namespace Drawer.Web.Pages.Location
                 }
                 else if (EditMode == EditMode.Update)
                 {
-                    var content = new UpdateLocationRequest(_location.Name!, _location.Note);
-                    var response = await LocationApiClient.UpdateLocation(_location.Id, content);
+                    var locationDto = new LocationUpdateCommandModel()
+                    {
+                        Name = _location.Name!,
+                        Note = _location.Note,
+                    };
+                    var response = await LocationApiClient.UpdateLocation(_location.Id, locationDto);
                     if (Snackbar.CheckSuccessFail(response))
                     {
                         NavManager.NavigateTo(Paths.LocationHome);

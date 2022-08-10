@@ -1,8 +1,10 @@
 ﻿using Drawer.Application.Config;
 using Drawer.Application.Exceptions;
+using Drawer.Application.Services.Organization.CommandModels;
 using Drawer.Application.Services.Organization.Repos;
 using Drawer.Domain.Models.Authentication;
 using Drawer.Domain.Models.Organization;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -12,11 +14,9 @@ using System.Threading.Tasks;
 
 namespace Drawer.Application.Services.Organization.Commands
 {
-    public record UpdateCompanyCommand(string Id, string Name, string? PhoneNumber) : ICommand<UpdateCompanyResult>;
+    public record UpdateCompanyCommand(string Id, CompanyAddUpdateCommandModel Company) : ICommand;
 
-    public record UpdateCompanyResult;
-
-    public class UpdateCompanyCommandHandler : ICommandHandler<UpdateCompanyCommand, UpdateCompanyResult>
+    public class UpdateCompanyCommandHandler : ICommandHandler<UpdateCompanyCommand>
     {
         private readonly ICompanyRepository _companyRepository;
 
@@ -25,17 +25,20 @@ namespace Drawer.Application.Services.Organization.Commands
             _companyRepository = companyRepository;
         }
 
-        public async Task<UpdateCompanyResult> Handle(UpdateCompanyCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(UpdateCompanyCommand command, CancellationToken cancellationToken)
         {
-            var company = await _companyRepository.FindByIdAsync(request.Id);
-            if (company == null)
-                throw new EntityNotFoundException<Company>(request.Id);
+            var companyDto = command.Company;
 
-            company.SetName(request.Name);
-            company.SetPhoneNumber(request.PhoneNumber);
+            var company = await _companyRepository.FindByIdAsync(command.Id);
+            if (company == null)
+                throw new EntityNotFoundException<Company>(command.Id);
+
+            company.SetName(companyDto.Name);
+            company.SetPhoneNumber(companyDto.PhoneNumber);
+
             await _companyRepository.SaveChangesAsync();
 
-            return new UpdateCompanyResult();
+            return Unit.Value;
         }
     }
 }

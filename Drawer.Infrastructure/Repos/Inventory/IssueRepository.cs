@@ -1,4 +1,5 @@
-﻿using Drawer.Application.Services.Inventory.Repos;
+﻿using Drawer.Application.Services.Inventory.QueryModels;
+using Drawer.Application.Services.Inventory.Repos;
 using Drawer.Domain.Models.Inventory;
 using Drawer.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -16,12 +17,39 @@ namespace Drawer.Infrastructure.Repos.Inventory
         {
         }
 
-        public async Task<List<Issue>> FindByIssueDateBetween(DateTime from, DateTime to)
+        public async Task<IssueQueryModel?> QueryById(long id)
+        {
+            return await _dbContext.Issues
+              .Where(x => x.Id == id)
+              .Select(x => new IssueQueryModel()
+              {
+                  Id = x.Id,
+                  TransactionNumber = x.TransactionNumber,
+                  IssueDateTimeUtc = x.IssueDateTime,
+                  ItemId = x.ItemId,
+                  LocationId = x.LocationId,
+                  Quantity = x.Quantity,
+                  Buyer = x.Buyer,
+              })
+              .FirstOrDefaultAsync();
+        }
+
+        public async Task<List<IssueQueryModel>> QueryByIssueDateBetween(DateTime from, DateTime to)
         {
             var utcTimeFrom = from.Date.ToUniversalTime();
             var utcTimeTo = to.Date.AddDays(1).AddTicks(-1).ToUniversalTime();
             return await _dbContext.Issues
                 .Where(x => utcTimeFrom <= x.IssueDateTime && x.IssueDateTime <= utcTimeTo)
+                .Select(x=> new IssueQueryModel()
+                {
+                    Id = x.Id,
+                    TransactionNumber = x.TransactionNumber,
+                    IssueDateTimeUtc = x.IssueDateTime,
+                    ItemId = x.ItemId,
+                    LocationId  =x.LocationId,
+                    Quantity = x.Quantity,
+                    Buyer = x.Buyer,
+                })
                 .ToListAsync();
         }
     }

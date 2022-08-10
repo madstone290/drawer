@@ -1,4 +1,5 @@
-﻿using Drawer.Contract.Inventory;
+﻿using Drawer.Application.Services.Inventory.CommandModels;
+using Drawer.Application.Services.Inventory.QueryModels;
 using Drawer.Web.Api.Inventory;
 using Drawer.Web.Pages.Issue.Models;
 using Drawer.Web.Utils;
@@ -13,8 +14,8 @@ namespace Drawer.Web.Pages.Issue
         private bool _isFormValid;
         private readonly IssueModel _issue = new();
         private readonly IssueModelValidator _validator = new();
-        private readonly List<GetItemsResponse.Item> _itemList = new();
-        private readonly List<GetLocationsResponse.Location> _locationList = new();
+        private readonly List<ItemQueryModel> _itemList = new();
+        private readonly List<LocationQueryModel> _locationList = new();
 
         public string TitleText
         {
@@ -48,10 +49,10 @@ namespace Drawer.Web.Pages.Issue
                 return;
 
             _itemList.Clear();
-            _itemList.AddRange(itemResponse.Data.Items);
+            _itemList.AddRange(itemResponse.Data);
 
             _locationList.Clear();
-            _locationList.AddRange(locationResponse.Data.Locations.Where(x => x.IsGroup == false));
+            _locationList.AddRange(locationResponse.Data.Where(x => x.IsGroup == false));
 
             _validator.ItemNames = _itemList.Select(x => x.Name).ToList();
             _validator.LocationNames = _locationList.Select(x => x.Name).ToList();
@@ -62,11 +63,17 @@ namespace Drawer.Web.Pages.Issue
                 if (!Snackbar.CheckFail(issueResponse))
                     return;
 
-                var issueDto = issueResponse.Data.Issue;
+                var issueDto = issueResponse.Data;
+                if(issueDto == null)
+                {
+                    Snackbar.Add("출고내역을 조회할 수 없습니다", Severity.Error);
+                    return;
+                }
+                    
 
                 _issue.Id = issueDto.Id;
-                _issue.IssueDate = issueDto.IssueDateTime.Date;
-                _issue.IssueTime = issueDto.IssueDateTime.TimeOfDay;
+                _issue.IssueDate = issueDto.IssueDateTimeLocal.Date;
+                _issue.IssueTime = issueDto.IssueDateTimeLocal.TimeOfDay;
                 _issue.ItemId = issueDto.ItemId;
                 _issue.ItemName = _itemList.First(x => x.Id == issueDto.ItemId).Name;
                 _issue.LocationId = issueDto.LocationId;
@@ -88,11 +95,18 @@ namespace Drawer.Web.Pages.Issue
             await _form.Validate();
             if (_isFormValid)
             {
+                var issueDto = new IssueAddUpdateCommandModel()
+                {
+                    IssueDateTimeLocal = _issue.IssueDateTime,
+                    ItemId = _issue.ItemId,
+                    LocationId = _issue.LocationId,
+                    Quantity = _issue.Quantity,
+                    Buyer = _issue.Buyer
+                };
+
                 if (EditMode == EditMode.Add)
                 {
-                    var content = new CreateIssueRequest(_issue.IssueDateTime, _issue.ItemId, _issue.LocationId,
-                        _issue.Quantity, _issue.Buyer);
-                    var response = await IssueApiClient.AddIssue(content);
+                    var response = await IssueApiClient.AddIssue(issueDto);
                     if (Snackbar.CheckSuccessFail(response))
                     {
                         NavManager.NavigateTo(Paths.IssueHome);
@@ -100,9 +114,7 @@ namespace Drawer.Web.Pages.Issue
                 }
                 else if (EditMode == EditMode.Update)
                 {
-                    var content = new UpdateIssueRequest(_issue.IssueDateTime, _issue.ItemId, _issue.LocationId,
-                        _issue.Quantity, _issue.Buyer);
-                    var response = await IssueApiClient.UpdateIssue(_issue.Id, content);
+                    var response = await IssueApiClient.UpdateIssue(_issue.Id, issueDto);
                     if (Snackbar.CheckSuccessFail(response))
                     {
                         NavManager.NavigateTo(Paths.IssueHome);

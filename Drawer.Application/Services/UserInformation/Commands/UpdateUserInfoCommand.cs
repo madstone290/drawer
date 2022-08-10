@@ -1,7 +1,9 @@
 ﻿using Drawer.Application.Config;
 using Drawer.Application.Exceptions;
+using Drawer.Application.Services.UserInformation.CommandModels;
 using Drawer.Application.Services.UserInformation.Repos;
 using Drawer.Domain.Models.Authentication;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -11,16 +13,9 @@ using System.Threading.Tasks;
 
 namespace Drawer.Application.Services.UserInformation.Commands
 {
-    /// <summary>
-    /// 사용자 정보를 업데이트한다
-    /// </summary>
-    /// <param name="UserId">사용자Id</param>
-    /// <param name="DisplayName">사용자 이름</param>
-    public record UpdateUserInfoCommand(string UserId, string DisplayName) : ICommand<UpdateUserInfoResult>;
+    public record UpdateUserInfoCommand(string UserId, UserInfoCommandModel UserInfo) : ICommand;
 
-    public record UpdateUserInfoResult(string UserId, string DisplayName);
-
-    public class UpdateUserCommandHandler : ICommandHandler<UpdateUserInfoCommand, UpdateUserInfoResult>
+    public class UpdateUserCommandHandler : ICommandHandler<UpdateUserInfoCommand>
     {
         private readonly IUserInfoRepository _userInfoRepository;
 
@@ -29,16 +24,18 @@ namespace Drawer.Application.Services.UserInformation.Commands
             _userInfoRepository = userInfoRepository;
         }
         
-        public async Task<UpdateUserInfoResult> Handle(UpdateUserInfoCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(UpdateUserInfoCommand command, CancellationToken cancellationToken)
         {
-            var userInfo = await _userInfoRepository.FindByUserIdAsync(request.UserId);
+            var userInfoDto = command.UserInfo;
+
+            var userInfo = await _userInfoRepository.FindByUserIdAsync(command.UserId);
             if (userInfo == null)
                 throw new InvalidUserIdException();
 
-            userInfo.SetDisplayName(request.DisplayName);
+            userInfo.SetDisplayName(userInfoDto.DisplayName);
             await _userInfoRepository.SaveChangesAsync();
 
-            return new UpdateUserInfoResult(userInfo.UserId, userInfo.DisplayName);
+            return Unit.Value;
         }
     }
 }

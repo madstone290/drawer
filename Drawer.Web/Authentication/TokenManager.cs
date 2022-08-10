@@ -1,5 +1,5 @@
-﻿using Drawer.Contract;
-using Drawer.Contract.Authentication;
+﻿using Drawer.Application.Services.Authentication.CommandModels;
+using Drawer.Shared;
 
 namespace Drawer.Web.Authentication
 {
@@ -24,13 +24,19 @@ namespace Drawer.Web.Authentication
             if (!state.IsAuthenticated)
                 return new TokenResult(false, null);
 
-            var responseMessage = await _httpClient.PostAsJsonAsync(ApiRoutes.Account.Refresh, 
-                new RefreshRequest(state.Email!, state.RefreshToken!));
+            var refreshDto = new RefreshCommandModel()
+            {
+                Email = state.Email!,
+                RefreshToken = state.RefreshToken!
+            };
+            var response = await _httpClient.PostAsJsonAsync(
+                ApiRoutes.Account.Refresh, 
+                refreshDto);
 
-            var response = await responseMessage.Content.ReadFromJsonAsync<RefreshResponse>();
+            var accessToken = await response.Content.ReadFromJsonAsync<string>() ?? default!;
 
-            await _tokenStorage.SaveAccessTokenAsync(response!.AccessToken);
-            return new TokenResult(true, response!.AccessToken);
+            await _tokenStorage.SaveAccessTokenAsync(accessToken);
+            return new TokenResult(true, accessToken);
         }
 
         public async Task<TokenResult> GetAccessTokenAsync()

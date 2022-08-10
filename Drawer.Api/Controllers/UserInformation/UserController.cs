@@ -1,13 +1,11 @@
-﻿using Drawer.Application.Services.UserInformation;
+﻿using Drawer.Application.Services.UserInformation.CommandModels;
 using Drawer.Application.Services.UserInformation.Commands;
 using Drawer.Application.Services.UserInformation.Queries;
-using Drawer.Contract;
-using Drawer.Contract.UserInformation;
+using Drawer.Application.Services.UserInformation.QueryModels;
 using Drawer.Shared;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace Drawer.Api.Controllers.UserInformation
 {
@@ -30,15 +28,13 @@ namespace Drawer.Api.Controllers.UserInformation
         /// <returns></returns>
         [HttpGet]
         [Route(ApiRoutes.User.Get)]
-        [ProducesResponseType(typeof(GetUserResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(UserInfoQueryModel), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetUser()
         {
             var userId = HttpContext.User.Claims.First(x=> x.Type == DrawerClaimTypes.UserId).Value;
             var query = new GetUserInfoQuery(userId);
-            var result = await _mediator.Send(query);
-            if (result == null)
-                return NoContent();
-            return Ok(new GetUserResponse(result.UserId, result.Email, result.DisplayName));
+            var user = await _mediator.Send(query);
+            return Ok(user);
         }
 
         /// <summary>
@@ -48,13 +44,13 @@ namespace Drawer.Api.Controllers.UserInformation
         /// <returns></returns>
         [HttpPut]
         [Route(ApiRoutes.User.Update)]
-        [ProducesResponseType(typeof(UpdateUserResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest request)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateUser([FromBody] UserInfoCommandModel userInfo)
         {
             var userId = HttpContext.User.Claims.First(x => x.Type == DrawerClaimTypes.UserId).Value;
-            var command = new UpdateUserInfoCommand(userId, request.DisplayName);
-            var result = await _mediator.Send(command);
-            return Ok(new UpdateUserResponse(result.DisplayName));
+            var command = new UpdateUserInfoCommand(userId, userInfo);
+            var unit = await _mediator.Send(command);
+            return Ok();
         }
 
         /// <summary>
@@ -64,11 +60,11 @@ namespace Drawer.Api.Controllers.UserInformation
         /// <returns></returns>
         [HttpPut]
         [Route(ApiRoutes.User.UpdatePassword)]
-        public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordRequest request)
+        public async Task<IActionResult> UpdatePassword([FromBody] UserPasswordCommandModel userPassword)
         {
             var userId = HttpContext.User.Claims.First(x => x.Type == DrawerClaimTypes.UserId).Value;
-            var command = new UpdatePasswordCommand(userId, request.CurrentPassword, request.NewPassword);
-            var result = await _mediator.Send(command);
+            var command = new UpdatePasswordCommand(userId, userPassword);
+            var unit = await _mediator.Send(command);
             return Ok();
         }
     }

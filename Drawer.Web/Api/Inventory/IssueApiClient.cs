@@ -1,5 +1,6 @@
-﻿using Drawer.Contract;
-using Drawer.Contract.Inventory;
+﻿using Drawer.Application.Services.Inventory.CommandModels;
+using Drawer.Application.Services.Inventory.QueryModels;
+using Drawer.Shared;
 using Drawer.Web.Authentication;
 using Drawer.Web.Utils;
 
@@ -12,9 +13,9 @@ namespace Drawer.Web.Api.Inventory
 
         }
 
-        public async Task<ApiResponse<GetIssuesResponse>> GetIssues(DateTime from, DateTime to)
+        public async Task<ApiResponse<List<IssueQueryModel>>> GetIssues(DateTime from, DateTime to)
         {
-            var request = new ApiRequest<GetIssuesResponse>(
+            var request = new ApiRequest<List<IssueQueryModel>>(
                 HttpMethod.Get,
                 ApiRoutes.Issues.GetList
                     .AddQuery("From", from.ToString("yyyy-MM-dd"))
@@ -23,31 +24,31 @@ namespace Drawer.Web.Api.Inventory
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<GetIssueResponse>> GetIssue(long id)
+        public async Task<ApiResponse<IssueQueryModel?>> GetIssue(long id)
         {
-            var request = new ApiRequest<GetIssueResponse>(
+            var request = new ApiRequest<IssueQueryModel?>(
                 HttpMethod.Get,
                 ApiRoutes.Issues.Get.Replace("{id}", $"{id}"));
 
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<CreateIssueResponse>> AddIssue(CreateIssueRequest content)
+        public async Task<ApiResponse<long>> AddIssue(IssueAddUpdateCommandModel issue)
         {
-            var request = new ApiRequest<CreateIssueResponse>(
+            var request = new ApiRequest<long>(
                 HttpMethod.Post,
                 ApiRoutes.Issues.Create,
-                content);
+                issue);
 
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<Unit>> UpdateIssue(long id, UpdateIssueRequest content)
+        public async Task<ApiResponse<Unit>> UpdateIssue(long id, IssueAddUpdateCommandModel issue)
         {
             var request = new ApiRequest(
                 HttpMethod.Put,
                 ApiRoutes.Issues.Update.Replace("{id}", $"{id}"),
-                content);
+                issue);
 
             return await SendAsync(request);
         }

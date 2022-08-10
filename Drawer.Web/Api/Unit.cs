@@ -5,6 +5,7 @@
     /// </summary>
     public struct Unit
     {
-        public static Unit Value => new ();
+        private static readonly Unit _value = new();
+        public static Unit Value => _value;
     }
 }

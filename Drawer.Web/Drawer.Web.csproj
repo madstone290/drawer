@@ -33,7 +33,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Drawer.AidBlazor\Drawer.AidBlazor.csproj" />
-		<ProjectReference Include="..\Drawer.Contract\Drawer.Contract.csproj" />
+		<ProjectReference Include="..\Drawer.Application\Drawer.Application.csproj" />
 		<ProjectReference Include="..\Drawer.Shared\Drawer.Shared.csproj" />
 	</ItemGroup>
 

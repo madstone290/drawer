@@ -1,5 +1,6 @@
-﻿using Drawer.Contract;
-using Drawer.Contract.Inventory;
+﻿using Drawer.Application.Services.Inventory.CommandModels;
+using Drawer.Application.Services.Inventory.QueryModels;
+using Drawer.Shared;
 using Drawer.Web.Authentication;
 
 namespace Drawer.Web.Api.Inventory
@@ -11,34 +12,32 @@ namespace Drawer.Web.Api.Inventory
 
         }
 
-        public async Task<ApiResponse<BatchCreateItemResponse>> BatchAddItem(BatchCreateItemRequest content)
+        public async Task<ApiResponse<List<long>>> BatchAddItem(List<ItemAddUpdateCommandModel> itemList)
         {
-            var request = new ApiRequest<BatchCreateItemResponse>(
+            var request = new ApiRequest<List<long>>(
                 HttpMethod.Post,
                 ApiRoutes.Items.BatchCreate,
-                content);
+                itemList);
 
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<CreateItemResponse>> AddItem(string name, string? code, string? number,
-            string? sku, string? measurementUnit)
+        public async Task<ApiResponse<long>> AddItem(ItemAddUpdateCommandModel item)
         {
-            var request = new ApiRequest<CreateItemResponse>(
+            var request = new ApiRequest<long>(
                 HttpMethod.Post,
                 ApiRoutes.Items.Create,
-                new CreateItemRequest(name, code, number, sku, measurementUnit));
+                item);
 
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<Unit>> UpdateItem(long id, string name, string? code, string? number,
-            string? sku, string? measurementUnit)
+        public async Task<ApiResponse<Unit>> UpdateItem(long id, ItemAddUpdateCommandModel item)
         {
             var request = new ApiRequest(
                 HttpMethod.Put,
                 ApiRoutes.Items.Update.Replace("{id}", $"{id}"),
-                new UpdateItemRequest(name, code, number, sku, measurementUnit));
+                item);  
 
             return await SendAsync(request);
         }
@@ -52,18 +51,18 @@ namespace Drawer.Web.Api.Inventory
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<GetItemResponse>> GetItem(long id)
+        public async Task<ApiResponse<ItemQueryModel?>> GetItem(long id)
         {
-            var request = new ApiRequest<GetItemResponse>(
+            var request = new ApiRequest<ItemQueryModel?>(
                 HttpMethod.Get,
                 ApiRoutes.Items.Get.Replace("{id}", $"{id}"));
 
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<GetItemsResponse>> GetItems()
+        public async Task<ApiResponse<List<ItemQueryModel>>> GetItems()
         {
-            var request = new ApiRequest<GetItemsResponse>(
+            var request = new ApiRequest<List<ItemQueryModel>>(
                 HttpMethod.Get,
                 ApiRoutes.Items.GetList);
 

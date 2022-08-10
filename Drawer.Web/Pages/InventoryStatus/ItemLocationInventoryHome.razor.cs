@@ -103,14 +103,14 @@ namespace Drawer.Web.Pages.InventoryStatus
 
             // 모든 아이템/위치에 대한 상세정보 생성
             _modelList.Clear();
-            foreach (var item in itemResponse.Data.Items)
+            foreach (var item in itemResponse.Data)
             {
-                foreach (var location in locationResponse.Data.Locations)
+                foreach (var location in locationResponse.Data)
                 {
                     if (location.IsGroup)
                         continue;
 
-                    var quantity = inventoryResponse.Data.InventoryItems
+                    var quantity = inventoryResponse.Data
                         .Where(x => x.ItemId == item.Id && x.LocationId == location.Id)
                         .Sum(x => x.Quantity);
                     var inventoryItemLocation = new ItemLocationInventoryModel()

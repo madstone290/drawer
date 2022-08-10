@@ -1,5 +1,4 @@
-﻿using Drawer.Contract;
-using Drawer.Contract.Authentication;
+﻿using Drawer.Shared;
 using Drawer.IntergrationTest.Seeds;
 using System;
 using System.Collections.Generic;
@@ -8,6 +7,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
+using Drawer.Application.Services.Authentication.CommandModels;
 
 namespace Drawer.IntergrationTest
 {
@@ -16,11 +16,15 @@ namespace Drawer.IntergrationTest
         /// <summary>
         /// 마스터 계정으로 로그인한다
         /// </summary>
-        public static async Task<LoginResponse> MasterLoginAsync(this HttpClient client)
+        public static async Task<LoginResponseCommandModel> MasterLoginAsync(this HttpClient client)
         {
-            var loginRequest = new LoginRequest(UserSeeds.Master.Email, UserSeeds.Master.Password);
+            var loginRequest = new LoginCommandModel()
+            {
+                Email = UserSeeds.Master.Email,
+                Password = UserSeeds.Master.Password
+            };
             var loginResponseMessage = await client.PostAsJsonAsync(ApiRoutes.Account.Login, loginRequest);
-            var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
+            var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponseCommandModel>();
             return loginResponse!;
         }
 

@@ -1,22 +1,17 @@
 ﻿using Drawer.Application.Config;
+using Drawer.Application.Services.Organization.QueryModels;
 using Drawer.Application.Services.Organization.Repos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Drawer.Application.Services.Organization.Queries.GetCompanyMembersResult;
 
 namespace Drawer.Application.Services.Organization.Queries
 {
-    public record class GetCompanyMembersQuery(string CompanyId) : IQuery<GetCompanyMembersResult>;
+    public record class GetCompanyMembersQuery(string CompanyId) : IQuery<List<CompanyMemberQueryModel>>;
 
-    public record GetCompanyMembersResult(IList<Member> Members)
-    {
-        public record Member(string CompanyId, string UserId);
-    };
-
-    public class GetCompanyMembersQueryHandler : IQueryHandler<GetCompanyMembersQuery, GetCompanyMembersResult>
+    public class GetCompanyMembersQueryHandler : IQueryHandler<GetCompanyMembersQuery, List<CompanyMemberQueryModel>>
     {
         private readonly ICompanyMemberRepository _companyMemberRepository;
 
@@ -25,11 +20,11 @@ namespace Drawer.Application.Services.Organization.Queries
             _companyMemberRepository = companyMemberRepository;
         }
 
-        public async Task<GetCompanyMembersResult> Handle(GetCompanyMembersQuery request, CancellationToken cancellationToken)
+        public async Task<List<CompanyMemberQueryModel>> Handle(GetCompanyMembersQuery request, CancellationToken cancellationToken)
         {
-            var members = await _companyMemberRepository.FindByCompanyIdAsync(request.CompanyId);
+            var members = await _companyMemberRepository.QueryByCompanyId(request.CompanyId);
 
-            return new GetCompanyMembersResult(members.Select(m => new Member(m.CompanyId, m.UserId)).ToList());
+            return members;
         }
     }
 }

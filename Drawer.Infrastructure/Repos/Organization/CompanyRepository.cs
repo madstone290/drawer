@@ -1,4 +1,5 @@
-﻿using Drawer.Application.Services.Organization.Repos;
+﻿using Drawer.Application.Services.Organization.QueryModels;
+using Drawer.Application.Services.Organization.Repos;
 using Drawer.Domain.Models.Organization;
 using Drawer.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,21 @@ namespace Drawer.Infrastructure.Repos.Organization
         public async Task<bool> ExistByOwnerId(string ownerId)
         {
             return await _dbContext.Companies.AnyAsync(x => x.OwnerId == ownerId);
+        }
+
+        public async Task<CompanyQueryModel?> QueryById(string id)
+        {
+            return await _dbContext.Companies
+                .Where(x => x.Id == id)
+                .Select(x => new CompanyQueryModel()
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    OwnerId = x.OwnerId,
+                    PhoneNumber = x.PhoneNumber
+                })
+                .FirstOrDefaultAsync();
+                
         }
     }
 }

@@ -1,7 +1,8 @@
-﻿using Drawer.Application.Services.Inventory.Commands;
+﻿using Drawer.Application.Services.Inventory.CommandModels;
+using Drawer.Application.Services.Inventory.Commands.IssueCommands;
 using Drawer.Application.Services.Inventory.Queries;
-using Drawer.Contract;
-using Drawer.Contract.Inventory;
+using Drawer.Application.Services.Inventory.QueryModels;
+using Drawer.Shared;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,69 +19,49 @@ namespace Drawer.Api.Controllers.InventoryManagement
 
         [HttpGet]
         [Route(ApiRoutes.Issues.GetList)]
-        [ProducesResponseType(typeof(GetIssuesResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetIssues(DateTime? from, DateTime? to)
+        [ProducesResponseType(typeof(List<IssueQueryModel>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetIssues([FromQuery] DateTime? from, [FromQuery] DateTime? to)
         {
-            List<IssueContracts.Issue> issues;
+            List<IssueQueryModel> issues;
             if (from.HasValue && to.HasValue)
             {
                 var query = new GetIssuesQuery(from.Value, to.Value);
-                var result = await _mediator.Send(query) ?? default!;
-                issues = result.Issues.Select(x =>
-                    new IssueContracts.Issue(x.Id,
-                                                x.TransactionNumber,
-                                                x.IssueDateTimeLocal,
-                                                x.ItemId,
-                                                x.LocationId,
-                                                x.Quantity,
-                                                x.Buyer)).ToList();
+                issues = await _mediator.Send(query);
             }
             else
             {
                 issues = new();
             }
-            return Ok(new GetIssuesResponse(issues));
+            return Ok(issues);
         }
 
 
         [HttpGet]
         [Route(ApiRoutes.Issues.Get)]
-        [ProducesResponseType(typeof(GetIssueResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IssueQueryModel), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetIssue([FromRoute] long id)
         {
-            var query = new GetIssueQuery(id);
-            var result = await _mediator.Send(query) ?? default!;
-            var issue = result.Issue;
-            if (issue == null)
-                return NoContent();
-
-            var issueDto = new IssueContracts.Issue(issue.Id,
-                                                    issue.TransactionNumber,
-                                                    issue.IssueDateTimeLocal,
-                                                    issue.ItemId,
-                                                    issue.LocationId,
-                                                    issue.Quantity,
-                                                    issue.Buyer);
-
-            return Ok(new GetIssueResponse(issueDto));
+            var query = new GetIssueByIdQuery(id);
+            var issue = await _mediator.Send(query) ?? default!;
+            return Ok(issue);
         }
 
         [HttpPost]
         [Route(ApiRoutes.Issues.Create)]
-        [ProducesResponseType(typeof(CreateIssueResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> CreateIssue([FromBody] CreateIssueRequest request)
+        [ProducesResponseType(typeof(long), StatusCodes.Status200OK)]
+        public async Task<IActionResult> CreateIssue([FromBody] IssueAddUpdateCommandModel issue)
         {
-            var command = new CreateIssueCommand(request.IssueDateTime, request.ItemId, request.LocationId, request.Quantity, request.Buyer);
-            var result = await _mediator.Send(command);
-            return Ok(new CreateIssueResponse(result.Id, result.TransactionNumber));
+            var command = new CreateIssueCommand(issue);
+            var issueId = await _mediator.Send(command);
+            return Ok(issueId);
         }
 
         [HttpPut]
         [Route(ApiRoutes.Issues.Update)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> UpdateIssue([FromRoute] long id, [FromBody] UpdateIssueRequest request)
+        public async Task<IActionResult> UpdateIssue([FromRoute] long id, [FromBody] IssueAddUpdateCommandModel issue)
         {
-            var command = new UpdateIssueCommand(id, request.IssueDateTime, request.ItemId, request.LocationId, request.Quantity, request.Buyer);
+            var command = new UpdateIssueCommand(id, issue);
             await _mediator.Send(command);
             return Ok();
         }

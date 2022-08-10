@@ -1,4 +1,6 @@
-﻿using Drawer.Contract.Inventory;
+﻿using Drawer.Application.Services.Inventory.CommandModels;
+using Drawer.Application.Services.Inventory.Commands;
+using Drawer.Application.Services.Inventory.QueryModels;
 using Drawer.Web.Api.Inventory;
 using Drawer.Web.Pages.Receipt.Models;
 using Drawer.Web.Utils;
@@ -13,8 +15,8 @@ namespace Drawer.Web.Pages.Receipt
         private bool _isFormValid;
         private readonly ReceiptModel _receipt = new();
         private readonly ReceiptModelValidator _validator = new();
-        private readonly List<GetItemsResponse.Item> _itemList = new();
-        private readonly List<GetLocationsResponse.Location> _locationList = new();
+        private readonly List<ItemQueryModel> _itemList = new();
+        private readonly List<LocationQueryModel> _locationList = new();
 
         public string TitleText
         {
@@ -48,10 +50,10 @@ namespace Drawer.Web.Pages.Receipt
                 return;
 
             _itemList.Clear();
-            _itemList.AddRange(itemResponse.Data.Items);
+            _itemList.AddRange(itemResponse.Data);
 
             _locationList.Clear();
-            _locationList.AddRange(locationResponse.Data.Locations.Where(x => x.IsGroup == false));
+            _locationList.AddRange(locationResponse.Data.Where(x => x.IsGroup == false));
 
             _validator.ItemNames = _itemList.Select(x => x.Name).ToList();
             _validator.LocationNames = _locationList.Select(x => x.Name).ToList();
@@ -62,11 +64,16 @@ namespace Drawer.Web.Pages.Receipt
                 if (!Snackbar.CheckFail(receiptResponse))
                     return;
 
-                var receiptDto = receiptResponse.Data.Receipt;
+                var receiptDto = receiptResponse.Data;
+                if(receiptDto == null)
+                {
+                    Snackbar.Add("아이디가 유효하지 않습니다", Severity.Error);
+                    return;
+                }
 
                 _receipt.Id = receiptDto.Id;
-                _receipt.ReceiptDate = receiptDto.ReceiptDateTime.Date;
-                _receipt.ReceiptTime = receiptDto.ReceiptDateTime.TimeOfDay;
+                _receipt.ReceiptDate = receiptDto.ReceiptDateTimeLocal.Date;
+                _receipt.ReceiptTime = receiptDto.ReceiptDateTimeLocal.TimeOfDay;
                 _receipt.ItemId = receiptDto.ItemId;
                 _receipt.ItemName = _itemList.First(x => x.Id == receiptDto.ItemId).Name;
                 _receipt.LocationId = receiptDto.LocationId;
@@ -88,11 +95,18 @@ namespace Drawer.Web.Pages.Receipt
             await _form.Validate();
             if (_isFormValid)
             {
-                if (EditMode == EditMode.Add)
+                var receiptDto = new ReceiptAddUpdateCommandModel()
                 {
-                    var content = new CreateReceiptRequest(_receipt.ReceiptDateTime, _receipt.ItemId, _receipt.LocationId,
-                        _receipt.Quantity, _receipt.Seller);
-                    var response = await ReceiptApiClient.AddReceipt(content);
+                    ReceiptDateTime = _receipt.ReceiptDateTime,
+                    ItemId = _receipt.ItemId,
+                    LocationId = _receipt.LocationId,
+                    Quantity = _receipt.Quantity,
+                    Seller = _receipt.Seller
+                };
+
+                if (EditMode == EditMode.Add)
+                {    
+                    var response = await ReceiptApiClient.AddReceipt(receiptDto);
                     if (Snackbar.CheckSuccessFail(response))
                     {
                         NavManager.NavigateTo(Paths.ReceiptHome);
@@ -100,9 +114,7 @@ namespace Drawer.Web.Pages.Receipt
                 }
                 else if (EditMode == EditMode.Update)
                 {
-                    var content = new UpdateReceiptRequest(_receipt.ReceiptDateTime, _receipt.ItemId, _receipt.LocationId,
-                        _receipt.Quantity, _receipt.Seller);
-                    var response = await ReceiptApiClient.UpdateReceipt(_receipt.Id, content);
+                    var response = await ReceiptApiClient.UpdateReceipt(_receipt.Id, receiptDto);
                     if (Snackbar.CheckSuccessFail(response))
                     {
                         NavManager.NavigateTo(Paths.ReceiptHome);

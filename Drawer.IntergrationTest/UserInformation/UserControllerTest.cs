@@ -1,6 +1,4 @@
-﻿using Drawer.Contract;
-using Drawer.Contract.Authentication;
-using Drawer.Contract.UserInformation;
+﻿using Drawer.Shared;
 using Drawer.IntergrationTest.Seeds;
 using FluentAssertions;
 using System;
@@ -12,6 +10,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using Drawer.Application.Services.UserInformation.QueryModels;
+using Drawer.Application.Services.UserInformation.CommandModels;
+using Drawer.Application.Services.Authentication.CommandModels;
 
 namespace Drawer.IntergrationTest.UserInformation
 {
@@ -44,9 +45,9 @@ namespace Drawer.IntergrationTest.UserInformation
         public async Task GetUser_WithToken_Returns_Ok_With_UserInfo(string email, string password, string displayName)
         {
             // Arrange
-            var loginRequest = new LoginRequest(email, password);
+            var loginRequest = new LoginCommandModel(email, password);
             var loginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, loginRequest);
-            var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
+            var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponseCommandModel>();
 
             var getUserRequestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.User.Get);
             getUserRequestMessage.SetBearerToken(loginResponse!.AccessToken);
@@ -56,10 +57,10 @@ namespace Drawer.IntergrationTest.UserInformation
 
             // Assert
             responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var getUserResponse = await responseMessage.Content.ReadFromJsonAsync<GetUserResponse>();
-            getUserResponse.Should().NotBeNull();
-            getUserResponse!.Email.Should().Be(email);
-            getUserResponse!.DisplayName.Should().Be(displayName);
+            var userInfo = await responseMessage.Content.ReadFromJsonAsync<UserInfoQueryModel>() ?? default!;
+            userInfo.Should().NotBeNull();
+            userInfo.Email.Should().Be(email);
+            userInfo.DisplayName.Should().Be(displayName);
         }
 
 
@@ -69,12 +70,17 @@ namespace Drawer.IntergrationTest.UserInformation
         {
             // Arrange
             string displayName = Guid.NewGuid().ToString();
-            var loginRequest = new LoginRequest(email, password);
+            var loginRequest = new LoginCommandModel(email, password);
             var loginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, loginRequest);
-            var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
+            var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponseCommandModel>();
+
+            var userInfoDto = new UserInfoCommandModel()
+            {
+                DisplayName = displayName
+            };
 
             var updateUserRequestMessage = new HttpRequestMessage(HttpMethod.Put, ApiRoutes.User.Update);
-            updateUserRequestMessage.Content = JsonContent.Create(new UpdateUserRequest(displayName));
+            updateUserRequestMessage.Content = JsonContent.Create(userInfoDto);
             updateUserRequestMessage.SetBearerToken(loginResponse!.AccessToken);
 
             // Act
@@ -82,11 +88,6 @@ namespace Drawer.IntergrationTest.UserInformation
 
             // Assert
             responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var getUserResponse = await responseMessage.Content.ReadFromJsonAsync<UpdateUserResponse>();
-            getUserResponse.Should().NotBeNull();
-            getUserResponse!.DisplayName.Should().Be(displayName);
-
-            _outputHelper.WriteLine(displayName);
         }
 
         [Theory]
@@ -95,12 +96,17 @@ namespace Drawer.IntergrationTest.UserInformation
         {
             // Arrange
             var newPassword = Guid.NewGuid().ToString();
-            var loginRequest = new LoginRequest(email, password);
+            var loginRequest = new LoginCommandModel(email, password);
             var loginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, loginRequest);
-            var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
+            var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponseCommandModel>();
 
+            var userPasswordDto = new UserPasswordCommandModel()
+            {
+                Password = "salt" + password,
+                NewPassword = newPassword
+            };
             var updatePasswordRequestMessage = new HttpRequestMessage(HttpMethod.Put, ApiRoutes.User.UpdatePassword);
-            updatePasswordRequestMessage.Content = JsonContent.Create(new UpdatePasswordRequest("salt" + password, newPassword));
+            updatePasswordRequestMessage.Content = JsonContent.Create(userPasswordDto);
             updatePasswordRequestMessage.SetBearerToken(loginResponse!.AccessToken);
 
             // Act
@@ -118,17 +124,22 @@ namespace Drawer.IntergrationTest.UserInformation
         {
             // Arrange
             var newPassword = Guid.NewGuid().ToString();
-            var loginRequest = new LoginRequest(email, password);
+            var loginRequest = new LoginCommandModel(email, password);
             var loginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, loginRequest);
-            var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
+            var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponseCommandModel>();
 
+            var userPasswordDto = new UserPasswordCommandModel()
+            {
+                Password = password,
+                NewPassword = newPassword
+            };
             var updatePasswordRequestMessage = new HttpRequestMessage(HttpMethod.Put, ApiRoutes.User.UpdatePassword);
-            updatePasswordRequestMessage.Content = JsonContent.Create(new UpdatePasswordRequest(password, newPassword));
+            updatePasswordRequestMessage.Content = JsonContent.Create(userPasswordDto);
             updatePasswordRequestMessage.SetBearerToken(loginResponse!.AccessToken);
 
             // Act
             var responseMessage = await _client.SendAsync(updatePasswordRequestMessage);
-            var newLoginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, new LoginRequest(email, newPassword));
+            var newLoginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, new LoginCommandModel(email, newPassword));
 
             // Assert
             responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);

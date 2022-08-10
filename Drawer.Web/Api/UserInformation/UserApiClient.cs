@@ -1,5 +1,6 @@
-﻿using Drawer.Contract;
-using Drawer.Contract.UserInformation;
+﻿using Drawer.Application.Services.UserInformation.CommandModels;
+using Drawer.Application.Services.UserInformation.QueryModels;
+using Drawer.Shared;
 using Drawer.Web.Authentication;
 
 namespace Drawer.Web.Api.UserInformation
@@ -10,31 +11,31 @@ namespace Drawer.Web.Api.UserInformation
         {
         }
 
-        public async Task<ApiResponse<GetUserResponse>> GetUser()
+        public async Task<ApiResponse<UserInfoQueryModel>> GetUser()
         {
-            var request = new ApiRequest<GetUserResponse>(
+            var request = new ApiRequest<UserInfoQueryModel>(
                   HttpMethod.Get,
                   ApiRoutes.User.Get);
 
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<Unit>> SaveUser(string displayName)
+        public async Task<ApiResponse<Unit>> SaveUser(UserInfoCommandModel userInfo)
         {
             var request = new ApiRequest<Unit>(
                     HttpMethod.Put,
                     ApiRoutes.User.Update,
-                    new UpdateUserRequest(displayName));
+                    userInfo);
 
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<Unit>> ChangePassword(string password, string newPassword)
+        public async Task<ApiResponse<Unit>> ChangePassword(UserPasswordCommandModel userPassword)
         {
             var request = new ApiRequest<Unit>(
                       HttpMethod.Put,
                       ApiRoutes.User.UpdatePassword,
-                      new UpdatePasswordRequest(password, newPassword));
+                      userPassword);
 
             return await SendAsync(request);
         }

@@ -1,5 +1,4 @@
-﻿using Drawer.Contract;
-using Drawer.Contract.Organization;
+﻿using Drawer.Application.Services.Organization.CommandModels;
 using Drawer.Web.Api;
 using Drawer.Web.Api.Organization;
 using Drawer.Web.Pages.Organization.Views;
@@ -19,9 +18,14 @@ namespace Drawer.Web.Pages.Organization.Presenters
             _apiClient = apiClient;
         }
 
-        public async Task<ApiResponse<CreateCompanyResponse>> CreateCompanyAsync()
+        public async Task<ApiResponse<string>> CreateCompanyAsync()
         {
-            var response = await _apiClient.CreateCompany(View.Model.Name, View.Model.PhoneNumber);
+            var companyDto = new CompanyAddUpdateCommandModel()
+            {
+                Name = View.Model.Name,
+                PhoneNumber = View.Model.PhoneNumber
+            };
+            var response = await _apiClient.CreateCompany(companyDto);
             // RazorPage로 리디렉트하기 때문에 성공출력은 하지 않는다.
             CheckFail(response);
 
@@ -34,7 +38,12 @@ namespace Drawer.Web.Pages.Organization.Presenters
 
         public async Task<ApiResponse<Unit>> UpdateCompanyAsync()
         {
-            var response = await _apiClient.UpdateCompany(View.Model.Name, View.Model.PhoneNumber);
+            var companyDto = new CompanyAddUpdateCommandModel()
+            {
+                Name = View.Model.Name,
+                PhoneNumber = View.Model.PhoneNumber
+            };
+            var response = await _apiClient.UpdateCompany(companyDto);
             CheckSuccessFail(response);
 
             if (response.IsSuccessful)

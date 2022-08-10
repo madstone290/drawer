@@ -1,4 +1,5 @@
 ﻿using Drawer.Application.Config;
+using Drawer.Application.Services.Inventory.QueryModels;
 using Drawer.Application.Services.Inventory.Repos;
 using Drawer.Domain.Models.Inventory;
 using System;
@@ -9,11 +10,9 @@ using System.Threading.Tasks;
 
 namespace Drawer.Application.Services.Inventory.Queries
 {
-    public record GetIssuesQuery(DateTime From, DateTime To) : IQuery<GetIssuesResult?>;
+    public record GetIssuesQuery(DateTime From, DateTime To) : IQuery<List<IssueQueryModel>>;
 
-    public record GetIssuesResult(List<Issue> Issues);
-
-    public class GetIssuesQueryHandler : IQueryHandler<GetIssuesQuery, GetIssuesResult?>
+    public class GetIssuesQueryHandler : IQueryHandler<GetIssuesQuery, List<IssueQueryModel>>
     {
         private readonly IIssueRepository _issueRepository;
 
@@ -22,11 +21,11 @@ namespace Drawer.Application.Services.Inventory.Queries
             _issueRepository = issueRepository;
         }
 
-        public async Task<GetIssuesResult?> Handle(GetIssuesQuery query, CancellationToken cancellationToken)
+        public async Task<List<IssueQueryModel>> Handle(GetIssuesQuery query, CancellationToken cancellationToken)
         {
-            var issues = await _issueRepository.FindByIssueDateBetween(query.From, query.To);
+            var issues = await _issueRepository.QueryByIssueDateBetween(query.From, query.To);
 
-            return new GetIssuesResult(issues);
+            return issues;
         }
     }
 }

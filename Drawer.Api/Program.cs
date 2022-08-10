@@ -5,6 +5,7 @@ using Drawer.Api.Swagger;
 using Drawer.Application;
 using Drawer.Infrastructure;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,7 +30,14 @@ builder.AddSerilog();
 builder.Services.AddApplicationDependency();
 builder.Services.AddInfrastructureDependency(builder.Configuration);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    var noContentFormatter = options.OutputFormatters.OfType<HttpNoContentOutputFormatter>().FirstOrDefault();
+    if (noContentFormatter != null)
+    {
+        noContentFormatter.TreatNullValueAsNoContent = false;
+    }
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddCustomSwagger();

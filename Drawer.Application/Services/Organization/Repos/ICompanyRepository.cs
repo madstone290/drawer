@@ -1,4 +1,5 @@
-﻿using Drawer.Domain.Models.Organization;
+﻿using Drawer.Application.Services.Organization.QueryModels;
+using Drawer.Domain.Models.Organization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,5 +13,8 @@ namespace Drawer.Application.Services.Organization.Repos
         Task<Company?> FindByIdAsync(string id);
 
         Task<bool> ExistByOwnerId(string ownerId);
+        
+        Task<CompanyQueryModel?> QueryById(string id);
+
     }
 }

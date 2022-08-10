@@ -1,4 +1,4 @@
-﻿using Drawer.Contract.Authentication;
+﻿using Drawer.Application.Services.Authentication.CommandModels;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,9 +10,9 @@ namespace Drawer.IntergrationTest.Seeds
 {
     public class UserSeeds 
     {
-        public IEnumerable<RegisterRequest> Users => _users;
+        public IEnumerable<RegisterCommandModel> Users => _users;
 
-        private readonly IList<RegisterRequest> _users = new List<RegisterRequest>
+        private readonly IList<RegisterCommandModel> _users = new List<RegisterCommandModel>
         {
             Master, 
             Admin, 
@@ -35,26 +35,26 @@ namespace Drawer.IntergrationTest.Seeds
             PasswordUser2
         };
 
-        public static RegisterRequest Master => new("master@master.com", "master12345", "master");
-        public static RegisterRequest Admin => new("admin@admin.com", "admin12345", "admin");
-        public static RegisterRequest SecurityUser => new("SecurityUser@manager.com", "manager12345", "manager");
-        public static RegisterRequest User1 => new("User1@manager.com", "manager12345", "user1");
-        public static RegisterRequest User2 => new("User2@manager.com", "manager12345", "user2");
-        public static RegisterRequest User3 => new("User3@manager.com", "manager12345", "user3");
-        public static RegisterRequest User4 => new("User4@manager.com", "manager12345", "user4");
-        public static RegisterRequest User5 => new("User5@manager.com", "manager12345", "user5");
-        public static RegisterRequest User6 => new("User6@manager.com", "manager12345", "user6");
-        public static RegisterRequest User7 => new("User7@manager.com", "manager12345", "user7");
-        public static RegisterRequest User8 => new("User8@manager.com", "manager12345", "user8");
-        public static RegisterRequest User9 => new("User9@manager.com", "manager12345", "user9");
+        public static RegisterCommandModel Master => new("master@master.com", "master12345", "master");
+        public static RegisterCommandModel Admin => new("admin@admin.com", "admin12345", "admin");
+        public static RegisterCommandModel SecurityUser => new("SecurityUser@manager.com", "manager12345", "manager");
+        public static RegisterCommandModel User1 => new("User1@manager.com", "manager12345", "user1");
+        public static RegisterCommandModel User2 => new("User2@manager.com", "manager12345", "user2");
+        public static RegisterCommandModel User3 => new("User3@manager.com", "manager12345", "user3");
+        public static RegisterCommandModel User4 => new("User4@manager.com", "manager12345", "user4");
+        public static RegisterCommandModel User5 => new("User5@manager.com", "manager12345", "user5");
+        public static RegisterCommandModel User6 => new("User6@manager.com", "manager12345", "user6");
+        public static RegisterCommandModel User7 => new("User7@manager.com", "manager12345", "user7");
+        public static RegisterCommandModel User8 => new("User8@manager.com", "manager12345", "user8");
+        public static RegisterCommandModel User9 => new("User9@manager.com", "manager12345", "user9");
 
-        public static RegisterRequest RefreshUser1 => new("RefreshUser1@manager.com", "manager12345", "manager");
-        public static RegisterRequest RefreshUser2 => new("RefreshUser2@manager.com", "manager12345", "manager");
-        public static RegisterRequest LoginUser1 => new("login@manager.com", "manager12345", "manager");
-        public static RegisterRequest GetUser1 => new("getUser@master.com", "worker12345", "worker");
-        public static RegisterRequest UpdateUser1 => new("worker1@master.com", "worker12345", "worker");
-        public static RegisterRequest PasswordUser1 => new("worker2@admin.com", "worker12345", "worker");
-        public static RegisterRequest PasswordUser2 => new("worker3@manager.com", "worker12345", "worker");
+        public static RegisterCommandModel RefreshUser1 => new("RefreshUser1@manager.com", "manager12345", "manager");
+        public static RegisterCommandModel RefreshUser2 => new("RefreshUser2@manager.com", "manager12345", "manager");
+        public static RegisterCommandModel LoginUser1 => new("login@manager.com", "manager12345", "manager");
+        public static RegisterCommandModel GetUser1 => new("getUser@master.com", "worker12345", "worker");
+        public static RegisterCommandModel UpdateUser1 => new("worker1@master.com", "worker12345", "worker");
+        public static RegisterCommandModel PasswordUser1 => new("worker2@admin.com", "worker12345", "worker");
+        public static RegisterCommandModel PasswordUser2 => new("worker3@manager.com", "worker12345", "worker");
 
         public class LoginUser : IEnumerable<object[]>
         {

@@ -1,13 +1,12 @@
-﻿using Drawer.Application.Helpers;
-using Drawer.Contract;
-using Drawer.Contract.Inventory;
+﻿using Drawer.Application.Services.Inventory.CommandModels;
+using Drawer.Application.Services.Inventory.QueryModels;
+using Drawer.Shared;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -28,22 +27,28 @@ namespace Drawer.IntergrationTest.Inventory
 
         async Task<long> CreateItem()
         {
-            var request = new CreateItemRequest(Guid.NewGuid().ToString(), null, null, null, null);
+            var request = new ItemAddUpdateCommandModel()
+            {
+                Name = Guid.NewGuid().ToString()
+            };
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Items.Create);
             requestMessage.Content = JsonContent.Create(request);
             var ResponseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
-            var response = await ResponseMessage.Content.ReadFromJsonAsync<CreateItemResponse>() ?? default!;
-            return response.Id;
+            var itemId = await ResponseMessage.Content.ReadFromJsonAsync<long>();
+            return itemId;
         }
 
         async Task<long> CreateLocation()
         {
-            var request = new CreateLocationRequest(null, Guid.NewGuid().ToString(), null, false);
+            var request = new LocationAddCommandModel()
+            {
+                Name = Guid.NewGuid().ToString(),
+            };
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Create);
             requestMessage.Content = JsonContent.Create(request);
             var ResponseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
-            var response = await ResponseMessage.Content.ReadFromJsonAsync<CreateLocationResponse>() ?? default!;
-            return response.Id;
+            var locationId = await ResponseMessage.Content.ReadFromJsonAsync<long>();
+            return locationId;
         }
 
         async Task<decimal> GetInventoryItemQuantity(long itemId, long locationId)
@@ -51,26 +56,33 @@ namespace Drawer.IntergrationTest.Inventory
             var requestMessage = new HttpRequestMessage(HttpMethod.Get,
               ApiRoutes.InventoryItems.Get + $"?ItemId={itemId}&LocationId={locationId}");
             var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
-            var responseContent = await responseMessage.Content.ReadFromJsonAsync<GetInventoryItemsResponse>();
-            return responseContent!.InventoryItems.FirstOrDefault()?.Quantity ?? 0;
+            var itemList = await responseMessage.Content.ReadFromJsonAsync<List<InventoryItemQueryModel>>() ?? default!;
+            return itemList.FirstOrDefault()?.Quantity ?? 0;
         }
 
         async Task<long> CreateReceipt(DateTime receiptDateTime, long itemId, long locationId, decimal quantity, string? seller)
         {
-            var requestContent = new CreateReceiptRequest(receiptDateTime, itemId, locationId, quantity, seller);
+            var requestContent = new ReceiptAddUpdateCommandModel()
+            {
+                ReceiptDateTime = receiptDateTime,
+                ItemId = itemId,
+                LocationId = locationId,
+                Quantity = quantity,
+                Seller = seller
+            };
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Receipts.Create);
             requestMessage.Content = JsonContent.Create(requestContent);
             var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
-            var response = await responseMessage.Content.ReadFromJsonAsync<CreateReceiptResponse>() ?? default!;
-            return response.Id;
+            var receiptId = await responseMessage.Content.ReadFromJsonAsync<long>();
+            return receiptId;
         }
 
-        async Task<ReceiptContracts.Receipt> GetReceipt(long receiptId)
+        async Task<ReceiptQueryModel?> GetReceipt(long receiptId)
         {
             var requestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.Receipts.Get.Replace("{id}", $"{receiptId}"));
             var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
-            var responseContent = await responseMessage.Content.ReadFromJsonAsync<GetReceiptResponse>() ?? default!;
-            return responseContent.Receipt;
+            var receipt = await responseMessage.Content.ReadFromJsonAsync<ReceiptQueryModel?>();
+            return receipt;
         }
 
         [Fact]
@@ -84,23 +96,29 @@ namespace Drawer.IntergrationTest.Inventory
             var seller = Guid.NewGuid().ToString();
 
             // Act
-            var requestContent = new CreateReceiptRequest(receiptDateTime, itemId, locationId, quantity, seller);
+            var requestContent = new ReceiptAddUpdateCommandModel()
+            {
+                ReceiptDateTime = receiptDateTime,
+                ItemId = itemId,
+                LocationId = locationId,
+                Quantity = quantity,
+                Seller = seller
+            };
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Receipts.Create);
             requestMessage.Content = JsonContent.Create(requestContent);
             var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
 
             // Assert
             responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var response = await responseMessage.Content.ReadFromJsonAsync<CreateReceiptResponse>() ?? default!;
-            response.Should().NotBeNull();
-            response.Id.Should().BeGreaterThan(0);
+            var receiptId = await responseMessage.Content.ReadFromJsonAsync<long>();
+            receiptId.Should().BeGreaterThan(0);
 
-            var receipt = await GetReceipt(response.Id);
-            receipt.Id.Should().Be(response.Id);
+            var receipt = await GetReceipt(receiptId) ?? default!;
+            receipt.Id.Should().Be(receiptId);
             receipt.ItemId.Should().Be(itemId);
             receipt.LocationId.Should().Be(locationId);
             receipt.Quantity.Should().Be(quantity);
-            receipt.ReceiptDateTime.Should().BeCloseTo(receiptDateTime, TimeSpan.FromTicks(10));
+            receipt.ReceiptDateTimeLocal.Should().BeCloseTo(receiptDateTime, TimeSpan.FromTicks(10));
             receipt.Seller.Should().Be(seller);
         }
 
@@ -117,7 +135,14 @@ namespace Drawer.IntergrationTest.Inventory
             var beforeQuantity = await GetInventoryItemQuantity(itemId, locationId);
 
             // Act
-            var requestContent = new CreateReceiptRequest(receiptDateTime, itemId, locationId, quantity, seller);
+            var requestContent = new ReceiptAddUpdateCommandModel()
+            {
+                ReceiptDateTime = receiptDateTime,
+                ItemId = itemId,
+                LocationId = locationId,
+                Quantity = quantity,
+                Seller = seller
+            };
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Receipts.Create);
             requestMessage.Content = JsonContent.Create(requestContent);
             var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
@@ -147,21 +172,29 @@ namespace Drawer.IntergrationTest.Inventory
             seller = Guid.NewGuid().ToString();
 
             // Act
-            var requestContent = new UpdateReceiptRequest(receiptDateTime, itemId, locationId, quantity, seller);
-            var requestMessage = new HttpRequestMessage(HttpMethod.Put, 
-                ApiRoutes.Receipts.Update.Replace("{id}",$"{receiptId}"));
+            var requestContent = new ReceiptAddUpdateCommandModel()
+            {
+                ReceiptDateTime = receiptDateTime,
+                ItemId = itemId,
+                LocationId = locationId,
+                Quantity = quantity,
+                Seller = seller
+            };
+            var requestMessage = new HttpRequestMessage(HttpMethod.Put,
+                ApiRoutes.Receipts.Update.Replace("{id}", $"{receiptId}"));
             requestMessage.Content = JsonContent.Create(requestContent);
             var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
 
             // Assert
             responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
 
-            var receipt = await GetReceipt(receiptId);
+            var receipt = await GetReceipt(receiptId) ?? default!;
+            receipt.Should().NotBeNull();
             receipt.Id.Should().Be(receiptId);
             receipt.ItemId.Should().Be(itemId);
             receipt.LocationId.Should().Be(locationId);
             receipt.Quantity.Should().Be(quantity);
-            receipt.ReceiptDateTime.Should().BeCloseTo(receiptDateTime, TimeSpan.FromTicks(10));
+            receipt.ReceiptDateTimeLocal.Should().BeCloseTo(receiptDateTime, TimeSpan.FromTicks(10));
             receipt.Seller.Should().Be(seller);
         }
 
@@ -183,7 +216,14 @@ namespace Drawer.IntergrationTest.Inventory
             seller = Guid.NewGuid().ToString();
 
             // Act
-            var requestContent = new UpdateReceiptRequest(receiptDateTime, itemId, locationId, quantity2, seller);
+            var requestContent = new ReceiptAddUpdateCommandModel()
+            {
+                ReceiptDateTime = receiptDateTime,
+                ItemId = itemId,
+                LocationId = locationId,
+                Quantity = quantity2,
+                Seller = seller
+            };
             var requestMessage = new HttpRequestMessage(HttpMethod.Put,
                 ApiRoutes.Receipts.Update.Replace("{id}", $"{receiptId}"));
             requestMessage.Content = JsonContent.Create(requestContent);
@@ -219,7 +259,14 @@ namespace Drawer.IntergrationTest.Inventory
 
 
             // Act
-            var requestContent = new UpdateReceiptRequest(receiptDateTime, itemId2, locationId2, quantity2, seller);
+            var requestContent = new ReceiptAddUpdateCommandModel()
+            {
+                ReceiptDateTime = receiptDateTime,
+                ItemId = itemId2,
+                LocationId = locationId2,
+                Quantity = quantity2,
+                Seller = seller
+            }; 
             var requestMessage = new HttpRequestMessage(HttpMethod.Put,
                 ApiRoutes.Receipts.Update.Replace("{id}", $"{receiptId}"));
             requestMessage.Content = JsonContent.Create(requestContent);
@@ -245,7 +292,7 @@ namespace Drawer.IntergrationTest.Inventory
             var seller = Guid.NewGuid().ToString();
 
             var receiptId = await CreateReceipt(receiptDateTime, itemId, locationId, quantity, seller);
-            
+
             // Act
             var requestMessage = new HttpRequestMessage(HttpMethod.Delete,
                 ApiRoutes.Receipts.Delete.Replace("{id}", $"{receiptId}"));
@@ -255,8 +302,10 @@ namespace Drawer.IntergrationTest.Inventory
             responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
 
             var getRequestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.Receipts.Get.Replace("{id}", $"{receiptId}"));
-            var getResponseMessage = await _client.SendAsyncWithMasterAuthentication(getRequestMessage);
-            getResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.NoContent);
+            var getResponse = await _client.SendAsyncWithMasterAuthentication(getRequestMessage);
+            getResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+            var receipt = await getResponse.Content.ReadFromJsonAsync<ReceiptQueryModel?>();
+            receipt.Should().BeNull();
         }
 
         [Fact]
@@ -291,7 +340,7 @@ namespace Drawer.IntergrationTest.Inventory
             var quantity = 30;
             var receiptDateTime = DateTime.Now;
             var seller = Guid.NewGuid().ToString();
-            
+
             var receiptId = await CreateReceipt(receiptDateTime, itemId, locationId, quantity, seller);
 
             // Act
@@ -300,14 +349,13 @@ namespace Drawer.IntergrationTest.Inventory
 
             // Assert
             responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var response = await responseMessage.Content.ReadFromJsonAsync<GetReceiptResponse>() ?? default!;
-            response.Should().NotBeNull();
-            var receipt = response.Receipt;
+            var receipt = await responseMessage.Content.ReadFromJsonAsync<ReceiptQueryModel>() ?? default!;
+            receipt.Should().NotBeNull();
             receipt.Id.Should().Be(receiptId);
             receipt.ItemId.Should().Be(itemId);
             receipt.LocationId.Should().Be(locationId);
             receipt.Quantity.Should().Be(quantity);
-            receipt.ReceiptDateTime.Should().BeCloseTo(receiptDateTime, TimeSpan.FromTicks(10));
+            receipt.ReceiptDateTimeLocal.Should().BeCloseTo(receiptDateTime, TimeSpan.FromTicks(10));
             receipt.Seller.Should().Be(seller);
         }
 
@@ -334,27 +382,27 @@ namespace Drawer.IntergrationTest.Inventory
 
 
             // Act
-            var requestMessage = new HttpRequestMessage(HttpMethod.Get, 
-                ApiRoutes.Receipts.GetList +$"?From={receiptDateTime.Date.ToDateFormat()}&To={receiptDateTime.Date.ToDateFormat()}");
+            var requestMessage = new HttpRequestMessage(HttpMethod.Get,
+                ApiRoutes.Receipts.GetList + $"?From={receiptDateTime.Date.ToDateFormat()}&To={receiptDateTime.Date.ToDateFormat()}");
             var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
 
             // Assert
             responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var response = await responseMessage.Content.ReadFromJsonAsync<GetReceiptsResponse>() ?? default!;
-            response.Should().NotBeNull();
-            response.Receipts.Should().Contain(x=> 
+            var receipts = await responseMessage.Content.ReadFromJsonAsync<List<ReceiptQueryModel>>() ?? default!;
+            receipts.Should().NotBeNull();
+            receipts.Should().Contain(x =>
                 x.Id == receiptId1 &&
                 x.ItemId == itemId1 &&
                 x.LocationId == locationId1 &&
                 x.Quantity == quantity1 &&
-                x.ReceiptDateTime.IsCloseTo(receiptDateTime1, TimeSpan.FromTicks(10)) &&
+                x.ReceiptDateTimeLocal.IsCloseTo(receiptDateTime1, TimeSpan.FromTicks(10)) &&
                 x.Seller == seller1);
-            response.Receipts.Should().Contain(x =>
+            receipts.Should().Contain(x =>
                 x.Id == receiptId2 &&
                 x.ItemId == itemId2 &&
                 x.LocationId == locationId2 &&
                 x.Quantity == quantity2 &&
-                x.ReceiptDateTime.IsCloseTo(receiptDateTime2, TimeSpan.FromTicks(10)) &&
+                x.ReceiptDateTimeLocal.IsCloseTo(receiptDateTime2, TimeSpan.FromTicks(10)) &&
                 x.Seller == seller2);
 
 

@@ -1,4 +1,5 @@
-﻿using Drawer.Web.Api.UserInformation;
+﻿using Drawer.Application.Services.UserInformation.CommandModels;
+using Drawer.Web.Api.UserInformation;
 using Drawer.Web.Pages.User.Views;
 using Drawer.Web.Presenters;
 using MudBlazor;
@@ -18,7 +19,12 @@ namespace Drawer.Web.Pages.User.Presenters
 
         public async Task ChanagePasswordAsync()
         {
-            var response = await _apiClient.ChangePassword(View.Model.Password, View.Model.NewPassword);
+            var passwordDto = new UserPasswordCommandModel()
+            {
+                Password = View.Model.Password,
+                NewPassword = View.Model.NewPassword
+            };
+            var response = await _apiClient.ChangePassword(passwordDto);
             CheckSuccessFail(response);
             
             if (response.IsSuccessful)

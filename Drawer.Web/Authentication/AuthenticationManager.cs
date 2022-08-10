@@ -1,7 +1,6 @@
-﻿using Drawer.Contract;
-using Drawer.Contract.Authentication;
-using Drawer.Contract.Common;
+﻿using Drawer.Application.Services.Authentication.CommandModels;
 using Drawer.Shared;
+using Drawer.Shared.Contracts.Common;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -29,7 +28,11 @@ namespace Drawer.Web.Authentication
 
         public async Task<AuthenticationResult> LoginAsync(string email, string password)
         {
-            var loginResponseMessage = await _httpClient.PostAsJsonAsync(ApiRoutes.Account.Login, new LoginRequest(email, password));
+            var loginDto = new LoginCommandModel(email, password);
+
+            var loginResponseMessage = await _httpClient.PostAsJsonAsync(
+                ApiRoutes.Account.Login, 
+                loginDto);
             if (!loginResponseMessage.IsSuccessStatusCode)
             {
                 var error = await loginResponseMessage.Content.ReadFromJsonAsync<ErrorResponse>();
@@ -44,7 +47,7 @@ namespace Drawer.Web.Authentication
             }
 
             // 쿠키인증을 진행한다.
-            var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>() ?? default!;
+            var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponseCommandModel>() ?? default!;
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Email, email),

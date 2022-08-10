@@ -1,4 +1,5 @@
-﻿using Drawer.Application.Services.Organization.Repos;
+﻿using Drawer.Application.Services.Organization.QueryModels;
+using Drawer.Application.Services.Organization.Repos;
 using Drawer.Domain.Models.Organization;
 using Drawer.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -16,17 +17,22 @@ namespace Drawer.Infrastructure.Repos.Organization
         {
         }
 
-        public async Task<IList<CompanyMember>> FindByCompanyIdAsync(string companyId)
-        {
-            return await _dbContext.CompanyMembers.Where(x => x.CompanyId == companyId)
-                .ToListAsync();
-        }
-
         public async Task<CompanyMember?> FindByUserIdAsync(string userId)
         {
             return await _dbContext.CompanyMembers
                 .FirstOrDefaultAsync(x => x.UserId == userId);
          
+        }
+
+        public async Task<List<CompanyMemberQueryModel>> QueryByCompanyId(string companyId)
+        {
+            return await _dbContext.CompanyMembers.Where(x => x.CompanyId == companyId)
+                .Select(x=> new CompanyMemberQueryModel() 
+                { 
+                    CompanyId = x.CompanyId,
+                    UserId = x.UserId
+                })
+                .ToListAsync();
         }
     }
 }

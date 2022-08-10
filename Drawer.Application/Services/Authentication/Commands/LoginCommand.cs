@@ -1,27 +1,19 @@
 ﻿using Drawer.Application.Config;
 using Drawer.Application.Exceptions;
 using Drawer.Application.Services.Authentication.Repos;
-using Drawer.Application.Services.Organization.Repos;
-using Drawer.Domain.Models.Authentication;
 using Drawer.Shared;
+using Drawer.Domain.Models.Authentication;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
+using Drawer.Application.Services.Authentication.CommandModels;
 
 namespace Drawer.Application.Services.Authentication.Commands
 {
-    public record LoginCommand(string Email, string Password) : ICommand<LoginResult>
+    public record LoginCommand(LoginCommandModel Login) : ICommand<LoginResponseCommandModel>
     {
         public TimeSpan RefreshTokenLifetime { get; set; } = TimeSpan.FromDays(7);
     }
 
-    public record LoginResult(bool IsCompanyMemeber, bool IsCompanyOwner, string AccessToken, string RefreshToken);
-
-    public class LoginCommandHandler : ICommandHandler<LoginCommand, LoginResult>
+    public class LoginCommandHandler : ICommandHandler<LoginCommand, LoginResponseCommandModel>
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ITokenGenerator _tokenGenerator;
@@ -39,13 +31,15 @@ namespace Drawer.Application.Services.Authentication.Commands
             _userClaimService = userClaimService;
         }
 
-        public async Task<LoginResult> Handle(LoginCommand command, CancellationToken cancellationToken)
+        public async Task<LoginResponseCommandModel> Handle(LoginCommand command, CancellationToken cancellationToken)
         {
-            var user = await _userManager.FindByEmailAsync(command.Email);
+            var loginDto = command.Login;
+
+            var user = await _userManager.FindByEmailAsync(loginDto.Email);
             if (user == null)
                 throw new InvalidLoginException();
 
-            var passwordMatch = await _userManager.CheckPasswordAsync(user, command.Password);
+            var passwordMatch = await _userManager.CheckPasswordAsync(user, loginDto.Password);
             if (!passwordMatch)
                 throw new InvalidLoginException();
 
@@ -64,7 +58,13 @@ namespace Drawer.Application.Services.Authentication.Commands
             await _refreshTokenRepository.AddAsync(refreshTokenEntity);
             await _refreshTokenRepository.SaveChangesAsync();
 
-            return new LoginResult(isCompanyMember, isCompanyOwner, accessToken, refreshToken);
+            return new LoginResponseCommandModel()
+            {
+                IsCompanyMember = isCompanyMember,
+                IsCompanyOwner = isCompanyOwner,
+                AccessToken = accessToken,
+                RefreshToken = refreshToken,
+            };
         }
     }
 }

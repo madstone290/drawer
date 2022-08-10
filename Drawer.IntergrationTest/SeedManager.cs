@@ -1,5 +1,5 @@
 ﻿using Drawer.Application.Services.Authentication.Repos;
-using Drawer.Contract;
+using Drawer.Shared;
 using Drawer.Domain.Models.Authentication;
 using Drawer.Domain.Models.UserInformation;
 using Drawer.Infrastructure.Data;
@@ -37,10 +37,6 @@ namespace Drawer.IntergrationTest
 
             dbContext.CompanyMembers.Truncate();
             dbContext.Companies.Truncate();
-
-            dbContext.Spots.Truncate();
-            dbContext.Zones.Truncate();
-            dbContext.WorkPlaces.Truncate();
 
             dbContext.Items.Truncate();
             dbContext.Locations.Truncate();

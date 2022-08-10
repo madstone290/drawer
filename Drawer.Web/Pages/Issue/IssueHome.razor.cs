@@ -94,17 +94,17 @@ namespace Drawer.Web.Pages.Issue
                 return;
             }
 
-            var itemList = itemResponse.Data.Items;
-            var locationList = locationResponse.Data.Locations;
+            var itemList = itemResponse.Data;
+            var locationList = locationResponse.Data;
             _issueList.Clear();
-            foreach (var issueDto in issueResponse.Data.Issues)
+            foreach (var issueDto in issueResponse.Data)
             {
                 var issue = new IssueTableModel()
                 {
                     Id = issueDto.Id,
                     TransactionNumber = issueDto.TransactionNumber,
-                    IssueDateString = issueDto.IssueDateTime.Date.ToString("yyyy-MM-dd"),
-                    IssueTimeString = issueDto.IssueDateTime.TimeOfDay.ToString(@"hh\:mm"),
+                    IssueDateString = issueDto.IssueDateTimeLocal.Date.ToString("yyyy-MM-dd"),
+                    IssueTimeString = issueDto.IssueDateTimeLocal.TimeOfDay.ToString(@"hh\:mm"),
                     ItemId = issueDto.ItemId,
                     ItemName = itemList.First(x => x.Id == issueDto.ItemId).Name,
                     LocationId = issueDto.LocationId,

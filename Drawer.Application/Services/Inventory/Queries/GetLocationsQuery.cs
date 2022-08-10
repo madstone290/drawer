@@ -1,6 +1,6 @@
 ﻿using Drawer.Application.Config;
+using Drawer.Application.Services.Inventory.QueryModels;
 using Drawer.Application.Services.Inventory.Repos;
-using Drawer.Application.Services.Locations.Repos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,14 +9,9 @@ using System.Threading.Tasks;
 
 namespace Drawer.Application.Services.Inventory.Queries
 {
-    public record GetLocationsQuery : IQuery<GetLocationsResult>;
+    public record GetLocationsQuery : IQuery<List<LocationQueryModel>>;
 
-    public record GetLocationsResult(IList<GetLocationsResult.Location> Locations)
-    {
-        public record Location(long Id, long? UpperLocationId, string Name, string? Note, int HierarchyLevel, bool IsGroup);
-    }
-
-    public class GetLocationsQueryHandler : IQueryHandler<GetLocationsQuery, GetLocationsResult>
+    public class GetLocationsQueryHandler : IQueryHandler<GetLocationsQuery, List<LocationQueryModel>>
     {
         private readonly ILocationRepository _locationRepository;
 
@@ -25,14 +20,11 @@ namespace Drawer.Application.Services.Inventory.Queries
             _locationRepository = locationRepository;
         }
 
-        public async Task<GetLocationsResult> Handle(GetLocationsQuery query, CancellationToken cancellationToken)
+        public async Task<List<LocationQueryModel>> Handle(GetLocationsQuery query, CancellationToken cancellationToken)
         {
-            var locations = await _locationRepository.FindAll();
+            var locations = await _locationRepository.QueryAll();
 
-            return new GetLocationsResult(
-                locations.Select(x =>
-                    new GetLocationsResult.Location(x.Id, x.ParentGroupId, x.Name, x.Note, x.HierarchyLevel, x.IsGroup)
-                ).ToList());
+            return locations;
         }
     }
 }

@@ -1,5 +1,6 @@
-﻿using Drawer.Contract;
-using Drawer.Contract.Inventory;
+﻿using Drawer.Application.Services.Inventory.CommandModels;
+using Drawer.Application.Services.Inventory.QueryModels;
+using Drawer.Shared;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;
@@ -26,31 +27,37 @@ namespace Drawer.IntergrationTest.Inventory
 
         async Task<long> CreateItem()
         {
-            var request = new CreateItemRequest(Guid.NewGuid().ToString(), null, null, null, null);
+            var request = new ItemAddUpdateCommandModel()
+            {
+                Name = Guid.NewGuid().ToString()
+            };
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Items.Create);
             requestMessage.Content = JsonContent.Create(request);
             var ResponseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
-            var response = await ResponseMessage.Content.ReadFromJsonAsync<CreateItemResponse>() ?? default!;
-            return response.Id;
+            var itemId = await ResponseMessage.Content.ReadFromJsonAsync<long>();
+            return itemId;
         }
 
         async Task<long> CreateLocation()
         {
-            var request = new CreateLocationRequest(null, Guid.NewGuid().ToString(), null, false);
+            var request = new LocationAddCommandModel()
+            {
+                Name = Guid.NewGuid().ToString(),
+            };
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Create);
             requestMessage.Content = JsonContent.Create(request);
             var ResponseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
-            var response = await ResponseMessage.Content.ReadFromJsonAsync<CreateLocationResponse>() ?? default!;
-            return response.Id;
+            var locationId = await ResponseMessage.Content.ReadFromJsonAsync<long>();
+            return locationId;
         }
 
         async Task<decimal> GetInventoryQuantity(long itemId, long locationId)
         {
-            var getRequestMessage = new HttpRequestMessage(HttpMethod.Get, 
-                ApiRoutes.InventoryItems.Get+ $"?ItemId={itemId}&LocationId={locationId}");
+            var getRequestMessage = new HttpRequestMessage(HttpMethod.Get,
+                ApiRoutes.InventoryItems.Get + $"?ItemId={itemId}&LocationId={locationId}");
             var getResponseMessage = await _client.SendAsyncWithMasterAuthentication(getRequestMessage);
-            var response = await getResponseMessage.Content.ReadFromJsonAsync<GetInventoryItemsResponse>() ?? default!;
-            return response.InventoryItems.FirstOrDefault()?.Quantity ?? 0M;
+            var inventoryItemList = await getResponseMessage.Content.ReadFromJsonAsync<List<InventoryItemQueryModel>>() ?? default!;
+            return inventoryItemList.FirstOrDefault()?.Quantity ?? 0M;
         }
 
         [Fact]
@@ -63,7 +70,12 @@ namespace Drawer.IntergrationTest.Inventory
             var oldQuantity = await GetInventoryQuantity(itemId, locationId);
 
             // Act
-            var request = new UpdateInventoryRequest(itemId, locationId, quantityChange);
+            var request = new InventoryItemUpdateCommandModel()
+            {
+                ItemId = itemId,
+                LocationId = locationId,
+                QuantityChange = quantityChange
+            };
             var requestMessage = new HttpRequestMessage(HttpMethod.Put, ApiRoutes.InventoryItems.Update);
             requestMessage.Content = JsonContent.Create(request);
             var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
@@ -75,42 +87,7 @@ namespace Drawer.IntergrationTest.Inventory
         }
 
         [Fact]
-        public async Task BatchUpdateInventory_Returns_Ok()
-        {
-            // Arrange
-            var itemId1 = await CreateItem();
-            var locationId1 = await CreateLocation();
-            var quantityChange1 = 30;
-            var oldQuantity1 = await GetInventoryQuantity(itemId1, quantityChange1);
-
-
-            var itemId2 = await CreateItem();
-            var locationId2 = await CreateLocation();
-            var quantityChange2 = 40;
-            var oldQuantity2 = await GetInventoryQuantity(itemId2, locationId2);
-
-
-            // Act
-            var request = new BatchUpdateInventoryItemRequest(
-                new List<BatchUpdateInventoryItemRequest.InventoryItem>()
-                {
-                    new BatchUpdateInventoryItemRequest.InventoryItem(itemId1, locationId1, quantityChange1),
-                    new BatchUpdateInventoryItemRequest.InventoryItem(itemId2, locationId2, quantityChange2),
-                });
-            var requestMessage = new HttpRequestMessage(HttpMethod.Put, ApiRoutes.InventoryItems.BatchUpdate);
-            requestMessage.Content = JsonContent.Create(request);
-            var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
-
-            // Assert
-            responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var newQuantity1 = await GetInventoryQuantity(itemId1, locationId1);
-            newQuantity1.Should().Be(oldQuantity1 + quantityChange1);
-            var newQuantity2 = await GetInventoryQuantity(itemId2, locationId2);
-            newQuantity2.Should().Be(oldQuantity2 + quantityChange2);
-        }
-
-        [Fact]
-        public async Task GetInventory_Returns_Ok_With_Content()
+        public async Task GetInventory_Returns_Ok()
         {
             // Arrange
             var itemId1 = await CreateItem();
@@ -121,12 +98,21 @@ namespace Drawer.IntergrationTest.Inventory
             var locationId2 = await CreateLocation();
             var quantity2 = 40;
 
-            var updateRequest = new BatchUpdateInventoryItemRequest(
-                new List<BatchUpdateInventoryItemRequest.InventoryItem>()
+            var updateRequest = new List<InventoryItemUpdateCommandModel>()
+            {
+                new InventoryItemUpdateCommandModel()
                 {
-                    new BatchUpdateInventoryItemRequest.InventoryItem(itemId1, locationId1, quantity1),
-                    new BatchUpdateInventoryItemRequest.InventoryItem(itemId2, locationId2, quantity2),
-                });
+                    ItemId = itemId1,
+                    LocationId = locationId1,
+                    QuantityChange =quantity1
+                },
+                new InventoryItemUpdateCommandModel()
+                {
+                    ItemId = itemId2,
+                    LocationId = locationId2,
+                    QuantityChange =quantity2
+                },
+            };
             var updateRequestMessage = new HttpRequestMessage(HttpMethod.Put, ApiRoutes.InventoryItems.BatchUpdate);
             updateRequestMessage.Content = JsonContent.Create(updateRequest);
             var updateResponseMessage = await _client.SendAsyncWithMasterAuthentication(updateRequestMessage);
@@ -137,13 +123,13 @@ namespace Drawer.IntergrationTest.Inventory
 
             // Assert
             getResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var response = await getResponseMessage.Content.ReadFromJsonAsync<GetInventoryItemsResponse>() ?? default!;
-            response.Should().NotBeNull();
-            response.InventoryItems.Should().Contain(x =>
+            var inventoryItemList = await getResponseMessage.Content.ReadFromJsonAsync<List<InventoryItemQueryModel>>() ?? default!;
+            inventoryItemList.Should().NotBeNull();
+            inventoryItemList.Should().Contain(x =>
                 x.ItemId == itemId1 &&
                 x.LocationId == locationId1 &&
                 x.Quantity == quantity1);
-            response.InventoryItems.Should().Contain(x =>
+            inventoryItemList.Should().Contain(x =>
                 x.ItemId == itemId2 &&
                 x.LocationId == locationId2 &&
                 x.Quantity == quantity2);

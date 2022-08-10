@@ -1,4 +1,4 @@
-﻿using Drawer.Contract.Common;
+﻿using Drawer.Shared.Contracts.Common;
 using Drawer.Web.Authentication;
 using Drawer.Web.Utils;
 
@@ -52,7 +52,7 @@ namespace Drawer.Web.Api
             {
                 var jsonResult = await responseMessage.Content.ReadNullableJsonAsync<TResponseData>();
                 if(jsonResult.IsSuccessful)
-                    return ApiResponse<TResponseData>.Success(jsonResult.Data!);
+                    return ApiResponse<TResponseData>.Success(jsonResult.Data);
                 else
                     return ApiResponse<TResponseData>.Fail("성공응답의 Json변환에 실패하였습니다");
             }
@@ -60,7 +60,7 @@ namespace Drawer.Web.Api
             {
                 var jsonResult = await responseMessage.Content.ReadNullableJsonAsync<ErrorResponse>();
                 if (jsonResult.IsSuccessful)
-                    return ApiResponse<TResponseData>.Fail(jsonResult.Data!.Message, jsonResult.Data!.Code);
+                    return ApiResponse<TResponseData>.Fail(jsonResult.Data.Message, jsonResult.Data.Code);
                 else
                     return ApiResponse<TResponseData>.Fail("실패응답의 Json변환에 실패하였습니다");
             }

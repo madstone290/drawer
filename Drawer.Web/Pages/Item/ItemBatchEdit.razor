@@ -1,8 +1,6 @@
 ﻿@using System.Reflection
-@using Drawer.Contract.Inventory
-@using Drawer.Contract.Locations
+@using Drawer.Application.Services.Inventory.CommandModels
 @using Drawer.Web.Api.Inventory
-@using Drawer.Web.Api.Locations
 @using Drawer.Web.Pages.Item.Models
 @using Drawer.Web.Services
 @using Drawer.Web.Utils
@@ -62,10 +60,17 @@
 
     private async Task<bool> Save(IEnumerable<ItemModel> items)
     {
-        var content = new BatchCreateItemRequest(items.Select(item =>
-              new BatchCreateItemRequest.Item(item.Name!, item.Code, item.Number, item.Sku, item.QuantityUnit)).ToList());
+        var itemListDto = items.Select(item =>
+              new ItemAddUpdateCommandModel()
+                  {
+                      Name = item.Name,
+                      Code = item.Code,
+                      Number = item.Number,
+                      Sku = item.Sku,
+                      QuantityUnit = item.QuantityUnit
+                  }).ToList();
 
-        var response = await ItemApiClient.BatchAddItem(content);
+        var response = await ItemApiClient.BatchAddItem(itemListDto);
 
         return Snackbar.CheckSuccessFail(response);
     }

@@ -1,9 +1,4 @@
-﻿using Drawer.Contract;
-using Drawer.Contract.Authentication;
-using Drawer.Contract.Common;
-using Drawer.Contract.Organization;
-using Drawer.Contract.UserInformation;
-using Drawer.IntergrationTest.Seeds;
+﻿using Drawer.Shared;
 using Drawer.IntergrationTest.TheoryData;
 using FluentAssertions;
 using System;
@@ -15,6 +10,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using Drawer.Shared.Contracts.Common;
+using Drawer.Application.Services.UserInformation.QueryModels;
+using Drawer.Application.Services.Organization.CommandModels;
+using Drawer.Application.Services.Organization.QueryModels;
+using Drawer.Application.Services.Authentication.CommandModels;
 
 namespace Drawer.IntergrationTest.Organization
 {
@@ -47,36 +47,41 @@ namespace Drawer.IntergrationTest.Organization
         public async Task OnlyOneCompany_CanBe_Created(string email, string password, string name, string phoneNumber, string name2, string phoneNumber2)
         {
             // Arrange
-            var loginRequest = new LoginRequest(email, password);
+            var loginRequest = new LoginCommandModel(email, password);
             var loginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, loginRequest);
-            var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
+            var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponseCommandModel>();
 
             var getUserRequestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.User.Get);
             getUserRequestMessage.SetBearerToken(loginResponse!.AccessToken);
             var getUserResponseMessage = await _client.SendAsync(getUserRequestMessage);
-            var getUserResponse = await getUserResponseMessage.Content!.ReadFromJsonAsync<GetUserResponse>();
+            var getUserResponse = await getUserResponseMessage.Content!.ReadFromJsonAsync<UserInfoQueryModel>();
 
-            var creatCompanyRequest = new CreateCompanyRequest(name, phoneNumber);
+            var companyDto1 = new CompanyAddUpdateCommandModel()
+            {
+                Name = name,
+                PhoneNumber = phoneNumber
+            };
             var createCompanyRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.Create);
-            createCompanyRequestMessage.Content = JsonContent.Create(creatCompanyRequest);
+            createCompanyRequestMessage.Content = JsonContent.Create(companyDto1);
             createCompanyRequestMessage.SetBearerToken(loginResponse!.AccessToken);
 
             // Act
             var createCompanyResponseMessage = await _client.SendAsync(createCompanyRequestMessage);
 
-            var creatCompanyRequest2 = new CreateCompanyRequest(name2, phoneNumber2);
+            var companyDto2 = new CompanyAddUpdateCommandModel()
+            {
+                Name = name2,
+                PhoneNumber = phoneNumber2
+            };
             var createCompanyRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.Create);
-            createCompanyRequestMessage2.Content = JsonContent.Create(creatCompanyRequest2);
+            createCompanyRequestMessage2.Content = JsonContent.Create(companyDto2);
             createCompanyRequestMessage2.SetBearerToken(loginResponse!.AccessToken);
             var createCompanyResponseMessage2 = await _client.SendAsync(createCompanyRequestMessage2);
 
             // Assert
             createCompanyResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var createCompanyResponse = await createCompanyResponseMessage.Content.ReadFromJsonAsync<CreateCompanyResponse>();
-            createCompanyResponse.Should().NotBeNull();
-            createCompanyResponse!.Name.Should().Be(creatCompanyRequest.Name);
-            createCompanyResponse!.PhoneNumber.Should().Be(creatCompanyRequest.PhoneNumber);
-            createCompanyResponse!.OwnerId.Should().Be(getUserResponse!.UserId);
+            var companyId = await createCompanyResponseMessage.Content.ReadFromJsonAsync<string>();
+            companyId.Should().NotBeNull();
 
             createCompanyResponseMessage2.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
             var createCompanyResponse2 = await createCompanyResponseMessage2.Content.ReadFromJsonAsync<ErrorResponse>();
@@ -89,29 +94,30 @@ namespace Drawer.IntergrationTest.Organization
         public async Task CreateCompany_Returns_Ok_With_CompanyInfo(string email, string password, string name, string phoneNumber)
         {
             // Arrange
-            var loginRequest = new LoginRequest(email, password);
+            var loginRequest = new LoginCommandModel(email, password);
             var loginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, loginRequest);
-            var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
+            var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponseCommandModel>();
 
             var getUserRequestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.User.Get);
             getUserRequestMessage.SetBearerToken(loginResponse!.AccessToken);
             var getUserResponseMessage = await _client.SendAsync(getUserRequestMessage);
-            var getUserResponse = await getUserResponseMessage.Content!.ReadFromJsonAsync<GetUserResponse>();
+            var userInfo = await getUserResponseMessage.Content!.ReadFromJsonAsync<UserInfoQueryModel>();
 
-            var creatCompanyRequest = new CreateCompanyRequest(name, phoneNumber);
-            var createCompanyRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.Create);
-            createCompanyRequestMessage.Content = JsonContent.Create(creatCompanyRequest);
-            createCompanyRequestMessage.SetBearerToken(loginResponse!.AccessToken);
+            var companyDto = new CompanyAddUpdateCommandModel()
+            {
+                Name = name,
+                PhoneNumber = phoneNumber
+            };
+            var companyRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.Create);
+            companyRequest.Content = JsonContent.Create(companyDto);
+            companyRequest.SetBearerToken(loginResponse!.AccessToken);
             // Act
-            var createCompanyResponseMessage = await _client.SendAsync(createCompanyRequestMessage);
+            var companyResponse = await _client.SendAsync(companyRequest);
 
             // Assert
-            createCompanyResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var createCompanyResponse = await createCompanyResponseMessage.Content.ReadFromJsonAsync<CreateCompanyResponse>();
-            createCompanyResponse.Should().NotBeNull();
-            createCompanyResponse!.Name.Should().Be(creatCompanyRequest.Name);
-            createCompanyResponse!.PhoneNumber.Should().Be(creatCompanyRequest.PhoneNumber);
-            createCompanyResponse!.OwnerId.Should().Be(getUserResponse!.UserId);
+            companyResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+            var companyId = await companyResponse.Content.ReadFromJsonAsync<string>();
+            companyId.Should().NotBeNull();
         }
 
         [Theory]
@@ -119,37 +125,41 @@ namespace Drawer.IntergrationTest.Organization
         public async Task GetCompany_Returns_Ok_With_CompanyInfo(string email, string password, string name, string phoneNumber)
         {
             // Arrange
-            var loginRequest = new LoginRequest(email, password);
+            var loginRequest = new LoginCommandModel(email, password);
             var loginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, loginRequest);
-            var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
+            var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponseCommandModel>();
 
-            var creatCompanyRequest = new CreateCompanyRequest(name, phoneNumber);
+            var companyDto = new CompanyAddUpdateCommandModel()
+            {
+                Name = name,
+                PhoneNumber = phoneNumber
+            }; 
             var createCompanyRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.Create);
-            createCompanyRequestMessage.Content = JsonContent.Create(creatCompanyRequest);
+            createCompanyRequestMessage.Content = JsonContent.Create(companyDto);
             createCompanyRequestMessage.SetBearerToken(loginResponse!.AccessToken);
 
             // Act
             var createCompanyResponseMessage = await _client.SendAsync(createCompanyRequestMessage);
             createCompanyResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var createCompanyResponse = await createCompanyResponseMessage.Content.ReadFromJsonAsync<CreateCompanyResponse>();
-            createCompanyResponse.Should().NotBeNull();
+            var companyId = await createCompanyResponseMessage.Content.ReadFromJsonAsync<string>();
+            companyId.Should().NotBeNull();
 
             // CompanyId클레임 획득을 위한 재로그인
-            loginRequest = new LoginRequest(email, password);
+            loginRequest = new LoginCommandModel(email, password);
             loginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, loginRequest);
-            loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
+            loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponseCommandModel>();
 
             var getCompanyRequestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.Company.Get);
             getCompanyRequestMessage.SetBearerToken(loginResponse!.AccessToken);
-            var getCompanyResponseMessage = await _client.SendAsync(getCompanyRequestMessage);
+            var getResponse = await _client.SendAsync(getCompanyRequestMessage);
 
             // Assert
-            getCompanyResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var getCompanyResponse = await getCompanyResponseMessage.Content.ReadFromJsonAsync<GetCompanyResponse>();
-            getCompanyResponse.Should().NotBeNull();
-            getCompanyResponse!.Id.Should().Be(createCompanyResponse!.Id);
-            getCompanyResponse!.Name.Should().Be(creatCompanyRequest.Name);
-            getCompanyResponse!.PhoneNumber.Should().Be(creatCompanyRequest.PhoneNumber);
+            getResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+            var company = await getResponse.Content.ReadFromJsonAsync<CompanyQueryModel?>() ?? default!;
+            company.Should().NotBeNull();
+            company.Id.Should().Be(companyId);
+            company.Name.Should().Be(companyDto.Name);
+            company.PhoneNumber.Should().Be(companyDto.PhoneNumber);
         }
 
         [Theory]
@@ -157,29 +167,33 @@ namespace Drawer.IntergrationTest.Organization
         public async Task CreateCompany_Also_Creates_CompanyMember(string email, string password, string name, string phoneNumber)
         {
             // Arrange
-            var loginRequest = new LoginRequest(email, password);
+            var loginRequest = new LoginCommandModel(email, password);
             var loginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, loginRequest);
-            var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
+            var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponseCommandModel>();
 
             var getUserRequestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.User.Get);
             getUserRequestMessage.SetBearerToken(loginResponse!.AccessToken);
-            var getUserResponseMessage = await _client.SendAsync(getUserRequestMessage);
-            var getUserResponse = await getUserResponseMessage.Content!.ReadFromJsonAsync<GetUserResponse>();
+            var userResponse = await _client.SendAsync(getUserRequestMessage);
+            var userInfo = await userResponse.Content.ReadFromJsonAsync<UserInfoQueryModel>() ?? default;
 
-            var createCompanyRequest = new CreateCompanyRequest(name, phoneNumber);
+            var companyDto = new CompanyAddUpdateCommandModel()
+            {
+                Name = name,
+                PhoneNumber = phoneNumber
+            };
             var createCompanyRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.Create);
-            createCompanyRequestMessage.Content = JsonContent.Create(createCompanyRequest);
+            createCompanyRequestMessage.Content = JsonContent.Create(companyDto);
             createCompanyRequestMessage.SetBearerToken(loginResponse!.AccessToken);
 
             // Act
             var createCompanyResponseMessage = await _client.SendAsync(createCompanyRequestMessage);
             createCompanyResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var createCompanyResponse = await createCompanyResponseMessage.Content.ReadFromJsonAsync<CreateCompanyResponse>();
+            var companyId = await createCompanyResponseMessage.Content.ReadFromJsonAsync<string>();
 
             // CompanyId클레임 획득을 위한 재로그인
-            loginRequest = new LoginRequest(email, password);
+            loginRequest = new LoginCommandModel(email, password);
             loginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, loginRequest);
-            loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponse>();
+            loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponseCommandModel>();
 
             var getCompanyMemberRequestMessage= new HttpRequestMessage(HttpMethod.Get, ApiRoutes.Company.GetMembers);
             getCompanyMemberRequestMessage.SetBearerToken(loginResponse!.AccessToken);
@@ -187,9 +201,9 @@ namespace Drawer.IntergrationTest.Organization
 
             // Assert
             getCompanyMemberResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var getCompanyMemberResponse = await getCompanyMemberResponseMessage.Content.ReadFromJsonAsync<GetCompanyMembersResponse>();
-            getCompanyMemberResponse!.Should().NotBeNull();
-            getCompanyMemberResponse!.Members.Should().Contain(m => m.UserId == getUserResponse!.UserId);
+            var members = await getCompanyMemberResponseMessage.Content.ReadFromJsonAsync<List<CompanyMemberQueryModel>>();
+            members.Should().NotBeNull();
+            members.Should().Contain(m => m.UserId == userInfo.UserId);
         }
       
     }

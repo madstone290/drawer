@@ -70,16 +70,15 @@ namespace Drawer.Web.Pages.Location
             }
 
             _locations.Clear();
-            foreach (var locationDto in response.Data.Locations)
+            foreach (var locationDto in response.Data)
             {
                 var location = new LocationModel()
                 {
                     Id = locationDto.Id,
                     Name = locationDto.Name,
                     Note = locationDto.Note,
-                    ParentGroupId = locationDto.UpperLocationId ?? 0,
-                    ParentGroupName = response.Data.Locations
-                        .FirstOrDefault(x => x.Id == locationDto.UpperLocationId)?.Name,
+                    ParentGroupId = locationDto.ParentGroupId ?? 0,
+                    ParentGroupName = response.Data.FirstOrDefault(x => x.Id == locationDto.ParentGroupId)?.Name,
                     HierarchyLevel = locationDto.HierarchyLevel,
                     IsGroup = locationDto.IsGroup
                 };

@@ -46,7 +46,6 @@ namespace Drawer.Web.Utils
                 isSuccessful = false;
             }
             return new JsonResult<T>(isSuccessful, data);
-
         }
 
         /// <summary>
@@ -77,7 +76,5 @@ namespace Drawer.Web.Utils
             }
             return new JsonResult<T>(isSuccessful, data);
         }
-
-
     }
 }

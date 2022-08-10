@@ -1,5 +1,6 @@
 ﻿using Drawer.Application.Config;
 using Drawer.Application.Exceptions;
+using Drawer.Application.Services.Authentication.CommandModels;
 using Drawer.Application.Services.Authentication.Repos;
 using Drawer.Domain.Models.Authentication;
 using Microsoft.AspNetCore.Identity;
@@ -15,15 +16,9 @@ namespace Drawer.Application.Services.Authentication.Commands
     /// <summary>
     /// 액세스 토큰을 갱신한다
     /// </summary>
-    public record RefreshCommand(string Email, string RefreshToken) : ICommand<RefreshResult>;
+    public record RefreshCommand(RefreshCommandModel Refresh) : ICommand<string>;
 
-    /// <summary>
-    /// 갱신 결과
-    /// </summary>
-    /// <param name="AccessToken"></param>
-    public record RefreshResult(string AccessToken);
-
-    public class RefreshCommandHandler : ICommandHandler<RefreshCommand, RefreshResult>
+    public class RefreshCommandHandler : ICommandHandler<RefreshCommand, string>
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
@@ -42,16 +37,18 @@ namespace Drawer.Application.Services.Authentication.Commands
             _userClaimService = userClaimService;
         }
 
-        public async Task<RefreshResult> Handle(RefreshCommand command, CancellationToken cancellationToken)
+        public async Task<string> Handle(RefreshCommand command, CancellationToken cancellationToken)
         {
-            var user = await _userManager.FindByEmailAsync(command.Email);
+            var refreshDto = command.Refresh;
+
+            var user = await _userManager.FindByEmailAsync(refreshDto.Email);
             if (user == null)
                 throw new InvalidLoginException();
             if (!user.EmailConfirmed)
                 throw new InvalidLoginException();
 
             var refreshTokens = await _refreshTokenRepository.FindByUserIdAsync(user.Id);
-            var refreshToken = refreshTokens.FirstOrDefault(x => x.Token == command.RefreshToken && x.IsActive);
+            var refreshToken = refreshTokens.FirstOrDefault(x => x.Token == refreshDto.RefreshToken && x.IsActive);
             if (refreshToken == null)
                 throw new InvalidRefreshTokenException();
 
@@ -64,7 +61,7 @@ namespace Drawer.Application.Services.Authentication.Commands
             var claims = await _userClaimService.GetClaimsAsync(user);
 
             var accessToken = _tokenGenerator.GenenateAccessToken(claims);
-            return new RefreshResult(accessToken);
+            return accessToken;
         }
     }
 }

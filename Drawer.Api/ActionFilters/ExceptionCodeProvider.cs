@@ -1,5 +1,5 @@
 ﻿using Drawer.Application.Exceptions;
-using Drawer.Contract.Common;
+using Drawer.Shared.Contracts.Common;
 
 namespace Drawer.Api.ActionFilters
 {

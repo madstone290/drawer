@@ -2,7 +2,6 @@
 using Drawer.Web.Pages.User.ViewModels;
 using Drawer.Web.Pages.User.Views;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 
 namespace Drawer.Web.Pages.User.Components

@@ -1,4 +1,5 @@
-﻿using Drawer.Application.Services.Inventory.Repos;
+﻿using Drawer.Application.Services.Inventory.QueryModels;
+using Drawer.Application.Services.Inventory.Repos;
 using Drawer.Domain.Models.Inventory;
 using Drawer.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -16,24 +17,54 @@ namespace Drawer.Infrastructure.Repos.Inventory
         {
         }
 
-        public async Task<IList<InventoryItem>> FindAll()
-        {
-            return await _dbContext.InventoryItems.ToListAsync();
-        }
-
         public async Task<InventoryItem?> FindByItemIdAndLocationIdAsync(long itemId, long locationId)
         {
-            return await _dbContext.InventoryItems.FirstOrDefaultAsync(x=> x.ItemId == itemId && x.LocationId == locationId);
+            return await _dbContext.InventoryItems.FirstOrDefaultAsync(x => x.ItemId == itemId && x.LocationId == locationId);
         }
 
-        public async Task<IList<InventoryItem>> FindByItemIdAsync(long itemId)
+        public async Task<InventoryItemQueryModel?> QueryByItemIdAndLocationId(long itemId, long locationId)
         {
-            return await _dbContext.InventoryItems.Where(x=> x.ItemId == itemId).ToListAsync();
+            return await _dbContext.InventoryItems.Where(x => x.ItemId == itemId && x.LocationId == locationId)
+                  .SelectQueryModel()
+                  .FirstOrDefaultAsync();
         }
 
-        public async Task<IList<InventoryItem>> FindByLocationIdAsync(long locationId)
+        public async Task<List<InventoryItemQueryModel>> QueryAll()
         {
-            return await _dbContext.InventoryItems.Where(x=> x.LocationId == locationId).ToListAsync();
+            return await _dbContext.InventoryItems
+                .SelectQueryModel()
+                .ToListAsync();
+        }
+
+        public async Task<List<InventoryItemQueryModel>> QueryByItemId(long itemId)
+        {
+            return await _dbContext.InventoryItems
+                .Where(x => x.ItemId == itemId)
+                .SelectQueryModel()
+                .ToListAsync();
+        }
+
+        public async Task<List<InventoryItemQueryModel>> QueryByLocationId(long locationId)
+        {
+            return await _dbContext.InventoryItems.Where(x => x.LocationId == locationId)
+               .SelectQueryModel()
+               .ToListAsync();
+        }
+
+    }
+
+    public static class InventoryItemRepositoryExtensions
+    {
+        public static IQueryable<InventoryItemQueryModel> SelectQueryModel(this IQueryable<InventoryItem> query)
+        {
+            return query.Select(x => new InventoryItemQueryModel()
+            {
+                ItemId = x.ItemId,
+                LocationId = x.LocationId,
+                Quantity = x.Quantity
+            });
         }
     }
+
 }
+

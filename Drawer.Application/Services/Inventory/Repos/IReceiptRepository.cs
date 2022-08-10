@@ -1,4 +1,5 @@
-﻿using Drawer.Domain.Models.Inventory;
+﻿using Drawer.Application.Services.Inventory.QueryModels;
+using Drawer.Domain.Models.Inventory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,8 @@ namespace Drawer.Application.Services.Inventory.Repos
 {
     public interface IReceiptRepository : IRepository<Receipt, long>
     {
-        Task<List<Receipt>>  FindByReceiptDateBetween(DateTime from, DateTime to);
+        Task<ReceiptQueryModel?> GetById(long id);
+
+        Task<List<ReceiptQueryModel>>  GetByReceiptDateBetween(DateTime from, DateTime to);
     }
 }

@@ -1,5 +1,6 @@
-﻿using Drawer.Contract;
-using Drawer.Contract.Inventory;
+﻿using Drawer.Application.Services.Inventory.CommandModels;
+using Drawer.Application.Services.Inventory.QueryModels;
+using Drawer.Shared;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;
@@ -27,104 +28,135 @@ namespace Drawer.IntergrationTest.Inventory
 
         async Task<long> CreateParentGroup()
         {
-            var request = new CreateLocationRequest(null, Guid.NewGuid().ToString(), null, true);
+            var requestContent = new LocationAddCommandModel()
+            {
+                Name = Guid.NewGuid().ToString(),
+                IsGroup = true
+            };
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Create);
-            requestMessage.Content = JsonContent.Create(request);
+            requestMessage.Content = JsonContent.Create(requestContent);
             var ResponseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
-            var Response = await ResponseMessage.Content.ReadFromJsonAsync<CreateLocationResponse>() ?? default!;
-            return Response.Id;
+            var locationId = await ResponseMessage.Content.ReadFromJsonAsync<long>();
+            return locationId;
         }
 
-        [Theory]
-        [InlineData("위치-생성-1", "note1")]
-        public async Task CreateLocation_Returns_Ok_With_Content(string name, string note)
+        [Fact]
+        public async Task CreateLocation_Returns_Ok_With_Content()
         {
             // Arrange
             var parentGroupId = await CreateParentGroup();
-            var request = new CreateLocationRequest(parentGroupId, name, note, false);
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Create);
-            requestMessage.Content = JsonContent.Create(request);
-
-            // Act
-            var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
-
-            // Assert
-            responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var response = await responseMessage.Content.ReadFromJsonAsync<CreateLocationResponse>() ?? default!;
-            response.Should().NotBeNull();
-        }
-
-        [Theory]
-        [InlineData(
-            "위치-배치-1", "위치입니다", false,
-            "위치-배치-2", "위치입니다", false
-        )]
-        public async Task BatchCreateLocation_Returns_Ok_With_Content(
-            string name1, string note1, bool isGroup1,
-            string name2, string note2, bool isGroup2)
-        {
-            var upperLocationId = await CreateParentGroup();
-            // Arrange
-            var request = new BatchCreateLocationRequest(new List<BatchCreateLocationRequest.Location>()
+            var requestContent = new LocationAddCommandModel()
             {
-                new BatchCreateLocationRequest.Location(upperLocationId, name1, note1, isGroup1),
-                new BatchCreateLocationRequest.Location(upperLocationId, name2, note2, isGroup2),
-            });
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.BatchCreate);
-            requestMessage.Content = JsonContent.Create(request);
+                ParentGroupId = parentGroupId,
+                Name = Guid.NewGuid().ToString(),
+                Note = Guid.NewGuid().ToString(),
+                IsGroup = false
+            };
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Create);
+            requestMessage.Content = JsonContent.Create(requestContent);
 
             // Act
             var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
 
             // Assert
             responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var response = await responseMessage.Content.ReadFromJsonAsync<BatchCreateLocationResponse>() ?? default!;
-            response.Should().NotBeNull();
-            response.IdList.Count.Should().Be(2);
+            var locationId = await responseMessage.Content.ReadFromJsonAsync<long>();
+            locationId.Should().BeGreaterThan(0);
         }
 
-        [Theory]
-        [InlineData("위치-ID조회-1", "note1")]
-        public async Task GetLocation_Returns_Ok_With_CreatedLocation(string name, string note)
+        [Fact]
+        public async Task BatchCreateLocation_Returns_Ok_With_Content()
+        {
+            var parentGroupId = await CreateParentGroup();
+            // Arrange
+            var requestContent = new List<LocationAddCommandModel>()
+            {
+                new LocationAddCommandModel()
+                {
+                    ParentGroupId = parentGroupId,
+                    Name = Guid.NewGuid().ToString(),
+                    Note = Guid.NewGuid().ToString(),
+                    IsGroup = false
+                },
+                new LocationAddCommandModel()
+                {
+                    ParentGroupId = parentGroupId,
+                    Name = Guid.NewGuid().ToString(),
+                    Note = Guid.NewGuid().ToString(),
+                    IsGroup = false
+                }
+            };
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.BatchCreate);
+            requestMessage.Content = JsonContent.Create(requestContent);
+
+            // Act
+            var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
+
+            // Assert
+            responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+            var locationIdList = await responseMessage.Content.ReadFromJsonAsync<List<long>>() ?? default!;
+            locationIdList.Should().NotBeNull();
+            locationIdList.Count.Should().Be(2);
+        }
+
+        [Fact]
+        public async Task GetLocation_Returns_Ok_With_CreatedLocation()
         {
             // Arrange
-            var upperLocationId = await CreateParentGroup();
-            var createRequest = new CreateLocationRequest(upperLocationId, name, note, false);
+            var parentGroupId = await CreateParentGroup();
+            var requestContent = new LocationAddCommandModel()
+            {
+                ParentGroupId = parentGroupId,
+                Name = Guid.NewGuid().ToString(),
+                Note = Guid.NewGuid().ToString(),
+                IsGroup = false
+            };
             var createRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Create);
-            createRequestMessage.Content = JsonContent.Create(createRequest);
+            createRequestMessage.Content = JsonContent.Create(requestContent);
             var createResponseMessage = await _client.SendAsyncWithMasterAuthentication(createRequestMessage);
-            var createResponse = await createResponseMessage.Content.ReadFromJsonAsync<CreateLocationResponse>() ?? null!;
+            var locationId = await createResponseMessage.Content.ReadFromJsonAsync<long>();
 
             // Act
             var getRequestMessage = new HttpRequestMessage(HttpMethod.Get,
-                ApiRoutes.Locations.Get.Replace("{id}", createResponse.Id.ToString()));
+                ApiRoutes.Locations.Get.Replace("{id}", $"{locationId}"));
             var getResponseMessage = await _client.SendAsyncWithMasterAuthentication(getRequestMessage);
 
             // Assert
             getResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var getResponse = await getResponseMessage.Content.ReadFromJsonAsync<GetLocationResponse>() ?? null!;
-            getResponse.Should().NotBeNull();
-            getResponse.Id.Should().Be(createResponse.Id);
-            getResponse.UpperLocationId.Should().Be(createRequest.ParentGroupId);
-            getResponse.Name.Should().Be(createRequest.Name);
-            getResponse.Note.Should().Be(createRequest.Note);
+            var location = await getResponseMessage.Content.ReadFromJsonAsync<LocationQueryModel>() ?? null!;
+            location.Should().NotBeNull();
+            location.Id.Should().Be(locationId);
+            location.ParentGroupId.Should().Be(requestContent.ParentGroupId);
+            location.Name.Should().Be(requestContent.Name);
+            location.Note.Should().Be(requestContent.Note);
         }
 
-        [Theory]
-        [InlineData("위치-조회-1", "note1", "위치-조회-2", "note2")]
-        public async Task GetLocations_Returns_Ok_With_CreatedLocations(string name1, string note1, string name2, string note2)
+        [Fact]
+        public async Task GetLocations_Returns_Ok_With_CreatedLocations()
         {
             // Arrange
-            var upperLocationId1 = await CreateParentGroup();
-            var createRequest1 = new CreateLocationRequest(upperLocationId1, name1, note1, false);
+            var parentGroupId1 = await CreateParentGroup();
+            var requestContent1 = new LocationAddCommandModel()
+            {
+                ParentGroupId = parentGroupId1,
+                Name = Guid.NewGuid().ToString(),
+                Note = Guid.NewGuid().ToString(),
+                IsGroup = false
+            };
             var createRequestMessage1 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Create);
-            createRequestMessage1.Content = JsonContent.Create(createRequest1);
+            createRequestMessage1.Content = JsonContent.Create(requestContent1);
             var createResponseMessage1 = await _client.SendAsyncWithMasterAuthentication(createRequestMessage1);
 
-            var upperLocationId2 = await CreateParentGroup();
-            var createRequest2 = new CreateLocationRequest(upperLocationId2, name2, note2, false);
+            var parentGroupId2 = await CreateParentGroup();
+            var requestContent2 = new LocationAddCommandModel()
+            {
+                ParentGroupId = parentGroupId2,
+                Name = Guid.NewGuid().ToString(),
+                Note = Guid.NewGuid().ToString(),
+                IsGroup = false
+            };
             var createRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Create);
-            createRequestMessage2.Content = JsonContent.Create(createRequest2);
+            createRequestMessage2.Content = JsonContent.Create(requestContent2);
             var createResponseMessage2 = await _client.SendAsyncWithMasterAuthentication(createRequestMessage2);
 
             // Act
@@ -133,72 +165,92 @@ namespace Drawer.IntergrationTest.Inventory
 
             // Assert
             getLocationsResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var getLocationsResponse = await getLocationsResponseMessage.Content.ReadFromJsonAsync<GetLocationsResponse>() ?? null!;
-            getLocationsResponse.Should().NotBeNull();
-            getLocationsResponse.Locations.Should().NotBeNull();
-            getLocationsResponse.Locations.Should()
-                .Contain(x => x.UpperLocationId == upperLocationId1 && x.Name == name1 && x.Note == note1);
-            getLocationsResponse.Locations.Should()
-                .Contain(x => x.UpperLocationId == upperLocationId2 && x.Name == name2 && x.Note == note2);
+            var locationList = await getLocationsResponseMessage.Content.ReadFromJsonAsync<List<LocationQueryModel>>() ?? null!;
+            locationList.Should().NotBeNull();
+            locationList.Should().Contain(x =>
+                x.ParentGroupId == requestContent1.ParentGroupId &&
+                x.Name == requestContent1.Name &&
+                x.Note == requestContent1.Note);
+            locationList.Should().Contain(x =>
+                x.ParentGroupId == requestContent2.ParentGroupId &&
+                x.Name == requestContent2.Name &&
+                x.Note == requestContent2.Note);
         }
 
-        [Theory]
-        [InlineData("위치-수정-전", "note1", "위치-수정-후", "note2")]
-        public async Task UpdateLocation_Returns_Ok(string name1, string note1, string name2, string note2)
+        [Fact]
+        public async Task UpdateLocation_Returns_Ok()
         {
             // Arrange
-            var upperLocationId = await CreateParentGroup();
-            var createRequest = new CreateLocationRequest(upperLocationId, name1, note1, false);
-            var createRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Create);
-            createRequestMessage.Content = JsonContent.Create(createRequest);
-            var createResponseMessage = await _client.SendAsyncWithMasterAuthentication(createRequestMessage);
-            var createResponse = await createResponseMessage.Content.ReadFromJsonAsync<CreateLocationResponse>() ?? null!;
+            var parentGroupId = await CreateParentGroup();
+            var createContent = new LocationAddCommandModel()
+            {
+                ParentGroupId = parentGroupId,
+                Name = Guid.NewGuid().ToString(),
+                Note = Guid.NewGuid().ToString(),
+                IsGroup = false
+            };
+            var createRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Create);
+            createRequest.Content = JsonContent.Create(createContent);
+            var createResponse = await _client.SendAsyncWithMasterAuthentication(createRequest);
+            var locationId = await createResponse.Content.ReadFromJsonAsync<long>();
 
             // Act
-            var updateRequest = new UpdateLocationRequest(name2, note2);
-            var updateRequestMessage = new HttpRequestMessage(HttpMethod.Put,
-                ApiRoutes.Locations.Update.Replace("{id}", createResponse.Id.ToString()));
-            updateRequestMessage.Content = JsonContent.Create(updateRequest);
-            var updateResponseMessage = await _client.SendAsyncWithMasterAuthentication(updateRequestMessage);
+            var updateContent = new LocationUpdateCommandModel()
+            {
+                Name = Guid.NewGuid().ToString(),
+                Note = Guid.NewGuid().ToString(),
+            };
+            var updateRequest = new HttpRequestMessage(HttpMethod.Put,
+                ApiRoutes.Locations.Update.Replace("{id}", $"{locationId}"));
+            updateRequest.Content = JsonContent.Create(updateContent);
+            var updateResponse = await _client.SendAsyncWithMasterAuthentication(updateRequest);
 
             // Assert
-            updateResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+            updateResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
 
-            var getRequestMessage = new HttpRequestMessage(HttpMethod.Get,
-                ApiRoutes.Locations.Get.Replace("{id}", createResponse.Id.ToString()));
-            var getResponseMessage = await _client.SendAsyncWithMasterAuthentication(getRequestMessage);
-            getResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var getResponse = await getResponseMessage.Content.ReadFromJsonAsync<GetLocationResponse>() ?? null!;
-            getResponse.Should().NotBeNull();
-            getResponse.Id.Should().Be(createResponse.Id);
-            getResponse.Name.Should().Be(updateRequest.Name);
-            getResponse.Note.Should().Be(updateRequest.Note);
+            var getRequest = new HttpRequestMessage(HttpMethod.Get,
+                ApiRoutes.Locations.Get.Replace("{id}", $"{locationId}"));
+            var getResponse = await _client.SendAsyncWithMasterAuthentication(getRequest);
+            getResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+            var location = await getResponse.Content.ReadFromJsonAsync<LocationQueryModel?>() ?? null!;
+            location.Should().NotBeNull();
+            location.Id.Should().Be(locationId);
+            location.Name.Should().Be(updateContent.Name);
+            location.Note.Should().Be(updateContent.Note);
         }
 
-        [Theory]
-        [InlineData("위치-삭제", "note")]
-        public async Task DeleteLocation_Returns_Ok(string name, string note)
+        [Fact]
+        public async Task DeleteLocation_Returns_Ok()
         {
             // Arrange
-            var upperLocationId = await CreateParentGroup();
-            var createRequest = new CreateLocationRequest(upperLocationId, name, note, false);
-            var createRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Create);
-            createRequestMessage.Content = JsonContent.Create(createRequest);
-            var createResponseMessage = await _client.SendAsyncWithMasterAuthentication(createRequestMessage);
-            var createResponse = await createResponseMessage.Content.ReadFromJsonAsync<CreateLocationResponse>() ?? null!;
+            var parentGroupId = await CreateParentGroup();
+            var createContent = new LocationAddCommandModel()
+            {
+                ParentGroupId = parentGroupId,
+                Name = Guid.NewGuid().ToString(),
+                Note = Guid.NewGuid().ToString(),
+                IsGroup = false
+            };
+            var createRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Create);
+            createRequest.Content = JsonContent.Create(createContent);
+            var createResponse = await _client.SendAsyncWithMasterAuthentication(createRequest);
+            var locationId = await createResponse.Content.ReadFromJsonAsync<long>();
 
             // Act
-            var deleteRequestMessage = new HttpRequestMessage(HttpMethod.Delete,
-                ApiRoutes.Locations.Delete.Replace("{id}", createResponse.Id.ToString()));
-            var deleteResponseMessage = await _client.SendAsyncWithMasterAuthentication(deleteRequestMessage);
+            var deleteRequest = new HttpRequestMessage(HttpMethod.Delete,
+                ApiRoutes.Locations.Delete.Replace("{id}", $"{locationId}"));
+            var deleteResponse = await _client.SendAsyncWithMasterAuthentication(deleteRequest);
 
             // Assert
-            deleteResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+            deleteResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
 
-            var getRequestMessage = new HttpRequestMessage(HttpMethod.Get,
-                ApiRoutes.Locations.Get.Replace("{id}", createResponse.Id.ToString()));
-            var getResponseMessage = await _client.SendAsyncWithMasterAuthentication(getRequestMessage);
-            getResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.NoContent);
+            var getRequest = new HttpRequestMessage(HttpMethod.Get,
+                ApiRoutes.Locations.Get.Replace("{id}", $"{locationId}"));
+            var getResponse = await _client.SendAsyncWithMasterAuthentication(getRequest);
+            getResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+
+            var location = await getResponse.Content.ReadFromJsonAsync<LocationQueryModel?>();
+            location.Should().BeNull();
         }
 
     }

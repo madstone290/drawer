@@ -94,17 +94,17 @@ namespace Drawer.Web.Pages.Receipt
                 return;
             }
 
-            var itemList = itemResponse.Data.Items;
-            var locationList = locationResponse.Data.Locations;
+            var itemList = itemResponse.Data;
+            var locationList = locationResponse.Data;
             _receiptList.Clear();
-            foreach (var receiptDto in receiptResponse.Data.Receipts)
+            foreach (var receiptDto in receiptResponse.Data)
             {
                 var receipt = new ReceiptTableModel()
                 {
                     Id = receiptDto.Id,
                     TransactionNumber = receiptDto.TransactionNumber,
-                    ReceiptDateString = receiptDto.ReceiptDateTime.Date.ToString("yyyy-MM-dd"),
-                    ReceiptTimeString = receiptDto.ReceiptDateTime.TimeOfDay.ToString(@"hh\:mm"),
+                    ReceiptDateString = receiptDto.ReceiptDateTimeLocal.Date.ToString("yyyy-MM-dd"),
+                    ReceiptTimeString = receiptDto.ReceiptDateTimeLocal.TimeOfDay.ToString(@"hh\:mm"),
                     ItemId = receiptDto.ItemId,
                     ItemName = itemList.First(x => x.Id == receiptDto.ItemId).Name,
                     LocationId = receiptDto.LocationId,

@@ -1,4 +1,5 @@
-﻿using Drawer.Domain.Models.Inventory;
+﻿using Drawer.Application.Services.Inventory.QueryModels;
+using Drawer.Domain.Models.Inventory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +10,10 @@ namespace Drawer.Application.Services.Inventory.Repos
 {
     public interface IItemRepository : IRepository<Item, long>
     {
-        Task<IList<Item>> FindAll();
-
         Task<bool> ExistByName(string name);
+
+        Task<ItemQueryModel?> QueryById(long id);
+
+        Task<List<ItemQueryModel>> QueryAll();
     }
 }

@@ -1,5 +1,5 @@
-﻿using Drawer.Contract;
-using Drawer.Contract.Inventory;
+﻿using Drawer.Application.Services.Inventory.QueryModels;
+using Drawer.Shared;
 using Drawer.Web.Authentication;
 using Drawer.Web.Utils;
 
@@ -11,13 +11,13 @@ namespace Drawer.Web.Api.Inventory
         {
         }
 
-        public async Task<ApiResponse<GetInventoryItemsResponse>> GetInventoryDetails(long? itemId = null, long? locationId = null)
+        public async Task<ApiResponse<List<InventoryItemQueryModel>>> GetInventoryDetails(long? itemId = null, long? locationId = null)
         {
             var uri = ApiRoutes.InventoryItems.Get
                 .AddQuery("ItemId", itemId?.ToString())
                 .AddQuery("LocationId", locationId?.ToString());
 
-            var request = new ApiRequest<GetInventoryItemsResponse>(
+            var request = new ApiRequest<List<InventoryItemQueryModel>>(
                 HttpMethod.Get,
                 uri);
 

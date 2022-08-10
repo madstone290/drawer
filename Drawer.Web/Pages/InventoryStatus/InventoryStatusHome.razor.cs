@@ -69,7 +69,7 @@ namespace Drawer.Web.Pages.InventoryStatus
 
             // 모든 아이템에 대한 상세정보 생성
             _inventoryItems.Clear();
-            foreach (var item in itemResponse.Data.Items)
+            foreach (var item in itemResponse.Data)
             {
                 var inventoryDetail = new ItemInventoryModel()
                 {
@@ -82,7 +82,7 @@ namespace Drawer.Web.Pages.InventoryStatus
             // 서버의 수량정보를 적용한다.
             foreach (var inventoryDetail in _inventoryItems)
             {
-                inventoryDetail.Quantity = inventoryResponse.Data.InventoryItems
+                inventoryDetail.Quantity = inventoryResponse.Data
                     .Where(x => x.ItemId == inventoryDetail.ItemId)
                     .Sum(x => x.Quantity);
             }

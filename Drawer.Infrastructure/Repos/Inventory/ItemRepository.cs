@@ -1,4 +1,5 @@
-﻿using Drawer.Application.Services.Inventory.Repos;
+﻿using Drawer.Application.Services.Inventory.QueryModels;
+using Drawer.Application.Services.Inventory.Repos;
 using Drawer.Domain.Models.Inventory;
 using Drawer.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -18,12 +19,41 @@ namespace Drawer.Infrastructure.Repos.Inventory
 
         public async Task<bool> ExistByName(string name)
         {
-            return await _dbContext.Items.AnyAsync(x=> x.Name == name);
+            return await _dbContext.Items.AnyAsync(x => x.Name == name);
         }
 
-        public async Task<IList<Item>> FindAll()
+        public async Task<List<ItemQueryModel>> QueryAll()
         {
-            return await _dbContext.Items.ToListAsync();
+            return await _dbContext.Items
+                .Select(x => new ItemQueryModel()
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Code = x.Code,
+                    Number = x.Number,
+                    Sku = x.Sku,
+                    QuantityUnit = x.QuantityUnit
+
+                })
+                .ToListAsync();
         }
+
+        public async Task<ItemQueryModel?> QueryById(long id)
+        {
+            return await _dbContext.Items
+                .Where(x => x.Id == id)
+                .Select(x => new ItemQueryModel()
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Code = x.Code,
+                    Number = x.Number,
+                    Sku = x.Sku,
+                    QuantityUnit = x.QuantityUnit
+
+                })
+                .FirstOrDefaultAsync();
+        }
+
     }
 }

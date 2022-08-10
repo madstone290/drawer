@@ -1,4 +1,5 @@
-﻿using Drawer.Domain.Models.Inventory;
+﻿using Drawer.Application.Services.Inventory.QueryModels;
+using Drawer.Domain.Models.Inventory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,8 @@ namespace Drawer.Application.Services.Inventory.Repos
 {
     public interface IIssueRepository : IRepository<Issue, long>
     {
-        Task<List<Issue>> FindByIssueDateBetween(DateTime from, DateTime to);
+        Task<IssueQueryModel?> QueryById(long id);
+        
+        Task<List<IssueQueryModel>> QueryByIssueDateBetween(DateTime from, DateTime to);
     }
 }

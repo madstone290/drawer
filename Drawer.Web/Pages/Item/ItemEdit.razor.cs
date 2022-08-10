@@ -1,4 +1,5 @@
-﻿using Drawer.Web.Api.Inventory;
+﻿using Drawer.Application.Services.Inventory.CommandModels;
+using Drawer.Web.Api.Inventory;
 using Drawer.Web.Pages.Item.Models;
 using Drawer.Web.Utils;
 using Microsoft.AspNetCore.Components;
@@ -60,20 +61,27 @@ namespace Drawer.Web.Pages.Item
             await _form.Validate();
             if (_isFormValid)
             {
+                var itemDto = new ItemAddUpdateCommandModel()
+                {
+                    Name = _item.Name,
+                    Code = _item.Code,
+                    Number = _item.Number,
+                    Sku = _item.Sku,
+                    QuantityUnit = _item.QuantityUnit
+                };
                 if (EditMode == EditMode.Add)
                 {
-                    var response = await ApiClient.AddItem(_item.Name, _item.Code, _item.Number, _item.Sku, _item.QuantityUnit);
+                    var response = await ApiClient.AddItem(itemDto);
                     Snackbar.CheckSuccessFail(response);
 
                     if (response.IsSuccessful)
                     {
-                        _item.Id = response.Data.Id;
                         NavManager.NavigateTo(Paths.ItemHome);
                     }
                 }
                 else if (EditMode == EditMode.Update)
                 {
-                    var response = await ApiClient.UpdateItem(_item.Id, _item.Name, _item.Code, _item.Number, _item.Sku, _item.QuantityUnit);
+                    var response = await ApiClient.UpdateItem(_item.Id, itemDto);
                     Snackbar.CheckSuccessFail(response);
 
                     if (response.IsSuccessful)

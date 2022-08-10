@@ -1,5 +1,7 @@
-﻿using Drawer.Contract;
-using Drawer.Contract.Inventory;
+﻿using Drawer.Application.Services.Inventory.CommandModels;
+using Drawer.Application.Services.Inventory.Commands.ReceiptCommands;
+using Drawer.Application.Services.Inventory.QueryModels;
+using Drawer.Shared;
 using Drawer.Web.Authentication;
 using Drawer.Web.Utils;
 
@@ -12,9 +14,9 @@ namespace Drawer.Web.Api.Inventory
 
         }
 
-        public async Task<ApiResponse<GetReceiptsResponse>> GetReceipts(DateTime from, DateTime to)
+        public async Task<ApiResponse<List<ReceiptQueryModel>>> GetReceipts(DateTime from, DateTime to)
         {
-            var request = new ApiRequest<GetReceiptsResponse>(
+            var request = new ApiRequest<List<ReceiptQueryModel>>(
                 HttpMethod.Get,
                 ApiRoutes.Receipts.GetList
                     .AddQuery("From", from.ToString("yyyy-MM-dd"))
@@ -23,31 +25,31 @@ namespace Drawer.Web.Api.Inventory
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<GetReceiptResponse>> GetReceipt(long id)
+        public async Task<ApiResponse<ReceiptQueryModel?>> GetReceipt(long id)
         {
-            var request = new ApiRequest<GetReceiptResponse>(
+            var request = new ApiRequest<ReceiptQueryModel?>(
                 HttpMethod.Get,
                 ApiRoutes.Receipts.Get.Replace("{id}", $"{id}"));
 
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<CreateReceiptResponse>> AddReceipt(CreateReceiptRequest content)
+        public async Task<ApiResponse<long>> AddReceipt(ReceiptAddUpdateCommandModel receipt)
         {
-            var request = new ApiRequest<CreateReceiptResponse>(
+            var request = new ApiRequest<long>(
                 HttpMethod.Post,
                 ApiRoutes.Receipts.Create,
-                content);
+                receipt);
 
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<Unit>> UpdateReceipt(long id, UpdateReceiptRequest content)
+        public async Task<ApiResponse<Unit>> UpdateReceipt(long id, ReceiptAddUpdateCommandModel receipt)
         {
             var request = new ApiRequest(
                 HttpMethod.Put,
                 ApiRoutes.Receipts.Update.Replace("{id}", $"{id}"),
-                content);
+                receipt);
 
             return await SendAsync(request);
         }

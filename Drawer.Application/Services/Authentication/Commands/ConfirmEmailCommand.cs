@@ -9,30 +9,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Drawer.Application.Services.Authentication.CommandModels;
 
 namespace Drawer.Application.Services.Authentication.Commands
 {
     /// <summary>
     /// 인증을 위한 메일링크를 송신한다
     /// </summary>
-    public class ConfirmEmailCommand : ICommand
-    {
-        /// <summary>
-        /// 수신 이메일 주소
-        /// </summary>
-        public string Email { get; }
-
-        /// <summary>
-        /// 리디렉트 주소
-        /// </summary>
-        public string ReturnUri { get; }
-
-        public ConfirmEmailCommand(string email, string returnUri)
-        {
-            Email = email;
-            ReturnUri = returnUri;
-        }
-    }
+    public record ConfirmEmailCommand(EmailConfirmationCommandModel EmailConfirmation) : ICommand;
 
     public class ConfirmEmailCommandHandler : ICommandHandler<ConfirmEmailCommand>
     {
@@ -45,20 +29,22 @@ namespace Drawer.Application.Services.Authentication.Commands
             _emailSender = emailSender; 
         }
 
-        public async Task<Unit> Handle(ConfirmEmailCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(ConfirmEmailCommand command, CancellationToken cancellationToken)
         {
-            var user = await _userManager.FindByEmailAsync(request.Email);
+            var emailConfirmationDto = command.EmailConfirmation;
+
+            var user = await _userManager.FindByEmailAsync(emailConfirmationDto.Email);
             if (user is null)
                 throw new InvalidEmailException();
 
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var linkUri = request.ReturnUri
+            var linkUri = emailConfirmationDto.RedirectUri
                 .AddQuery("token", Uri.EscapeDataString(token))
                 .AddQuery("email", user.Email);
 
             string mailText = $"<a href=\"{linkUri}\">{Messages.ConfirmationEmailText}</a>";
 
-            await _emailSender.SendEmailAsync(request.Email, Messages.ConfirmationEmailSubject, mailText, true);
+            await _emailSender.SendEmailAsync(emailConfirmationDto.Email, Messages.ConfirmationEmailSubject, mailText, true);
             return Unit.Value;
         }
     }

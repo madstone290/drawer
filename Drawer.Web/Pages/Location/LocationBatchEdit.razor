@@ -1,5 +1,5 @@
-﻿@using Drawer.Contract.Inventory
-@using Drawer.Contract.Locations
+﻿@using Drawer.Application.Services.Inventory.CommandModels
+@using Drawer.Application.Services.Inventory.QueryModels
 @using Drawer.Web.Api.Inventory
 @using Drawer.Web.Authentication
 @using Drawer.Web.Pages.Item.Models
@@ -59,8 +59,8 @@
     [Inject] public LocationApiClient LocationApiClient { get; set; } = null!;
     [Inject] public ILockService LockService { get; set; } = null!;
 
-    private List<GetLocationsResponse.Location> _locations = new();
-    private List<GetLocationsResponse.Location> _locationGroups = new();
+    private List<LocationQueryModel> _locations = new();
+    private List<LocationQueryModel> _locationGroups = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -81,7 +81,7 @@
 
             if (Snackbar.CheckFail(response))
             {
-                _locations.AddRange(response.Data.Locations.ToList());
+                _locations.AddRange(response.Data.ToList());
                 _locationGroups.AddRange(_locations.Where(x => x.IsGroup));
 
                 _validator.LocationNames = _locationGroups.Select(x => x.Name).ToList();
@@ -94,10 +94,14 @@
 
     private async Task<bool> Save(IEnumerable<LocationModel> locations)
     {
-        var content = new BatchCreateLocationRequest(locations.Select(x =>
-            new BatchCreateLocationRequest.Location(x.ParentGroupId, x.Name!, x.Note, x.IsGroup)).ToList());
-
-        var response = await LocationApiClient.BatchAddLocation(content);
+        var locationListDto = locations.Select(x => new LocationAddCommandModel()
+        {
+            ParentGroupId = x.ParentGroupId,
+            Name = x.Name,
+            Note = x.Note,
+            IsGroup = x.IsGroup
+        }).ToList();
+        var response = await LocationApiClient.BatchAddLocation(locationListDto);
 
         return Snackbar.CheckSuccessFail(response);
     }

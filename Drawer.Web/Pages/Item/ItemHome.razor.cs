@@ -74,7 +74,7 @@ namespace Drawer.Web.Pages.Item
 
             ItemList.Clear();
 
-            foreach (var itemDto in response.Data.Items)
+            foreach (var itemDto in response.Data)
             {
                 var item = new ItemTableModel()
                 {
