@@ -1,9 +1,11 @@
 using Drawer.Api;
 using Drawer.Api.ActionFilters;
 using Drawer.Api.Logging;
+using Drawer.Api.Middlewares;
 using Drawer.Api.Swagger;
 using Drawer.Application;
 using Drawer.Infrastructure;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Serilog;
@@ -62,6 +64,7 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
 });
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseSerilogRequestLogging();
 
