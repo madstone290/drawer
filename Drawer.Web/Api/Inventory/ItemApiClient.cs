@@ -12,7 +12,7 @@ namespace Drawer.Web.Api.Inventory
 
         }
 
-        public async Task<ApiResponse<List<long>>> BatchAddItem(List<ItemAddUpdateCommandModel> itemList)
+        public async Task<ApiResponse<List<long>>> BatchAddItem(List<ItemCommandModel> itemList)
         {
             var request = new ApiRequest<List<long>>(
                 HttpMethod.Post,
@@ -22,7 +22,7 @@ namespace Drawer.Web.Api.Inventory
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<long>> AddItem(ItemAddUpdateCommandModel item)
+        public async Task<ApiResponse<long>> AddItem(ItemCommandModel item)
         {
             var request = new ApiRequest<long>(
                 HttpMethod.Post,
@@ -32,7 +32,7 @@ namespace Drawer.Web.Api.Inventory
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<Unit>> UpdateItem(long id, ItemAddUpdateCommandModel item)
+        public async Task<ApiResponse<Unit>> UpdateItem(long id, ItemCommandModel item)
         {
             var request = new ApiRequest(
                 HttpMethod.Put,

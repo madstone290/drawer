@@ -33,17 +33,17 @@ namespace Drawer.Web.Api.Inventory
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<long>> AddIssue(IssueAddUpdateCommandModel issue)
+        public async Task<ApiResponse<long>> AddIssue(IssueCommandModel issue)
         {
             var request = new ApiRequest<long>(
                 HttpMethod.Post,
-                ApiRoutes.Issues.Create,
+                ApiRoutes.Issues.Add,
                 issue);
 
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<Unit>> UpdateIssue(long id, IssueAddUpdateCommandModel issue)
+        public async Task<ApiResponse<Unit>> UpdateIssue(long id, IssueCommandModel issue)
         {
             var request = new ApiRequest(
                 HttpMethod.Put,
@@ -57,7 +57,7 @@ namespace Drawer.Web.Api.Inventory
         {
             var request = new ApiRequest(
                 HttpMethod.Delete,
-                ApiRoutes.Issues.Delete.Replace("{id}", $"{id}"));
+                ApiRoutes.Issues.Remove.Replace("{id}", $"{id}"));
                 
             return await SendAsync(request);
         }

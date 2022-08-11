@@ -3,20 +3,20 @@ using Drawer.Application.Services.Inventory.CommandModels;
 using Drawer.Application.Services.Inventory.Repos;
 using Drawer.Domain.Models.Inventory;
 
-namespace Drawer.Application.Services.Inventory.Commands.LocationCommands
+namespace Drawer.Application.Services.Inventory.Commands
 {
-    public record CreateLocationCommand(LocationAddCommandModel Location) : ICommand<long>;
+    public record LocationAddCommand(LocationAddCommandModel Location) : ICommand<long>;
 
-    public class CreateLocationCommandHandler : ICommandHandler<CreateLocationCommand, long>
+    public class LocationAddCommandHandler : ICommandHandler<LocationAddCommand, long>
     {
         private readonly ILocationRepository _locationRepository;
 
-        public CreateLocationCommandHandler(ILocationRepository locationRepository)
+        public LocationAddCommandHandler(ILocationRepository locationRepository)
         {
             _locationRepository = locationRepository;
         }
 
-        public async Task<long> Handle(CreateLocationCommand command, CancellationToken cancellationToken)
+        public async Task<long> Handle(LocationAddCommand command, CancellationToken cancellationToken)
         {
             var locationDto = command.Location;
 

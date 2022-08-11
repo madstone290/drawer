@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Drawer.Application.Services.Inventory.CommandModels
 {
-    public class ItemAddUpdateCommandModel
+    public class ItemCommandModel
     {
         /// <summary>
         /// 품명

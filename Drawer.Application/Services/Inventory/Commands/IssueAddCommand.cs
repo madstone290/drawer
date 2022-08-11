@@ -9,17 +9,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drawer.Application.Services.Inventory.Commands.IssueCommands
+namespace Drawer.Application.Services.Inventory.Commands
 {
-    public record CreateIssueCommand(IssueAddUpdateCommandModel Issue) : ICommand<long>;
+    public record IssueAddCommand(IssueCommandModel Issue) : ICommand<long>;
 
-    public class CreateIssueCommandHandler : ICommandHandler<CreateIssueCommand, long>
+    public class IssueAddCommandHandler : ICommandHandler<IssueAddCommand, long>
     {
         private readonly IInventoryUnitOfWork _inventoryUnitOfWork;
         private readonly IItemRepository _itemRepository;
         private readonly ILocationRepository _locationRepository;
 
-        public CreateIssueCommandHandler(IInventoryUnitOfWork inventoryUnitOfWork,
+        public IssueAddCommandHandler(IInventoryUnitOfWork inventoryUnitOfWork,
                                          IItemRepository itemRepository,
                                          ILocationRepository locationRepository)
         {
@@ -28,7 +28,7 @@ namespace Drawer.Application.Services.Inventory.Commands.IssueCommands
             _locationRepository = locationRepository;
         }
 
-        public async Task<long> Handle(CreateIssueCommand command, CancellationToken cancellationToken)
+        public async Task<long> Handle(IssueAddCommand command, CancellationToken cancellationToken)
         {
             var issueDto = command.Issue;
             // 출고내역 생성 후 재고 감소
@@ -49,12 +49,12 @@ namespace Drawer.Application.Services.Inventory.Commands.IssueCommands
             var issue = new Issue(transactionNumber, issueDto.ItemId, issueDto.LocationId, issueDto.Quantity);
             issue.SetIssueTime(issueDto.IssueDateTimeLocal);
             issue.SetBuyer(issueDto.Buyer);
+            issue.SetNote(issueDto.Note);
 
             await _inventoryUnitOfWork.IssueRepository.AddAsync(issue);
 
             // 재고 감소
             inventoryItem.Decrease(issueDto.Quantity);
-
 
             await _inventoryUnitOfWork.SaveChangesAsync();
             return issue.Id;

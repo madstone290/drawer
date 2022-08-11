@@ -9,20 +9,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drawer.Application.Services.Inventory.Commands.ReceiptCommands
+namespace Drawer.Application.Services.Inventory.Commands
 {
-    public record DeleteReceiptCommand(long Id) : ICommand;
+    public record ReceiptRemoveCommand(long Id) : ICommand;
 
-    public class DeleteReceiptCommandHandler : ICommandHandler<DeleteReceiptCommand>
+    public class ReceiptRemoveCommandHandler : ICommandHandler<ReceiptRemoveCommand>
     {
         private readonly IInventoryUnitOfWork _inventoryUnitOfWork;
 
-        public DeleteReceiptCommandHandler(IInventoryUnitOfWork inventoryUnitOfWork)
+        public ReceiptRemoveCommandHandler(IInventoryUnitOfWork inventoryUnitOfWork)
         {
             _inventoryUnitOfWork = inventoryUnitOfWork;
         }
 
-        public async Task<Unit> Handle(DeleteReceiptCommand command, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(ReceiptRemoveCommand command, CancellationToken cancellationToken)
         {
             // 입고내역을 수정하고 재고수량을 감소한다.
 

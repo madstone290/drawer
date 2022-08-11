@@ -10,17 +10,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drawer.Application.Services.Inventory.Commands.InventoryItemCommands
+namespace Drawer.Application.Services.Inventory.Commands
 {
-    public record UpdateInventoryCommand(InventoryItemUpdateCommandModel Item) : ICommand;
+    public record InventoryItemUpdateCommand(InventoryItemCommandModel Item) : ICommand;
 
-    public class UpdateInventoryCommandHandler : ICommandHandler<UpdateInventoryCommand>
+    public class InventoryItemUpdateCommandHandler : ICommandHandler<InventoryItemUpdateCommand>
     {
         private readonly IInventoryItemRepository _inventoryDetailRepository;
         private readonly IItemRepository _itemRepository;
         private readonly ILocationRepository _locationRepository;
 
-        public UpdateInventoryCommandHandler(IInventoryItemRepository inventoryDetailRepository,
+        public InventoryItemUpdateCommandHandler(IInventoryItemRepository inventoryDetailRepository,
             IItemRepository itemRepository, ILocationRepository locationRepository)
         {
             _inventoryDetailRepository = inventoryDetailRepository;
@@ -28,7 +28,7 @@ namespace Drawer.Application.Services.Inventory.Commands.InventoryItemCommands
             _locationRepository = locationRepository;
         }
 
-        public async Task<Unit> Handle(UpdateInventoryCommand command, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(InventoryItemUpdateCommand command, CancellationToken cancellationToken)
         {
             var itemDto = command.Item;
 

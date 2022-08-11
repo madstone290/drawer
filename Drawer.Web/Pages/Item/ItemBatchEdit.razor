@@ -61,7 +61,7 @@
     private async Task<bool> Save(IEnumerable<ItemModel> items)
     {
         var itemListDto = items.Select(item =>
-              new ItemAddUpdateCommandModel()
+              new ItemCommandModel()
                   {
                       Name = item.Name,
                       Code = item.Code,

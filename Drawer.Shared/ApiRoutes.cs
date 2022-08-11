@@ -120,20 +120,24 @@ namespace Drawer.Shared
 
         public static class Receipts
         {
-            public const string Create = "/Api/Receipts";
+            public const string Add = "/Api/Receipts";
             public const string Update = "/Api/Receipts/{id}";
-            public const string Delete = "/Api/Receipts/{id}";
+            public const string Remove = "/Api/Receipts/{id}";
             public const string Get = "/Api/Receipts/{id}";
             public const string GetList = "/Api/Receipts";
+
+            public const string BatchAdd = "/Api/Receipts/Batch";
         }
 
         public static class Issues
         {
-            public const string Create = "/Api/Issues";
+            public const string Add = "/Api/Issues";
             public const string Update = "/Api/Issues/{id}";
-            public const string Delete = "/Api/Issues/{id}";
+            public const string Remove = "/Api/Issues/{id}";
             public const string Get = "/Api/Issues/{id}";
             public const string GetList = "/Api/Issues";
+
+            public const string BatchAdd = "/Api/Issues/Batch";
         }
     }
 }

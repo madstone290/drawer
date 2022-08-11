@@ -61,7 +61,7 @@ namespace Drawer.Web.Pages.Item
             await _form.Validate();
             if (_isFormValid)
             {
-                var itemDto = new ItemAddUpdateCommandModel()
+                var itemDto = new ItemCommandModel()
                 {
                     Name = _item.Name,
                     Code = _item.Code,

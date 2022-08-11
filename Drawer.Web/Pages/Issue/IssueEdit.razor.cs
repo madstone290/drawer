@@ -95,7 +95,7 @@ namespace Drawer.Web.Pages.Issue
             await _form.Validate();
             if (_isFormValid)
             {
-                var issueDto = new IssueAddUpdateCommandModel()
+                var issueDto = new IssueCommandModel()
                 {
                     IssueDateTimeLocal = _issue.IssueDateTime,
                     ItemId = _issue.ItemId,

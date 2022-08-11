@@ -30,7 +30,7 @@ namespace Drawer.IntergrationTest.Inventory
         public async Task CreateItem_Returns_Ok_With_Content()
         {
             // Arrange
-            var itemDto = new ItemAddUpdateCommandModel()
+            var itemDto = new ItemCommandModel()
             {
                 Name = Guid.NewGuid().ToString(),
                 Code = Guid.NewGuid().ToString(),
@@ -54,9 +54,9 @@ namespace Drawer.IntergrationTest.Inventory
         public async Task BatchCreateItem_Returns_Ok_With_Content()
         {
             // Arrange
-            var itemListDto = new List<ItemAddUpdateCommandModel>()
+            var itemListDto = new List<ItemCommandModel>()
             {
-                new ItemAddUpdateCommandModel()
+                new ItemCommandModel()
                 {
                     Name = Guid.NewGuid().ToString(),
                     Code = Guid.NewGuid().ToString(),
@@ -64,7 +64,7 @@ namespace Drawer.IntergrationTest.Inventory
                     Sku = Guid.NewGuid().ToString(),
                     QuantityUnit = Guid.NewGuid().ToString(),
                 },
-                new ItemAddUpdateCommandModel()
+                new ItemCommandModel()
                 {
                     Name = Guid.NewGuid().ToString(),
                     Code = Guid.NewGuid().ToString(),
@@ -90,7 +90,7 @@ namespace Drawer.IntergrationTest.Inventory
         public async Task GetItem_Returns_Ok_With_CreatedItem()
         {
             // Arrange
-            var itemDto = new ItemAddUpdateCommandModel()
+            var itemDto = new ItemCommandModel()
             {
                 Name = Guid.NewGuid().ToString(),
                 Code = Guid.NewGuid().ToString(),
@@ -124,7 +124,7 @@ namespace Drawer.IntergrationTest.Inventory
         public async Task GetItems_Returns_Ok_With_CreatedItems()
         {
             // Arrange
-            var itemDto1 = new ItemAddUpdateCommandModel()
+            var itemDto1 = new ItemCommandModel()
             {
                 Name = Guid.NewGuid().ToString(),
                 Code = Guid.NewGuid().ToString(),
@@ -136,7 +136,7 @@ namespace Drawer.IntergrationTest.Inventory
             createRequest1.Content = JsonContent.Create(itemDto1);
             var createResponse1 = await _client.SendAsyncWithMasterAuthentication(createRequest1);
 
-            var itemDto2 = new ItemAddUpdateCommandModel()
+            var itemDto2 = new ItemCommandModel()
             {
                 Name = Guid.NewGuid().ToString(),
                 Code = Guid.NewGuid().ToString(),
@@ -175,7 +175,7 @@ namespace Drawer.IntergrationTest.Inventory
         public async Task UpdateItem_Returns_Ok()
         {
             // Arrange
-            var itemDto1 = new ItemAddUpdateCommandModel()
+            var itemDto1 = new ItemCommandModel()
             {
                 Name = Guid.NewGuid().ToString(),
                 Code = Guid.NewGuid().ToString(),
@@ -189,7 +189,7 @@ namespace Drawer.IntergrationTest.Inventory
             var itemId = await createResponseMessage.Content.ReadFromJsonAsync<long>();
 
             // Act
-            var itemDto2 = new ItemAddUpdateCommandModel()
+            var itemDto2 = new ItemCommandModel()
             {
                 Name = Guid.NewGuid().ToString(),
                 Code = Guid.NewGuid().ToString(),
@@ -223,7 +223,7 @@ namespace Drawer.IntergrationTest.Inventory
         public async Task DeleteItem_Returns_Ok()
         {
             // Arrange
-            var itemDto = new ItemAddUpdateCommandModel()
+            var itemDto = new ItemCommandModel()
             {
                 Name = Guid.NewGuid().ToString(),
                 Code = Guid.NewGuid().ToString(),

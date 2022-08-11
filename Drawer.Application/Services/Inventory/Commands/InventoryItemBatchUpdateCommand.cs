@@ -5,17 +5,17 @@ using Drawer.Application.Services.Inventory.Repos;
 using Drawer.Domain.Models.Inventory;
 using MediatR;
 
-namespace Drawer.Application.Services.Inventory.Commands.InventoryItemCommands
+namespace Drawer.Application.Services.Inventory.Commands
 {
-    public record BatchUpdateInventoryCommand(List<InventoryItemUpdateCommandModel> Items) : ICommand;
+    public record InventoryItemBatchUpdateCommand(List<InventoryItemCommandModel> Items) : ICommand;
 
-    public class BatchUpdateInventoryCommandHandler : ICommandHandler<BatchUpdateInventoryCommand>
+    public class InventoryItemBatchUpdateCommandHandler : ICommandHandler<InventoryItemBatchUpdateCommand>
     {
         private readonly IInventoryItemRepository _inventoryDetailRepository;
         private readonly IItemRepository _itemRepository;
         private readonly ILocationRepository _locationRepository;
 
-        public BatchUpdateInventoryCommandHandler(IInventoryItemRepository inventoryDetailRepository,
+        public InventoryItemBatchUpdateCommandHandler(IInventoryItemRepository inventoryDetailRepository,
             IItemRepository itemRepository, ILocationRepository locationRepository)
         {
             _inventoryDetailRepository = inventoryDetailRepository;
@@ -23,7 +23,7 @@ namespace Drawer.Application.Services.Inventory.Commands.InventoryItemCommands
             _locationRepository = locationRepository;
         }
 
-        public async Task<Unit> Handle(BatchUpdateInventoryCommand command, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(InventoryItemBatchUpdateCommand command, CancellationToken cancellationToken)
         {
             foreach (var itemDto in command.Items)
             {

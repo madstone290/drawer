@@ -1,5 +1,5 @@
 ﻿using Drawer.Application.Services.Inventory.CommandModels;
-using Drawer.Application.Services.Inventory.Commands.IssueCommands;
+using Drawer.Application.Services.Inventory.Commands;
 using Drawer.Application.Services.Inventory.Queries;
 using Drawer.Application.Services.Inventory.QueryModels;
 using Drawer.Shared;
@@ -47,31 +47,41 @@ namespace Drawer.Api.Controllers.InventoryManagement
         }
 
         [HttpPost]
-        [Route(ApiRoutes.Issues.Create)]
+        [Route(ApiRoutes.Issues.Add)]
         [ProducesResponseType(typeof(long), StatusCodes.Status200OK)]
-        public async Task<IActionResult> CreateIssue([FromBody] IssueAddUpdateCommandModel issue)
+        public async Task<IActionResult> AddIssue([FromBody] IssueCommandModel issue)
         {
-            var command = new CreateIssueCommand(issue);
+            var command = new IssueAddCommand(issue);
             var issueId = await _mediator.Send(command);
             return Ok(issueId);
+        }
+
+        [HttpPost]
+        [Route(ApiRoutes.Issues.BatchAdd)]
+        [ProducesResponseType(typeof(List<long>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> BatchAddIssue([FromBody] List<IssueCommandModel> issueList)
+        {
+            var command = new IssueBatchAddCommand(issueList);
+            var locationIdList = await _mediator.Send(command);
+            return Ok(locationIdList);
         }
 
         [HttpPut]
         [Route(ApiRoutes.Issues.Update)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> UpdateIssue([FromRoute] long id, [FromBody] IssueAddUpdateCommandModel issue)
+        public async Task<IActionResult> UpdateIssue([FromRoute] long id, [FromBody] IssueCommandModel issue)
         {
-            var command = new UpdateIssueCommand(id, issue);
+            var command = new IssueUpdateCommand(id, issue);
             await _mediator.Send(command);
             return Ok();
         }
 
         [HttpDelete]
-        [Route(ApiRoutes.Issues.Delete)]
+        [Route(ApiRoutes.Issues.Remove)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> DeleteIssue([FromRoute] long id)
+        public async Task<IActionResult> RemoveIssue([FromRoute] long id)
         {
-            var command = new DeleteIssueCommand(id);
+            var command = new IssueRemoveCommand(id);
             await _mediator.Send(command);
             return Ok();
         }

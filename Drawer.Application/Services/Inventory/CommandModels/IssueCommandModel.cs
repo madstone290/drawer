@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 
 namespace Drawer.Application.Services.Inventory.CommandModels
 {
-    public class IssueAddUpdateCommandModel
+    public class IssueCommandModel
     {
         public DateTime IssueDateTimeLocal { get; set; }
         public long ItemId { get; set; }
         public long LocationId { get; set; }
         public decimal Quantity { get; set; }
         public string? Buyer { get; set; }
+        public string? Note { get; set; }
     }
 }

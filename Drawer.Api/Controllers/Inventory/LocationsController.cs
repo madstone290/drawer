@@ -2,9 +2,9 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Drawer.Application.Services.Inventory.Queries;
-using Drawer.Application.Services.Inventory.Commands.LocationCommands;
 using Drawer.Application.Services.Inventory.QueryModels;
 using Drawer.Application.Services.Inventory.CommandModels;
+using Drawer.Application.Services.Inventory.Commands;
 
 namespace Drawer.Api.Controllers.InventoryManagement
 {
@@ -41,9 +41,9 @@ namespace Drawer.Api.Controllers.InventoryManagement
         [HttpPost]
         [Route(ApiRoutes.Locations.Create)]
         [ProducesResponseType(typeof(long), StatusCodes.Status200OK)]
-        public async Task<IActionResult> CreateLocation([FromBody] LocationAddCommandModel location)
+        public async Task<IActionResult> Add([FromBody] LocationAddCommandModel location)
         {
-            var command = new CreateLocationCommand(location);
+            var command = new LocationAddCommand(location);
             var locationId = await _mediator.Send(command);
             return Ok(locationId);
         }
@@ -51,9 +51,9 @@ namespace Drawer.Api.Controllers.InventoryManagement
         [HttpPost]
         [Route(ApiRoutes.Locations.BatchCreate)]
         [ProducesResponseType(typeof(List<long>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> BatchCreateItem([FromBody] List<LocationAddCommandModel> locationList)
+        public async Task<IActionResult> BatchAdd([FromBody] List<LocationAddCommandModel> locationList)
         {
-            var command = new BatchCreateLocationCommand(locationList);
+            var command = new LocationBatchAddCommand(locationList);
             var locationIdList = await _mediator.Send(command);
             return Ok(locationIdList);
         }
@@ -61,9 +61,9 @@ namespace Drawer.Api.Controllers.InventoryManagement
         [HttpPut]
         [Route(ApiRoutes.Locations.Update)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> UpdateLocation([FromRoute] long id, [FromBody] LocationUpdateCommandModel location)
+        public async Task<IActionResult> Update([FromRoute] long id, [FromBody] LocationUpdateCommandModel location)
         {
-            var command = new UpdateLocationCommand(id, location);
+            var command = new LocationUpdateCommand(id, location);
             await _mediator.Send(command);
             return Ok();
         }
@@ -71,9 +71,9 @@ namespace Drawer.Api.Controllers.InventoryManagement
         [HttpDelete]
         [Route(ApiRoutes.Locations.Delete)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> DeleteLocation([FromRoute] long id)
+        public async Task<IActionResult> Remove([FromRoute] long id)
         {
-            var command = new DeleteLocationCommand(id);
+            var command = new LocationRemoveCommand(id);
             await _mediator.Send(command);
             return Ok();
         }

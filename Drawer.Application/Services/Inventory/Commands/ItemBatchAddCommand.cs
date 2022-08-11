@@ -3,23 +3,23 @@ using Drawer.Application.Services.Inventory.CommandModels;
 using Drawer.Application.Services.Inventory.Repos;
 using Drawer.Domain.Models.Inventory;
 
-namespace Drawer.Application.Services.Inventory.Commands.ItemCommands
+namespace Drawer.Application.Services.Inventory.Commands
 {
     /// <summary>
     /// 아이템을 생성한다.
     /// </summary>
-    public record BatchCreateItemCommand(List<ItemAddUpdateCommandModel> ItemList): ICommand<List<long>>;
+    public record ItemBatchAddCommand(List<ItemCommandModel> ItemList) : ICommand<List<long>>;
 
-    public class BatchCreateItemCommandHandler : ICommandHandler<BatchCreateItemCommand, List<long>>
+    public class ItemBatchAddCommandHandler : ICommandHandler<ItemBatchAddCommand, List<long>>
     {
         private readonly IItemRepository _itemRepository;
 
-        public BatchCreateItemCommandHandler(IItemRepository itemRepository)
+        public ItemBatchAddCommandHandler(IItemRepository itemRepository)
         {
             _itemRepository = itemRepository;
         }
 
-        public async Task<List<long>> Handle(BatchCreateItemCommand command, CancellationToken cancellationToken)
+        public async Task<List<long>> Handle(ItemBatchAddCommand command, CancellationToken cancellationToken)
         {
             var itemList = new List<Item>();
             foreach (var itemDto in command.ItemList)

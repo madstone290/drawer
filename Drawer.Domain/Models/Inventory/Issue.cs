@@ -53,6 +53,11 @@ namespace Drawer.Domain.Models.Inventory
         public string? Buyer { get; private set; }
 
         /// <summary>
+        /// 비고
+        /// </summary>
+        public string? Note { get; private set; }
+
+        /// <summary>
         /// 아이템, 위치, 수량을 변경한다.
         /// </summary>
         /// <param name="itemId"></param>
@@ -85,6 +90,11 @@ namespace Drawer.Domain.Models.Inventory
         public void SetBuyer(string? buyer)
         {
             Buyer = buyer;
+        }
+
+        public void SetNote(string? note)
+        {
+            Note = note;
         }
     }
 }

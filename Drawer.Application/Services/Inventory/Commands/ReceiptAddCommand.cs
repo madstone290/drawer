@@ -9,20 +9,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drawer.Application.Services.Inventory.Commands.ReceiptCommands
+namespace Drawer.Application.Services.Inventory.Commands
 {
     /// <summary>
     /// 입고를 생성하고 입고ID를 반환한다.
     /// </summary>
-    public record CreateReceiptCommand(ReceiptAddUpdateCommandModel Receipt) : ICommand<long>;
+    public record ReceiptAddCommand(ReceiptCommandModel Receipt) : ICommand<long>;
 
-    public class CreateReceiptCommandHandler : ICommandHandler<CreateReceiptCommand, long>
+    public class ReceiptAddCommandHandler : ICommandHandler<ReceiptAddCommand, long>
     {
         private readonly IInventoryUnitOfWork _inventoryUnitOfWork;
         private readonly IItemRepository _itemRepository;
         private readonly ILocationRepository _locationRepository;
 
-        public CreateReceiptCommandHandler(IInventoryUnitOfWork inventoryUnitOfWork,
+        public ReceiptAddCommandHandler(IInventoryUnitOfWork inventoryUnitOfWork,
                                            IItemRepository itemRepository,
                                            ILocationRepository locationRepository)
         {
@@ -31,7 +31,7 @@ namespace Drawer.Application.Services.Inventory.Commands.ReceiptCommands
             _locationRepository = locationRepository;
         }
 
-        public async Task<long> Handle(CreateReceiptCommand command, CancellationToken cancellationToken)
+        public async Task<long> Handle(ReceiptAddCommand command, CancellationToken cancellationToken)
         {
             var receiptDto = command.Receipt;
 
@@ -45,8 +45,9 @@ namespace Drawer.Application.Services.Inventory.Commands.ReceiptCommands
 
             var transactionNumber = Guid.NewGuid().ToString();
             var receipt = new Receipt(transactionNumber, receiptDto.ItemId, receiptDto.LocationId, receiptDto.Quantity);
-            receipt.SetReceiptDateTime(receiptDto.ReceiptDateTime);
+            receipt.SetReceiptDateTime(receiptDto.ReceiptDateTimeLocal);
             receipt.SetSeller(receiptDto.Seller);
+            receipt.SetNote(receiptDto.Note);
 
             await _inventoryUnitOfWork.ReceiptRepository.AddAsync(receipt);
 

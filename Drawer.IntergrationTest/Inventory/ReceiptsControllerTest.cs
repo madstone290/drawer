@@ -25,9 +25,9 @@ namespace Drawer.IntergrationTest.Inventory
             _outputHelper = outputHelper;
         }
 
-        async Task<long> CreateItem()
+        async Task<long> NewItem()
         {
-            var request = new ItemAddUpdateCommandModel()
+            var request = new ItemCommandModel()
             {
                 Name = Guid.NewGuid().ToString()
             };
@@ -38,7 +38,7 @@ namespace Drawer.IntergrationTest.Inventory
             return itemId;
         }
 
-        async Task<long> CreateLocation()
+        async Task<long> NewLocation()
         {
             var request = new LocationAddCommandModel()
             {
@@ -60,17 +60,17 @@ namespace Drawer.IntergrationTest.Inventory
             return itemList.FirstOrDefault()?.Quantity ?? 0;
         }
 
-        async Task<long> CreateReceipt(DateTime receiptDateTime, long itemId, long locationId, decimal quantity, string? seller)
+        async Task<long> NewReceipt(DateTime receiptDateTime, long itemId, long locationId, decimal quantity, string? seller)
         {
-            var requestContent = new ReceiptAddUpdateCommandModel()
+            var requestContent = new ReceiptCommandModel()
             {
-                ReceiptDateTime = receiptDateTime,
+                ReceiptDateTimeLocal = receiptDateTime,
                 ItemId = itemId,
                 LocationId = locationId,
                 Quantity = quantity,
                 Seller = seller
             };
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Receipts.Create);
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Receipts.Add);
             requestMessage.Content = JsonContent.Create(requestContent);
             var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
             var receiptId = await responseMessage.Content.ReadFromJsonAsync<long>();
@@ -86,25 +86,25 @@ namespace Drawer.IntergrationTest.Inventory
         }
 
         [Fact]
-        public async Task Create_Receipt_Will_Return_Ok()
+        public async Task Add_Receipt_Will_Return_Ok()
         {
             // Arrange
-            var itemId = await CreateItem();
-            var locationId = await CreateLocation();
+            var itemId = await NewItem();
+            var locationId = await NewLocation();
             var quantity = 30;
             var receiptDateTime = DateTime.Now;
             var seller = Guid.NewGuid().ToString();
 
             // Act
-            var requestContent = new ReceiptAddUpdateCommandModel()
+            var requestContent = new ReceiptCommandModel()
             {
-                ReceiptDateTime = receiptDateTime,
+                ReceiptDateTimeLocal = receiptDateTime,
                 ItemId = itemId,
                 LocationId = locationId,
                 Quantity = quantity,
                 Seller = seller
             };
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Receipts.Create);
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Receipts.Add);
             requestMessage.Content = JsonContent.Create(requestContent);
             var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
 
@@ -123,11 +123,11 @@ namespace Drawer.IntergrationTest.Inventory
         }
 
         [Fact]
-        public async Task Create_Receipt_Will_Increase_InventoryItem_Quantity()
+        public async Task Add_Receipt_Will_Increase_InventoryItem_Quantity()
         {
             // Arrange
-            var itemId = await CreateItem();
-            var locationId = await CreateLocation();
+            var itemId = await NewItem();
+            var locationId = await NewLocation();
             var quantity = 30;
             var receiptDateTime = DateTime.Now;
             var seller = Guid.NewGuid().ToString();
@@ -135,15 +135,15 @@ namespace Drawer.IntergrationTest.Inventory
             var beforeQuantity = await GetInventoryItemQuantity(itemId, locationId);
 
             // Act
-            var requestContent = new ReceiptAddUpdateCommandModel()
+            var requestContent = new ReceiptCommandModel()
             {
-                ReceiptDateTime = receiptDateTime,
+                ReceiptDateTimeLocal = receiptDateTime,
                 ItemId = itemId,
                 LocationId = locationId,
                 Quantity = quantity,
                 Seller = seller
             };
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Receipts.Create);
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Receipts.Add);
             requestMessage.Content = JsonContent.Create(requestContent);
             var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
 
@@ -154,27 +154,66 @@ namespace Drawer.IntergrationTest.Inventory
         }
 
         [Fact]
+        public async Task BatchAdd_Receipt_Will_Return_Ok()
+        {
+            // Arrange
+            var receiptListDto = new List<ReceiptCommandModel>()
+            {
+                new ReceiptCommandModel()
+                {
+                    ReceiptDateTimeLocal = DateTime.Now,
+                    ItemId = await NewItem(),
+                    LocationId = await NewLocation(),
+                    Seller = Guid.NewGuid().ToString(),
+                    Note = Guid.NewGuid().ToString(),
+                    Quantity = Random.Shared.Next(1, 100)
+                },
+                new ReceiptCommandModel()
+                {
+                    ReceiptDateTimeLocal = DateTime.Now,
+                    ItemId = await NewItem(),
+                    LocationId = await NewLocation(),
+                    Seller = Guid.NewGuid().ToString(),
+                    Note = Guid.NewGuid().ToString(),
+                    Quantity = Random.Shared.Next(1, 100)
+                }
+            };
+
+
+            // Act
+            var request = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Receipts.BatchAdd);
+            request.Content = JsonContent.Create(receiptListDto);
+            var response = await _client.SendAsyncWithMasterAuthentication(request);
+
+            // Assert
+            response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+            var receiptIdList = await response.Content.ReadFromJsonAsync<List<long>>() ?? default!;
+            receiptIdList.Should().NotBeNull();
+            receiptIdList.Count.Should().Be(receiptListDto.Count);
+        }
+
+        [Fact]
         public async Task Update_Receipt_Will_Return_Ok()
         {
             // Arrange
-            var itemId = await CreateItem();
-            var locationId = await CreateLocation();
+            var itemId = await NewItem();
+            var locationId = await NewLocation();
             var quantity = 30;
             var receiptDateTime = DateTime.Now;
             var seller = Guid.NewGuid().ToString();
 
-            var receiptId = await CreateReceipt(receiptDateTime, itemId, locationId, quantity, seller);
+            var receiptId = await NewReceipt(receiptDateTime, itemId, locationId, quantity, seller);
 
-            itemId = await CreateItem();
-            locationId = await CreateLocation();
+            itemId = await NewItem();
+            locationId = await NewLocation();
             quantity = 50;
             receiptDateTime = DateTime.Now.AddSeconds(10);
             seller = Guid.NewGuid().ToString();
 
             // Act
-            var requestContent = new ReceiptAddUpdateCommandModel()
+            var requestContent = new ReceiptCommandModel()
             {
-                ReceiptDateTime = receiptDateTime,
+                ReceiptDateTimeLocal = receiptDateTime,
                 ItemId = itemId,
                 LocationId = locationId,
                 Quantity = quantity,
@@ -202,13 +241,13 @@ namespace Drawer.IntergrationTest.Inventory
         public async Task Update_Receipt_Same_ItemLocation_Will_Update_InventoryItem_Quantity()
         {
             // Arrange
-            var itemId = await CreateItem();
-            var locationId = await CreateLocation();
+            var itemId = await NewItem();
+            var locationId = await NewLocation();
             var quantity1 = 30;
             var receiptDateTime = DateTime.Now;
             var seller = Guid.NewGuid().ToString();
 
-            var receiptId = await CreateReceipt(receiptDateTime, itemId, locationId, quantity1, seller);
+            var receiptId = await NewReceipt(receiptDateTime, itemId, locationId, quantity1, seller);
             var inventoryQuantityBefore = await GetInventoryItemQuantity(itemId, locationId);
 
             var quantity2 = 50;
@@ -216,9 +255,9 @@ namespace Drawer.IntergrationTest.Inventory
             seller = Guid.NewGuid().ToString();
 
             // Act
-            var requestContent = new ReceiptAddUpdateCommandModel()
+            var requestContent = new ReceiptCommandModel()
             {
-                ReceiptDateTime = receiptDateTime,
+                ReceiptDateTimeLocal = receiptDateTime,
                 ItemId = itemId,
                 LocationId = locationId,
                 Quantity = quantity2,
@@ -240,17 +279,17 @@ namespace Drawer.IntergrationTest.Inventory
         public async Task Update_Receipt_Different_ItemLocation_Will_Update_InventoryItem_Quantity()
         {
             // Arrange
-            var itemId1 = await CreateItem();
-            var locationId1 = await CreateLocation();
+            var itemId1 = await NewItem();
+            var locationId1 = await NewLocation();
             var quantity1 = 30;
             var receiptDateTime = DateTime.Now;
             var seller = Guid.NewGuid().ToString();
 
-            var receiptId = await CreateReceipt(receiptDateTime, itemId1, locationId1, quantity1, seller);
+            var receiptId = await NewReceipt(receiptDateTime, itemId1, locationId1, quantity1, seller);
             var inventoryQuantity1Before = await GetInventoryItemQuantity(itemId1, locationId1);
 
-            var itemId2 = await CreateItem();
-            var locationId2 = await CreateLocation();
+            var itemId2 = await NewItem();
+            var locationId2 = await NewLocation();
             var quantity2 = 50;
             receiptDateTime = DateTime.Now.AddSeconds(10);
             seller = Guid.NewGuid().ToString();
@@ -259,9 +298,9 @@ namespace Drawer.IntergrationTest.Inventory
 
 
             // Act
-            var requestContent = new ReceiptAddUpdateCommandModel()
+            var requestContent = new ReceiptCommandModel()
             {
-                ReceiptDateTime = receiptDateTime,
+                ReceiptDateTimeLocal = receiptDateTime,
                 ItemId = itemId2,
                 LocationId = locationId2,
                 Quantity = quantity2,
@@ -285,17 +324,17 @@ namespace Drawer.IntergrationTest.Inventory
         public async Task Delete_Receipt_Will_Return_Ok()
         {
             // Arrange
-            var itemId = await CreateItem();
-            var locationId = await CreateLocation();
+            var itemId = await NewItem();
+            var locationId = await NewLocation();
             var quantity = 30;
             var receiptDateTime = DateTime.Now;
             var seller = Guid.NewGuid().ToString();
 
-            var receiptId = await CreateReceipt(receiptDateTime, itemId, locationId, quantity, seller);
+            var receiptId = await NewReceipt(receiptDateTime, itemId, locationId, quantity, seller);
 
             // Act
             var requestMessage = new HttpRequestMessage(HttpMethod.Delete,
-                ApiRoutes.Receipts.Delete.Replace("{id}", $"{receiptId}"));
+                ApiRoutes.Receipts.Remove.Replace("{id}", $"{receiptId}"));
             var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
 
             // Assert
@@ -312,18 +351,18 @@ namespace Drawer.IntergrationTest.Inventory
         public async Task Delete_Receipt_Will_Decrease_InventoryItem_Quantity()
         {
             // Arrange
-            var itemId = await CreateItem();
-            var locationId = await CreateLocation();
+            var itemId = await NewItem();
+            var locationId = await NewLocation();
             var quantity = 30;
             var receiptDateTime = DateTime.Now;
             var seller = Guid.NewGuid().ToString();
 
-            var receiptId = await CreateReceipt(receiptDateTime, itemId, locationId, quantity, seller);
+            var receiptId = await NewReceipt(receiptDateTime, itemId, locationId, quantity, seller);
             var inventoryQuantityBefore = await GetInventoryItemQuantity(itemId, locationId);
 
             // Act
             var requestMessage = new HttpRequestMessage(HttpMethod.Delete,
-                ApiRoutes.Receipts.Delete.Replace("{id}", $"{receiptId}"));
+                ApiRoutes.Receipts.Remove.Replace("{id}", $"{receiptId}"));
             var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
 
             // Assert
@@ -335,13 +374,13 @@ namespace Drawer.IntergrationTest.Inventory
         public async Task Get_Receipt_Will_Return_Created_Receipt()
         {
             // Arrange
-            var itemId = await CreateItem();
-            var locationId = await CreateLocation();
+            var itemId = await NewItem();
+            var locationId = await NewLocation();
             var quantity = 30;
             var receiptDateTime = DateTime.Now;
             var seller = Guid.NewGuid().ToString();
 
-            var receiptId = await CreateReceipt(receiptDateTime, itemId, locationId, quantity, seller);
+            var receiptId = await NewReceipt(receiptDateTime, itemId, locationId, quantity, seller);
 
             // Act
             var requestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.Receipts.Get.Replace("{id}", $"{receiptId}"));
@@ -364,21 +403,21 @@ namespace Drawer.IntergrationTest.Inventory
         {
             var receiptDateTime = DateTime.Now;
 
-            var itemId1 = await CreateItem();
-            var locationId1 = await CreateLocation();
+            var itemId1 = await NewItem();
+            var locationId1 = await NewLocation();
             var quantity1 = 30;
             var receiptDateTime1 = receiptDateTime;
             var seller1 = Guid.NewGuid().ToString();
 
-            var receiptId1 = await CreateReceipt(receiptDateTime1, itemId1, locationId1, quantity1, seller1);
+            var receiptId1 = await NewReceipt(receiptDateTime1, itemId1, locationId1, quantity1, seller1);
 
-            var itemId2 = await CreateItem();
-            var locationId2 = await CreateLocation();
+            var itemId2 = await NewItem();
+            var locationId2 = await NewLocation();
             var quantity2 = 30;
             var receiptDateTime2 = receiptDateTime;
             var seller2 = Guid.NewGuid().ToString();
 
-            var receiptId2 = await CreateReceipt(receiptDateTime2, itemId2, locationId2, quantity2, seller2);
+            var receiptId2 = await NewReceipt(receiptDateTime2, itemId2, locationId2, quantity2, seller2);
 
 
             // Act

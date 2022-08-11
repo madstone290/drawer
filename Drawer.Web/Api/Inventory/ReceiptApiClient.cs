@@ -1,5 +1,4 @@
 ﻿using Drawer.Application.Services.Inventory.CommandModels;
-using Drawer.Application.Services.Inventory.Commands.ReceiptCommands;
 using Drawer.Application.Services.Inventory.QueryModels;
 using Drawer.Shared;
 using Drawer.Web.Authentication;
@@ -34,17 +33,17 @@ namespace Drawer.Web.Api.Inventory
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<long>> AddReceipt(ReceiptAddUpdateCommandModel receipt)
+        public async Task<ApiResponse<long>> AddReceipt(ReceiptCommandModel receipt)
         {
             var request = new ApiRequest<long>(
                 HttpMethod.Post,
-                ApiRoutes.Receipts.Create,
+                ApiRoutes.Receipts.Add,
                 receipt);
 
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<Unit>> UpdateReceipt(long id, ReceiptAddUpdateCommandModel receipt)
+        public async Task<ApiResponse<Unit>> UpdateReceipt(long id, ReceiptCommandModel receipt)
         {
             var request = new ApiRequest(
                 HttpMethod.Put,
@@ -58,7 +57,7 @@ namespace Drawer.Web.Api.Inventory
         {
             var request = new ApiRequest(
                 HttpMethod.Delete,
-                ApiRoutes.Receipts.Delete.Replace("{id}", $"{id}"));
+                ApiRoutes.Receipts.Remove.Replace("{id}", $"{id}"));
                 
             return await SendAsync(request);
         }

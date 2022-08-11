@@ -27,7 +27,7 @@ namespace Drawer.IntergrationTest.Inventory
 
         async Task<long> CreateItem()
         {
-            var request = new ItemAddUpdateCommandModel()
+            var request = new ItemCommandModel()
             {
                 Name = Guid.NewGuid().ToString()
             };
@@ -70,7 +70,7 @@ namespace Drawer.IntergrationTest.Inventory
             var oldQuantity = await GetInventoryQuantity(itemId, locationId);
 
             // Act
-            var request = new InventoryItemUpdateCommandModel()
+            var request = new InventoryItemCommandModel()
             {
                 ItemId = itemId,
                 LocationId = locationId,
@@ -98,15 +98,15 @@ namespace Drawer.IntergrationTest.Inventory
             var locationId2 = await CreateLocation();
             var quantity2 = 40;
 
-            var updateRequest = new List<InventoryItemUpdateCommandModel>()
+            var updateRequest = new List<InventoryItemCommandModel>()
             {
-                new InventoryItemUpdateCommandModel()
+                new InventoryItemCommandModel()
                 {
                     ItemId = itemId1,
                     LocationId = locationId1,
                     QuantityChange =quantity1
                 },
-                new InventoryItemUpdateCommandModel()
+                new InventoryItemCommandModel()
                 {
                     ItemId = itemId2,
                     LocationId = locationId2,

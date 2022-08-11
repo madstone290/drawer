@@ -2,7 +2,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Drawer.Application.Services.Inventory.Queries;
-using Drawer.Application.Services.Inventory.Commands.InventoryItemCommands;
+using Drawer.Application.Services.Inventory.Commands;
 using Drawer.Application.Services.Inventory.QueryModels;
 using Drawer.Application.Services.Inventory.CommandModels;
 
@@ -30,9 +30,9 @@ namespace Drawer.Api.Controllers.BasicInfo
         [HttpPut]
         [Route(ApiRoutes.InventoryItems.Update)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> CreateInventoryDetail([FromBody] InventoryItemUpdateCommandModel item)
+        public async Task<IActionResult> UpdateInventoryItem([FromBody] InventoryItemCommandModel item)
         {
-            var command = new UpdateInventoryCommand(item);
+            var command = new InventoryItemUpdateCommand(item);
             var unit = await _mediator.Send(command);
             return Ok();
         }
@@ -40,9 +40,9 @@ namespace Drawer.Api.Controllers.BasicInfo
         [HttpPut]
         [Route(ApiRoutes.InventoryItems.BatchUpdate)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> BatchUpdateInventory([FromBody] List<InventoryItemUpdateCommandModel> itemList)
+        public async Task<IActionResult> BatchUpdateInventoryItem([FromBody] List<InventoryItemCommandModel> itemList)
         {
-            var command = new BatchUpdateInventoryCommand(itemList);
+            var command = new InventoryItemBatchUpdateCommand(itemList);
             var result = await _mediator.Send(command);
             return Ok();
         }

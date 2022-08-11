@@ -9,20 +9,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drawer.Application.Services.Inventory.Commands.IssueCommands
+namespace Drawer.Application.Services.Inventory.Commands
 {
-    public record DeleteIssueCommand(long Id) : ICommand;
+    public record IssueRemoveCommand(long Id) : ICommand;
 
-    public class DeleteIssueCommandHandler : ICommandHandler<DeleteIssueCommand>
+    public class IssueRemoveCommandHandler : ICommandHandler<IssueRemoveCommand>
     {
         private readonly IInventoryUnitOfWork _inventoryUnitOfWork;
 
-        public DeleteIssueCommandHandler(IInventoryUnitOfWork inventoryUnitOfWork)
+        public IssueRemoveCommandHandler(IInventoryUnitOfWork inventoryUnitOfWork)
         {
             _inventoryUnitOfWork = inventoryUnitOfWork;
         }
 
-        public async Task<Unit> Handle(DeleteIssueCommand command, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(IssueRemoveCommand command, CancellationToken cancellationToken)
         {
             // 출고내역을 수정하고 재고수량을 증가한다.
 

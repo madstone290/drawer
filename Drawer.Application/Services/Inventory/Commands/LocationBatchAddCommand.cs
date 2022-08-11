@@ -8,20 +8,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drawer.Application.Services.Inventory.Commands.LocationCommands
+namespace Drawer.Application.Services.Inventory.Commands
 {
-    public record BatchCreateLocationCommand(List<LocationAddCommandModel> LocationList) : ICommand<List<long>>;
+    public record LocationBatchAddCommand(List<LocationAddCommandModel> LocationList) : ICommand<List<long>>;
 
-    public class BatchCreateLocationCommandHandler : ICommandHandler<BatchCreateLocationCommand, List<long>>
+    public class LocationBatchAddCommandHandler : ICommandHandler<LocationBatchAddCommand, List<long>>
     {
         private readonly ILocationRepository _locationRepository;
 
-        public BatchCreateLocationCommandHandler(ILocationRepository LocationRepository)
+        public LocationBatchAddCommandHandler(ILocationRepository LocationRepository)
         {
             _locationRepository = LocationRepository;
         }
 
-        public async Task<List<long>> Handle(BatchCreateLocationCommand command, CancellationToken cancellationToken)
+        public async Task<List<long>> Handle(LocationBatchAddCommand command, CancellationToken cancellationToken)
         {
             var locationList = new List<Location>();
             foreach (var locationDto in command.LocationList)

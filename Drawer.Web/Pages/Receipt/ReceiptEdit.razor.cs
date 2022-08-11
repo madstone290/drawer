@@ -95,9 +95,9 @@ namespace Drawer.Web.Pages.Receipt
             await _form.Validate();
             if (_isFormValid)
             {
-                var receiptDto = new ReceiptAddUpdateCommandModel()
+                var receiptDto = new ReceiptCommandModel()
                 {
-                    ReceiptDateTime = _receipt.ReceiptDateTime,
+                    ReceiptDateTimeLocal = _receipt.ReceiptDateTime,
                     ItemId = _receipt.ItemId,
                     LocationId = _receipt.LocationId,
                     Quantity = _receipt.Quantity,

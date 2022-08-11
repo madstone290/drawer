@@ -10,17 +10,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drawer.Application.Services.Inventory.Commands.IssueCommands
+namespace Drawer.Application.Services.Inventory.Commands
 {
-    public record UpdateIssueCommand(long Id, IssueAddUpdateCommandModel Issue) : ICommand;
+    public record IssueUpdateCommand(long Id, IssueCommandModel Issue) : ICommand;
 
-    public class UpdateIssueCommandHandler : ICommandHandler<UpdateIssueCommand>
+    public class IssueUpdateCommandHandler : ICommandHandler<IssueUpdateCommand>
     {
         private readonly IInventoryUnitOfWork _inventoryUnitOfWork;
         private readonly IItemRepository _itemRepository;
         private readonly ILocationRepository _locationRepository;
 
-        public UpdateIssueCommandHandler(IInventoryUnitOfWork inventoryUnitOfWork,
+        public IssueUpdateCommandHandler(IInventoryUnitOfWork inventoryUnitOfWork,
                                          IItemRepository itemRepository,
                                          ILocationRepository locationRepository)
         {
@@ -29,7 +29,7 @@ namespace Drawer.Application.Services.Inventory.Commands.IssueCommands
             _locationRepository = locationRepository;
         }
 
-        public async Task<Unit> Handle(UpdateIssueCommand command, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(IssueUpdateCommand command, CancellationToken cancellationToken)
         {
             // 1. 품목, 위치가 같은 경우 (동일한 1개의 재고를 수정한다)
             // 2. 품목, 위치가 다른 경우 (다른 2개의 재고를 수정한다)
@@ -59,6 +59,7 @@ namespace Drawer.Application.Services.Inventory.Commands.IssueCommands
                 issue.SetQuantity(issueDto.Quantity);
                 issue.SetIssueTime(issueDto.IssueDateTimeLocal);
                 issue.SetBuyer(issueDto.Buyer);
+                issue.SetNote(issueDto.Note);
 
                 // 재고 수정
                 inventoryItem.Increase(quantityBefore);
@@ -90,6 +91,7 @@ namespace Drawer.Application.Services.Inventory.Commands.IssueCommands
                 issue.SetInventoryInfo(issueDto.ItemId, issueDto.LocationId, issueDto.Quantity);
                 issue.SetIssueTime(issueDto.IssueDateTimeLocal);
                 issue.SetBuyer(issueDto.Buyer);
+                issue.SetNote(issueDto.Note);
 
                 // 이전 재고 증가
                 var beforeInventoryItem = await _inventoryUnitOfWork.InventoryItemRepository

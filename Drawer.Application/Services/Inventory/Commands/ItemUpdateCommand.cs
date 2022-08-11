@@ -10,20 +10,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drawer.Application.Services.Inventory.Commands.ItemCommands
+namespace Drawer.Application.Services.Inventory.Commands
 {
-    public record UpdateItemCommand(long Id, ItemAddUpdateCommandModel Item) : ICommand;
+    public record ItemUpdateCommand(long Id, ItemCommandModel Item) : ICommand;
 
-    public class UpdateItemCommandHandler : ICommandHandler<UpdateItemCommand>
+    public class ItemUpdateCommandHandler : ICommandHandler<ItemUpdateCommand>
     {
         private readonly IItemRepository _itemRepository;
 
-        public UpdateItemCommandHandler(IItemRepository itemRepository)
+        public ItemUpdateCommandHandler(IItemRepository itemRepository)
         {
             _itemRepository = itemRepository;
         }
 
-        public async Task<Unit> Handle(UpdateItemCommand command1, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(ItemUpdateCommand command1, CancellationToken cancellationToken)
         {
             var itemId = command1.Id;
             var itemDto = command1.Item;

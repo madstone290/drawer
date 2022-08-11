@@ -8,23 +8,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drawer.Application.Services.Inventory.Commands.ItemCommands
+namespace Drawer.Application.Services.Inventory.Commands
 {
     /// <summary>
     /// 아이템을 생성한다.
     /// </summary>
-    public record CreateItemCommand(ItemAddUpdateCommandModel Item) : ICommand<long>;
+    public record ItemAddCommand(ItemCommandModel Item) : ICommand<long>;
 
-    public class CreateItemCommandHandler : ICommandHandler<CreateItemCommand, long>
+    public class ItemAddCommandHandler : ICommandHandler<ItemAddCommand, long>
     {
         private readonly IItemRepository _itemRepository;
 
-        public CreateItemCommandHandler(IItemRepository itemRepository)
+        public ItemAddCommandHandler(IItemRepository itemRepository)
         {
             _itemRepository = itemRepository;
         }
 
-        public async Task<long> Handle(CreateItemCommand command, CancellationToken cancellationToken)
+        public async Task<long> Handle(ItemAddCommand command, CancellationToken cancellationToken)
         {
             var itemDto = command.Item;
 

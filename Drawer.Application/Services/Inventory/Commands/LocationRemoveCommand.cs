@@ -9,20 +9,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drawer.Application.Services.Inventory.Commands.LocationCommands
+namespace Drawer.Application.Services.Inventory.Commands
 {
-    public record DeleteLocationCommand(long Id) : ICommand;
+    public record LocationRemoveCommand(long Id) : ICommand;
 
-    public class DeleteLocationCommandHandler : ICommandHandler<DeleteLocationCommand>
+    public class LocationRemoveCommandHandler : ICommandHandler<LocationRemoveCommand>
     {
         private readonly ILocationRepository _locationRepository;
 
-        public DeleteLocationCommandHandler(ILocationRepository locationRepository)
+        public LocationRemoveCommandHandler(ILocationRepository locationRepository)
         {
             _locationRepository = locationRepository;
         }
 
-        public async Task<Unit> Handle(DeleteLocationCommand command, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(LocationRemoveCommand command, CancellationToken cancellationToken)
         {
             // 위치가 참조된 곳이 있는지 확인한다.
             var location = await _locationRepository.FindByIdAsync(command.Id)

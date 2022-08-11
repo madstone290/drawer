@@ -3,8 +3,8 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Drawer.Shared;
 using Drawer.Application.Services.Inventory.Queries;
-using Drawer.Application.Services.Inventory.Commands.ReceiptCommands;
 using Drawer.Application.Services.Inventory.CommandModels;
+using Drawer.Application.Services.Inventory.Commands;
 
 namespace Drawer.Api.Controllers.InventoryManagement
 {
@@ -52,31 +52,42 @@ namespace Drawer.Api.Controllers.InventoryManagement
         }
 
         [HttpPost]
-        [Route(ApiRoutes.Receipts.Create)]
+        [Route(ApiRoutes.Receipts.Add)]
         [ProducesResponseType(typeof(long), StatusCodes.Status200OK)]
-        public async Task<IActionResult> CreateReceipt([FromBody] ReceiptAddUpdateCommandModel receipt)
+        public async Task<IActionResult> AddReceipt([FromBody] ReceiptCommandModel receipt)
         {
-            var command = new CreateReceiptCommand(receipt);
+            var command = new ReceiptAddCommand(receipt);
             var receiptId = await _mediator.Send(command);
             return Ok(receiptId);
+        }
+
+
+        [HttpPost]
+        [Route(ApiRoutes.Receipts.BatchAdd)]
+        [ProducesResponseType(typeof(List<long>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> BatchAddReceipt([FromBody] List<ReceiptCommandModel> receiptList)
+        {
+            var command = new ReceiptBatchAddCommand(receiptList);
+            var locationIdList = await _mediator.Send(command);
+            return Ok(locationIdList);
         }
 
         [HttpPut]
         [Route(ApiRoutes.Receipts.Update)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> UpdateReceipt([FromRoute] long id, [FromBody] ReceiptAddUpdateCommandModel receipt)
+        public async Task<IActionResult> UpdateReceipt([FromRoute] long id, [FromBody] ReceiptCommandModel receipt)
         {
-            var command = new UpdateReceiptCommand(id, receipt);
+            var command = new ReceiptUpdateCommand(id, receipt);
             await _mediator.Send(command);
             return Ok();
         }
 
         [HttpDelete]
-        [Route(ApiRoutes.Receipts.Delete)]
+        [Route(ApiRoutes.Receipts.Remove)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> DeleteReceipt([FromRoute] long id)
+        public async Task<IActionResult> RemoveReceipt([FromRoute] long id)
         {
-            var command = new DeleteReceiptCommand(id);
+            var command = new ReceiptRemoveCommand(id);
             await _mediator.Send(command);
             return Ok();
         }

@@ -10,17 +10,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drawer.Application.Services.Inventory.Commands.ReceiptCommands
+namespace Drawer.Application.Services.Inventory.Commands
 {
-    public record UpdateReceiptCommand(long Id, ReceiptAddUpdateCommandModel Receipt) : ICommand<Unit>;
+    public record ReceiptUpdateCommand(long Id, ReceiptCommandModel Receipt) : ICommand<Unit>;
 
-    public class UpdateReceiptHandler : ICommandHandler<UpdateReceiptCommand, Unit>
+    public class ReceiptUpdateCommandHandler : ICommandHandler<ReceiptUpdateCommand, Unit>
     {
         private readonly IInventoryUnitOfWork _inventoryUnitOfWork;
         private readonly IItemRepository _itemRepository;
         private readonly ILocationRepository _locationRepository;
 
-        public UpdateReceiptHandler(IInventoryUnitOfWork inventoryUnitOfWork,
+        public ReceiptUpdateCommandHandler(IInventoryUnitOfWork inventoryUnitOfWork,
                                     IItemRepository itemRepository,
                                     ILocationRepository locationRepository)
         {
@@ -29,7 +29,7 @@ namespace Drawer.Application.Services.Inventory.Commands.ReceiptCommands
             _locationRepository = locationRepository;
         }
 
-        public async Task<Unit> Handle(UpdateReceiptCommand command, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(ReceiptUpdateCommand command, CancellationToken cancellationToken)
         {
             var receiptId = command.Id;
             var receiptDto = command.Receipt;
@@ -54,8 +54,9 @@ namespace Drawer.Application.Services.Inventory.Commands.ReceiptCommands
                     throw new AppException("재고수량이 부족하여 입고내역을 수정할 수 없습니다");
 
                 receipt.SetQuantity(receiptDto.Quantity);
-                receipt.SetReceiptDateTime(receiptDto.ReceiptDateTime);
+                receipt.SetReceiptDateTime(receiptDto.ReceiptDateTimeLocal);
                 receipt.SetSeller(receiptDto.Seller);
+                receipt.SetNote(receiptDto.Note);
 
                 inventoryItem.Add(quantityDiff);
             }
@@ -81,8 +82,9 @@ namespace Drawer.Application.Services.Inventory.Commands.ReceiptCommands
                 var quantityBefore = receipt.Quantity;
 
                 receipt.SetInventoryInfo(receiptDto.ItemId, receiptDto.LocationId, receiptDto.Quantity);
-                receipt.SetReceiptDateTime(receiptDto.ReceiptDateTime);
+                receipt.SetReceiptDateTime(receiptDto.ReceiptDateTimeLocal);
                 receipt.SetSeller(receiptDto.Seller);
+                receipt.SetNote(receiptDto.Note);
 
                 // 이전 재고 감소
                 beforeInventoryItem.Decrease(quantityBefore);

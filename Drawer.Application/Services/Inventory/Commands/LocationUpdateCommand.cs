@@ -10,20 +10,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drawer.Application.Services.Inventory.Commands.LocationCommands
+namespace Drawer.Application.Services.Inventory.Commands
 {
-    public record UpdateLocationCommand(long Id, LocationUpdateCommandModel Location) : ICommand;
+    public record LocationUpdateCommand(long Id, LocationUpdateCommandModel Location) : ICommand;
 
-    public class UpdateLocationCommandHandler : ICommandHandler<UpdateLocationCommand>
+    public class LocationUpdateCommandHandler : ICommandHandler<LocationUpdateCommand>
     {
         private readonly ILocationRepository _locationRepository;
 
-        public UpdateLocationCommandHandler(ILocationRepository locationRepository)
+        public LocationUpdateCommandHandler(ILocationRepository locationRepository)
         {
             _locationRepository = locationRepository;
         }
 
-        public async Task<Unit> Handle(UpdateLocationCommand command, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(LocationUpdateCommand command, CancellationToken cancellationToken)
         {
             var locationId = command.Id;
             var locationDto = command.Location;
