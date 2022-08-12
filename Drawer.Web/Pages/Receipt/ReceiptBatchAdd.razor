@@ -1,0 +1,161 @@
+﻿@using Drawer.Application.Services.Inventory.CommandModels
+@using Drawer.Application.Services.Inventory.QueryModels
+@using Drawer.Web.Api.Inventory
+@using Drawer.Web.Authentication
+@using Drawer.Web.Pages.Item.Models
+@using Drawer.Web.Pages.Receipt.Models
+@using Drawer.Web.Services
+@using Drawer.Web.Utils
+@using Drawer.Web.Pages.Location.Models;
+
+@attribute [Route(Paths.ReceiptBatchAdd)]
+
+<CascadingValue IsFixed="true" Value="this">
+    <BatchEdit TitleText="입고 일괄 추가"
+               TModel="@ReceiptModel"
+               HomePath="@Paths.ReceiptHome"
+               ExcelFormName="입고_추가_양식"
+               SaveAsyncFunc="@Save"
+               IsLoading="@_isLoading"
+               ExcelOptions="@_excelOptions">
+        <HeaderRow>
+            <MudTh Style="min-width:100px;">입고일자</MudTh>
+            <MudTh Style="min-width:100px;">입고시간</MudTh>
+            <MudTh Style="min-width:100px;">아이템</MudTh>
+            <MudTh Style="min-width:100px;">위치</MudTh>
+            <MudTh Style="min-width:100px;">수량</MudTh>
+            <MudTh Style="min-width:100px;">판매자</MudTh>
+            <MudTh Style="min-width:100px;">비고</MudTh>
+        </HeaderRow>
+        <BodyRow>
+            <MudTd>
+                <AidKeyTextField TKey="@(DateTime?)"
+                                 @bind-Key="context.ReceiptDate"
+                                 @bind-Value="context.ReceiptDateString"
+                                 KeyFunc="@((v)=> DateTime.TryParse(v, out DateTime dt) ? dt : null)"
+                                 Validation="@((_) => ValidateProperty(context, nameof(ReceiptModel.ReceiptDateString)))" />
+            </MudTd>
+            <MudTd>
+                <AidKeyTextField TKey="@(TimeSpan?)"
+                                 @bind-Key="context.ReceiptTime"
+                                 @bind-Value="context.ReceiptTimeString"
+                                 KeyFunc="@((v)=> TimeSpan.TryParse(v, out TimeSpan ts) ? ts : null)"
+                                 Validation="@((_) => ValidateProperty(context, nameof(ReceiptModel.ReceiptTimeString)))" />
+            </MudTd>
+            <MudTd>
+                <AidCompleteField TKey="long"
+                                  DisableUnderLine="true"
+                                  @bind-Key="context.ItemId"
+                                  @bind-Value="context.ItemName"
+                                  ItemValues="@(_itemList.Select(x=> x.Name).ToList())"
+                                  KeyFunc="@((value) => _itemList.FirstOrDefault(x=> x.Name == value)?.Id ?? 0)"
+                                  Validation="@((_) => ValidateProperty(context, nameof(ReceiptModel.ItemName)))" />
+            </MudTd>
+            <MudTd>
+                <AidCompleteField TKey="long"
+                                  DisableUnderLine="true"
+                                  @bind-Key="context.LocationId"
+                                  @bind-Value="context.LocationName"
+                                  ItemValues="@(_locationList.Select(x=> x.Name).ToList())"
+                                  KeyFunc="@((value) => _locationList.FirstOrDefault(x=> x.Name == value)?.Id ?? 0)"
+                                  Validation="@((_) => ValidateProperty(context, nameof(ReceiptModel.LocationName)))" />
+            </MudTd>
+            <MudTd>
+                <AidNumericField @bind-Value="context.Quantity"
+                                 Validation="@((_) => ValidateProperty(context, nameof(ReceiptModel.Quantity)))" />
+            </MudTd>
+            <MudTd>
+                <AidTextField @bind-Value="context.Seller"
+                              Validation="@((_) => ValidateProperty(context, nameof(ReceiptModel.Seller)))" />
+            </MudTd>
+            <MudTd>
+                <AidTextField @bind-Value="context.Note"
+                              Validation="@((_) => ValidateProperty(context, nameof(ReceiptModel.Note)))" />
+            </MudTd>
+
+        </BodyRow>
+    </BatchEdit>
+</CascadingValue>
+@code {
+    private readonly ReceiptModelValidator _validator = new();
+    private readonly ExcelOptions _excelOptions = new ExcelOptionsBuilder()
+           .AddColumn(nameof(ReceiptModel.ReceiptDateString), "입고일자")
+           .AddColumn(nameof(ReceiptModel.ReceiptTimeString), "입고시간")
+           .AddColumn(nameof(ReceiptModel.ItemName), "아이템")
+           .AddColumn(nameof(ReceiptModel.LocationName), "위치")
+           .AddColumn(nameof(ReceiptModel.Quantity), "수량")
+           .AddColumn(nameof(ReceiptModel.Seller), "판매자")
+           .AddColumn(nameof(ReceiptModel.Note), "비고")
+           .Build();
+
+    private bool _isLoading;
+    private List<ItemQueryModel> _itemList = new();
+    private List<LocationQueryModel> _locationList = new();
+
+    [Inject] public ReceiptApiClient ReceiptApiClient { get; set; } = null!;
+    [Inject] public LocationApiClient LocationApiClient { get; set; } = null!;
+    [Inject] public ItemApiClient ItemApiClient { get; set; } = null!;
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        _isLoading = true;
+
+        var itemTask = ItemApiClient.GetItems()
+            .ContinueWith((task) =>
+            {
+                var itemResponse = task.Result;
+                if (Snackbar.CheckFail(itemResponse))
+                {
+                    _itemList.Clear();
+                    _itemList.AddRange(itemResponse.Data);
+                    _validator.ItemNames = _itemList.Select(x => x.Name).ToList();
+                }
+            });
+
+        var locationTask = LocationApiClient.GetLocations()
+            .ContinueWith((task) =>
+            {
+                var locationResponse = task.Result;
+                if (Snackbar.CheckFail(locationResponse))
+                {
+                    _locationList.Clear();
+                    _locationList.AddRange(locationResponse.Data.Where(x => x.IsGroup == false));
+                    _validator.LocationNames = _locationList.Select(x => x.Name).ToList();
+                }
+            });
+        await Task.WhenAll(itemTask, locationTask);
+        _isLoading = false;
+    }
+
+    private async Task<bool> Save(IEnumerable<ReceiptModel> receiptList)
+    {
+        var receiptListDto = receiptList.Select(x => new ReceiptCommandModel()
+            {
+                ReceiptDateTimeLocal = x.ReceiptDateTime,
+                ItemId = x.ItemId,
+                LocationId = x.LocationId,
+                Quantity = x.Quantity,
+                Seller = x.Seller,
+                Note = x.Note
+            }).ToList();
+        var response = await ReceiptApiClient.BatchAddReceipt(receiptListDto);
+        return Snackbar.CheckSuccessFail(response);
+    }
+
+    private string? ValidateProperty(ReceiptModel instance, string property)
+    {
+        var msg = _validator.ValidateProperty(instance, property);
+        return msg;
+    }
+}
+
+
+
+

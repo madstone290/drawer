@@ -63,8 +63,11 @@
                           @bind-Value="_issue.Buyer"
                           For="@(() => _issue.Buyer)" />
         </MudItem>
-
-
+        <MudItem xs="12" sm="6">
+            <MudTextField Label="비고"
+                          @bind-Value="_issue.Note"
+                          For="@(() => _issue.Note)" />
+        </MudItem>
 
     </MudGrid>
 </MudForm>

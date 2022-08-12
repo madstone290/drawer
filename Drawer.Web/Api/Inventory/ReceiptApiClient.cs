@@ -43,6 +43,16 @@ namespace Drawer.Web.Api.Inventory
             return await SendAsync(request);
         }
 
+        public async Task<ApiResponse<List<long>>> BatchAddReceipt(List<ReceiptCommandModel> receiptList)
+        {
+            var request = new ApiRequest<List<long>>(
+                HttpMethod.Post,
+                ApiRoutes.Receipts.BatchAdd,
+                receiptList);
+
+            return await SendAsync(request);
+        }
+
         public async Task<ApiResponse<Unit>> UpdateReceipt(long id, ReceiptCommandModel receipt)
         {
             var request = new ApiRequest(
@@ -53,7 +63,7 @@ namespace Drawer.Web.Api.Inventory
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<Unit>> DeleteReceipt(long id)
+        public async Task<ApiResponse<Unit>> RemoveReceipt(long id)
         {
             var request = new ApiRequest(
                 HttpMethod.Delete,

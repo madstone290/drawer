@@ -21,6 +21,7 @@ namespace Drawer.Web.Pages.Receipt
             .AddColumn(nameof(ReceiptTableModel.LocationName), "위치")
             .AddColumn(nameof(ReceiptTableModel.QuantityString), "수량")
             .AddColumn(nameof(ReceiptTableModel.Seller), "판매자")
+            .AddColumn(nameof(ReceiptTableModel.Note), "비고")
             .Build();
 
         private bool _isTableLoading;
@@ -110,7 +111,8 @@ namespace Drawer.Web.Pages.Receipt
                     LocationId = receiptDto.LocationId,
                     LocationName = locationList.First(x => x.Id == receiptDto.LocationId).Name,
                     QuantityString = receiptDto.Quantity.ToString(),
-                    Seller = receiptDto.Seller
+                    Seller = receiptDto.Seller,
+                    Note = receiptDto.Note
                 };
                 _receiptList.Add(receipt);
             }
@@ -138,7 +140,7 @@ namespace Drawer.Web.Pages.Receipt
         {
             if (SelectedReceipt == null)
             {
-                Snackbar.Add("입고 먼저 선택하세요", Severity.Normal);
+                Snackbar.Add("입고를 먼저 선택하세요", Severity.Normal);
                 return;
             }
 
@@ -156,7 +158,7 @@ namespace Drawer.Web.Pages.Receipt
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                var response = await ReceiptApiClient.DeleteReceipt(selectedReceipt.Id);
+                var response = await ReceiptApiClient.RemoveReceipt(selectedReceipt.Id);
                 if (Snackbar.CheckSuccessFail(response))
                 {
                     _receiptList.Remove(selectedReceipt);
@@ -166,7 +168,7 @@ namespace Drawer.Web.Pages.Receipt
 
         private void BatchEdit_Click()
         {
-            NavManager.NavigateTo(Paths.ReceiptBatchEdit);
+            NavManager.NavigateTo(Paths.ReceiptBatchAdd);
         }
 
         private async Task Download_ClickAsync()

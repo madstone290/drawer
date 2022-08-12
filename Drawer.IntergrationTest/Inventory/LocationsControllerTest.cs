@@ -33,7 +33,7 @@ namespace Drawer.IntergrationTest.Inventory
                 Name = Guid.NewGuid().ToString(),
                 IsGroup = true
             };
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Create);
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Add);
             requestMessage.Content = JsonContent.Create(requestContent);
             var ResponseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
             var locationId = await ResponseMessage.Content.ReadFromJsonAsync<long>();
@@ -52,7 +52,7 @@ namespace Drawer.IntergrationTest.Inventory
                 Note = Guid.NewGuid().ToString(),
                 IsGroup = false
             };
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Create);
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Add);
             requestMessage.Content = JsonContent.Create(requestContent);
 
             // Act
@@ -86,7 +86,7 @@ namespace Drawer.IntergrationTest.Inventory
                     IsGroup = false
                 }
             };
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.BatchCreate);
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.BatchAdd);
             requestMessage.Content = JsonContent.Create(requestContent);
 
             // Act
@@ -111,7 +111,7 @@ namespace Drawer.IntergrationTest.Inventory
                 Note = Guid.NewGuid().ToString(),
                 IsGroup = false
             };
-            var createRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Create);
+            var createRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Add);
             createRequestMessage.Content = JsonContent.Create(requestContent);
             var createResponseMessage = await _client.SendAsyncWithMasterAuthentication(createRequestMessage);
             var locationId = await createResponseMessage.Content.ReadFromJsonAsync<long>();
@@ -143,7 +143,7 @@ namespace Drawer.IntergrationTest.Inventory
                 Note = Guid.NewGuid().ToString(),
                 IsGroup = false
             };
-            var createRequestMessage1 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Create);
+            var createRequestMessage1 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Add);
             createRequestMessage1.Content = JsonContent.Create(requestContent1);
             var createResponseMessage1 = await _client.SendAsyncWithMasterAuthentication(createRequestMessage1);
 
@@ -155,7 +155,7 @@ namespace Drawer.IntergrationTest.Inventory
                 Note = Guid.NewGuid().ToString(),
                 IsGroup = false
             };
-            var createRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Create);
+            var createRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Add);
             createRequestMessage2.Content = JsonContent.Create(requestContent2);
             var createResponseMessage2 = await _client.SendAsyncWithMasterAuthentication(createRequestMessage2);
 
@@ -189,7 +189,7 @@ namespace Drawer.IntergrationTest.Inventory
                 Note = Guid.NewGuid().ToString(),
                 IsGroup = false
             };
-            var createRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Create);
+            var createRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Add);
             createRequest.Content = JsonContent.Create(createContent);
             var createResponse = await _client.SendAsyncWithMasterAuthentication(createRequest);
             var locationId = await createResponse.Content.ReadFromJsonAsync<long>();
@@ -231,14 +231,14 @@ namespace Drawer.IntergrationTest.Inventory
                 Note = Guid.NewGuid().ToString(),
                 IsGroup = false
             };
-            var createRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Create);
+            var createRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Add);
             createRequest.Content = JsonContent.Create(createContent);
             var createResponse = await _client.SendAsyncWithMasterAuthentication(createRequest);
             var locationId = await createResponse.Content.ReadFromJsonAsync<long>();
 
             // Act
             var deleteRequest = new HttpRequestMessage(HttpMethod.Delete,
-                ApiRoutes.Locations.Delete.Replace("{id}", $"{locationId}"));
+                ApiRoutes.Locations.Remove.Replace("{id}", $"{locationId}"));
             var deleteResponse = await _client.SendAsyncWithMasterAuthentication(deleteRequest);
 
             // Assert

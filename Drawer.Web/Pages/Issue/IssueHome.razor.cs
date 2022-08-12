@@ -21,6 +21,7 @@ namespace Drawer.Web.Pages.Issue
             .AddColumn(nameof(IssueTableModel.LocationName), "위치")
             .AddColumn(nameof(IssueTableModel.QuantityString), "수량")
             .AddColumn(nameof(IssueTableModel.Buyer), "구매자")
+            .AddColumn(nameof(IssueTableModel.Note), "비고")
             .Build();
 
         private bool _isTableLoading;
@@ -110,7 +111,8 @@ namespace Drawer.Web.Pages.Issue
                     LocationId = issueDto.LocationId,
                     LocationName = locationList.First(x => x.Id == issueDto.LocationId).Name,
                     QuantityString = issueDto.Quantity.ToString(),
-                    Buyer = issueDto.Buyer
+                    Buyer = issueDto.Buyer,
+                    Note = issueDto.Note,
                 };
                 _issueList.Add(issue);
             }
@@ -138,7 +140,7 @@ namespace Drawer.Web.Pages.Issue
         {
             if (SelectedIssue == null)
             {
-                Snackbar.Add("출고 먼저 선택하세요", Severity.Normal);
+                Snackbar.Add("출고를 먼저 선택하세요", Severity.Normal);
                 return;
             }
 
@@ -156,7 +158,7 @@ namespace Drawer.Web.Pages.Issue
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                var response = await IssueApiClient.DeleteIssue(selectedIssue.Id);
+                var response = await IssueApiClient.RemoveIssue(selectedIssue.Id);
                 if (Snackbar.CheckSuccessFail(response))
                 {
                     _issueList.Remove(selectedIssue);
@@ -166,7 +168,7 @@ namespace Drawer.Web.Pages.Issue
 
         private void BatchEdit_Click()
         {
-            NavManager.NavigateTo(Paths.IssueBatchEdit);
+            NavManager.NavigateTo(Paths.IssueBatchAdd);
         }
 
         private async Task Download_ClickAsync()

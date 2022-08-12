@@ -24,6 +24,7 @@ namespace Drawer.Web.Pages.Issue.Models
         public decimal Quantity { get; set; }
         public string? QuantityString { get; set; }
         public string? Buyer { get; set; }
+        public string? Note { get; set; }
     }
 
     public class IssueModelValidator : AbstractValidator<IssueModel>

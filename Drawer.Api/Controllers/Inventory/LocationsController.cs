@@ -39,7 +39,7 @@ namespace Drawer.Api.Controllers.InventoryManagement
         }
 
         [HttpPost]
-        [Route(ApiRoutes.Locations.Create)]
+        [Route(ApiRoutes.Locations.Add)]
         [ProducesResponseType(typeof(long), StatusCodes.Status200OK)]
         public async Task<IActionResult> Add([FromBody] LocationAddCommandModel location)
         {
@@ -49,7 +49,7 @@ namespace Drawer.Api.Controllers.InventoryManagement
         }
 
         [HttpPost]
-        [Route(ApiRoutes.Locations.BatchCreate)]
+        [Route(ApiRoutes.Locations.BatchAdd)]
         [ProducesResponseType(typeof(List<long>), StatusCodes.Status200OK)]
         public async Task<IActionResult> BatchAdd([FromBody] List<LocationAddCommandModel> locationList)
         {
@@ -69,7 +69,7 @@ namespace Drawer.Api.Controllers.InventoryManagement
         }
 
         [HttpDelete]
-        [Route(ApiRoutes.Locations.Delete)]
+        [Route(ApiRoutes.Locations.Remove)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Remove([FromRoute] long id)
         {

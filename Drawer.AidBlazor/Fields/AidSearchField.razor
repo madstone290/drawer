@@ -1,0 +1,50 @@
+﻿@typeparam T
+
+@{
+    if (!Visible)
+        return;
+}
+<MudTextField T="@T"
+              Disabled="@(!Enabled)"
+              Placeholder="@BasePlaceholder"
+              Class="@Class"
+              @bind-Value="@Value"
+              Label="@Label"
+              Adornment="@Adornment.Start"
+              AdornmentIcon="@Icons.Material.Filled.Search"
+              IconSize="@Size.Medium"
+              Immediate="@true" />
+
+@code {
+    private const string BasePlaceholder = "검색";
+
+    private T? _value;
+
+    private string Class
+    {
+        get => new ClassBuilder()
+            .Add("aid-field")
+            .AddIf("aid-field-no-label", string.IsNullOrWhiteSpace(Label))
+            .Build();
+    }
+
+    [Parameter]
+    public T? Value
+    {
+        get => _value;
+        set
+        {
+            if (EqualityComparer<T>.Default.Equals(_value, value))
+                return;
+            _value = value;
+            ValueChanged.InvokeAsync(value);
+        }
+    }
+
+
+    [Parameter] public EventCallback<T?> ValueChanged { get; set; }
+    [Parameter] public bool Visible { get; set; } = true;
+    [Parameter] public bool Enabled { get; set; } = true;
+    [Parameter] public string? Label { get; set; }
+}
+

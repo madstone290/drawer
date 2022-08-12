@@ -21,16 +21,7 @@ namespace Drawer.Infrastructure.Repos.Inventory
         {
             return await _dbContext.Issues
               .Where(x => x.Id == id)
-              .Select(x => new IssueQueryModel()
-              {
-                  Id = x.Id,
-                  TransactionNumber = x.TransactionNumber,
-                  IssueDateTimeUtc = x.IssueDateTime,
-                  ItemId = x.ItemId,
-                  LocationId = x.LocationId,
-                  Quantity = x.Quantity,
-                  Buyer = x.Buyer,
-              })
+              .SelectQueryModel()
               .FirstOrDefaultAsync();
         }
 
@@ -40,17 +31,26 @@ namespace Drawer.Infrastructure.Repos.Inventory
             var utcTimeTo = to.Date.AddDays(1).AddTicks(-1).ToUniversalTime();
             return await _dbContext.Issues
                 .Where(x => utcTimeFrom <= x.IssueDateTime && x.IssueDateTime <= utcTimeTo)
-                .Select(x=> new IssueQueryModel()
-                {
-                    Id = x.Id,
-                    TransactionNumber = x.TransactionNumber,
-                    IssueDateTimeUtc = x.IssueDateTime,
-                    ItemId = x.ItemId,
-                    LocationId  =x.LocationId,
-                    Quantity = x.Quantity,
-                    Buyer = x.Buyer,
-                })
+                .SelectQueryModel()
                 .ToListAsync();
+        }
+    }
+
+    public static class IssueRepositoryExtensions
+    {
+        public static IQueryable<IssueQueryModel> SelectQueryModel(this IQueryable<Issue> query)
+        {
+            return query.Select(x => new IssueQueryModel()
+            {
+                Id = x.Id,
+                TransactionNumber = x.TransactionNumber,
+                IssueDateTimeUtc = x.IssueDateTime,
+                ItemId = x.ItemId,
+                LocationId = x.LocationId,
+                Quantity = x.Quantity,
+                Buyer = x.Buyer,
+                Note = x.Note
+            });
         }
     }
 }

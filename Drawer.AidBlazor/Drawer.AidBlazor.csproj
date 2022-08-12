@@ -7,6 +7,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Inputs\**" />
+	  <Content Remove="Inputs\**" />
+	  <EmbeddedResource Remove="Inputs\**" />
+	  <None Remove="Inputs\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<SupportedPlatform Include="browser" />
 	</ItemGroup>
 
@@ -26,6 +33,10 @@
 	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 	  </Resource>
 	  <Resource Include="_Imports.razor" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Inputs\" />
 	</ItemGroup>
 
 </Project>

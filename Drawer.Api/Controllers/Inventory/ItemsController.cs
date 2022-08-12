@@ -39,7 +39,7 @@ namespace Drawer.Api.Controllers.InventoryManagement
         }
 
         [HttpPost]
-        [Route(ApiRoutes.Items.Create)]
+        [Route(ApiRoutes.Items.Add)]
         [ProducesResponseType(typeof(long), StatusCodes.Status200OK)]
         public async Task<IActionResult> AddItem([FromBody] ItemCommandModel item)
         {
@@ -70,7 +70,7 @@ namespace Drawer.Api.Controllers.InventoryManagement
         }
 
         [HttpDelete]
-        [Route(ApiRoutes.Items.Delete)]
+        [Route(ApiRoutes.Items.Remove)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> RemoveItem([FromRoute] long id)
         {

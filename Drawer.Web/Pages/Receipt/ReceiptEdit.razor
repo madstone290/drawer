@@ -63,7 +63,11 @@
                           @bind-Value="_receipt.Seller"
                           For="@(() => _receipt.Seller)" />
         </MudItem>
-
+        <MudItem xs="12" sm="6">
+            <MudTextField Label="비고"
+                          @bind-Value="_receipt.Note"
+                          For="@(() => _receipt.Note)" />
+        </MudItem>
 
 
     </MudGrid>

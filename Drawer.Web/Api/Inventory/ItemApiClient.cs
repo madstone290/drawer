@@ -26,7 +26,7 @@ namespace Drawer.Web.Api.Inventory
         {
             var request = new ApiRequest<long>(
                 HttpMethod.Post,
-                ApiRoutes.Items.Create,
+                ApiRoutes.Items.Add,
                 item);
 
             return await SendAsync(request);
@@ -46,7 +46,7 @@ namespace Drawer.Web.Api.Inventory
         {
             var request = new ApiRequest(
                 HttpMethod.Delete,
-                ApiRoutes.Items.Delete.Replace("{id}", $"{id}"));
+                ApiRoutes.Items.Remove.Replace("{id}", $"{id}"));
 
             return await SendAsync(request);
         }

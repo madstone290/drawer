@@ -112,9 +112,17 @@
     [CascadingParameter] public IValidationContainer? ValidationContainer { get; set; }
 
     [Parameter] public bool DisableUnderLine { get; set; }
+
+    /// <summary>
+    /// 입력값 유효성 검사 함수.
+    /// 유효한 경우 null을 반환한다.
+    /// </summary>
     [Parameter] public Func<string?, string?>? Validation { get; set; }
     [Parameter] public string? Label { get; set; }
     [Parameter] public int MaxHeight { get; set; } = 200;
+    /// <summary>
+    /// 유효성 검사를 실행할 객체의 속성이름
+    /// </summary>
     [Parameter] public Expression<Func<string>>? For { get; set; }
 
     /// <summary>
@@ -352,7 +360,7 @@
     async Task<string?> IValidation.ValidateAsync()
     {
         //MudInput은 에러 출력기능을 제공하지 않는다.
-        _error = Validation?.Invoke(Value);
+        _error = await Task.Run(()=> Validation?.Invoke(Value));
         return _error;
     }
 

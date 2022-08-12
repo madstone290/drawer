@@ -91,6 +91,9 @@
                     <MudTh>
                         <MudTableSortLabel T="IssueTableModel" SortBy="x => x.Buyer">구매자</MudTableSortLabel>
                     </MudTh>
+                     <MudTh>
+                        <MudTableSortLabel T="IssueTableModel" SortBy="x => x.Note">비고</MudTableSortLabel>
+                    </MudTh>
                 </MudTHeadRow>
             </Header>
 
@@ -115,6 +118,9 @@
                 </MudTd>
                 <MudTd>
                     <MudHighlighter Text="@context.Buyer" HighlightedText="@searchText" />
+                </MudTd>
+                 <MudTd>
+                    <MudHighlighter Text="@context.Note" HighlightedText="@searchText" />
                 </MudTd>
             </Row>
 

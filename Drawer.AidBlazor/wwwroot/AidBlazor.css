@@ -22,6 +22,7 @@ html, body {
     display: flex;
     flex-direction: column;
 }
+
     .aid-container > * {
         margin: 2px 0px 2px 0px;
     }
@@ -65,6 +66,19 @@ html, body {
     width: 100%
 }
 
+/* Field 기본 탑마진 제거 */
+.aid-field.mud-input-control {
+    margin-top: 0px;
+}
+
+
+/* Field 라벨 표시여부 */
+.aid-field-no-label.mud-input-control > .mud-input-control-input-container > div.mud-input.mud-input-text {
+    margin-top: 0px;
+}
+
+
+
 /* 테이블셀 */
 .mud-table-cell {
     padding: 6px 12px 6px 12px;
@@ -85,8 +99,8 @@ html, body {
 .mud-table-root .mud-table-head .mud-table-cell {
     border-top: 1px solid var(--mud-palette-table-lines);
 }
-    /* 테이블 푸터 */
-    .mud-table-sticky-footer .mud-table-foot {
+/* 테이블 푸터 */
+.mud-table-sticky-footer .mud-table-foot {
     position: sticky;
     bottom: 0;
     z-index: 10;
@@ -106,5 +120,3 @@ html, body {
 .mud-table-foot > .mud-table-row:first-child > .mud-table-cell {
     border-top: 1px solid var(--mud-palette-table-lines);
 }
-
-

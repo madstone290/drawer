@@ -9,13 +9,16 @@ namespace Drawer.Web.Controllers
     {
         private readonly IConfiguration _configuration;
 
-        private const string VERSION = "1.0.1";
-
         public DevOpsController(IConfiguration configuration)
         {
             _configuration = configuration;
         }
 
+        /// <summary>
+        /// Blue/Green 배포전략을 위해 사용한다.
+        /// 현재 배포중인 컬러를 반환한다.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Route("DeploymentColor")]
         public string GetDeploymentColor()

@@ -4,6 +4,12 @@ namespace Drawer.Web.Pages.Receipt.Models
 {
     public class ReceiptModel
     {
+        public ReceiptModel()
+        {
+            ReceiptDateString = DateTime.Today.ToString("yyyy-MM-dd");
+            ReceiptTimeString = DateTime.Now.TimeOfDay.ToString(@"hh\:mm");
+        }
+
         public long Id { get; set; }
         public string? TransactionNumber { get; set; } = Guid.NewGuid().ToString();
         public DateTime? ReceiptDate { get; set; } = DateTime.Now.Date;
@@ -17,13 +23,16 @@ namespace Drawer.Web.Pages.Receipt.Models
                 return ReceiptDate.Value.Add(ReceiptTime.Value);
             }
         }
+        public string? ReceiptDateString { get; set; }
+        public string? ReceiptTimeString { get; set; }
+
         public long ItemId { get; set; }
         public string? ItemName { get; set; }
         public long LocationId { get; set; }
         public string? LocationName { get; set; }
         public decimal Quantity { get; set; }
-        public string? QuantityString { get; set; }
         public string? Seller { get; set; }
+        public string? Note { get; set; }
     }
 
     public class ReceiptModelValidator : AbstractValidator<ReceiptModel>
@@ -97,6 +106,20 @@ namespace Drawer.Web.Pages.Receipt.Models
             RuleFor(x => x.Quantity)
                 .GreaterThan(0)
                 .WithMessage("0보다 커야합니다");
+
+            RuleFor(x => x.ReceiptDateString)
+              .Custom((value, context) =>
+              {
+                  if (!DateTime.TryParse(value, out var time))
+                      context.AddFailure("유효한 날짜형식이 아닙니다");
+              });
+
+            RuleFor(x=> x.ReceiptTimeString)
+                .Custom((value, context) =>
+                {
+                    if (!TimeSpan.TryParse(value, out var time))
+                        context.AddFailure("유효한 시간형식이 아닙니다");
+                });
         }
     }
 }

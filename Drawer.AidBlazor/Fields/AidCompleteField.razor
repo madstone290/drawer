@@ -4,10 +4,11 @@
 @implements IAsyncDisposable
 
 <div style="display:flex; flex-direction:column;">
-    <MudTextField @ref="_textFieldReference"
+    <MudTextField @ref="_fieldReference"
                   @attributes="Attributes"
                   T="string"
-                  Immediate="true"
+                  Class="@Class"
+                  Immediate="@Immediate"
                   Label="@Label"
                   DisableUnderLine="@(DisableUnderLine && !_isInputFocused)"
                   Value="@Value"
@@ -45,12 +46,20 @@
 
 @code {
 
-    private MudTextField<string> _textFieldReference = null!;
+    private MudTextField<string> _fieldReference = null!;
 
     /// <summary>
     /// 컴포넌트 식별용 아이디
     /// </summary>
     private readonly string _componentId = Guid.NewGuid().ToString();
+
+    private string Class
+    {
+        get => new ClassBuilder()
+            .Add("aid-field")
+            .AddIf("aid-field-no-label", string.IsNullOrWhiteSpace(Label))
+            .Build();
+    }
 
     /// <summary>
     /// 인풋 포커스 여부
@@ -107,12 +116,16 @@
 
     [CascadingParameter] public IValidationContainer? ValidationContainer { get; set; }
 
+    [Parameter] public bool Immediate { get; set; } = true;
+    /// <summary>
+    /// 컴포넌트 생성 후 유효성 검사 여부
+    /// </summary>
+    [Parameter] public bool InitialValidation { get; set; } = true;
     [Parameter] public bool DisableUnderLine { get; set; }
     [Parameter] public Func<string, string>? Validation { get; set; }
     [Parameter] public string? Label { get; set; }
     [Parameter] public int MaxHeight { get; set; } = 200;
     [Parameter] public Expression<Func<string>>? For { get; set; }
-
     /// <summary>
     /// 메뉴리스트 아이템 값 목록
     /// </summary>
@@ -123,8 +136,36 @@
     /// </summary>
     [Parameter] public Func<string, TKey?>? KeyFunc { get; set; }
 
-    [Parameter] public TKey? Key { get; set; }
-    [Parameter] public string? Value { get; set; }
+    private TKey? _key;
+    private string? _value;
+    [Parameter]
+    public TKey? Key
+    {
+        get => _key;
+        set
+        {
+            if (EqualityComparer<TKey>.Default.Equals(_key, value))
+                return;
+            _key = value;
+            KeyChanged.InvokeAsync(value);
+        }
+    }
+    [Parameter]
+    public string? Value
+    {
+        get => _value;
+        set
+        {
+            if (EqualityComparer<string>.Default.Equals(_value, value))
+                return;
+            _value = value;
+            ValueChanged.InvokeAsync(value);
+
+            if(KeyFunc != null)
+                Key = KeyFunc.Invoke(value);
+        }
+    }
+
     [Parameter] public EventCallback<TKey?> KeyChanged { get; set; }
     [Parameter] public EventCallback<string?> ValueChanged { get; set; }
 
@@ -135,6 +176,18 @@
     }
 
     private int RenderCount = 1;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (InitialValidation)
+            {
+                await _fieldReference.Validate();
+            }
+        }
+    }
+
     protected override void OnAfterRender(bool firstRender)
     {
         Debug($"{RenderCount++} OnAfterRender");
@@ -167,13 +220,13 @@
     private async void ListItem_Click()
     {
         _isItemChosen = true;
-        await _textFieldReference.SetText(Convert.ToString(_selectedListItemValue));
+        await _fieldReference.SetText(Convert.ToString(_selectedListItemValue));
         _isOpen = false;
     }
 
     private async Task TextField_ValueChanged(string value)
     {
-        await SetValueAsync(value);
+        Value = value;
 
         if (_isItemChosen)
         {
@@ -225,7 +278,7 @@
         if (_selectedListItemValue != null)
         {
             _isItemChosen = true;
-            await _textFieldReference.SetText(Convert.ToString(_selectedListItemValue));
+            await _fieldReference.SetText(Convert.ToString(_selectedListItemValue));
             _isOpen = false;
         }
     }
@@ -254,25 +307,6 @@
 
         _selectedListItemValue = _filteredItemValues[_selectedListItemIndex];
         ScrollToListItem(_selectedListItemIndex);
-    }
-
-    private async Task SetKeyAsync(TKey? key)
-    {
-        if (EqualityComparer<TKey>.Default.Equals(Key, key))
-            return;
-        Key = key;
-        if (KeyChanged.HasDelegate)
-            await KeyChanged.InvokeAsync(key);
-    }
-
-    private async Task SetValueAsync(string value)
-    {
-        if (EqualityComparer<string>.Default.Equals(Value, value))
-            return;
-        Value = value;
-        await RefreshKeyAsync();
-        if (ValueChanged.HasDelegate)
-            await ValueChanged.InvokeAsync(value);
     }
 
     /// <summary>
@@ -325,15 +359,6 @@
         return $"{_componentId}_item_{index}";
     }
 
-    private async Task RefreshKeyAsync()
-    {
-        if (Value != null && KeyFunc != null)
-        {
-            var key = KeyFunc.Invoke(Value);
-            await SetKeyAsync(key);
-        }
-    }
-
     private void Debug(string message)
     {
 #if DEBUG
@@ -344,8 +369,8 @@
     async Task<string?> IValidation.ValidateAsync()
     {
         // TextField 객체의 Validation을 실행하고 에러를 반환한다.
-        await _textFieldReference.Validate();
-        return _textFieldReference.GetErrorText();
+        await _fieldReference.Validate();
+        return _fieldReference.GetErrorText();
     }
 
     ValueTask IAsyncDisposable.DisposeAsync()

@@ -24,7 +24,7 @@
         </HeaderRow>
         <BodyRow>
             <MudTd>
-                <AidCompleteInput TKey="long"
+                <AidCompleteField TKey="long"
                                   DisableUnderLine="true"
                                   @bind-Key="context.ParentGroupId"
                                   @bind-Value="context.ParentGroupName"
@@ -33,13 +33,12 @@
                                   Validation="@((_) => ValidateProperty(context, nameof(LocationModel.ParentGroupName)))" />
             </MudTd>
             <MudTd>
-                <AidInput @bind-Value="context.Name"
-                          ExecuteInitialValidation="true"
-                          Validation="@((_) => ValidateProperty(context, nameof(LocationModel.Name)))" />
+                <AidTextField @bind-Value="context.Name"
+                              Validation="@((_) => ValidateProperty(context, nameof(LocationModel.Name)))" />
             </MudTd>
             <MudTd>
-                <AidInput @bind-Value="context.Note"
-                          Validation="@((_) => ValidateProperty(context, nameof(LocationModel.Note)))" />
+                <AidTextField @bind-Value="context.Note"
+                              Validation="@((_) => ValidateProperty(context, nameof(LocationModel.Note)))" />
             </MudTd>
             <MudTd>
                 <MudCheckBox @bind-Checked="context.IsGroup" />
@@ -95,12 +94,12 @@
     private async Task<bool> Save(IEnumerable<LocationModel> locations)
     {
         var locationListDto = locations.Select(x => new LocationAddCommandModel()
-        {
-            ParentGroupId = x.ParentGroupId,
-            Name = x.Name,
-            Note = x.Note,
-            IsGroup = x.IsGroup
-        }).ToList();
+            {
+                ParentGroupId = x.ParentGroupId,
+                Name = x.Name,
+                Note = x.Note,
+                IsGroup = x.IsGroup
+            }).ToList();
         var response = await LocationApiClient.BatchAddLocation(locationListDto);
 
         return Snackbar.CheckSuccessFail(response);

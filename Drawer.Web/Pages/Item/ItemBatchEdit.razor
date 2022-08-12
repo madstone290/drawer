@@ -23,24 +23,24 @@
     </HeaderRow>
     <BodyRow>
         <MudTd>
-            <AidInput @bind-Value="context.Name"
-                      Validation="((_) => ValidateProperty(context, x => x.Name))" />
+            <AidTextField @bind-Value="context.Name"
+                          Validation="((_) => ValidateProperty(context, x => x.Name))" />
         </MudTd>
         <MudTd>
-            <AidInput @bind-Value="context.Code"
-                      Validation="((_) => ValidateProperty(context, x => x.Code))" />
+            <AidTextField @bind-Value="context.Code"
+                          Validation="((_) => ValidateProperty(context, x => x.Code))" />
         </MudTd>
         <MudTd>
-            <AidInput @bind-Value="context.Number"
-                      Validation="((_) => ValidateProperty(context, x => x.Number))" />
+            <AidTextField @bind-Value="context.Number"
+                          Validation="((_) => ValidateProperty(context, x => x.Number))" />
         </MudTd>
         <MudTd>
-            <AidInput @bind-Value="context.Sku"
-                      Validation="((_) => ValidateProperty(context, x => x.Sku))" />
+            <AidTextField @bind-Value="context.Sku"
+                          Validation="((_) => ValidateProperty(context, x => x.Sku))" />
         </MudTd>
         <MudTd>
-            <AidInput @bind-Value="context.QuantityUnit"
-                      Validation="((_) => ValidateProperty(context, x => x.QuantityUnit))" />
+            <AidTextField @bind-Value="context.QuantityUnit"
+                          Validation="((_) => ValidateProperty(context, x => x.QuantityUnit))" />
         </MudTd>
     </BodyRow>
 </BatchEdit>

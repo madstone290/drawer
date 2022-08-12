@@ -31,7 +31,7 @@ namespace Drawer.IntergrationTest.Inventory
             {
                 Name = Guid.NewGuid().ToString()
             };
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Items.Create);
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Items.Add);
             requestMessage.Content = JsonContent.Create(request);
             var ResponseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
             var itemId = await ResponseMessage.Content.ReadFromJsonAsync<long>();
@@ -44,7 +44,7 @@ namespace Drawer.IntergrationTest.Inventory
             {
                 Name = Guid.NewGuid().ToString(),
             };
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Create);
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Add);
             requestMessage.Content = JsonContent.Create(request);
             var ResponseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
             var locationId = await ResponseMessage.Content.ReadFromJsonAsync<long>();

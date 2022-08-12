@@ -52,7 +52,7 @@
         public const string LocationItemInventoryHome = "/LocationItemInventoryHome";
 
         public const string ReceiptHome = "/Receipt";
-        public const string ReceiptBatchEdit = "/Receipt/BatchEdit";
+        public const string ReceiptBatchAdd = "/Receipt/BatchAdd";
         public const string ReceiptAdd = "/Receipt/Add";
         public const string ReceiptUpdate = "/Receipt/Update/{id}";
         public const string ReceiptView = "/Receipt/View/{id}";
@@ -60,7 +60,7 @@
 
 
         public const string IssueHome = "/Issue";
-        public const string IssueBatchEdit = "/Issue/BatchEdit";
+        public const string IssueBatchAdd = "/Issue/BatchAdd";
         public const string IssueAdd = "/Issue/Add";
         public const string IssueUpdate = "/Issue/Update/{id}";
         public const string IssueView = "/Issue/View/{id}";

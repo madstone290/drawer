@@ -34,16 +34,19 @@
                 엑셀 폼 다운로드
             </AidButton>
             <AidButton Color="Color.Tertiary"
+                       Enabled="@(!IsLoading)"
                        StartIcon="@Icons.Material.Filled.FileUpload"
                        OnClick=@(() => ExcelUpload_Click())>
                 엑셀 업로드
             </AidButton>
             <AidButton Color="Color.Secondary"
+                       Enabled="@(!IsLoading)"
                        StartIcon="@Icons.Material.Filled.Add"
                        OnClick=@(() => NewRow_Click())>
                 행 추가
             </AidButton>
             <AidButton Color="Color.Primary"
+                       Enabled="@(!IsLoading)"
                        StartIcon="@Icons.Material.Filled.Save"
                        OnClick=@(() => Save_Click())>
                 저장
@@ -90,7 +93,10 @@
 
     [Inject] public IExcelFileService ExcelFileService { get; set; } = null!;
     [Inject] public IBlazorComponentService BlazorComponentService { get; set; } = null!;
-
+    /// <summary>
+    /// 데이터 로딩상태. 로딩중에는 일부 기능을 사용할 수 없다.
+    /// </summary>
+    [Parameter] public bool IsLoading { get; set; }
     /// <summary>
     /// 화면 타이틀
     /// </summary>

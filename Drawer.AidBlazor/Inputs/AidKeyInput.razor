@@ -1,0 +1,116 @@
+﻿@typeparam TKey
+@implements IValidation
+@implements IAsyncDisposable
+
+<div style="display:flex; flex-direction:column;">
+    <MudInput @ref="inputReference"
+              T="@string"
+              Immediate="false"
+              InputType="InputType.Text"
+              Validation="@Validation"
+              @bind-Value="@Value"
+              @onfocus="OnFocus"
+              @onblur="OnBlur"
+              DisableUnderLine="!showUnderline">
+    </MudInput>
+    <MudText Color="Color.Error" Typo="Typo.overline">@_error</MudText>
+</div>
+
+
+@code {
+
+    private MudInput<string> inputReference = null!;
+    private TKey? _key;
+    private string? _value;
+    private string? _error;
+    private bool showUnderline;
+
+    [CascadingParameter] public IValidationContainer? ValidationContainer { get; set; }
+    [Parameter]
+    public string? Value
+    {
+        get => _value;
+        set
+        {
+            if (EqualityComparer<string>.Default.Equals(_value, value))
+                return;
+            _value = value;
+            ValueChanged.InvokeAsync(value);
+
+            _error = Validation?.Invoke(value);
+
+            Key = KeyFunc(value);
+
+        }
+    }
+    [Parameter]
+    public TKey? Key
+    {
+        get => _key;
+        set
+        {
+            if (EqualityComparer<TKey?>.Default.Equals(_key, value))
+                return;
+            _key = value;
+            KeyChanged.InvokeAsync(value);
+        }
+    }
+
+
+    [Parameter] public EventCallback<TKey?> KeyChanged { get; set; }
+    [Parameter] public EventCallback<string?> ValueChanged { get; set; }
+
+     /// <summary>
+    /// Value -> Key 변환 함수
+    /// </summary>
+    [Parameter] public Func<string?, TKey?>? KeyFunc { get; set; }
+
+    /// <summary>
+    /// 값 유효성을 검사한다.
+    /// </summary>
+    [Parameter] public Func<string?, string?>? Validation { get; set; }
+
+    [Parameter] public bool Visible { get; set; } = true;
+
+    /// <summary>
+    /// 컴포넌트 생성후 유효성검사를 실행할 것인가?
+    /// </summary>
+    [Parameter] public bool ExecuteInitialValidation { get; set; } = true;
+
+    protected override void OnInitialized()
+    {
+        if (ValidationContainer != null)
+        {
+            ValidationContainer.AddValidation(this);
+        }
+        if (ExecuteInitialValidation)
+        {
+            _error = Validation?.Invoke(Value);
+        }
+    }
+
+    private void OnFocus()
+    {
+        showUnderline = true;
+    }
+
+    private void OnBlur()
+    {
+        showUnderline = false;
+    }
+
+    async Task<string?> IValidation.ValidateAsync()
+    {
+        //MudInput은 에러 출력기능을 제공하지 않는다.
+        _error = await Task.Run(() => Validation?.Invoke(Value));
+        return _error;
+    }
+
+    ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (ValidationContainer != null)
+            ValidationContainer.RemoveValidation(this);
+
+        return ValueTask.CompletedTask;
+    }
+}

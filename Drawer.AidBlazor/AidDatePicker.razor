@@ -1,7 +1,9 @@
 ﻿@using System.Linq.Expressions
-<MudDatePicker @ref="_picker" @bind-Date="@Date"
+<MudDatePicker @ref="_picker"
+               @bind-Date="@Date"
+               @bind-Text="@Text"
                Label="@Label"
-               For="@For" 
+               For="@For"
                Editable="true">
     <PickerActions>
         <MudButton Variant="Variant.Filled" Color="@Color.Info" OnClick="@Today_Click">오늘</MudButton>
@@ -13,6 +15,7 @@
     private MudDatePicker _picker = null!;
 
     private DateTime? _date;
+    private string? _text;
 
     [Parameter]
     public DateTime? Date
@@ -28,6 +31,22 @@
     }
 
     [Parameter] public EventCallback<DateTime?> DateChanged { get; set; }
+
+    [Parameter]
+    public string? Text
+    {
+        get => _text;
+        set
+        {
+            if (EqualityComparer<string?>.Default.Equals(_text, value))
+                return;
+            _text = value;
+            TextChanged.InvokeAsync(value);
+        }
+    }
+
+    [Parameter] public EventCallback<string?> TextChanged { get; set; }
+
     [Parameter] public string? Label { get; set; }
     [Parameter] public Expression<Func<DateTime?>>? For { get; set; }
 

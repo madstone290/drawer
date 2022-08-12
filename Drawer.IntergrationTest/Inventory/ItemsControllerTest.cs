@@ -38,7 +38,7 @@ namespace Drawer.IntergrationTest.Inventory
                 Sku = Guid.NewGuid().ToString(),
                 QuantityUnit = Guid.NewGuid().ToString(),
             };
-            var request = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Items.Create);
+            var request = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Items.Add);
             request.Content = JsonContent.Create(itemDto);
 
             // Act
@@ -98,7 +98,7 @@ namespace Drawer.IntergrationTest.Inventory
                 Sku = Guid.NewGuid().ToString(),
                 QuantityUnit = Guid.NewGuid().ToString(),
             };
-            var createRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Items.Create);
+            var createRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Items.Add);
             createRequest.Content = JsonContent.Create(itemDto);
             var createResponse = await _client.SendAsyncWithMasterAuthentication(createRequest);
             var itemId = await createResponse.Content.ReadFromJsonAsync<long>();
@@ -132,7 +132,7 @@ namespace Drawer.IntergrationTest.Inventory
                 Sku = Guid.NewGuid().ToString(),
                 QuantityUnit = Guid.NewGuid().ToString(),
             };
-            var createRequest1 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Items.Create);
+            var createRequest1 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Items.Add);
             createRequest1.Content = JsonContent.Create(itemDto1);
             var createResponse1 = await _client.SendAsyncWithMasterAuthentication(createRequest1);
 
@@ -144,7 +144,7 @@ namespace Drawer.IntergrationTest.Inventory
                 Sku = Guid.NewGuid().ToString(),
                 QuantityUnit = Guid.NewGuid().ToString(),
             };
-            var createRequest2 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Items.Create);
+            var createRequest2 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Items.Add);
             createRequest2.Content = JsonContent.Create(itemDto2);
             var createResponse2 = await _client.SendAsyncWithMasterAuthentication(createRequest2);
 
@@ -183,7 +183,7 @@ namespace Drawer.IntergrationTest.Inventory
                 Sku = Guid.NewGuid().ToString(),
                 QuantityUnit = Guid.NewGuid().ToString(),
             };
-            var createRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Items.Create);
+            var createRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Items.Add);
             createRequest.Content = JsonContent.Create(itemDto1);
             var createResponseMessage = await _client.SendAsyncWithMasterAuthentication(createRequest);
             var itemId = await createResponseMessage.Content.ReadFromJsonAsync<long>();
@@ -231,14 +231,14 @@ namespace Drawer.IntergrationTest.Inventory
                 Sku = Guid.NewGuid().ToString(),
                 QuantityUnit = Guid.NewGuid().ToString(),
             };
-            var createRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Items.Create);
+            var createRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Items.Add);
             createRequest.Content = JsonContent.Create(itemDto);
             var createResponse = await _client.SendAsyncWithMasterAuthentication(createRequest);
             var itemId = await createResponse.Content.ReadFromJsonAsync<long>();
 
             // Act
             var deleteRequest = new HttpRequestMessage(HttpMethod.Delete,
-                ApiRoutes.Items.Delete.Replace("{id}", $"{itemId}"));
+                ApiRoutes.Items.Remove.Replace("{id}", $"{itemId}"));
             var deleteResponse = await _client.SendAsyncWithMasterAuthentication(deleteRequest);
 
             // Assert

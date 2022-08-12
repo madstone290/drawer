@@ -54,46 +54,13 @@ namespace Drawer.Shared
             public const string GetMembers = Index + "/Members";
         }
 
-        public static class Workplaces
-        {
-            public const string Create = "/Api/Workplaces";
-            public const string Update = "/Api/Workplaces/{id}";
-            public const string Delete = "/Api/Workplaces/{id}";
-            public const string Get = "/Api/Workplaces/{id}";
-            public const string GetList = "/Api/Workplaces";
-
-            public const string BatchCreate = "/Api/Workplaces/Batch";
-        }
-
-        public static class Zones
-        {
-            public const string Create = "/Api/Zones";
-            public const string Update = "/Api/Zones/{id}";
-            public const string Delete = "/Api/Zones/{id}";
-            public const string Get = "/Api/Zones/{id}";
-            public const string GetList = "/Api/Zones";
-
-            public const string BatchCreate = "/Api/Zones/Batch";
-        }
-
-        public static class Spots
-        {
-            public const string Create = "/Api/Spots";
-            public const string Update = "/Api/Spots/{id}";
-            public const string Delete = "/Api/Spots/{id}";
-            public const string Get = "/Api/Spots/{id}";
-            public const string GetList = "/Api/Spots";
-
-            public const string BatchCreate = "/Api/Spots/Batch";
-        }
-
         public static class Items
         {
-            public const string Create =    "/Api/Items";
-            public const string Update =    "/Api/Items/{id}";
-            public const string Delete =    "/Api/Items/{id}";
-            public const string Get =       "/Api/Items/{id}";
-            public const string GetList =   "/Api/Items";
+            public const string Add = "/Api/Items";
+            public const string Update = "/Api/Items/{id}";
+            public const string Remove = "/Api/Items/{id}";
+            public const string Get = "/Api/Items/{id}";
+            public const string GetList = "/Api/Items";
 
             public const string BatchCreate = "/Api/Items/Batch";
         }
@@ -101,13 +68,13 @@ namespace Drawer.Shared
 
         public static class Locations
         {
-            public const string Create = "/Api/Locations";
+            public const string Add = "/Api/Locations";
             public const string Update = "/Api/Locations/{id}";
-            public const string Delete = "/Api/Locations/{id}";
+            public const string Remove = "/Api/Locations/{id}";
             public const string Get = "/Api/Locations/{id}";
             public const string GetList = "/Api/Locations";
 
-            public const string BatchCreate = "/Api/Locations/Batch";
+            public const string BatchAdd = "/Api/Locations/Batch";
         }
 
         public static class InventoryItems

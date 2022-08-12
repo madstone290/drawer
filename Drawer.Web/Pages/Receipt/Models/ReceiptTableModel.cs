@@ -12,5 +12,6 @@
         public string? LocationName { get; set; }
         public string? QuantityString { get; set; }
         public string? Seller { get; set; }
+        public string? Note { get; set; }
     }
 }

@@ -11,18 +11,6 @@ namespace Drawer.Application.Services.Inventory.QueryModels
     /// </summary>
     public class ReceiptQueryModel
     {
-        public ReceiptQueryModel() { }
-        public ReceiptQueryModel(long id, string transactionNumber, DateTime receiptDateTime, long itemId, long locationId, decimal quantity, string? seller)
-        {
-            Id = id;
-            TransactionNumber = transactionNumber;
-            ReceiptDateTimeUtc = receiptDateTime;
-            ItemId = itemId;
-            LocationId = locationId;
-            Quantity = quantity;
-            Seller = seller;
-        }
-
         /// <summary>
         /// 아이디
         /// </summary>
@@ -63,7 +51,10 @@ namespace Drawer.Application.Services.Inventory.QueryModels
         /// </summary>
         public string? Seller { get; set; }
 
-
+        /// <summary>
+        /// 비고
+        /// </summary>
+        public string? Note { get; set; }
 
     }
 }
