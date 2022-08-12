@@ -48,10 +48,10 @@
         </AidToolBar>
         <AidToolBar>
             <AidCompleteField Label="컨테이너 위치"
-                              TKey="long"
-                              KeyChanged="@Field_KeyChanged"
-                              KeyFunc="@((name) => _locations.FirstOrDefault(x=> x.Name == name)?.Id ?? 0)"
-                              ItemValues="@(_locations.Select(x=> x.Name).ToList())" />
+                              TValue="long"
+                              ValueChanged="@Field_KeyChanged"
+                              TextToValueFunc="@((name) => _locations.FirstOrDefault(x=> x.Name == name)?.Id ?? 0)"
+                              TextItemList="@(_locations.Select(x=> x.Name).ToList())" />
         </AidToolBar>
         <AidTable Loading="@_isTableLoading"
                   T="@ItemLocationInventoryModel"

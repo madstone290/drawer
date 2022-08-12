@@ -29,35 +29,29 @@
         </HeaderRow>
         <BodyRow>
             <MudTd>
-                <AidKeyTextField TKey="@(DateTime?)"
-                                 @bind-Key="context.ReceiptDate"
-                                 @bind-Value="context.ReceiptDateString"
-                                 KeyFunc="@((v)=> DateTime.TryParse(v, out DateTime dt) ? dt : null)"
-                                 Validation="@((_) => ValidateProperty(context, nameof(ReceiptModel.ReceiptDateString)))" />
+                <AidDatePicker @bind-Text="@context.ReceiptDateString"
+                               DateChanged="@((date) => @context.ReceiptDate = date)" />
             </MudTd>
             <MudTd>
-                <AidKeyTextField TKey="@(TimeSpan?)"
-                                 @bind-Key="context.ReceiptTime"
-                                 @bind-Value="context.ReceiptTimeString"
-                                 KeyFunc="@((v)=> TimeSpan.TryParse(v, out TimeSpan ts) ? ts : null)"
-                                 Validation="@((_) => ValidateProperty(context, nameof(ReceiptModel.ReceiptTimeString)))" />
+                <AidTimePicker @bind-Text="@context.ReceiptTimeString"
+                               TimeChanged="@((time) => @context.ReceiptTime = time)" />
             </MudTd>
             <MudTd>
-                <AidCompleteField TKey="long"
+                <AidCompleteField TValue="long"
                                   DisableUnderLine="true"
-                                  @bind-Key="context.ItemId"
-                                  @bind-Value="context.ItemName"
-                                  ItemValues="@(_itemList.Select(x=> x.Name).ToList())"
-                                  KeyFunc="@((value) => _itemList.FirstOrDefault(x=> x.Name == value)?.Id ?? 0)"
+                                  @bind-Text="context.ItemName"
+                                  ValueChanged="@((value) => context.ItemId = value)"
+                                  TextItemList="@(_itemList.Select(x=> x.Name).ToList())"
+                                  TextToValueFunc="@((value) => _itemList.FirstOrDefault(x=> x.Name == value)?.Id ?? 0)"
                                   Validation="@((_) => ValidateProperty(context, nameof(ReceiptModel.ItemName)))" />
             </MudTd>
             <MudTd>
-                <AidCompleteField TKey="long"
+                <AidCompleteField TValue="long"
                                   DisableUnderLine="true"
-                                  @bind-Key="context.LocationId"
-                                  @bind-Value="context.LocationName"
-                                  ItemValues="@(_locationList.Select(x=> x.Name).ToList())"
-                                  KeyFunc="@((value) => _locationList.FirstOrDefault(x=> x.Name == value)?.Id ?? 0)"
+                                  @bind-Text="context.LocationName"
+                                  ValueChanged="@((value) => context.LocationId = value)"
+                                  TextItemList="@(_locationList.Select(x=> x.Name).ToList())"
+                                  TextToValueFunc="@((value) => _locationList.FirstOrDefault(x=> x.Name == value)?.Id ?? 0)"
                                   Validation="@((_) => ValidateProperty(context, nameof(ReceiptModel.LocationName)))" />
             </MudTd>
             <MudTd>

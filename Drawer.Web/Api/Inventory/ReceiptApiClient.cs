@@ -19,7 +19,7 @@ namespace Drawer.Web.Api.Inventory
                 HttpMethod.Get,
                 ApiRoutes.Receipts.GetList
                     .AddQuery("From", from.ToString("yyyy-MM-dd"))
-                    .AddQuery("To", to.ToString("yyy-MM-dd")));
+                    .AddQuery("To", to.ToString("yyyy-MM-dd")));
 
             return await SendAsync(request);
         }

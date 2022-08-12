@@ -1,0 +1,155 @@
+﻿@using System.Linq.Expressions
+@using System.Globalization
+@implements IValidation
+@implements IAsyncDisposable
+
+<MudTimePicker @ref="_pickerReference"
+               @bind-Text="@PickerText"
+               Label="@Label"
+               For="@For"
+               Class="@Class"
+               Error="@_error"
+               ErrorText="@_errorText"
+               Placeholder="@Placeholder"
+               TimeFormat="@BaseTimeFormart"
+               DisableToolbar="@true"
+               Editable="true">
+    <PickerActions>
+        <MudButton Variant="Variant.Filled" Color="@Color.Info" OnClick="@Now_Click">지금</MudButton>
+        <MudButton Variant="Variant.Filled" Color="@Color.Secondary" OnClick="@Cancel_Click">취소</MudButton>
+        <MudButton Variant="Variant.Filled" Color="@Color.Primary" OnClick="@Ok_Click">확인</MudButton>
+    </PickerActions>
+</MudTimePicker>
+@code {
+    
+    /*
+     * 데이터 바인딩은 Text, Date 둘 중 하나만 한다.
+     * 나머지 값은 ChangedCallback을 통해 갱신한다.
+     */
+
+    public enum BindMode
+    {
+        Time,
+        Text
+    }
+
+    private const string BaseTimeFormart = @"hh\:mm";
+
+    private MudTimePicker _pickerReference = null!;
+
+    private string? _pickerText;
+    private TimeSpan? _time;
+    private string? _text;
+    /// <summary>
+    /// 에러 여부
+    /// </summary>
+    private bool _error;
+    private string? _errorText = "유효한 시간이 아닙니다";
+
+
+    private string Class
+    {
+        get => new ClassBuilder()
+            .Add("aid-picker")
+            .AddIf("aid-picker-no-label", string.IsNullOrWhiteSpace(Label))
+            .Build();
+    }
+
+    private string? PickerText
+    {
+        get => _pickerText;
+        set
+        {
+            if (EqualityComparer<string?>.Default.Equals(_pickerText, value))
+                return;
+            _pickerText = value;
+
+            _error = !TimeSpan.TryParseExact(value, BaseTimeFormart, CultureInfo.InvariantCulture, 
+                TimeSpanStyles.None, out TimeSpan time);
+
+            Text = value;
+            Time = _error ? null : time;
+        }
+    }
+
+    [Parameter]
+    public TimeSpan? Time
+    {
+        get => _time;
+        set
+        {
+            if (EqualityComparer<TimeSpan?>.Default.Equals(_time, value))
+                return;
+            _time = value;
+            TimeChanged.InvokeAsync(value);
+            
+            if(Mode == BindMode.Time)
+                PickerText = value.HasValue ? value.Value.ToString(BaseTimeFormart) : null;
+        }
+    }
+
+    [Parameter]
+    public string? Text
+    {
+        get => _text;
+        set
+        {
+            if (EqualityComparer<string?>.Default.Equals(_text, value))
+                return;
+            _text = value;
+            TextChanged.InvokeAsync(value);
+            
+            if(Mode == BindMode.Text)
+                PickerText = value;
+        }
+    }
+
+    [Parameter] public EventCallback<TimeSpan?> TimeChanged { get; set; }
+    [Parameter] public EventCallback<string?> TextChanged { get; set; }
+    [Parameter] public string? Label { get; set; }
+    [Parameter] public string? Placeholder { get; set; } = "시간을 선택하세요";
+    [Parameter] public Expression<Func<TimeSpan?>>? For { get; set; }
+
+    /// <summary>
+    /// 바인딩 모드. @bind- 특성과 일치해야 한다. 데이트피커 값 갱신조건이 달라진다.
+    /// </summary>
+    [Parameter] public BindMode Mode { get; set; } = BindMode.Text;
+
+    [CascadingParameter] public IValidationContainer? ValidationContainer { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (ValidationContainer != null)
+            ValidationContainer.AddValidation(this);
+    }
+
+    private void Now_Click()
+    {
+        Time = DateTime.Now.TimeOfDay;
+    }
+
+    private void Cancel_Click()
+    {
+        _pickerReference.Close(false);
+    }
+
+    private void Ok_Click()
+    {
+        _pickerReference.Close();
+    }
+
+    async Task<string?> IValidation.ValidateAsync()
+    {
+        var errorMessage = _error ? _errorText : null;
+        return await Task.FromResult(errorMessage);
+    }
+
+    ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (ValidationContainer != null)
+            ValidationContainer.RemoveValidation(this);
+
+        return ValueTask.CompletedTask;
+    }
+
+}

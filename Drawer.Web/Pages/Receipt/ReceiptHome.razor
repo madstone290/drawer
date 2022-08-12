@@ -49,15 +49,22 @@
         </AidToolBar>
 
         <AidToolBar>
-            <MudGrid>
-               <MudItem xs="4" sm="4" md="3" lg="2">
-                    <AidDatePicker Label="조회 시작일" @bind-Date="@_receiptDateFrom" />
+            <MudGrid Spacing="1">
+                <MudItem xs="4" sm="4" md="3" lg="2">
+                    <AidDatePicker @bind-Date="@_receiptDateFrom"
+                                   Mode="AidDatePicker.BindMode.Date"
+                                   Label="조회 시작일" />
+
                 </MudItem>
                 <MudItem xs="4" sm="4" md="3" lg="2">
-                    <AidDatePicker Label="조회 종료일" @bind-Date="@_receiptDateTo" />
+                    <AidDatePicker @bind-Date="@_receiptDateTo"
+                                   Mode="AidDatePicker.BindMode.Date"
+                                   Label="조회 종료일" />
                 </MudItem>
                 <MudItem xs="4" sm="4" md="3" lg="2">
-                    <AidSearchField T="@string" @bind-Value="@searchText" />
+                    <AidSearchField Label="검색"
+                                    T="@string"
+                                    @bind-Value="@searchText" />
                 </MudItem>
             </MudGrid>
         </AidToolBar>

@@ -24,13 +24,13 @@
         </HeaderRow>
         <BodyRow>
             <MudTd>
-                <AidCompleteField TKey="long"
-                                  DisableUnderLine="true"
-                                  @bind-Key="context.ParentGroupId"
-                                  @bind-Value="context.ParentGroupName"
-                                  ItemValues="@(_locationGroups.Select(x=> x.Name).ToList())"
-                                  KeyFunc="@((value) => _locationGroups.FirstOrDefault(x=> x.Name == value)?.Id ?? 0)"
-                                  Validation="@((_) => ValidateProperty(context, nameof(LocationModel.ParentGroupName)))" />
+                <AidCompleteField TValue="long"
+                                  @bind-Text="context.ParentGroupName"
+                                  ValueChanged="((value) => context.ParentGroupId = value)"
+                                  TextItemList="@(_locationGroups.Select(x=> x.Name).ToList())"
+                                  TextToValueFunc="@((value) => _locationGroups.FirstOrDefault(x=> x.Name == value)?.Id ?? 0)"
+                                  Validation="@((_) => ValidateProperty(context, nameof(LocationModel.ParentGroupName)))"
+                                  DisableUnderLine="true" />
             </MudTd>
             <MudTd>
                 <AidTextField @bind-Value="context.Name"

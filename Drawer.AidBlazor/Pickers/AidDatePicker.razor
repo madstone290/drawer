@@ -1,0 +1,158 @@
+﻿@using System.Linq.Expressions
+@using System.Globalization
+@implements IValidation
+@implements IAsyncDisposable
+
+<MudDatePicker @ref="_pickerReference"
+               @bind-Text="@PickerText"
+               Label="@Label"
+               For="@For"
+               Class="@Class"
+               Error="@_error"
+               ErrorText="@_errorText"
+               Placeholder="@Placeholder"
+               TitleDateFormat="@BaseDateFormart"
+               Mask="@(new DateMask(BaseDateFormart))"
+               DisableToolbar="@true"
+               Editable="true">
+    <PickerActions>
+        <MudButton Variant="Variant.Filled" Color="@Color.Info" OnClick="@Today_Click">오늘</MudButton>
+        <MudButton Variant="Variant.Filled" Color="@Color.Secondary" OnClick="@Cancel_Click">취소</MudButton>
+        <MudButton Variant="Variant.Filled" Color="@Color.Primary" OnClick="@Ok_Click">확인</MudButton>
+    </PickerActions>
+</MudDatePicker>
+@code {
+
+     /*
+     * 데이터 바인딩은 Text, Date 둘 중 하나만 한다.
+     * 나머지 값은 ChangedCallback을 통해 갱신한다.
+     */
+
+    public enum BindMode
+    {
+        Date,
+        Text
+    }
+
+    private const string BaseDateFormart = "yyyy-MM-dd";
+
+    private MudDatePicker _pickerReference = null!;
+
+    private string? _pickerText;
+    private DateTime? _date;
+    private string? _text;
+    /// <summary>
+    /// 에러 여부
+    /// </summary>
+    private bool _error;
+    private string? _errorText = "유효한 날짜가 아닙니다";
+
+
+    private string Class
+    {
+        get => new ClassBuilder()
+            .Add("aid-picker")
+            .AddIf("aid-picker-no-label", string.IsNullOrWhiteSpace(Label))
+            .Build();
+    }
+
+    private string? PickerText
+    {
+        get => _pickerText;
+        set
+        {
+            if (EqualityComparer<string?>.Default.Equals(_pickerText, value))
+                return;
+            _pickerText = value;
+
+            _error = !DateTime.TryParseExact(value, BaseDateFormart, CultureInfo.InvariantCulture,
+                DateTimeStyles.None, out DateTime date);
+
+            Text = value;
+            Date = _error ? null : date;
+        }
+    }
+
+
+    [Parameter]
+    public DateTime? Date
+    {
+        get => _date;
+        set
+        {
+            if (EqualityComparer<DateTime?>.Default.Equals(_date, value))
+                return;
+            _date = value;
+            DateChanged.InvokeAsync(value); 
+
+            if(Mode == BindMode.Date)
+                PickerText = value.HasValue ? value.Value.ToString(BaseDateFormart) : null;
+        }
+    }
+
+    [Parameter]
+    public string? Text
+    {
+        get => _text;
+        set
+        {
+            if (EqualityComparer<string?>.Default.Equals(_text, value))
+                return;
+            _text = value;
+            TextChanged.InvokeAsync(value);
+
+            if(Mode == BindMode.Text)
+                PickerText = value;
+        }
+    }
+
+    [Parameter] public EventCallback<DateTime?> DateChanged { get; set; }
+    [Parameter] public EventCallback<string?> TextChanged { get; set; }
+    [Parameter] public string? Label { get; set; }
+    [Parameter] public string? Placeholder { get; set; } = "날짜를 선택하세요";
+    [Parameter] public Expression<Func<DateTime?>>? For { get; set; }
+
+    /// <summary>
+    /// 바인딩 모드. @bind- 특성과 일치해야 한다. 데이트피커 값 갱신조건이 달라진다.
+    /// </summary>
+    [Parameter] public BindMode Mode { get; set; } = BindMode.Text;
+
+    [CascadingParameter] public IValidationContainer? ValidationContainer { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (ValidationContainer != null)
+            ValidationContainer.AddValidation(this);
+    }
+
+    private async void Today_Click()
+    {
+        await _pickerReference.GoToDate(DateTime.Today);
+    }
+
+    private void Cancel_Click()
+    {
+        _pickerReference.Close(false);
+    }
+
+    private void Ok_Click()
+    {
+        _pickerReference.Close();
+    }
+
+    async Task<string?> IValidation.ValidateAsync()
+    {
+        var errorMessage = _error ? _errorText : null;
+
+        return await Task.FromResult(errorMessage);
+    }
+
+    ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (ValidationContainer != null)
+            ValidationContainer.RemoveValidation(this);
+
+        return ValueTask.CompletedTask;
+    }
+
+}

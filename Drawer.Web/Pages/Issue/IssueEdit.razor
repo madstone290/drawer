@@ -32,22 +32,22 @@
         </MudItem>
 
         <MudItem xs="6" sm="3">
-            <AidCompleteField TKey="long"
+            <AidCompleteField TValue="long"
                               Label="아이템"
-                              @bind-Key="_issue.ItemId"
-                              @bind-Value="_issue.ItemName"
+                              @bind-Text="_issue.ItemName"
+                              ValueChanged="@((value) => _issue.ItemId = value)"
                               For="()=>_issue.ItemName"
-                              ItemValues="@(_itemList.Select(x=> x.Name).ToList())"
-                              KeyFunc="@((value) => _itemList.FirstOrDefault(x=> x.Name == value)?.Id ?? 0)" />
+                              TextItemList="@(_itemList.Select(x=> x.Name).ToList())"
+                              TextToValueFunc="@((value) => _itemList.FirstOrDefault(x=> x.Name == value)?.Id ?? 0)" />
         </MudItem>
         <MudItem xs="6" sm="3">
-            <AidCompleteField TKey="long"
+            <AidCompleteField TValue="long"
                               Label="위치"
-                              @bind-Key="_issue.LocationId"
-                              @bind-Value="_issue.LocationName"
+                              @bind-Text="_issue.LocationName"
+                              ValueChanged="@((value) => _issue.LocationId = value)"
                               For="()=>_issue.LocationName"
-                              ItemValues="@(_locationList.Select(x=> x.Name).ToList())"
-                              KeyFunc="@((value) => _locationList.FirstOrDefault(x=> x.Name == value)?.Id ?? 0)" />
+                              TextItemList="@(_locationList.Select(x=> x.Name).ToList())"
+                              TextToValueFunc="@((value) => _locationList.FirstOrDefault(x=> x.Name == value)?.Id ?? 0)" />
         </MudItem>
         <MudItem xs="0" sm="6">
         </MudItem>

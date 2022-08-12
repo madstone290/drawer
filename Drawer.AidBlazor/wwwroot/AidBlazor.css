@@ -66,17 +66,25 @@ html, body {
     width: 100%
 }
 
-/* Field 기본 탑마진 제거 */
+/* Field 기본 탑마진 제거. Field는 mud-input-control을 루트 요소로 사용한다. */
 .aid-field.mud-input-control {
     margin-top: 0px;
 }
-
 
 /* Field 라벨 표시여부 */
 .aid-field-no-label.mud-input-control > .mud-input-control-input-container > div.mud-input.mud-input-text {
     margin-top: 0px;
 }
 
+/* Picker 기본 탑마진 제거. Picker는 mud-input-control을 하위 요소로 사용한다. */
+.aid-picker .mud-input-control {
+    margin-top: 0px;
+}
+
+/* Picker 라벨 표시여부 */
+.aid-picker-no-label .mud-input-control > .mud-input-control-input-container > div.mud-input.mud-input-text {
+    margin-top: 0px;
+}
 
 
 /* 테이블셀 */

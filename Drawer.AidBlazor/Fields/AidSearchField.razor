@@ -6,7 +6,7 @@
 }
 <MudTextField T="@T"
               Disabled="@(!Enabled)"
-              Placeholder="@BasePlaceholder"
+              Placeholder="@Placeholder"
               Class="@Class"
               @bind-Value="@Value"
               Label="@Label"
@@ -16,7 +16,7 @@
               Immediate="@true" />
 
 @code {
-    private const string BasePlaceholder = "검색";
+    private const string BasePlaceholder = "검색어를 입력하세요";
 
     private T? _value;
 
@@ -46,5 +46,7 @@
     [Parameter] public bool Visible { get; set; } = true;
     [Parameter] public bool Enabled { get; set; } = true;
     [Parameter] public string? Label { get; set; }
+    [Parameter] public string? Placeholder { get; set; } = BasePlaceholder;
 }
+
 

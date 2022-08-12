@@ -18,13 +18,13 @@
          Model="_location" ValidationDelay="0" Validation="@_validator.ValidateValue()">
     <MudGrid>
         <MudItem xs="6" sm="3">
-            <AidCompleteField TKey="long"
+            <AidCompleteField TValue="long"
                               Label="상위 그룹"
-                              @bind-Key="_location.ParentGroupId"
-                              @bind-Value="_location.ParentGroupName"
+                              @bind-Text="_location.ParentGroupName"
+                              ValueChanged="@((value) => _location.ParentGroupId = value)"
                               For="()=>_location.ParentGroupName"
-                              ItemValues="@(_locationGroups.Select(x=> x.Name).ToList())"
-                              KeyFunc="@((value) => _locationGroups.FirstOrDefault(x=> x.Name == value)?.Id ?? 0)" />
+                              TextItemList="@(_locationGroups.Select(x=> x.Name).ToList())"
+                              TextToValueFunc="@((value) => _locationGroups.FirstOrDefault(x=> x.Name == value)?.Id ?? 0)" />
         </MudItem>
         <MudItem xs="6" sm="3">
             <MudTextField @bind-Value="_location.Name"

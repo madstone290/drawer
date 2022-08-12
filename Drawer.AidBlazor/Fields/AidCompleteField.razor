@@ -1,4 +1,4 @@
-﻿@typeparam TKey
+﻿@typeparam TValue
 @using System.Linq.Expressions
 @implements IValidation
 @implements IAsyncDisposable
@@ -11,7 +11,7 @@
                   Immediate="@Immediate"
                   Label="@Label"
                   DisableUnderLine="@(DisableUnderLine && !_isInputFocused)"
-                  Value="@Value"
+                  Value="@FieldText"
                   ValueChanged="@TextField_ValueChanged"
                   OnKeyDown="TextField_KeyDown"
                   OnKeyUp="TextField_KeyUp"
@@ -46,6 +46,12 @@
 
 @code {
 
+    public enum BindMode
+    {
+        Text,
+        Value
+    }
+
     private MudTextField<string> _fieldReference = null!;
 
     /// <summary>
@@ -60,6 +66,8 @@
             .AddIf("aid-field-no-label", string.IsNullOrWhiteSpace(Label))
             .Build();
     }
+
+    private string _fieldText;
 
     /// <summary>
     /// 인풋 포커스 여부
@@ -126,48 +134,73 @@
     [Parameter] public string? Label { get; set; }
     [Parameter] public int MaxHeight { get; set; } = 200;
     [Parameter] public Expression<Func<string>>? For { get; set; }
-    /// <summary>
-    /// 메뉴리스트 아이템 값 목록
-    /// </summary>
-    [Parameter] public List<string>? ItemValues { get; set; }
+    [Parameter] public BindMode Mode { get; set; } = BindMode.Text;
 
     /// <summary>
-    /// Value -> Key 변환 함수
+    /// 텍스트 아이템 값 목록
     /// </summary>
-    [Parameter] public Func<string, TKey?>? KeyFunc { get; set; }
+    [Parameter] public List<string>? TextItemList { get; set; }
 
-    private TKey? _key;
-    private string? _value;
-    [Parameter]
-    public TKey? Key
+    /// <summary>
+    /// Text -> Value 변환 함수
+    /// </summary>
+    [Parameter] public Func<string?, TValue?>? TextToValueFunc { get; set; }
+
+    /// <summary>
+    /// Value -> Text 변환 함수
+    /// </summary>
+    [Parameter] public Func<TValue, string?>? ValueToTextFunc { get; set; }
+
+    private TValue? _value;
+    private string? _text;
+
+    private string? FieldText
     {
-        get => _key;
+        get => _fieldText;
         set
         {
-            if (EqualityComparer<TKey>.Default.Equals(_key, value))
+            if (EqualityComparer<string>.Default.Equals(_fieldText, value))
                 return;
-            _key = value;
-            KeyChanged.InvokeAsync(value);
+            _fieldText = value;
+
+            Text = value;
+            Value = TextToValueFunc == null ? default : TextToValueFunc(value);
         }
     }
+
     [Parameter]
-    public string? Value
+    public TValue? Value
     {
         get => _value;
         set
         {
-            if (EqualityComparer<string>.Default.Equals(_value, value))
+            if (EqualityComparer<TValue>.Default.Equals(_value, value))
                 return;
             _value = value;
             ValueChanged.InvokeAsync(value);
 
-            if(KeyFunc != null)
-                Key = KeyFunc.Invoke(value);
+            if(Mode == BindMode.Value)
+                FieldText = ValueToTextFunc == null ? value?.ToString() : ValueToTextFunc.Invoke(value);
+        }
+    }
+    [Parameter]
+    public string? Text
+    {
+        get => _text;
+        set
+        {
+            if (EqualityComparer<string>.Default.Equals(_text, value))
+                return;
+            _text = value;
+            TextChanged.InvokeAsync(value);
+
+            if(Mode == BindMode.Text)
+                FieldText = value;
         }
     }
 
-    [Parameter] public EventCallback<TKey?> KeyChanged { get; set; }
-    [Parameter] public EventCallback<string?> ValueChanged { get; set; }
+    [Parameter] public EventCallback<TValue?> ValueChanged { get; set; }
+    [Parameter] public EventCallback<string?> TextChanged { get; set; }
 
     protected override void OnInitialized()
     {
@@ -226,7 +259,7 @@
 
     private async Task TextField_ValueChanged(string value)
     {
-        Value = value;
+        FieldText = value;
 
         if (_isItemChosen)
         {
@@ -318,19 +351,19 @@
         // 2. 아이템 목록 렌더링
         // 3. 아이템 목록 렌더링이 완료되면 선택할 아이템 인덱스를 이용해서 다시 한번 렌더링
 
-        if (ItemValues == null)
+        if (TextItemList == null)
             return;
         Debug("ShowMenu");
-        if (string.IsNullOrWhiteSpace(Value))
+        if (string.IsNullOrWhiteSpace(Text))
         {
             Debug("Value is null");
-            _filteredItemValues = ItemValues.ToList();
+            _filteredItemValues = TextItemList.ToList();
         }
         else
         {
             Debug("Value is not null");
-            _filteredItemValues = ItemValues.Where(item =>
-                item.Contains(Value, StringComparison.OrdinalIgnoreCase)).ToList();
+            _filteredItemValues = TextItemList.Where(item =>
+                item.Contains(Text, StringComparison.OrdinalIgnoreCase)).ToList();
         }
         Debug($"FilteredItem Count: {_filteredItemValues?.Count}");
         _isOpen = false;
