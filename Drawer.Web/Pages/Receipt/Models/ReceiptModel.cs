@@ -7,14 +7,17 @@ namespace Drawer.Web.Pages.Receipt.Models
     {
         public ReceiptModel()
         {
-            ReceiptDateString = DateTimeExtensions.KoreaToday.ToString("yyyy-MM-dd");
-            ReceiptTimeString = DateTimeExtensions.KoreaNowTime.ToString(@"hh\:mm");
+            ReceiptDate = DateTimeExtensions.KoreaToday;
+            ReceiptTime = DateTimeExtensions.KoreaNowTime;
+
+            ReceiptDateString = ReceiptDate.Value.ToString("yyyy-MM-dd");
+            ReceiptTimeString = ReceiptTime.Value.ToString(@"hh\:mm");
         }
 
         public long Id { get; set; }
-        public string? TransactionNumber { get; set; } = Guid.NewGuid().ToString();
-        public DateTime? ReceiptDate { get; set; } = DateTime.Now.Date;
-        public TimeSpan? ReceiptTime { get; set; } = DateTime.Now.TimeOfDay;
+        public string? TransactionNumber { get; set; } 
+        public DateTime? ReceiptDate { get; set; }
+        public TimeSpan? ReceiptTime { get; set; }
         public DateTime ReceiptDateTime
         {
             get

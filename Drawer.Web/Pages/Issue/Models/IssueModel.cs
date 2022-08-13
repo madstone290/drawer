@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Drawer.Shared;
+using FluentValidation;
 
 namespace Drawer.Web.Pages.Issue.Models
 {
@@ -6,14 +7,17 @@ namespace Drawer.Web.Pages.Issue.Models
     {
         public IssueModel()
         {
-            IssueDateString = DateTime.Today.ToString("yyyy-MM-dd");
-            IssueTimeString = DateTime.Now.TimeOfDay.ToString(@"hh\:mm");
+            IssueDate = DateTimeExtensions.KoreaToday;
+            IssueTime = DateTimeExtensions.KoreaNowTime;
+
+            IssueDateString = IssueDate.Value.ToString("yyyy-MM-dd");
+            IssueTimeString = IssueTime.Value.ToString(@"hh\:mm");
         }
 
         public long Id { get; set; }
-        public string? TransactionNumber { get; set; } = Guid.NewGuid().ToString();
-        public DateTime? IssueDate { get; set; } = DateTime.Now.Date;
-        public TimeSpan? IssueTime { get; set; } = DateTime.Now.TimeOfDay;
+        public string? TransactionNumber { get; set; }
+        public DateTime? IssueDate { get; set; } 
+        public TimeSpan? IssueTime { get; set; } 
         public DateTime IssueDateTime
         {
             get

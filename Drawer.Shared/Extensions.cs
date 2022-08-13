@@ -8,11 +8,11 @@ namespace Drawer.Shared
 {
     public static class DateTimeExtensions
     {
-        public static DateTime KoreaToday => DateTime.UtcNow.ToKorea().Date;
-
         public static DateTime KoreaNow => DateTime.UtcNow.ToKorea();
 
-        public static TimeSpan KoreaNowTime => DateTime.UtcNow.ToKorea().TimeOfDay;
+        public static DateTime KoreaToday => KoreaNow.Date;
+
+        public static TimeSpan KoreaNowTime => KoreaNow.TimeOfDay;
 
         public static DateTime ToKorea(this DateTime utcTime)
         {
