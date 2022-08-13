@@ -1,4 +1,5 @@
 ﻿using Drawer.AidBlazor;
+using Drawer.Application.Services.Inventory.QueryModels;
 using Drawer.Web.Api.Inventory;
 using Drawer.Web.Pages.Receipt.Models;
 using Drawer.Web.Services;
@@ -13,6 +14,9 @@ namespace Drawer.Web.Pages.Receipt
     {
         private AidTable<ReceiptTableModel> table = null!;
         private readonly List<ReceiptTableModel> _receiptList = new();
+        private readonly List<ItemQueryModel> _itemList = new();
+        private readonly List<LocationQueryModel> _locationList = new();
+
         private readonly ExcelOptions _excelOptions = new ExcelOptionsBuilder()
             .AddColumn(nameof(ReceiptTableModel.TransactionNumber), "입고번호")
             .AddColumn(nameof(ReceiptTableModel.ReceiptDateString), "입고일자")
@@ -24,7 +28,7 @@ namespace Drawer.Web.Pages.Receipt
             .AddColumn(nameof(ReceiptTableModel.Note), "비고")
             .Build();
 
-        private bool _isTableLoading;
+        private bool _isLoading;
         private bool canCreate = false;
         private bool canRead = false;
         private bool canUpdate = false;
@@ -85,39 +89,65 @@ namespace Drawer.Web.Pages.Receipt
                 return;
             }
 
-            _isTableLoading = true;
-            var receiptResponse = await ReceiptApiClient.GetReceipts(_receiptDateFrom.Value, _receiptDateTo.Value);
-            var itemResponse = await ItemApiClient.GetItems();
-            var locationResponse = await LocationApiClient.GetLocations();
-            if (!Snackbar.CheckFail(receiptResponse, itemResponse, locationResponse))
-            {
-                _isTableLoading = false;
-                return;
-            }
+            _isLoading = true;
 
-            var itemList = itemResponse.Data;
-            var locationList = locationResponse.Data;
-            _receiptList.Clear();
-            foreach (var receiptDto in receiptResponse.Data)
-            {
-                var receipt = new ReceiptTableModel()
+            var receiptTask = ReceiptApiClient.GetReceipts(_receiptDateFrom.Value, _receiptDateTo.Value)
+                .ContinueWith((task) =>
                 {
-                    Id = receiptDto.Id,
-                    TransactionNumber = receiptDto.TransactionNumber,
-                    ReceiptDateString = receiptDto.ReceiptDateTimeLocal.Date.ToString("yyyy-MM-dd"),
-                    ReceiptTimeString = receiptDto.ReceiptDateTimeLocal.TimeOfDay.ToString(@"hh\:mm"),
-                    ItemId = receiptDto.ItemId,
-                    ItemName = itemList.First(x => x.Id == receiptDto.ItemId).Name,
-                    LocationId = receiptDto.LocationId,
-                    LocationName = locationList.First(x => x.Id == receiptDto.LocationId).Name,
-                    QuantityString = receiptDto.Quantity.ToString(),
-                    Seller = receiptDto.Seller,
-                    Note = receiptDto.Note
-                };
-                _receiptList.Add(receipt);
+                    var receiptResponse = task.Result;
+                    if (!Snackbar.CheckFail(receiptResponse))
+                        return;
+
+                    foreach (var receiptDto in receiptResponse.Data)
+                    {
+                        var receipt = new ReceiptTableModel()
+                        {
+                            Id = receiptDto.Id,
+                            TransactionNumber = receiptDto.TransactionNumber,
+                            ReceiptDateString = receiptDto.ReceiptDateTimeLocal.Date.ToString("yyyy-MM-dd"),
+                            ReceiptTimeString = receiptDto.ReceiptDateTimeLocal.TimeOfDay.ToString(@"hh\:mm"),
+                            ItemId = receiptDto.ItemId,
+                            LocationId = receiptDto.LocationId,
+                            QuantityString = receiptDto.Quantity.ToString(),
+                            Seller = receiptDto.Seller,
+                            Note = receiptDto.Note
+                        };
+                        _receiptList.Add(receipt);
+                    }
+                });
+
+
+            var itemTask = ItemApiClient.GetItems()
+                .ContinueWith((task) =>
+                {
+                    var itemResponse = task.Result;
+                    if (Snackbar.CheckFail(itemResponse))
+                    {
+                        _itemList.Clear();
+                        _itemList.AddRange(itemResponse.Data);
+                    }
+                });
+
+            var locationTask = LocationApiClient.GetLocations()
+                .ContinueWith((task) =>
+                {
+                    var locationResponse = task.Result;
+                    if (Snackbar.CheckFail(locationResponse))
+                    {
+                        _locationList.Clear();
+                        _locationList.AddRange(locationResponse.Data.Where(x => x.IsGroup == false));
+                    }
+                });
+
+            await Task.WhenAll(receiptTask, itemTask, locationTask);
+
+            foreach (var receipt in _receiptList)
+            {
+                receipt.ItemName = _itemList.First(x => x.Id == receipt.ItemId).Name;
+                receipt.LocationName = _locationList.First(x => x.Id == receipt.LocationId).Name;
             }
 
-            _isTableLoading = false;
+            _isLoading = false;
         }
 
         private void Add_Click()

@@ -1,13 +1,15 @@
-﻿@implements IValidation
+﻿@using System.Linq.Expressions
+@implements IValidation
 @implements IAsyncDisposable
 
 <MudTextField @ref="_fieldReference"
+              @attributes="@Attributes"
               T="@string"
               Class="@Class"
               Label="@Label"
               Immediate="@Immediate"
               InputType="InputType.Text"
-              Validation="@Validation"
+              AutoFocus="@AutoFocus"
               @bind-Value="@Value"
               @onfocus="OnFocus"
               @onblur="OnBlur"
@@ -27,6 +29,21 @@
             .AddIf("aid-field-no-label", string.IsNullOrWhiteSpace(Label))
             .Build();
     }
+
+    private Dictionary<string, object> Attributes
+    {
+        get
+        {
+            Dictionary<string, object> _attributes = new();
+            if (For != null)
+                _attributes.Add("For", For);
+            else if (Validation != null)
+                _attributes.Add("Validation", Validation);
+            return _attributes;
+        }
+    }
+
+
 
     [CascadingParameter] public IValidationContainer? ValidationContainer { get; set; }
 
@@ -53,7 +70,11 @@
     [Parameter] public string? Label { get; set; }
     [Parameter] public bool Visible { get; set; } = true;
     [Parameter] public bool Immediate { get; set; } = true;
-     /// <summary>
+    [Parameter] public bool AutoFocus { get; set; } = false;
+
+    [Parameter] public Expression<Func<string>>? For { get; set; }
+
+    /// <summary>
     /// 컴포넌트 생성 후 유효성 검사 여부
     /// </summary>
     [Parameter] public bool InitialValidation { get; set; } = true;

@@ -54,12 +54,8 @@ namespace Drawer.Web.Pages.InventoryStatus
                 if (_hideZeroQuantity == value)
                     return;
                 _hideZeroQuantity = value;
-                
-                _displayModelList.Clear();
-                if(_hideZeroQuantity)
-                    _displayModelList.AddRange(_modelList.Where(x => 0 < x.Quantity));
-                else
-                    _displayModelList.AddRange(_modelList);
+
+                RefreshDisplayList();
             }
         }
 
@@ -125,7 +121,7 @@ namespace Drawer.Web.Pages.InventoryStatus
                 }
             }
 
-            _displayModelList.AddRange(_modelList);
+            RefreshDisplayList();
 
             _isTableLoading = false;
         }
@@ -149,6 +145,18 @@ namespace Drawer.Web.Pages.InventoryStatus
         {
             var fileName = $"위치-{DateTime.Now:yyMMdd-HHmmss}.xlsx";
             await ExcelFileService.Download(fileName, _modelList, _excelOptions);
+        }
+
+        /// <summary>
+        /// 화면에 표시할 리스트를 갱신한다.
+        /// </summary>
+        void RefreshDisplayList()
+        {
+            _displayModelList.Clear();
+            if (HideZeroQuantity)
+                _displayModelList.AddRange(_modelList.Where(x => 0 < x.Quantity));
+            else
+                _displayModelList.AddRange(_modelList);
         }
     }
 }

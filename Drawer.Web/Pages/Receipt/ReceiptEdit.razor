@@ -1,5 +1,9 @@
 ﻿@using Drawer.Web.Pages.Receipt.Models
 @using Drawer.Web.Utils
+
+@if (_isLoading)
+    return;
+
 <ContentTitle Text="@TitleText" />
 <AidToolBar>
     <AidButton Color="Color.Error"
@@ -20,11 +24,13 @@
         <MudItem xs="6" sm="3">
             <AidDatePicker Label="입고일자"
                            @bind-Date="_receipt.ReceiptDate"
+                           Mode="AidDatePicker.BindMode.Date"
                            For="@(() => _receipt.ReceiptDate)" />
         </MudItem>
         <MudItem xs="6" sm="3">
             <AidTimePicker Label="입고시간"
                            @bind-Time="_receipt.ReceiptTime"
+                           Mode="AidTimePicker.BindMode.Time"
                            For="@(() => _receipt.ReceiptTime)">
             </AidTimePicker>
         </MudItem>
@@ -49,6 +55,7 @@
                               TextItemList="@(_locationList.Select(x=> x.Name).ToList())"
                               TextToValueFunc="@((value) => _locationList.FirstOrDefault(x=> x.Name == value)?.Id ?? 0)" />
         </MudItem>
+
         <MudItem xs="0" sm="6">
         </MudItem>
 

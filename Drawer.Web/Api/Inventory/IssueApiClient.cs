@@ -44,7 +44,7 @@ namespace Drawer.Web.Api.Inventory
         }
 
 
-        public async Task<ApiResponse<List<long>>> BatchAddReceipt(List<IssueCommandModel> issueList)
+        public async Task<ApiResponse<List<long>>> BatchAddIssue(List<IssueCommandModel> issueList)
         {
             var request = new ApiRequest<List<long>>(
                 HttpMethod.Post,

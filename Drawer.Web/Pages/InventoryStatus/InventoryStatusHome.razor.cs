@@ -59,8 +59,13 @@ namespace Drawer.Web.Pages.InventoryStatus
         {
             _isTableLoading = true;
 
-            var itemResponse = await ItemApiClient.GetItems();
-            var inventoryResponse = await InventoryApiClient.GetInventoryDetails();
+            var itemTask = ItemApiClient.GetItems();
+            var inventoryTask= InventoryApiClient.GetInventoryDetails();
+            await Task.WhenAll(itemTask, inventoryTask);
+
+            var itemResponse = itemTask.Result;
+            var inventoryResponse = inventoryTask.Result;
+
             if (!Snackbar.CheckFail(itemResponse, inventoryResponse))
             {
                 _isTableLoading = false;

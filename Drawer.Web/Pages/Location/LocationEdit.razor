@@ -1,5 +1,9 @@
 ﻿@using Drawer.Web.Pages.Location.Models
 @using Drawer.Web.Utils
+
+@if (_isLoading)
+    return;
+
 <ContentTitle Text="@TitleText" />
 <AidToolBar>
     <AidButton Color="Color.Error"
@@ -27,7 +31,7 @@
                               TextToValueFunc="@((value) => _locationGroups.FirstOrDefault(x=> x.Name == value)?.Id ?? 0)" />
         </MudItem>
         <MudItem xs="6" sm="3">
-            <MudTextField @bind-Value="_location.Name"
+            <AidTextField @bind-Value="_location.Name"
                           For="@(() => _location.Name)"
                           Label="이름"
                           AutoFocus="true" />

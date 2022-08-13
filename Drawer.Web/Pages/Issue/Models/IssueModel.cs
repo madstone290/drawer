@@ -4,6 +4,12 @@ namespace Drawer.Web.Pages.Issue.Models
 {
     public class IssueModel
     {
+        public IssueModel()
+        {
+            IssueDateString = DateTime.Today.ToString("yyyy-MM-dd");
+            IssueTimeString = DateTime.Now.TimeOfDay.ToString(@"hh\:mm");
+        }
+
         public long Id { get; set; }
         public string? TransactionNumber { get; set; } = Guid.NewGuid().ToString();
         public DateTime? IssueDate { get; set; } = DateTime.Now.Date;
@@ -17,14 +23,18 @@ namespace Drawer.Web.Pages.Issue.Models
                 return IssueDate.Value.Add(IssueTime.Value);
             }
         }
+        public string? IssueDateString { get; set; }
+        public string? IssueTimeString { get; set; }
+
         public long ItemId { get; set; }
         public string? ItemName { get; set; }
         public long LocationId { get; set; }
         public string? LocationName { get; set; }
         public decimal Quantity { get; set; }
-        public string? QuantityString { get; set; }
         public string? Buyer { get; set; }
         public string? Note { get; set; }
+
+
     }
 
     public class IssueModelValidator : AbstractValidator<IssueModel>

@@ -17,6 +17,8 @@ namespace Drawer.Web.Pages.Issue
         private readonly List<ItemQueryModel> _itemList = new();
         private readonly List<LocationQueryModel> _locationList = new();
 
+        private bool _isLoading;
+
         public string TitleText
         {
             get
@@ -42,47 +44,62 @@ namespace Drawer.Web.Pages.Issue
 
         protected override async Task OnInitializedAsync()
         {
+            _isLoading = true;
 
-            var itemResponse = await ItemApiClient.GetItems();
-            var locationResponse = await LocationApiClient.GetLocations();
-            if (!Snackbar.CheckFail(itemResponse, locationResponse))
-                return;
-
-            _itemList.Clear();
-            _itemList.AddRange(itemResponse.Data);
-
-            _locationList.Clear();
-            _locationList.AddRange(locationResponse.Data.Where(x => x.IsGroup == false));
-
-            _validator.ItemNames = _itemList.Select(x => x.Name).ToList();
-            _validator.LocationNames = _locationList.Select(x => x.Name).ToList();
-
-            if (EditMode == EditMode.Update)
-            {
-                var issueResponse = await IssueApiClient.GetIssue(IssueId);
-                if (!Snackbar.CheckFail(issueResponse))
-                    return;
-
-                var issueDto = issueResponse.Data;
-                if(issueDto == null)
+            var itemTask = ItemApiClient.GetItems()
+                .ContinueWith((task) =>
                 {
-                    Snackbar.Add("출고내역을 조회할 수 없습니다", Severity.Error);
-                    return;
-                }
-                    
+                    var itemResponse = task.Result;
+                    if (!Snackbar.CheckFail(itemResponse))
+                        return;
 
-                _issue.Id = issueDto.Id;
-                _issue.IssueDate = issueDto.IssueDateTimeLocal.Date;
-                _issue.IssueTime = issueDto.IssueDateTimeLocal.TimeOfDay;
-                _issue.ItemId = issueDto.ItemId;
-                _issue.ItemName = _itemList.First(x => x.Id == issueDto.ItemId).Name;
-                _issue.LocationId = issueDto.LocationId;
-                _issue.LocationName = _locationList.First(x => x.Id == issueDto.LocationId).Name;
-                _issue.Quantity = issueDto.Quantity;
-                _issue.Buyer = issueDto.Buyer;
-            }
+                    _itemList.Clear();
+                    _itemList.AddRange(itemResponse.Data);
+                    _validator.ItemNames = _itemList.Select(x => x.Name).ToList();
+                });
 
+            var locationTask = LocationApiClient.GetLocations()
+                .ContinueWith((task) =>
+                {
+                    var locationResponse = task.Result;
+                    if (!Snackbar.CheckFail(locationResponse))
+                        return;
 
+                    _locationList.Clear();
+                    _locationList.AddRange(locationResponse.Data.Where(x => x.IsGroup == false));
+                    _validator.LocationNames = _locationList.Select(x => x.Name).ToList();
+                });
+
+            var issueTask = EditMode != EditMode.Update
+                ? Task.CompletedTask
+                : IssueApiClient.GetIssue(IssueId)
+                    .ContinueWith((task) =>
+                    {
+                        var issueResponse = task.Result;
+                        if (!Snackbar.CheckFail(issueResponse))
+                            return;
+
+                        var issueDto = issueResponse.Data;
+                        if (issueDto == null)
+                        {
+                            Snackbar.Add("출고내역을 조회할 수 없습니다", Severity.Error);
+                            return;
+                        }
+
+                        _issue.Id = issueDto.Id;
+                        _issue.IssueDate = issueDto.IssueDateTimeLocal.Date;
+                        _issue.IssueTime = issueDto.IssueDateTimeLocal.TimeOfDay;
+                        _issue.ItemId = issueDto.ItemId;
+                        _issue.ItemName = _itemList.First(x => x.Id == issueDto.ItemId).Name;
+                        _issue.LocationId = issueDto.LocationId;
+                        _issue.LocationName = _locationList.First(x => x.Id == issueDto.LocationId).Name;
+                        _issue.Quantity = issueDto.Quantity;
+                        _issue.Buyer = issueDto.Buyer;
+                    });
+
+            await Task.WhenAll(itemTask, locationTask, issueTask);
+
+            _isLoading = false;
         }
 
         void Back_Click()

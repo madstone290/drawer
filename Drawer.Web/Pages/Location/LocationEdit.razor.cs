@@ -12,6 +12,8 @@ namespace Drawer.Web.Pages.Location
     {
         private MudForm _form = null!;
         private bool _isFormValid;
+        private bool _isLoading;
+
         private readonly LocationModel _location = new();
         private readonly LocationModelValidator _validator = new();
         private readonly List<LocationQueryModel> _locations = new();
@@ -40,6 +42,8 @@ namespace Drawer.Web.Pages.Location
 
         protected override async Task OnInitializedAsync()
         {
+            _isLoading = true;
+
             var response = await LocationApiClient.GetLocations();
             if (Snackbar.CheckFail(response))
             {
@@ -63,6 +67,8 @@ namespace Drawer.Web.Pages.Location
                 _location.Note = location.Note;
                 _location.ParentGroupId = location.ParentGroupId ?? 0;
             }
+
+            _isLoading = false;
         }
 
         void Back_Click()

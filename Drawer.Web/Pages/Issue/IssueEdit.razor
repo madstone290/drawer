@@ -1,5 +1,9 @@
 ﻿@using Drawer.Web.Pages.Issue.Models
 @using Drawer.Web.Utils
+
+@if (_isLoading)
+    return;
+
 <ContentTitle Text="@TitleText" />
 <AidToolBar>
     <AidButton Color="Color.Error"
@@ -20,11 +24,13 @@
         <MudItem xs="6" sm="3">
             <AidDatePicker Label="출고일자"
                            @bind-Date="_issue.IssueDate"
+                           Mode="AidDatePicker.BindMode.Date"
                            For="@(() => _issue.IssueDate)" />
         </MudItem>
         <MudItem xs="6" sm="3">
             <AidTimePicker Label="출고시간"
                            @bind-Time="_issue.IssueTime"
+                           Mode="AidTimePicker.BindMode.Time"
                            For="@(() => _issue.IssueTime)">
             </AidTimePicker>
         </MudItem>

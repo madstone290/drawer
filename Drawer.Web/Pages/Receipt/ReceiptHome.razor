@@ -70,7 +70,7 @@
         </AidToolBar>
 
         <AidTable @ref="table"
-                  Loading="@_isTableLoading"
+                  Loading="@_isLoading"
                   T="@ReceiptTableModel"
                   Items="@_receiptList"
                   Filter="@(new Func<ReceiptTableModel,bool>(FilterReceipts))">

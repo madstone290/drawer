@@ -50,21 +50,27 @@
         </AidToolBar>
 
         <AidToolBar>
-            <MudGrid>
+            <MudGrid Spacing="1">
                 <MudItem xs="4" sm="4" md="3" lg="2">
-                    <AidDatePicker Label="조회 시작일" @bind-Date="@_issueDateFrom" />
+                    <AidDatePicker Label="조회 시작일"
+                                   @bind-Date="@_issueDateFrom"
+                                   Mode="AidDatePicker.BindMode.Date" />
                 </MudItem>
                 <MudItem xs="4" sm="4" md="3" lg="2">
-                    <AidDatePicker Label="조회 종료일" @bind-Date="@_issueDateTo" />
+                    <AidDatePicker Label="조회 종료일"
+                                   @bind-Date="@_issueDateTo"
+                                   Mode="AidDatePicker.BindMode.Date" />
                 </MudItem>
                 <MudItem xs="4" sm="4" md="3" lg="2">
-                    <AidSearchField T="@string" @bind-Value="@searchText" />
+                    <AidSearchField Label="검색"
+                                    T="@string"
+                                    @bind-Value="@searchText" />
                 </MudItem>
             </MudGrid>
         </AidToolBar>
 
         <AidTable @ref="table"
-                  Loading="@_isTableLoading"
+                  Loading="@_isLoading"
                   T="@IssueTableModel"
                   Items="@_issueList"
                   Filter="@(new Func<IssueTableModel,bool>(FilterIssues))">
@@ -91,7 +97,7 @@
                     <MudTh>
                         <MudTableSortLabel T="IssueTableModel" SortBy="x => x.Buyer">구매자</MudTableSortLabel>
                     </MudTh>
-                     <MudTh>
+                    <MudTh>
                         <MudTableSortLabel T="IssueTableModel" SortBy="x => x.Note">비고</MudTableSortLabel>
                     </MudTh>
                 </MudTHeadRow>
@@ -119,7 +125,7 @@
                 <MudTd>
                     <MudHighlighter Text="@context.Buyer" HighlightedText="@searchText" />
                 </MudTd>
-                 <MudTd>
+                <MudTd>
                     <MudHighlighter Text="@context.Note" HighlightedText="@searchText" />
                 </MudTd>
             </Row>

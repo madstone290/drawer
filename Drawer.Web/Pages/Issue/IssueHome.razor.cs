@@ -1,4 +1,5 @@
 ﻿using Drawer.AidBlazor;
+using Drawer.Application.Services.Inventory.QueryModels;
 using Drawer.Web.Api.Inventory;
 using Drawer.Web.Pages.Issue.Models;
 using Drawer.Web.Services;
@@ -13,6 +14,9 @@ namespace Drawer.Web.Pages.Issue
     {
         private AidTable<IssueTableModel> table = null!;
         private readonly List<IssueTableModel> _issueList = new();
+        private readonly List<ItemQueryModel> _itemList = new();
+        private readonly List<LocationQueryModel> _locationList = new();
+
         private readonly ExcelOptions _excelOptions = new ExcelOptionsBuilder()
             .AddColumn(nameof(IssueTableModel.TransactionNumber), "출고번호")
             .AddColumn(nameof(IssueTableModel.IssueDateString), "출고일자")
@@ -24,7 +28,7 @@ namespace Drawer.Web.Pages.Issue
             .AddColumn(nameof(IssueTableModel.Note), "비고")
             .Build();
 
-        private bool _isTableLoading;
+        private bool _isLoading;
         private bool canCreate = false;
         private bool canRead = false;
         private bool canUpdate = false;
@@ -85,39 +89,65 @@ namespace Drawer.Web.Pages.Issue
                 return;
             }
 
-            _isTableLoading = true;
-            var issueResponse = await IssueApiClient.GetIssues(_issueDateFrom.Value, _issueDateTo.Value);
-            var itemResponse = await ItemApiClient.GetItems();
-            var locationResponse = await LocationApiClient.GetLocations();
-            if (!Snackbar.CheckFail(issueResponse, itemResponse, locationResponse))
-            {
-                _isTableLoading = false;
-                return;
-            }
+            _isLoading = true;
 
-            var itemList = itemResponse.Data;
-            var locationList = locationResponse.Data;
-            _issueList.Clear();
-            foreach (var issueDto in issueResponse.Data)
-            {
-                var issue = new IssueTableModel()
+            var issueTask = IssueApiClient.GetIssues(_issueDateFrom.Value, _issueDateTo.Value)
+                .ContinueWith((task) =>
                 {
-                    Id = issueDto.Id,
-                    TransactionNumber = issueDto.TransactionNumber,
-                    IssueDateString = issueDto.IssueDateTimeLocal.Date.ToString("yyyy-MM-dd"),
-                    IssueTimeString = issueDto.IssueDateTimeLocal.TimeOfDay.ToString(@"hh\:mm"),
-                    ItemId = issueDto.ItemId,
-                    ItemName = itemList.First(x => x.Id == issueDto.ItemId).Name,
-                    LocationId = issueDto.LocationId,
-                    LocationName = locationList.First(x => x.Id == issueDto.LocationId).Name,
-                    QuantityString = issueDto.Quantity.ToString(),
-                    Buyer = issueDto.Buyer,
-                    Note = issueDto.Note,
-                };
-                _issueList.Add(issue);
+                    var issueResponse = task.Result;
+                    if (!Snackbar.CheckFail(issueResponse))
+                        return;
+
+                    foreach (var issueDto in issueResponse.Data)
+                    {
+                        var issue = new IssueTableModel()
+                        {
+                            Id = issueDto.Id,
+                            TransactionNumber = issueDto.TransactionNumber,
+                            IssueDateString = issueDto.IssueDateTimeLocal.Date.ToString("yyyy-MM-dd"),
+                            IssueTimeString = issueDto.IssueDateTimeLocal.TimeOfDay.ToString(@"hh\:mm"),
+                            ItemId = issueDto.ItemId,
+                            LocationId = issueDto.LocationId,
+                            QuantityString = issueDto.Quantity.ToString(),
+                            Buyer = issueDto.Buyer,
+                            Note = issueDto.Note
+                        };
+                        _issueList.Add(issue);
+                    }
+                });
+
+
+            var itemTask = ItemApiClient.GetItems()
+                .ContinueWith((task) =>
+                {
+                    var itemResponse = task.Result;
+                    if (Snackbar.CheckFail(itemResponse))
+                    {
+                        _itemList.Clear();
+                        _itemList.AddRange(itemResponse.Data);
+                    }
+                });
+
+            var locationTask = LocationApiClient.GetLocations()
+                .ContinueWith((task) =>
+                {
+                    var locationResponse = task.Result;
+                    if (Snackbar.CheckFail(locationResponse))
+                    {
+                        _locationList.Clear();
+                        _locationList.AddRange(locationResponse.Data.Where(x => x.IsGroup == false));
+                    }
+                });
+
+            await Task.WhenAll(issueTask, itemTask, locationTask);
+
+            foreach (var issue in _issueList)
+            {
+                issue.ItemName = _itemList.First(x => x.Id == issue.ItemId).Name;
+                issue.LocationName = _locationList.First(x => x.Id == issue.LocationId).Name;
             }
 
-            _isTableLoading = false;
+            _isLoading = false;
         }
 
         private void Add_Click()

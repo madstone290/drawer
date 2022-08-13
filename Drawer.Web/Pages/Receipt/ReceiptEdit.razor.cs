@@ -18,6 +18,8 @@ namespace Drawer.Web.Pages.Receipt
         private readonly List<ItemQueryModel> _itemList = new();
         private readonly List<LocationQueryModel> _locationList = new();
 
+        private bool _isLoading;
+
         public string TitleText
         {
             get
@@ -43,45 +45,62 @@ namespace Drawer.Web.Pages.Receipt
 
         protected override async Task OnInitializedAsync()
         {
+            _isLoading = true;
 
-            var itemResponse = await ItemApiClient.GetItems();
-            var locationResponse = await LocationApiClient.GetLocations();
-            if (!Snackbar.CheckFail(itemResponse, locationResponse))
-                return;
-
-            _itemList.Clear();
-            _itemList.AddRange(itemResponse.Data);
-
-            _locationList.Clear();
-            _locationList.AddRange(locationResponse.Data.Where(x => x.IsGroup == false));
-
-            _validator.ItemNames = _itemList.Select(x => x.Name).ToList();
-            _validator.LocationNames = _locationList.Select(x => x.Name).ToList();
-
-            if (EditMode == EditMode.Update)
-            {
-                var receiptResponse = await ReceiptApiClient.GetReceipt(ReceiptId);
-                if (!Snackbar.CheckFail(receiptResponse))
-                    return;
-
-                var receiptDto = receiptResponse.Data;
-                if(receiptDto == null)
+            var itemTask = ItemApiClient.GetItems()
+                .ContinueWith((task) =>
                 {
-                    Snackbar.Add("아이디가 유효하지 않습니다", Severity.Error);
-                    return;
-                }
+                    var itemResponse = task.Result;
+                    if (!Snackbar.CheckFail(itemResponse))
+                        return;
 
-                _receipt.Id = receiptDto.Id;
-                _receipt.ReceiptDate = receiptDto.ReceiptDateTimeLocal.Date;
-                _receipt.ReceiptTime = receiptDto.ReceiptDateTimeLocal.TimeOfDay;
-                _receipt.ItemId = receiptDto.ItemId;
-                _receipt.ItemName = _itemList.First(x => x.Id == receiptDto.ItemId).Name;
-                _receipt.LocationId = receiptDto.LocationId;
-                _receipt.LocationName = _locationList.First(x => x.Id == receiptDto.LocationId).Name;
-                _receipt.Quantity = receiptDto.Quantity;
-                _receipt.Seller = receiptDto.Seller;
-            }
+                    _itemList.Clear();
+                    _itemList.AddRange(itemResponse.Data);
+                    _validator.ItemNames = _itemList.Select(x => x.Name).ToList();
+                });
 
+            var locationTask = LocationApiClient.GetLocations()
+                .ContinueWith((task) =>
+                {
+                    var locationResponse = task.Result;
+                    if (!Snackbar.CheckFail(locationResponse))
+                        return;
+
+                    _locationList.Clear();
+                    _locationList.AddRange(locationResponse.Data.Where(x => x.IsGroup == false));
+                    _validator.LocationNames = _locationList.Select(x => x.Name).ToList();
+                });
+
+            var receiptTask = EditMode != EditMode.Update
+                ? Task.CompletedTask
+                : ReceiptApiClient.GetReceipt(ReceiptId)
+                    .ContinueWith((task) =>
+                    {
+                        var receiptResponse = task.Result;
+                        if (!Snackbar.CheckFail(receiptResponse))
+                            return;
+
+                        var receiptDto = receiptResponse.Data;
+                        if (receiptDto == null)
+                        {
+                            Snackbar.Add("입고내역을 조회할 수 없습니다", Severity.Error);
+                            return;
+                        }
+
+                        _receipt.Id = receiptDto.Id;
+                        _receipt.ReceiptDate = receiptDto.ReceiptDateTimeLocal.Date;
+                        _receipt.ReceiptTime = receiptDto.ReceiptDateTimeLocal.TimeOfDay;
+                        _receipt.ItemId = receiptDto.ItemId;
+                        _receipt.ItemName = _itemList.First(x => x.Id == receiptDto.ItemId).Name;
+                        _receipt.LocationId = receiptDto.LocationId;
+                        _receipt.LocationName = _locationList.First(x => x.Id == receiptDto.LocationId).Name;
+                        _receipt.Quantity = receiptDto.Quantity;
+                        _receipt.Seller = receiptDto.Seller;
+                    });
+
+            await Task.WhenAll(itemTask, locationTask, receiptTask);
+
+            _isLoading = false;
 
         }
 
