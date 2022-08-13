@@ -64,8 +64,7 @@
                 return;
             _pickerText = value;
 
-            _error = !TimeSpan.TryParseExact(value, BaseTimeFormart, CultureInfo.InvariantCulture, 
-                TimeSpanStyles.None, out TimeSpan time);
+            _error = !TimeSpan.TryParseExact(value, BaseTimeFormart, null, TimeSpanStyles.None, out TimeSpan time);
 
             Text = value;
             Time = _error ? null : time;

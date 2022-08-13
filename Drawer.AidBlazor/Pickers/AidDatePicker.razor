@@ -12,7 +12,7 @@
                ErrorText="@_errorText"
                Placeholder="@Placeholder"
                TitleDateFormat="@BaseDateFormart"
-               Mask="@(new DateMask(BaseDateFormart))"
+               DateFormat="@BaseDateFormart"
                DisableToolbar="@true"
                Editable="true">
     <PickerActions>
@@ -65,8 +65,7 @@
                 return;
             _pickerText = value;
 
-            _error = !DateTime.TryParseExact(value, BaseDateFormart, CultureInfo.InvariantCulture,
-                DateTimeStyles.None, out DateTime date);
+            _error = !DateTime.TryParseExact(value, BaseDateFormart, null, DateTimeStyles.None, out DateTime date);
 
             Text = value;
             Date = _error ? null : date;
