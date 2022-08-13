@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Drawer.Shared;
+using FluentValidation;
 
 namespace Drawer.Web.Pages.Receipt.Models
 {
@@ -6,8 +7,8 @@ namespace Drawer.Web.Pages.Receipt.Models
     {
         public ReceiptModel()
         {
-            ReceiptDateString = DateTime.Today.ToString("yyyy-MM-dd");
-            ReceiptTimeString = DateTime.Now.TimeOfDay.ToString(@"hh\:mm");
+            ReceiptDateString = DateTimeExtensions.KoreaToday.ToString("yyyy-MM-dd");
+            ReceiptTimeString = DateTimeExtensions.KoreaNowTime.ToString(@"hh\:mm");
         }
 
         public long Id { get; set; }

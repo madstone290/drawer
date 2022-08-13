@@ -6,11 +6,11 @@
 <MudTimePicker @ref="_pickerReference"
                @bind-Text="@PickerText"
                Label="@Label"
-               For="@For"
                Class="@Class"
                Error="@_error"
-               ErrorText="@_errorText"
+               ErrorText="@ErrorText"
                Placeholder="@Placeholder"
+               Validation="@Validation"
                DisableToolbar="@true"
                Editable="true">
     <PickerActions>
@@ -21,10 +21,10 @@
 </MudTimePicker>
 @code {
 
-     /*
-     * 데이터 바인딩은 Text, Date 둘 중 하나만 한다.
-     * 나머지 값은 ChangedCallback을 통해 갱신한다.
-     */
+            /*
+            * 데이터 바인딩은 Text, Date 둘 중 하나만 한다.
+            * 나머지 값은 ChangedCallback을 통해 갱신한다.
+            */
 
     public enum BindMode
     {
@@ -33,6 +33,7 @@
     }
 
     private const string BaseTimeFormart = @"hh\:mm";
+    private const string ErrorText = "유효한 시간이 아닙니다";
 
     private MudTimePicker _pickerReference = null!;
 
@@ -43,8 +44,6 @@
     /// 에러 여부
     /// </summary>
     private bool _error;
-    private string? _errorText = "유효한 시간이 아닙니다";
-
 
     private string Class
     {
@@ -53,6 +52,7 @@
             .AddIf("aid-picker-no-label", string.IsNullOrWhiteSpace(Label))
             .Build();
     }
+
 
     private string? PickerText
     {
@@ -65,9 +65,9 @@
 
             _error = !TimeSpan.TryParseExact(value, BaseTimeFormart, null, TimeSpanStyles.None, out TimeSpan time);
 
-           
+
             SetTextInternal(value, false);
-            
+
             if (_error)
                 SetTimeInternal(null, false);
             else
@@ -116,12 +116,20 @@
     [Parameter] public EventCallback<string?> TextChanged { get; set; }
     [Parameter] public string? Label { get; set; }
     [Parameter] public string? Placeholder { get; set; } = "시간을 선택하세요";
-    [Parameter] public Expression<Func<TimeSpan?>>? For { get; set; }
 
     /// <summary>
     /// 바인딩 모드. @bind- 특성과 일치해야 한다. 데이트피커 값 갱신조건이 달라진다.
     /// </summary>
     [Parameter] public BindMode Mode { get; set; } = BindMode.Text;
+
+    [Parameter] public Func<TimeSpan?, string?> Validation { get; set; } = new Func<TimeSpan?, string?>((time) =>
+    {
+        if (time == null)
+            return ErrorText;
+        else
+            return null;
+    });
+
 
     [CascadingParameter] public IValidationContainer? ValidationContainer { get; set; }
 
@@ -148,7 +156,7 @@
 
     async Task<string?> IValidation.ValidateAsync()
     {
-        var errorMessage = _error ? _errorText : null;
+        var errorMessage = _error ? ErrorText : null;
         return await Task.FromResult(errorMessage);
     }
 

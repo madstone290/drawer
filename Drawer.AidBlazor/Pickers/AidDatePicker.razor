@@ -6,13 +6,14 @@
 <MudDatePicker @ref="_pickerReference"
                @bind-Text="@PickerText"
                Label="@Label"
-               For="@For"
                Class="@Class"
                Error="@_error"
-               ErrorText="@_errorText"
+               ErrorText="@ErrorText"
                Placeholder="@Placeholder"
                TitleDateFormat="@BaseDateFormart"
+               Converter="@_converter"
                DisableToolbar="@true"
+               Validation="@Validation"
                Editable="true">
     <PickerActions>
         <MudButton Variant="Variant.Filled" Color="@Color.Info" OnClick="@Today_Click">오늘</MudButton>
@@ -22,11 +23,11 @@
 </MudDatePicker>
 @code {
 
-    /*
-     *
-    * 데이터 바인딩은 Text, Date 둘 중 하나만 한다.
-    * 나머지 값은 ChangedCallback을 통해 갱신한다.
-    */
+            /*
+            *
+            * 데이터 바인딩은 Text, Date 둘 중 하나만 한다.
+            * 나머지 값은 ChangedCallback을 통해 갱신한다.
+            */
 
     public enum BindMode
     {
@@ -35,6 +36,7 @@
     }
 
     private const string BaseDateFormart = "yyyy-MM-dd";
+    private const string ErrorText = "유효한 날짜가 아닙니다";
 
     private MudDatePicker _pickerReference = null!;
 
@@ -45,8 +47,22 @@
     /// 에러 여부
     /// </summary>
     private bool _error;
-    private string? _errorText = "유효한 날짜가 아닙니다";
 
+
+    private MudBlazor.Converter<DateTime?, string> _converter = new MudBlazor.Converter<DateTime?, string>()
+        {
+            SetFunc = (date) =>
+            {
+                return date.HasValue ? date.Value.ToString(BaseDateFormart) : string.Empty;
+            },
+            GetFunc = (value) =>
+            {
+                if (DateTime.TryParseExact(value, BaseDateFormart, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
+                    return date;
+                else
+                    return null;
+            }
+        };
 
     private string Class
     {
@@ -68,7 +84,7 @@
             _error = !DateTime.TryParseExact(value, BaseDateFormart, null, DateTimeStyles.None, out DateTime date);
 
             SetTextInternal(value, false);
-            
+
             if (_error)
                 SetDateInternal(null, false);
             else
@@ -119,12 +135,20 @@
     [Parameter] public EventCallback<string?> TextChanged { get; set; }
     [Parameter] public string? Label { get; set; }
     [Parameter] public string? Placeholder { get; set; } = "날짜를 선택하세요";
-    [Parameter] public Expression<Func<DateTime?>>? For { get; set; }
 
     /// <summary>
     /// 바인딩 모드. @bind- 특성과 일치해야 한다. 데이트피커 값 갱신조건이 달라진다.
     /// </summary>
     [Parameter] public BindMode Mode { get; set; } = BindMode.Text;
+
+    [Parameter]
+    public Func<DateTime?, string?> Validation { get; set; } =  new Func<DateTime?, string?>((date) =>
+    {
+        if (date == null)
+            return ErrorText;
+        else
+            return null;
+    });
 
     [CascadingParameter] public IValidationContainer? ValidationContainer { get; set; }
 
@@ -151,7 +175,7 @@
 
     async Task<string?> IValidation.ValidateAsync()
     {
-        var errorMessage = _error ? _errorText : null;
+        var errorMessage = _error ? ErrorText : null;
 
         return await Task.FromResult(errorMessage);
     }

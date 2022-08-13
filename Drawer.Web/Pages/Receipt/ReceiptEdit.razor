@@ -24,15 +24,12 @@
         <MudItem xs="6" sm="3">
             <AidDatePicker Label="입고일자"
                            @bind-Date="_receipt.ReceiptDate"
-                           Mode="AidDatePicker.BindMode.Date"
-                           For="@(() => _receipt.ReceiptDate)" />
+                           Mode="AidDatePicker.BindMode.Date" />
         </MudItem>
         <MudItem xs="6" sm="3">
             <AidTimePicker Label="입고시간"
                            @bind-Time="_receipt.ReceiptTime"
-                           Mode="AidTimePicker.BindMode.Time"
-                           For="@(() => _receipt.ReceiptTime)">
-            </AidTimePicker>
+                           Mode="AidTimePicker.BindMode.Time" />
         </MudItem>
         <MudItem xs="0" sm="6">
         </MudItem>

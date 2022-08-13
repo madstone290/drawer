@@ -24,15 +24,12 @@
         <MudItem xs="6" sm="3">
             <AidDatePicker Label="출고일자"
                            @bind-Date="_issue.IssueDate"
-                           Mode="AidDatePicker.BindMode.Date"
-                           For="@(() => _issue.IssueDate)" />
+                           Mode="AidDatePicker.BindMode.Date"/>
         </MudItem>
         <MudItem xs="6" sm="3">
             <AidTimePicker Label="출고시간"
                            @bind-Time="_issue.IssueTime"
-                           Mode="AidTimePicker.BindMode.Time"
-                           For="@(() => _issue.IssueTime)">
-            </AidTimePicker>
+                           Mode="AidTimePicker.BindMode.Time" />
         </MudItem>
         <MudItem xs="0" sm="6">
         </MudItem>
