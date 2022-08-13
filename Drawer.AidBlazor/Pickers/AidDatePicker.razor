@@ -12,7 +12,6 @@
                ErrorText="@_errorText"
                Placeholder="@Placeholder"
                TitleDateFormat="@BaseDateFormart"
-               DateFormat="@BaseDateFormart"
                DisableToolbar="@true"
                Editable="true">
     <PickerActions>
@@ -23,10 +22,11 @@
 </MudDatePicker>
 @code {
 
-     /*
-     * 데이터 바인딩은 Text, Date 둘 중 하나만 한다.
-     * 나머지 값은 ChangedCallback을 통해 갱신한다.
-     */
+    /*
+     *
+    * 데이터 바인딩은 Text, Date 둘 중 하나만 한다.
+    * 나머지 값은 ChangedCallback을 통해 갱신한다.
+    */
 
     public enum BindMode
     {
@@ -67,8 +67,12 @@
 
             _error = !DateTime.TryParseExact(value, BaseDateFormart, null, DateTimeStyles.None, out DateTime date);
 
-            Text = value;
-            Date = _error ? null : date;
+            SetTextInternal(value, false);
+            
+            if (_error)
+                SetDateInternal(null, false);
+            else
+                SetDateInternal(date, false);
         }
     }
 
@@ -77,33 +81,39 @@
     public DateTime? Date
     {
         get => _date;
-        set
-        {
-            if (EqualityComparer<DateTime?>.Default.Equals(_date, value))
-                return;
-            _date = value;
-            DateChanged.InvokeAsync(value); 
-
-            if(Mode == BindMode.Date)
-                PickerText = value.HasValue ? value.Value.ToString(BaseDateFormart) : null;
-        }
+        set => SetDateInternal(value, true);
     }
 
     [Parameter]
     public string? Text
     {
         get => _text;
-        set
-        {
-            if (EqualityComparer<string?>.Default.Equals(_text, value))
-                return;
-            _text = value;
-            TextChanged.InvokeAsync(value);
-
-            if(Mode == BindMode.Text)
-                PickerText = value;
-        }
+        set => SetTextInternal(value, true);
     }
+
+    void SetTextInternal(string? value, bool setPickerText)
+    {
+        if (EqualityComparer<string?>.Default.Equals(_text, value))
+            return;
+        _text = value;
+        TextChanged.InvokeAsync(value);
+
+        if (Mode == BindMode.Text && setPickerText)
+            PickerText = value;
+    }
+
+
+    void SetDateInternal(DateTime? value, bool setPickerText)
+    {
+        if (EqualityComparer<DateTime?>.Default.Equals(_date, value))
+            return;
+        _date = value;
+        DateChanged.InvokeAsync(value);
+
+        if (Mode == BindMode.Date && setPickerText)
+            PickerText = value.HasValue ? value.Value.ToString(BaseDateFormart) : null;
+    }
+
 
     [Parameter] public EventCallback<DateTime?> DateChanged { get; set; }
     [Parameter] public EventCallback<string?> TextChanged { get; set; }
