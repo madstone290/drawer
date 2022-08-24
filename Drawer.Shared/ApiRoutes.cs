@@ -77,6 +77,15 @@ namespace Drawer.Shared
             public const string BatchAdd = "/Api/Locations/Batch";
         }
 
+        public static class Layouts
+        {
+            public const string Add = "/Api/Layouts";
+            public const string Update = "/Api/Layouts/{id}";
+            public const string Remove = "/Api/Layouts/{id}";
+            public const string Get = "/Api/Layouts/{id}";
+            public const string GetList = "/Api/Layouts";
+        }
+
         public static class InventoryItems
         {
             public const string Get = "/Api/InventoryItems";

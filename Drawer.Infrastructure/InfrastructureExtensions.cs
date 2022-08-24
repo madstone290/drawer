@@ -119,7 +119,8 @@ namespace Drawer.Infrastructure
             services.AddScoped<IInventoryItemRepository, InventoryItemRepository>();
             services.AddScoped<IReceiptRepository, ReceiptRepository>();
             services.AddScoped<IIssueRepository, IssueRepository>();
-            
+            services.AddScoped<ILayoutRepository, LayoutRepository>();
+
         }
     }
 }

@@ -45,6 +45,7 @@ namespace Drawer.Infrastructure.Data
         public DbSet<InventoryItem> InventoryItems { get; set; } = default!;
         public DbSet<Receipt> Receipts { get; set; } = default!;
         public DbSet<Issue> Issues { get; set; } = default!;
+        public DbSet<Layout> Layouts { get; set; } = default!;
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
