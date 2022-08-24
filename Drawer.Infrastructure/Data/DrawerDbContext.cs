@@ -1,7 +1,6 @@
 ﻿using Drawer.Domain.Models;
 using Drawer.Domain.Models.Authentication;
 using Drawer.Domain.Models.Inventory;
-using Drawer.Domain.Models.Locations;
 using Drawer.Domain.Models.Organization;
 using Drawer.Domain.Models.UserInformation;
 using Drawer.Infrastructure.Data.Audit;
