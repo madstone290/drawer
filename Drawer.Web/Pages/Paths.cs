@@ -68,6 +68,9 @@
 
         public const string TransferHome = "/Transfer";
 
+
+        public const string LayoutHome = "/Layout";
+        public const string LayoutEdit = "/Layout/Edit";
     }
 }
 

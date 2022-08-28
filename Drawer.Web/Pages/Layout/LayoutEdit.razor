@@ -1,0 +1,67 @@
+﻿@using Drawer.Web.Authentication
+@using Drawer.Web.Services.Canvas
+
+@attribute [Route(Paths.LayoutEdit)]
+
+<ContentTitle Text="배치도" />
+<AuthorizeView Context="AuthorizeView" Policy="@Policies.CompanyMember">
+    <NotAuthorized>
+        <NeedCompany />
+    </NotAuthorized>
+    <Authorized>
+        <AidToolBar>
+            <AidButton Color="Color.Error"
+                       OnClick="Back_Click">
+                뒤로
+            </AidButton>
+            <AidButton Enabled="@(_canAccess)"
+                       Color="Color.Secondary"
+                       StartIcon="@Icons.Material.Filled.Save"
+                       OnClick=@(() => Save_ClickAsync())>
+                저장
+            </AidButton>
+        </AidToolBar>
+        <div class="main">
+            <div class="main-palette">
+                <span>도형</span>
+                <div>
+                    <img id="rectItemImage">
+                    <img id="circleItemImage">
+                </div>
+
+                <span>속성</span>
+                <div style="@_displayStyle">
+                    <MudTextField @bind-Text="@Text" T="string" Label="텍스트" />
+                    <MudSelect @bind-Text="@VAlignment" T="string" Label="텍스트 수직 위치">
+                        @foreach (var alignment in CanvasItem.Options.VAlignment.Collection)
+                        {
+                            <MudSelectItem Value="@(alignment)" />
+                        }
+                    </MudSelect>
+                    <MudSelect @bind-Text="@HAlignment" T="string" Label="텍스트 수평 위치">
+                        @foreach (var alignment in CanvasItem.Options.HAlignment.Collection)
+                        {
+                            <MudSelectItem Value="@(alignment)" />
+                        }
+                    </MudSelect>
+                    <MudSelect @bind-Text="@Degree" T="string" Label="텍스트 방향">
+                        @foreach (var direction in CanvasItem.Options.Degree.Collection)
+                        {
+                            <MudSelectItem Value="@(direction)" />
+                        }
+                    </MudSelect>
+                    <MudColorPicker Label="배경색" @bind-Text="BackColor" />
+                </div>
+            </div>
+
+            <div class="main-canvas">
+                <div style="margin: auto; padding:50px;">
+                    <canvas style="border:solid; border-color:#ccc; border-width:1px;" id="canvas" width="1800" height="800">
+                    </canvas>
+                </div>
+            </div>
+        </div>
+
+    </Authorized>
+</AuthorizeView>
+

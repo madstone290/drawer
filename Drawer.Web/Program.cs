@@ -7,6 +7,7 @@ using Drawer.Web.Encryption;
 using Drawer.Web.Frontend;
 using Drawer.Web.Presenters;
 using Drawer.Web.Services;
+using Drawer.Web.Services.Canvas;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
 using MudBlazor;
@@ -75,6 +76,7 @@ builder.Services.AddScoped<IExcelService, ExcelService>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IJavaScriptService, JavaScriptService>();
 builder.Services.AddTransient<ILockService, LockService>();
+builder.Services.AddTransient<ICanvasService, CanvasService>();
 
 builder.Services.Scan(selector =>
 {

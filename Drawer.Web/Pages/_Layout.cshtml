@@ -10,7 +10,10 @@
     <base href="~/" />
     <component type="typeof(HeadOutlet)" render-mode="Server" />
 
-    <!--mudblazor start-->
+    <!-- blazor css bundling -->
+    <link href="Drawer.web.styles.css" rel="stylesheet">
+
+    <!--mudblazor -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
     <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
     <!--Aidblazor-->
@@ -38,5 +41,9 @@
     <!-- drawer -->
     <script src="js/file.js"></script>
     <script src="js/table.js"></script>
+
+    <!-- canvas -->
+    <script src="js/fabric.min.js"></script>
+    <script src="js/canvas.js"></script>
 </body>
 </html>

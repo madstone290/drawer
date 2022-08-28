@@ -17,6 +17,13 @@ namespace Drawer.Infrastructure.Repos.Inventory
         {
         }
 
+        public async Task<Layout?> FindByLocationId(long locationId)
+        {
+            return await _dbContext.Layouts
+                .Where(x => x.LocationId == locationId)
+               .FirstOrDefaultAsync();
+        }
+
         public async Task<List<LayoutQueryModel>> QueryAll()
         {
             return await _dbContext.Layouts
@@ -32,6 +39,15 @@ namespace Drawer.Infrastructure.Repos.Inventory
                 .Include(x=> x.Items)
                 .SelectQueryModel()
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<LayoutQueryModel?> QueryByLocation(long locationId)
+        {
+            return await _dbContext.Layouts
+                 .Where(x => x.LocationId == locationId)
+                 .Include(x => x.Items)
+                 .SelectQueryModel()
+                 .FirstOrDefaultAsync();
         }
     }
 

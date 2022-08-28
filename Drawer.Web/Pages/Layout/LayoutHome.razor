@@ -1,0 +1,78 @@
+﻿@using Drawer.Web.Authentication
+@using Drawer.Web.Pages.Layout.Models
+@using Drawer.Web.Services.Canvas
+
+@attribute [Route(Paths.LayoutHome)]
+
+<ContentTitle Text="배치도" />
+<AuthorizeView Context="AuthorizeView" Policy="@Policies.CompanyMember">
+    <NotAuthorized>
+        <NeedCompany />
+    </NotAuthorized>
+    <Authorized>
+        <AidToolBar>
+            <AidButton Enabled="@(_canAccess)"
+                       Color="Color.Secondary"
+                       StartIcon="@Icons.Material.Filled.Refresh"
+                       OnClick=@(() => Load_Click())>
+                조회
+            </AidButton>
+            <AidButton Enabled="@(_canAccess)"
+                       Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.Update"
+                       OnClick=@(() => Edit_Click())>
+                등록
+            </AidButton>
+            <AidButton Enabled="@(_canAccess)"
+                       Color="Color.Warning"
+                       StartIcon="@Icons.Material.Filled.Delete"
+                       OnClick=@(() => Delete_Click())>
+                삭제
+            </AidButton>
+        </AidToolBar>
+
+        <div class="main">
+            <div class="main-table">
+                <AidTable T="LocationModel"
+                          Loading="@_isLoading"
+                          Items="@_locationList"
+                          FocusedItemChanged="OnFocusedItemChanged">
+
+                    <Header>
+                        <MudTHeadRow>
+                            <MudTh>
+                                <MudTableSortLabel T="LocationModel" SortBy="x => x.Name">이름</MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>
+                                <MudTableSortLabel T="LocationModel" SortBy="x => x.Note">비고</MudTableSortLabel>
+                            </MudTh>
+                        </MudTHeadRow>
+                    </Header>
+
+                    <Row>
+                        <MudTd>
+                            <MudHighlighter Text="@context.Name" />
+                        </MudTd>
+                        <MudTd>
+                            <MudHighlighter Text="@context.Note" />
+                        </MudTd>
+                    </Row>
+
+                    <Footer>
+                        <MudTFootRow>
+                            <MudTd colSpan="100">총 @(TotalRowCount)개의 행</MudTd>
+                        </MudTFootRow>
+                    </Footer>
+                </AidTable>
+            </div>
+
+            <div class="main-canvas">
+                <canvas id="@CANVAS_ID" style="border:solid; border-color:#ccc; border-width:1px;" 
+                    width="@_canvasWidth" height="@_canvasHeight">
+                </canvas>
+            </div>
+
+        </div>
+    </Authorized>
+</AuthorizeView>
+

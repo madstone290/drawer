@@ -79,11 +79,11 @@ namespace Drawer.Shared
 
         public static class Layouts
         {
-            public const string Add = "/Api/Layouts";
-            public const string Update = "/Api/Layouts/{id}";
+            public const string Edit = "/Api/Layouts";
             public const string Remove = "/Api/Layouts/{id}";
             public const string Get = "/Api/Layouts/{id}";
             public const string GetList = "/Api/Layouts";
+            public const string GetByLocation = "/Api/Layouts/Location/{locationId}";
         }
 
         public static class InventoryItems

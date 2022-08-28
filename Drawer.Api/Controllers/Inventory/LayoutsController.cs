@@ -23,8 +23,8 @@ namespace Drawer.Api.Controllers.InventoryManagement
         public async Task<IActionResult> GetLayouts()
         {
             var query = new GetLayoutsQuery();
-            var locationList = await _mediator.Send(query);
-            return Ok(locationList);
+            var layoutList = await _mediator.Send(query);
+            return Ok(layoutList);
         }
 
 
@@ -34,28 +34,29 @@ namespace Drawer.Api.Controllers.InventoryManagement
         public async Task<IActionResult> GetLayout([FromRoute] long id)
         {
             var query = new GetLayoutByIdQuery(id);
-            var location = await _mediator.Send(query);
-            return Ok(location);
+            var layout = await _mediator.Send(query);
+            return Ok(layout);
         }
+
+        [HttpGet]
+        [Route(ApiRoutes.Layouts.GetByLocation)]
+        [ProducesResponseType(typeof(LayoutQueryModel), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetLayoutByLocation([FromRoute] long locationId)
+        {
+            var query = new GetLayoutByLocationQuery(locationId);
+            var layout = await _mediator.Send(query);
+            return Ok(layout);
+        }
+
 
         [HttpPost]
-        [Route(ApiRoutes.Layouts.Add)]
+        [Route(ApiRoutes.Layouts.Edit)]
         [ProducesResponseType(typeof(long), StatusCodes.Status200OK)]
-        public async Task<IActionResult> Add([FromBody] LayoutAddCommandModel location)
+        public async Task<IActionResult> Edit([FromBody] LayoutEditCommandModel layout)
         {
-            var command = new LayoutAddCommand(location);
-            var locationId = await _mediator.Send(command);
-            return Ok(locationId);
-        }
-
-        [HttpPut]
-        [Route(ApiRoutes.Layouts.Update)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> Update([FromRoute] long id, [FromBody] LayoutUpdateCommandModel location)
-        {
-            var command = new LayoutUpdateCommand(id, location);
-            await _mediator.Send(command);
-            return Ok();
+            var command = new LayoutEditCommand(layout);
+            var layoutId = await _mediator.Send(command);
+            return Ok(layoutId);
         }
 
         [HttpDelete]

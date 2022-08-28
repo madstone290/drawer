@@ -60,11 +60,11 @@ namespace Drawer.IntergrationTest.Inventory
         {
             // Arrange
             var locationId = await CreateRootLocation();
-            var requestContent = new LayoutAddCommandModel()
+            var requestContent = new LayoutEditCommandModel()
             {
                 LocationId = locationId
             };
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Layouts.Add);
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Layouts.Edit);
             requestMessage.Content = JsonContent.Create(requestContent);
 
             // Act
@@ -72,8 +72,6 @@ namespace Drawer.IntergrationTest.Inventory
 
             // Assert
             responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var layoutId = await responseMessage.Content.ReadFromJsonAsync<long>();
-            layoutId.Should().BeGreaterThan(0);
         }
 
         [Fact]
@@ -81,25 +79,23 @@ namespace Drawer.IntergrationTest.Inventory
         {
             // Arrange
             var locationId = await CreateRootLocation();
-            var requestContent = new LayoutAddCommandModel()
+            var requestContent = new LayoutEditCommandModel()
             {
                 LocationId = locationId
             };
-            var createRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Layouts.Add);
+            var createRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Layouts.Edit);
             createRequestMessage.Content = JsonContent.Create(requestContent);
             var createResponseMessage = await _client.SendAsyncWithMasterAuthentication(createRequestMessage);
-            var layoutId = await createResponseMessage.Content.ReadFromJsonAsync<long>();
 
             // Act
             var getRequestMessage = new HttpRequestMessage(HttpMethod.Get,
-                ApiRoutes.Layouts.Get.Replace("{id}", $"{layoutId}"));
+                ApiRoutes.Layouts.GetByLocation.Replace("{locationId}", $"{locationId}"));
             var getResponseMessage = await _client.SendAsyncWithMasterAuthentication(getRequestMessage);
 
             // Assert
             getResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
             var layout = await getResponseMessage.Content.ReadFromJsonAsync<LayoutQueryModel>() ?? null!;
             layout.Should().NotBeNull();
-            layout.Id.Should().Be(layoutId);
             layout.LocationId.Should().Be(requestContent.LocationId);
             // TODO 아이템 비교할 것
         }
@@ -109,20 +105,20 @@ namespace Drawer.IntergrationTest.Inventory
         {
             // Arrange
             var locationId1 = await CreateRootLocation();
-            var requestContent1 = new LayoutAddCommandModel()
+            var requestContent1 = new LayoutEditCommandModel()
             {
                 LocationId = locationId1,
             };
-            var createRequestMessage1 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Layouts.Add);
+            var createRequestMessage1 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Layouts.Edit);
             createRequestMessage1.Content = JsonContent.Create(requestContent1);
             var createResponseMessage1 = await _client.SendAsyncWithMasterAuthentication(createRequestMessage1);
 
             var locationId2 = await CreateRootLocation();
-            var requestContent2 = new LayoutAddCommandModel()
+            var requestContent2 = new LayoutEditCommandModel()
             {
                 LocationId = locationId2,
             };
-            var createRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Layouts.Add);
+            var createRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Layouts.Edit);
             createRequestMessage2.Content = JsonContent.Create(requestContent2);
             var createResponseMessage2 = await _client.SendAsyncWithMasterAuthentication(createRequestMessage2);
 
@@ -145,18 +141,18 @@ namespace Drawer.IntergrationTest.Inventory
         {
             // Arrange
             var locationId = await CreateRootLocation();
-            var createContent = new LayoutAddCommandModel()
+            var createContent = new LayoutEditCommandModel()
             {
                 LocationId = locationId,
             };
-            var createRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Layouts.Add);
+            var createRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Layouts.Edit);
             createRequest.Content = JsonContent.Create(createContent);
             var createResponse = await _client.SendAsyncWithMasterAuthentication(createRequest);
-            var layoutId = await createResponse.Content.ReadFromJsonAsync<long>();
 
             // Act
-            var updateContent = new LayoutUpdateCommandModel()
+            var updateContent = new LayoutEditCommandModel()
             {
+                LocationId = locationId,
                 ItemList = new List<LayoutItem>()
                 {
                     new LayoutItem()
@@ -205,8 +201,7 @@ namespace Drawer.IntergrationTest.Inventory
                     }
                 }
             };
-            var updateRequest = new HttpRequestMessage(HttpMethod.Put,
-                ApiRoutes.Layouts.Update.Replace("{id}", $"{layoutId}"));
+            var updateRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Layouts.Edit);
             updateRequest.Content = JsonContent.Create(updateContent);
             var updateResponse = await _client.SendAsyncWithMasterAuthentication(updateRequest);
 
@@ -214,12 +209,11 @@ namespace Drawer.IntergrationTest.Inventory
             updateResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
 
             var getRequest = new HttpRequestMessage(HttpMethod.Get,
-                ApiRoutes.Layouts.Get.Replace("{id}", $"{layoutId}"));
+                ApiRoutes.Layouts.GetByLocation.Replace("{locationId}", $"{locationId}"));
             var getResponse = await _client.SendAsyncWithMasterAuthentication(getRequest);
             getResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
             var layout = await getResponse.Content.ReadFromJsonAsync<LayoutQueryModel?>() ?? null!;
             layout.Should().NotBeNull();
-            layout.Id.Should().Be(layoutId);
             layout.ItemList.Should().Contain(updateContent.ItemList);
         }
 
@@ -232,17 +226,16 @@ namespace Drawer.IntergrationTest.Inventory
         {
             // Arrange
             var locationId = await CreateRootLocation();
-            var createContent = new LayoutAddCommandModel()
+            var createContent = new LayoutEditCommandModel()
             {
                 LocationId = locationId,
             };
-            var createRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Layouts.Add);
+            var createRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Layouts.Edit);
             createRequest.Content = JsonContent.Create(createContent);
             var createResponse = await _client.SendAsyncWithMasterAuthentication(createRequest);
-            var layoutId = await createResponse.Content.ReadFromJsonAsync<long>();
 
             // Act
-            var updateContent = new LayoutUpdateCommandModel()
+            var updateContent = new LayoutEditCommandModel()
             {
                 ItemList = new List<LayoutItem>()
                 {
@@ -270,8 +263,8 @@ namespace Drawer.IntergrationTest.Inventory
                     }
                 }
             };
-            var updateRequest = new HttpRequestMessage(HttpMethod.Put,
-                ApiRoutes.Layouts.Update.Replace("{id}", $"{layoutId}"));
+            var updateRequest = new HttpRequestMessage(HttpMethod.Post,
+                ApiRoutes.Layouts.Edit.Replace("{locationId}", $"{locationId}"));
             updateRequest.Content = JsonContent.Create(updateContent);
             var updateResponse = await _client.SendAsyncWithMasterAuthentication(updateRequest);
 
