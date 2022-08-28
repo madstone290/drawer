@@ -17,9 +17,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.HandleArgs(args);
 
-// dotnet run 명령어 사용시 정적파일을 제공한다.
-builder.WebHost.UseStaticWebAssets();
-
 // 로컬스토리지 사용을 위한 Blazored.LocalStorage 서비스 추가
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddRazorPages();
