@@ -235,6 +235,9 @@ class Drawer {
     canvasWidth = 1920;
     canvasHeight = 1080;
 
+    // 캔버스 줌 레벨
+    zoomLevel = 1;
+
     // event callback functions 
     itemSelectionChanged = function (id) {
     };
@@ -384,7 +387,11 @@ class Drawer {
 
         canvasElement.parentElement.addEventListener("drop", function (e) {
             let shape = e.dataTransfer.getData("shape");
-            const item = self.addNewItem(shape, self.snapToGrid(e.layerX), self.snapToGrid(e.layerY));
+
+            let xPoint = self.snapToGrid(e.layerX / self.zoomLevel);
+            let yPoint = self.snapToGrid(e.layerY / self.zoomLevel);
+            const item = self.addNewItem(shape, xPoint, yPoint);
+
             self.canvas.setActiveObject(item);
         });
     }
@@ -698,6 +705,8 @@ class Drawer {
         this.canvas.setHeight(nextHeight);
 
         this.canvas.setZoom(level);
+
+        this.zoomLevel = level;
     }
 
     deleteItem(item) {
