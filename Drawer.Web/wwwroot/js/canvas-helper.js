@@ -71,3 +71,7 @@ export function exportItemList() {
 export function importItemList(itemList) {
     drawer.importItemInfos(itemList);
 }
+
+export function setInteraction(enabled) {
+    drawer.setInteraction(enabled);
+}

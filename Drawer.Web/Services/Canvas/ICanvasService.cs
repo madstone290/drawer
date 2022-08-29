@@ -18,6 +18,7 @@ namespace Drawer.Web.Services.Canvas
         Task ClearCanvas();
         Task<List<CanvasItem>> ExportItemList();
         Task ImportItemList(List<CanvasItem> result);
+        Task SetInteraction(bool enabled);
     }
 
     public class CanvasService : ICanvasService
@@ -112,7 +113,12 @@ namespace Drawer.Web.Services.Canvas
             await _module.InvokeVoidAsync("importItemList", itemList);
         }
 
-  
+        public async Task SetInteraction(bool enabled)
+        {
+            if (_module == null)
+                return;
+            await _module.InvokeVoidAsync("setInteraction", enabled);
+        }
     }
 
 }

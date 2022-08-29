@@ -54,6 +54,8 @@ namespace Drawer.Web.Pages.Layout
             var layout = _layoutList.First(x => x.LocationId == location.Id);
             await CanvasService.ImportItemList(
                 layout.ItemList.Select(x => CanvasItemConverter.ToCanvasItem(x)).ToList());
+
+            await CanvasService.SetInteraction(false);
         }
 
         async Task Load_Click()

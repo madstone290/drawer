@@ -810,6 +810,14 @@ class Drawer {
         return this.canvas.getItemById(id);
     }
 
+
+    /**
+     * 캔버스의 모든 아이템을 반환한다.
+     * */
+    getAllItems() {
+        return this.canvas.getObjects("group");
+    }
+
     // 캔버스 아이템의 배경색을 변경한다. 아이템이 그룹인 경우 shape 아이템의 배경색을 변경한다.
     // canvasItem: 변경할 캔버스 아이템
     // color: 변경색상 rgb코드
@@ -839,7 +847,7 @@ class Drawer {
     }
 
     exportItemInfos() {
-        let groups = this.canvas.getObjects("group");
+        let groups = this.getAllItems();
         console.log("exportItemInfos", groups);
         let itemInfos = new Array();
         for (const group of groups) {
@@ -853,6 +861,18 @@ class Drawer {
         console.log("importItemInfos", itemInfos);
         for (const itemInfo of itemInfos) {
             this.addItem(itemInfo);
+        }
+    }
+
+    /**
+     * 캔버스의 상호작용 기능을 활성화/비활성화 한다.
+     * @param {any} enabled 상호작용 활성화 여부
+     */
+    setInteraction(enabled) {
+        this.canvas.hoverCursor = enabled ? "all-scroll" : "default";
+        let items = this.getAllItems();
+        for (const item of items) {
+            item.selectable = enabled;
         }
     }
 
