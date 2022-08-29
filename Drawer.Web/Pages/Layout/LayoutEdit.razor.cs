@@ -1,12 +1,7 @@
-﻿using Drawer.AidBlazor;
-using Drawer.Application.Services.Inventory.CommandModels;
-using Drawer.Application.Services.Inventory.QueryModels;
+﻿using Drawer.Application.Services.Inventory.CommandModels;
 using Drawer.Web.Api.Inventory;
 using Drawer.Web.Pages.Layout.Models;
-using Drawer.Web.Pages.Location.Models;
-using Drawer.Web.Services;
 using Drawer.Web.Services.Canvas;
-using Drawer.Web.Shared;
 using Drawer.Web.Utils;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -148,28 +143,6 @@ namespace Drawer.Web.Pages.Layout
             if (firstRender)
             {
                 /** 캔버스 아이템을 추가하기 위해선 렌더링이 완료되어야 한다. **/
-
-                if (!long.TryParse(LocationId, out long locationId))
-                {
-                    Snackbar.Add("레이아웃을 찾을 수 없습니다", Severity.Error);
-                    return;
-                }
-
-                var response = await LayoutApiClient.GetLayoutByLocation(locationId);
-                if (!Snackbar.CheckFail(response))
-                    return;
-
-                if (response.Data == null)
-                {
-                    _layout.LocationId = locationId;
-                    _layout.ItemList = new List<Domain.Models.Inventory.LayoutItem>();
-                }
-                else
-                {
-                    _layout.LocationId = locationId;
-                    _layout.ItemList = response.Data.ItemList;
-                }
-
                 var canvasId = "canvas";
                 var paletteItems = new PaletteItem[]
                 {
@@ -184,6 +157,7 @@ namespace Drawer.Web.Pages.Layout
 
                 await CanvasService.ImportItemList(
                     _layout.ItemList.Select(x => CanvasItemConverter.ToCanvasItem(x)).ToList());
+                await CanvasService.Zoom(0.7);
             }
         }
 

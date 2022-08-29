@@ -20,8 +20,6 @@ namespace Drawer.Web.Pages.Layout
 
         private bool _canAccess = true;
         private bool _isLoading = false;
-        private int _canvasWidth = 1300;
-        private int _canvasHeight = 650;
 
         public int TotalRowCount => _locationList.Count;
 
@@ -47,15 +45,19 @@ namespace Drawer.Web.Pages.Layout
             selectedLocation = location;
             
             await CanvasService.ClearCanvas();
+            
 
             if (location == null)
                 return;
+
+            await CanvasService.Zoom(0.6);
 
             var layout = _layoutList.First(x => x.LocationId == location.Id);
             await CanvasService.ImportItemList(
                 layout.ItemList.Select(x => CanvasItemConverter.ToCanvasItem(x)).ToList());
 
             await CanvasService.SetInteraction(false);
+  
         }
 
         async Task Load_Click()

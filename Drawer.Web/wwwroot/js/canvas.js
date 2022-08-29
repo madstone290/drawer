@@ -52,9 +52,9 @@ fabric.Group.prototype.setDegree = function (degree) {
 fabric.Group.prototype.refreshText = function () {
     let textItem = this.item(1);
 
-    let text = this.text; // default row degree
+    let text = this.text ? this.text : "";
     if (this.degree == "column") {
-        text = this.text.split("").join("\n");
+        text = text.split("").join("\n");
     }
 
     textItem.set({
@@ -152,10 +152,10 @@ fabric.Group.prototype.refresh = function () {
 
     let nextWidth = Math.max(groupScaledWidth, textScaledWidth);
     let nextHeight = Math.max(groupScaledHeight, textScaledHeight);
-
+    
     this.remove(shapeItem);
     this.remove(textItem);
-
+    
     shapeItem.set({
         left: this.left,
         top: this.top,
@@ -182,8 +182,8 @@ fabric.Group.prototype.toItemInfo = function () {
     itemInfo.type = this.type;
     itemInfo.left = this.left;
     itemInfo.top = this.top;
-    itemInfo.width = this.width;
-    itemInfo.height = this.height;
+    itemInfo.width = parseInt(this.width.toFixed());
+    itemInfo.height = parseInt(this.height.toFixed());
     itemInfo.isPattern = this.isPattern;
     itemInfo.patternImageId = this.patternImageId;
     itemInfo.backColor = this.backColor;
@@ -230,6 +230,10 @@ class ItemInfo {
  * */
 class Drawer {
     canvas; // fabrict canvas instance
+
+    // 캔버스는 고정 크기를 사용한다. 실제 크기 조절은 줌 기능을 이용한다.
+    canvasWidth = 1920;
+    canvasHeight = 1080;
 
     // event callback functions 
     itemSelectionChanged = function (id) {
@@ -452,49 +456,45 @@ class Drawer {
 
     // 너비 유효성검사. 최소/최대 너비 검사.
     validateScaleX(canvasItem) {
-        let canvasWidth = this.canvas.width;
         let scaledWidth = canvasItem.getScaledWidth();
 
         if (scaledWidth < this.gridSize)
             return this.gridSize / canvasItem.width;
-        if (canvasWidth < scaledWidth)
-            return canvasWidth / canvasItem.width;
+        if (this.canvasWidth < scaledWidth)
+            return this.canvasWidth / canvasItem.width;
         else
             return canvasItem.scaleX;
     };
 
     // 높이 유효성검사. 최소/최대 높이 검사.
     validateScaleY(canvasItem) {
-        let canvasHeight = this.canvas.height;
         let scaledHeight = canvasItem.getScaledHeight();
         if (scaledHeight < this.gridSize)
             return this.gridSize / canvasItem.height;
-        if (canvasHeight < scaledHeight)
-            return canvasHeight / canvasItem.height;
+        if (this.canvasHeight < scaledHeight)
+            return this.canvasHeight / canvasItem.height;
         else
             return canvasItem.scaleY;
     };
 
     // left 유효성검사. 오브젝트는 캔버스 안에 위치해야한다.
     validateLeft(canvasItem) {
-        let canvasWidth = this.canvas.width;
         let scaledWidth = canvasItem.getScaledWidth();
         if (canvasItem.left < 0)
             return 0;
-        else if (canvasWidth < canvasItem.left + scaledWidth)
-            return canvasWidth - scaledWidth;
+        else if (this.canvasWidth < canvasItem.left + scaledWidth)
+            return this.canvasWidth - scaledWidth;
         else
             return canvasItem.left;
     };
 
     // top 유효성검사. 오브젝트는 캔버스 안에 위치해야한다.
     validateTop(canvasItem) {
-        let canvasHeight = this.canvas.height;
         let scaledHeight = canvasItem.getScaledHeight();
         if (canvasItem.top < 0)
             return 0;
-        else if (canvasHeight < canvasItem.top + scaledHeight)
-            return canvasHeight - scaledHeight;
+        else if (this.canvasHeight < canvasItem.top + scaledHeight)
+            return this.canvasHeight - scaledHeight;
         else
             return canvasItem.top;
     };
@@ -690,6 +690,16 @@ class Drawer {
         }
     }
 
+    zoom(level) {
+        let nextWidth = this.canvasWidth * level;
+        let nextHeight = this.canvasHeight * level;
+
+        this.canvas.setWidth(nextWidth);
+        this.canvas.setHeight(nextHeight);
+
+        this.canvas.setZoom(level);
+    }
+
     deleteItem(item) {
         this.canvas.remove(item);
 
@@ -761,8 +771,10 @@ class Drawer {
             top: itemInfo.top
         });
 
-        group.setText(itemInfo.text);
+        // 텍스트 변경과정에서 아이템의 크기가 변할 수 있기 때문에 텍스트 각도를 미리 설정해야한다.
+        // 세로텍스트를 가로텍스트로 인식하는 경우 너비가 변경되고 반대의 경우 높이가 변경된다.
         group.setDegree(itemInfo.degree);
+        group.setText(itemInfo.text);
         group.setFontSize(itemInfo.fontSize);
         group.setHAlignment(itemInfo.hAlignment);
         group.setVAlignment(itemInfo.vAlignment);
@@ -770,7 +782,7 @@ class Drawer {
 
         this.validateItem(group);
         this.canvas.add(group);
-        
+
         return group;
     }
 
@@ -843,17 +855,14 @@ class Drawer {
 
     exportItemInfos() {
         let groups = this.getAllItems();
-        console.log("exportItemInfos", groups);
         let itemInfos = new Array();
         for (const group of groups) {
             itemInfos.push(group.toItemInfo());
         }
-        console.log("exportItemInfos", itemInfos);
         return itemInfos;
     }
 
     importItemInfos(itemInfos) {
-        console.log("importItemInfos", itemInfos);
         for (const itemInfo of itemInfos) {
             this.addItem(itemInfo);
         }
@@ -864,7 +873,7 @@ class Drawer {
      * @param {any} enabled 상호작용 활성화 여부
      */
     setInteraction(enabled) {
-        this.canvas.hoverCursor = enabled ? "all-scroll" : "default";
+        this.canvas.hoverCursor = enabled ? "move" : "default";
         let items = this.getAllItems();
         for (const item of items) {
             item.selectable = enabled;

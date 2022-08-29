@@ -19,6 +19,7 @@ namespace Drawer.Web.Services.Canvas
         Task<List<CanvasItem>> ExportItemList();
         Task ImportItemList(List<CanvasItem> result);
         Task SetInteraction(bool enabled);
+        Task Zoom(double level);
     }
 
     public class CanvasService : ICanvasService
@@ -121,6 +122,13 @@ namespace Drawer.Web.Services.Canvas
             if (_module == null)
                 return;
             await _module.InvokeVoidAsync("setInteraction", enabled);
+        }
+
+        public async Task Zoom(double level)
+        {
+            if (_module == null)
+                return;
+            await _module.InvokeVoidAsync("zoom", level);
         }
     }
 

@@ -18,6 +18,10 @@ export function drawGridLines() {
     drawer.drawGridLines();
 }
 
+export function zoom(level) {
+    drawer.zoom(level);
+}
+
 export function getItemInfo(id) {
     return drawer.getItemInfo(id);
 }
