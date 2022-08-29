@@ -31,6 +31,7 @@ namespace Drawer.Infrastructure.Repos.Inventory
             var utcTimeTo = to.Date.AddDays(1).AddTicks(-1).ToUniversalTime();
             return await _dbContext.Issues
                 .Where(x => utcTimeFrom <= x.IssueDateTime && x.IssueDateTime <= utcTimeTo)
+                .OrderBy(x => x.IssueDateTime)
                 .SelectQueryModel()
                 .ToListAsync();
         }
