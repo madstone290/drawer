@@ -1,4 +1,5 @@
 ﻿using Drawer.Application.Services.Inventory.CommandModels;
+using Drawer.Application.Services.Inventory.QueryModels;
 using Drawer.Web.Api.Inventory;
 using Drawer.Web.Pages.Layout.Models;
 using Drawer.Web.Services.Canvas;
@@ -10,18 +11,50 @@ namespace Drawer.Web.Pages.Layout
 {
     public partial class LayoutEdit
     {
+        /// <summary>
+        /// 캔버스 HTML 요소 아이디
+        /// </summary>
+        private const string CANVAS_ID = "canvas";
+
+        /// <summary>
+        /// 팔레트 직사각형 아이템 아이디
+        /// </summary>
+        private const string RECT_ITEM_ID = "rectItemImage";
+
+        /// <summary>
+        /// 팔레트 원 아이템 아이디
+        /// </summary>
+        private const string CIRCLE_ITEM_ID = "circleItemImage";
 
         private const string DISPLAY_NONE = "display:none";
+
+        private readonly LayoutModel _layout = new ();
+        private readonly List<LocationQueryModel> _locationList = new ();
+        private readonly Dictionary<string, IEnumerable<long>?> _selectedLocationListDict = new();
+
+        private IEnumerable<LocationQueryModel>? _selectedLocationList;
+        
 
         /// <summary>
         /// 데이터 로드 태스크. 렌더링 후 로드완료 상태를 확인해야한다.
         /// </summary>
-        private Task _loadTask;
+        private Task? _loadTask;
 
         private bool _canAccess = true;
         private string? _displayStyle = DISPLAY_NONE;
         private string? _selectedCanvasItemId;
-        private readonly LayoutModel _layout = new LayoutModel();
+
+
+        public IEnumerable<LocationQueryModel>? SelectedLocationList
+        {
+            get => _selectedLocationList;
+            set
+            {
+                _selectedLocationList = value;
+                if (_selectedCanvasItemId != null)
+                    _selectedLocationListDict[_selectedCanvasItemId] = value?.Select(x=> x.Id);
+            }
+        }
 
         private bool _propertyPanelVisible = true;
         public bool PropertyPanelVisible
@@ -118,14 +151,15 @@ namespace Drawer.Web.Pages.Layout
 
         [Inject] public ICanvasService CanvasService { get; set; } = null!;
         [Inject] public LayoutApiClient LayoutApiClient { get; set; } = null!;
-
+        [Inject] public LocationApiClient LocationApiClient { get; set; } = null!;
+        
         protected override async Task OnInitializedAsync()
         {
-            _loadTask = LoadLayout();
+            _loadTask = LoadData();
             await _loadTask;
         }
 
-        async Task LoadLayout()
+        async Task LoadData()
         {
             if (!long.TryParse(LocationId, out long locationId))
             {
@@ -133,11 +167,19 @@ namespace Drawer.Web.Pages.Layout
                 return;
             }
 
-            var response = await LayoutApiClient.GetLayoutByLocation(locationId);
-            if (!Snackbar.CheckFail(response))
+            var layoutTask = LayoutApiClient.GetLayoutByLocation(locationId);
+            var locationTask = LocationApiClient.GetLocations();
+
+            await Task.WhenAll(layoutTask, locationTask);
+
+            var layoutResponse = layoutTask.Result;
+            var locationResponse = locationTask.Result;
+
+
+            if (!Snackbar.CheckFail(layoutResponse, locationResponse))
                 return;
 
-            if (response.Data == null)
+            if (layoutResponse.Data == null)
             {
                 // 임시
                 _layout.LocationId = locationId;
@@ -146,7 +188,15 @@ namespace Drawer.Web.Pages.Layout
             else
             {
                 _layout.LocationId = locationId;
-                _layout.ItemList = response.Data.ItemList;
+                _layout.ItemList = layoutResponse.Data.ItemList;
+            }
+
+            _locationList.Clear();
+            _locationList.AddRange(locationResponse.Data.Where(x=> x.IsGroup == false));
+
+            foreach(var item in _layout.ItemList)
+            {
+                _selectedLocationListDict.Add(item.ItemId, item.ConnectedLocations.ToList());
             }
         }
 
@@ -155,17 +205,17 @@ namespace Drawer.Web.Pages.Layout
             if (firstRender)
             {
                 /** 캔버스 아이템을 추가하기 위해선 렌더링이 완료되어야 한다. **/
-                var canvasId = "canvas";
                 var paletteItems = new PaletteItem[]
                 {
-                    PaletteItem.Rect("rectItemImage"),
-                    PaletteItem.Circle("circleItemImage"),
+                    PaletteItem.Rect(RECT_ITEM_ID),
+                    PaletteItem.Circle(CIRCLE_ITEM_ID)
                 };
                 var canvasMediator = new CanvasCallbacks();
                 canvasMediator.OnItemSelectionChanged = new EventCallback<string>(this, OnItemSelectionChanged);
-                await CanvasService.InitCanvas(canvasId, paletteItems, canvasMediator, true);
+                await CanvasService.InitCanvas(CANVAS_ID, paletteItems, canvasMediator, true);
 
-                await _loadTask;
+                if(_loadTask != null)
+                    await _loadTask;
 
                 await CanvasService.ImportItemList(
                     _layout.ItemList.Select(x => CanvasItemConverter.ToCanvasItem(x)).ToList());
@@ -178,6 +228,7 @@ namespace Drawer.Web.Pages.Layout
         {
             _layout.ItemList = (await CanvasService.ExportItemList()).Select(x => new Domain.Models.Inventory.LayoutItem()
             {
+                ConnectedLocations = _selectedLocationListDict.GetValueOrDefault(x.ItemId) ?? Enumerable.Empty<long>(),
                 ItemId = x.ItemId,
 
                 Shape = x.Shape,
@@ -225,6 +276,10 @@ namespace Drawer.Web.Pages.Layout
             {
                 PropertyPanelVisible = true;
 
+                var locationIdList = _selectedLocationListDict.GetValueOrDefault(itemInfo.ItemId) ?? Enumerable.Empty<long>();
+
+                _selectedLocationList = _locationList.Where(x => locationIdList.Contains(x.Id));
+
                 _backColor = itemInfo.BackColor;
 
                 _text = itemInfo.Text;
@@ -232,6 +287,7 @@ namespace Drawer.Web.Pages.Layout
                 _degree = itemInfo.Degree;
                 _hAlignment = itemInfo.HAlignment;
                 _vAlignment = itemInfo.VAlignment;
+
             }
             StateHasChanged();
         }

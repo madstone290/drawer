@@ -809,18 +809,19 @@ class Drawer {
         else
             backColor = shapeItem.fill;
 
-        return {
-            id: groupItem.id,
-            isPattern: isPattern,
-            backColor: backColor,
-            patternImageId: patternImageId,
+        let itemInfo = new ItemInfo();
+        itemInfo.itemId = groupItem.id;
+        itemInfo.isPattern= isPattern;
+        itemInfo.backColor= backColor;
+        itemInfo.patternImageId= patternImageId;
+            
+        itemInfo.text= groupItem.text;
+        itemInfo.fontSize= groupItem.fontSize;
+        itemInfo.vAlignment= groupItem.vAlignment;
+        itemInfo.hAlignment= groupItem.hAlignment;
+        itemInfo.degree= groupItem.degree
 
-            text: groupItem.text,
-            fontSize: groupItem.fontSize,
-            vAlignment: groupItem.vAlignment,
-            hAlignment: groupItem.hAlignment,
-            degree: groupItem.degree
-        };
+        return itemInfo;
     }
 
     getItemById(id) {

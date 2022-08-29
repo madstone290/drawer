@@ -15,7 +15,9 @@ namespace Drawer.Domain.Models.Inventory
         {
             get
             {
-                return ConnectedLocationsString?.Split(",").Select(x => Convert.ToInt64(x)) ?? Enumerable.Empty<long>();
+                return ConnectedLocationsString?.Split(",")
+                    .Where(x=> long.TryParse(x, out long _))
+                    .Select(x => long.Parse(x)) ?? Enumerable.Empty<long>();
             }
             set
             {
@@ -73,7 +75,7 @@ namespace Drawer.Domain.Models.Inventory
                 return "수직 정렬이 유효하지 않습니다";
             if (!LayoutItemOptions.HAlignment.Collection.Contains(HAlignment))
                 return "수평 정렬이 유효하지 않습니다";
-            if (ConnectedLocationsString != null && ConnectedLocationsString.Split(",").Any(str => !long.TryParse(str, out long _)))
+            if (!string.IsNullOrWhiteSpace(ConnectedLocationsString) && ConnectedLocationsString.Split(",").Any(str => !long.TryParse(str, out long _)))
                 return "위치목록이 유효하지 않습니다";
 
             return null;

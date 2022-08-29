@@ -1,4 +1,5 @@
-﻿@using Drawer.Web.Authentication
+﻿@using Drawer.Application.Services.Inventory.QueryModels
+@using Drawer.Web.Authentication
 @using Drawer.Web.Services.Canvas
 
 @attribute [Route(Paths.LayoutEdit)]
@@ -25,12 +26,22 @@
             <div class="main-palette">
                 <span>도형</span>
                 <div>
-                    <img id="rectItemImage">
-                    <img id="circleItemImage">
+                    <img id="@RECT_ITEM_ID">
+                    <img id="@CIRCLE_ITEM_ID">
                 </div>
 
                 <span>속성</span>
                 <div style="@_displayStyle">
+                    <MudSelect T="@LocationQueryModel"
+                               ToStringFunc="@((loc) => loc?.Name)"
+                               Label="위치 연결"
+                               MultiSelection="true"
+                               @bind-SelectedValues="SelectedLocationList">
+                        @foreach (var location in _locationList)
+                        {
+                            <MudSelectItem Value="@location" />
+                        }
+                    </MudSelect>
                     <AidTextField @bind-Value="@Text" Label="텍스트" />
                     <AidNumericField @bind-Value="@FontSize" Label="폰트 크기" />
                     <MudSelect @bind-Text="@VAlignment" T="string" Label="텍스트 수직 위치">
@@ -57,8 +68,8 @@
 
             <div class="main-canvas">
                 <div style="margin: auto; padding:10px;">
-                    <canvas style="border:solid; border-color:#ccc; border-width:1px;" id="canvas" 
-                        width="@CanvasDefaults.Width" height="@CanvasDefaults.Height">
+                    <canvas style="border:solid; border-color:#ccc; border-width:1px;" id="@CANVAS_ID"
+                            width="@CanvasDefaults.Width" height="@CanvasDefaults.Height">
                     </canvas>
                 </div>
             </div>
