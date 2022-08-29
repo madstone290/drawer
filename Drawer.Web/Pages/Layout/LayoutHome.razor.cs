@@ -20,8 +20,8 @@ namespace Drawer.Web.Pages.Layout
 
         private bool _canAccess = true;
         private bool _isLoading = false;
-        private int _canvasWidth = 1000;
-        private int _canvasHeight = 700;
+        private int _canvasWidth = 1300;
+        private int _canvasHeight = 650;
 
         public int TotalRowCount => _locationList.Count;
 
@@ -38,7 +38,7 @@ namespace Drawer.Web.Pages.Layout
         {
             if (firstRender)
             {
-                await CanvasService.InitCanvas(CANVAS_ID, Enumerable.Empty<PaletteItem>(), new CanvasCallbacks());
+                await CanvasService.InitCanvas(CANVAS_ID, Enumerable.Empty<PaletteItem>(), new CanvasCallbacks(), false);
             }
         }
 

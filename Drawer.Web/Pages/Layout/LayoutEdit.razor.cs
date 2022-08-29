@@ -178,7 +178,7 @@ namespace Drawer.Web.Pages.Layout
                 };
                 var canvasMediator = new CanvasCallbacks();
                 canvasMediator.OnItemSelectionChanged = new EventCallback<string>(this, UpdateText);
-                await CanvasService.InitCanvas(canvasId, paletteItems, canvasMediator);
+                await CanvasService.InitCanvas(canvasId, paletteItems, canvasMediator, true);
 
                 await _loadTask;
 

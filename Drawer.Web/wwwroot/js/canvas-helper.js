@@ -14,6 +14,10 @@ export function initDrawer(canvasMediatorRef, canvasId, paletteItems) {
     };
 }
 
+export function drawGridLines() {
+    drawer.drawGridLines();
+}
+
 export function getItemInfo(id) {
     return drawer.getItemInfo(id);
 }

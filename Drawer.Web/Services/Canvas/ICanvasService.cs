@@ -7,7 +7,7 @@ namespace Drawer.Web.Services.Canvas
     /// </summary>
     public interface ICanvasService
     {
-        Task InitCanvas(string canvasId, IEnumerable<PaletteItem> paletteItems, CanvasCallbacks callbacks);
+        Task InitCanvas(string canvasId, IEnumerable<PaletteItem> paletteItems, CanvasCallbacks callbacks, bool drawGridLines);
         Task SetBackColor(string id, string? colorCode);
         Task SetDegree(string id, string degree);
         Task SetHAlignment(string id, string horizontalAlignment);
@@ -34,11 +34,14 @@ namespace Drawer.Web.Services.Canvas
             _jsRuntime = jsRuntime;
         }
 
-        public async Task InitCanvas(string canvasId, IEnumerable<PaletteItem> paletteItems, CanvasCallbacks callbacks)
+        public async Task InitCanvas(string canvasId, IEnumerable<PaletteItem> paletteItems, CanvasCallbacks callbacks, bool drawGridLines)
         {
             _module = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", JS_FILE);
             _canvasCallbacks = DotNetObjectReference.Create(callbacks);
             await _module.InvokeVoidAsync("initDrawer", _canvasCallbacks, canvasId, paletteItems);
+
+            if(drawGridLines)
+                await _module.InvokeVoidAsync("drawGridLines");
         }
 
         public async Task SetBackColor(string id, string? colorCode)

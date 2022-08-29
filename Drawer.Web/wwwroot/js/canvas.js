@@ -268,7 +268,6 @@ class Drawer {
             selection: false // 그룹 선택 불가
         });
 
-        this.drawGrid(canvas, this.gridSize);
         this.addCanvasSelectionEventHandler(canvas);
         this.addCanvasObjectModifiedHandler(canvas, this.gridSize, this.gridSize);
         this.addCanvasDeleteKeyEventHandler(canvas);
@@ -276,31 +275,6 @@ class Drawer {
         this.addDropEventHandler(canvas)
 
         return canvas;
-    }
-
-    /**
-     * 그리드 라인을 그린다.
-     * 캔버스 너비/높이가 그리드 크기의 정수배가 되도록 한다.
-     * @param {any} canvas fabric canvas
-     * @param {any} gridSize 그리드 크기
-     */
-    drawGrid(canvas, gridSize) {
-        let horizontalItemCount = canvas.width / gridSize;
-        let vertialItemCount = canvas.height / gridSize;
-
-        // 캔버스 경계를 제외하고 안쪽에만 라인을 그린다.
-        let lineOptions = { stroke: '#ccc', selectable: false };
-
-        // 수직라인 1 .. xItemCount - 1
-        for (let i = 1; i < horizontalItemCount; i++) {
-            let verticalLine = new fabric.Line([i * gridSize, 0, i * gridSize, canvas.height], lineOptions);
-            canvas.add(verticalLine);
-        }
-        // 수평라인 1 .. yItemCount - 1
-        for (let i = 1; i < vertialItemCount; i++) {
-            let horizontalLine = new fabric.Line([0, i * gridSize, canvas.width, i * gridSize], lineOptions);
-            canvas.add(horizontalLine);
-        }
     }
 
     /**
@@ -694,6 +668,27 @@ class Drawer {
 
 
     /** public methods **/
+
+    /**
+    * 그리드 라인을 그린다.
+    * 캔버스 너비/높이가 그리드 크기의 정수배가 되도록 한다.
+    */
+    drawGridLines() {
+        // 캔버스 경계를 제외하고 안쪽에만 라인을 그린다.
+        let hLineCount = (this.canvas.width / this.gridSize) - 1;
+        let vLineCount = (this.canvas.height / this.gridSize) - 1;
+
+        let lineOptions = { stroke: '#ccc', selectable: false, hoverCursor: "default" };
+
+        for (let i = 1; i <= hLineCount; i++) {
+            let verticalLine = new fabric.Line([i * this.gridSize, 0, i * this.gridSize, this.canvas.height], lineOptions);
+            this.canvas.add(verticalLine);
+        }
+        for (let i = 1; i <= vLineCount; i++) {
+            let horizontalLine = new fabric.Line([0, i * this.gridSize, this.canvas.width, i * this.gridSize], lineOptions);
+            this.canvas.add(horizontalLine);
+        }
+    }
 
     deleteItem(item) {
         this.canvas.remove(item);
