@@ -40,9 +40,9 @@ namespace Drawer.Web.Api.Inventory
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<long>> EditLayout(LayoutEditCommandModel layout)
+        public async Task<ApiResponse<Unit>> EditLayout(LayoutEditCommandModel layout)
         {
-            var request = new ApiRequest<long>(
+            var request = new ApiRequest(
                 HttpMethod.Post,
                 ApiRoutes.Layouts.Edit,
                 layout);

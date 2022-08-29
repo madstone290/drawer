@@ -816,6 +816,7 @@ class Drawer {
             patternImageId: patternImageId,
 
             text: groupItem.text,
+            fontSize: groupItem.fontSize,
             vAlignment: groupItem.vAlignment,
             hAlignment: groupItem.hAlignment,
             degree: groupItem.degree
@@ -844,6 +845,11 @@ class Drawer {
 
     setItemText(groupItem, text) {
         groupItem.setText(text);
+        this.canvas.renderAll();
+    }
+
+    setItemFontSize(groupItem, fontSize) {
+        groupItem.setFontSize(fontSize);
         this.canvas.renderAll();
     }
 

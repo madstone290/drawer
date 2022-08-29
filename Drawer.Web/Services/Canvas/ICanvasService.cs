@@ -12,6 +12,7 @@ namespace Drawer.Web.Services.Canvas
         Task SetDegree(string id, string degree);
         Task SetHAlignment(string id, string horizontalAlignment);
         Task SetText(string id, string text);
+        Task SetFontSize(string id, int fontSize);
         Task SetVAlignment(string id, string verticalAlignment);
         Task<CanvasItem?> GetItem(string id);
         Task DeleteItem(string id);
@@ -20,6 +21,7 @@ namespace Drawer.Web.Services.Canvas
         Task ImportItemList(List<CanvasItem> result);
         Task SetInteraction(bool enabled);
         Task Zoom(double level);
+        
     }
 
     public class CanvasService : ICanvasService
@@ -35,101 +37,98 @@ namespace Drawer.Web.Services.Canvas
             _jsRuntime = jsRuntime;
         }
 
+        private async Task InvokeVoidAsync(string identifier, params object?[]? args)
+        {
+            if (_module == null)
+                return;
+            await _module.InvokeVoidAsync(identifier, args);
+        }
+
+        private async Task<T?> InvokeAsync<T>(string identifier, params object?[]? args)
+        {
+            if (_module == null)
+                return default;
+            return await _module.InvokeAsync<T>(identifier, args);
+        }
+
         public async Task InitCanvas(string canvasId, IEnumerable<PaletteItem> paletteItems, CanvasCallbacks callbacks, bool drawGridLines)
         {
             _module = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", JS_FILE);
             _canvasCallbacks = DotNetObjectReference.Create(callbacks);
-            await _module.InvokeVoidAsync("initDrawer", _canvasCallbacks, canvasId, paletteItems);
+
+            await InvokeVoidAsync("initDrawer", _canvasCallbacks, canvasId, paletteItems);
 
             if(drawGridLines)
-                await _module.InvokeVoidAsync("drawGridLines");
+                await InvokeVoidAsync("drawGridLines");
         }
 
         public async Task SetBackColor(string id, string? colorCode)
         {
-            if (_module == null)
-                return;
-            await _module.InvokeVoidAsync("setBackColor", id, colorCode);
+            await InvokeVoidAsync("setBackColor", id, colorCode);
         }
 
         public async Task SetText(string id, string text)
         {
-            if (_module == null)
-                return;
-            await _module.InvokeVoidAsync("setText", id, text);
+            await InvokeVoidAsync("setText", id, text);
+        }
+
+        public async Task SetFontSize(string id, int fontSize)
+        {
+            await InvokeVoidAsync("setFontSize", id, fontSize);
         }
 
         public async Task SetVAlignment(string id, string verticalAlignment)
         {
-            if (_module == null)
-                return;
-            await _module.InvokeVoidAsync("setVAlignment", id, verticalAlignment);
+            await InvokeVoidAsync("setVAlignment", id, verticalAlignment);
         }
 
 
         public async Task SetHAlignment(string id, string horizontalAlignment)
         {
-            if (_module == null)
-                return;
-            await _module.InvokeVoidAsync("setHAlignment", id, horizontalAlignment);
+            await InvokeVoidAsync("setHAlignment", id, horizontalAlignment);
         }
 
         public async Task SetDegree(string id, string degree)
         {
-            if (_module == null)
-                return;
-            await _module.InvokeVoidAsync("setDegree", id, degree);
+            await InvokeVoidAsync("setDegree", id, degree);
         }
-
 
         public async Task<CanvasItem?> GetItem(string id)
         {
-            if (_module == null)
-                return null;
-            return await _module.InvokeAsync<CanvasItem>("getItemInfo", id);
+            return await InvokeAsync<CanvasItem>("getItemInfo", id);
         }
 
         public async Task DeleteItem(string id)
         {
-            if (_module == null)
-                return;
-            await _module.InvokeAsync<CanvasItem>("deleteItem", id);
+            await InvokeAsync<CanvasItem>("deleteItem", id);
         }
 
         public async Task ClearCanvas()
         {
-            if (_module == null)
-                return;
-            await _module.InvokeVoidAsync("clearCanvas");
+            await InvokeVoidAsync("clearCanvas");
         }
 
         public async Task<List<CanvasItem>> ExportItemList()
         {
-            if (_module == null)
-                return new List<CanvasItem>();
-            return await _module.InvokeAsync<List<CanvasItem>>("exportItemList");
+            var canvasItemList = await InvokeAsync<List<CanvasItem>>("exportItemList");
+            return canvasItemList ?? new List<CanvasItem>();
         }
 
         public async Task ImportItemList(List<CanvasItem> itemList)
         {
-            if (_module == null)
-                return;
-            await _module.InvokeVoidAsync("importItemList", itemList);
+            await InvokeVoidAsync("importItemList", itemList);
         }
 
         public async Task SetInteraction(bool enabled)
         {
-            if (_module == null)
-                return;
-            await _module.InvokeVoidAsync("setInteraction", enabled);
+            await InvokeVoidAsync("setInteraction", enabled);
         }
 
         public async Task Zoom(double level)
         {
-            if (_module == null)
-                return;
-            await _module.InvokeVoidAsync("zoom", level);
+            await InvokeVoidAsync("zoom", level);
         }
+
     }
 
 }

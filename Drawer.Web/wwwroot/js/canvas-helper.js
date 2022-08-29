@@ -40,6 +40,13 @@ export function setText(id, text) {
     drawer.setItemText(item, text);
 }
 
+export function setFontSize(id, fontSize) {
+    let item = drawer.getItemById(id);
+    if (!item)
+        return;
+    drawer.setItemFontSize(item, fontSize);
+}
+
 export function setHAlignment(id, hAlignment) {
     let item = drawer.getItemById(id);
     if (!item)

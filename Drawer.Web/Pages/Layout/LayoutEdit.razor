@@ -31,7 +31,8 @@
 
                 <span>속성</span>
                 <div style="@_displayStyle">
-                    <MudTextField @bind-Text="@Text" T="string" Label="텍스트" />
+                    <AidTextField @bind-Value="@Text" Label="텍스트" />
+                    <AidNumericField @bind-Value="@FontSize" Label="폰트 크기" />
                     <MudSelect @bind-Text="@VAlignment" T="string" Label="텍스트 수직 위치">
                         @foreach (var alignment in CanvasItem.Options.VAlignment.Collection)
                         {

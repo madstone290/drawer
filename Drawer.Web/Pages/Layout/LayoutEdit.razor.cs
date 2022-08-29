@@ -63,6 +63,18 @@ namespace Drawer.Web.Pages.Layout
             }
         }
 
+        private int _fontSize = 20;
+        public int FontSize 
+        {
+            get => _fontSize;
+            set
+            {
+                _fontSize = value;
+                if (_selectedCanvasItemId != null)
+                    _ = CanvasService.SetFontSize(_selectedCanvasItemId, _fontSize);
+            }
+        }
+
         private string _vAlignment = CanvasItem.Options.VAlignment.Top;
         public string VAlignment
         {
@@ -150,7 +162,7 @@ namespace Drawer.Web.Pages.Layout
                     PaletteItem.Circle("circleItemImage"),
                 };
                 var canvasMediator = new CanvasCallbacks();
-                canvasMediator.OnItemSelectionChanged = new EventCallback<string>(this, UpdateText);
+                canvasMediator.OnItemSelectionChanged = new EventCallback<string>(this, OnItemSelectionChanged);
                 await CanvasService.InitCanvas(canvasId, paletteItems, canvasMediator, true);
 
                 await _loadTask;
@@ -184,11 +196,13 @@ namespace Drawer.Web.Pages.Layout
                 VAlignment = x.VAlignment,
             }).ToList();
 
-            await LayoutApiClient.EditLayout(new LayoutEditCommandModel()
+            var response = await LayoutApiClient.EditLayout(new LayoutEditCommandModel()
             {
                 LocationId = _layout.LocationId,
                 ItemList = _layout.ItemList
             });
+
+            Snackbar.CheckSuccessFail(response);
         }
 
         void Back_Click()
@@ -196,7 +210,7 @@ namespace Drawer.Web.Pages.Layout
             NavManager.NavigateTo(Paths.LayoutHome);
         }
 
-        async void UpdateText(string id)
+        async void OnItemSelectionChanged(string id)
         {
             _selectedCanvasItemId = id;
 
@@ -214,26 +228,14 @@ namespace Drawer.Web.Pages.Layout
                 _backColor = itemInfo.BackColor;
 
                 _text = itemInfo.Text;
+                _fontSize = itemInfo.FontSize;
                 _degree = itemInfo.Degree;
                 _hAlignment = itemInfo.HAlignment;
                 _vAlignment = itemInfo.VAlignment;
             }
             StateHasChanged();
         }
-
-
-        List<CanvasItem> _itemInfos = new List<CanvasItem>();
-        async Task Export_Click()
-        {
-            _itemInfos.Clear();
-            var itemInfos = await CanvasService.ExportItemList();
-            _itemInfos.AddRange(itemInfos);
-        }
-
-        async Task Import_ClickAsync()
-        {
-            await CanvasService.ImportItemList(_itemInfos);
-        }
+       
 
     }
 }
