@@ -46,6 +46,7 @@ namespace Drawer.IntergrationTest.Inventory
             var requestContent = new LocationAddCommandModel()
             {
                 Name = Guid.NewGuid().ToString(),
+                ParentGroupId = await CreateRootLocation(),
             };
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Add);
             requestMessage.Content = JsonContent.Create(requestContent);

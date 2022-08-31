@@ -27,6 +27,18 @@ namespace Drawer.Domain.Models.Inventory
         public long? ParentGroupId { get; private set; }
 
         /// <summary>
+        /// 루트 그룹 ID.
+        /// </summary>
+        public long? RootGroupId { get; private set; }
+
+        /// <summary>
+        /// 실제 루트그룹ID.
+        /// 루트그룹의 RootGroupId 속성 값은 null이다.
+        /// </summary>
+        public long ActualRootGroupId => RootGroupId.HasValue ? RootGroupId.Value : Id;
+
+
+        /// <summary>
         /// 계층 레벨. 0부터시작해서 1씩 증가한다.
         /// </summary>
         public int HierarchyLevel { get; private set; }
@@ -46,6 +58,9 @@ namespace Drawer.Domain.Models.Inventory
         private Location() { }
         public Location(Location? parentGroup, string name, bool isGroup)
         {
+            if (parentGroup == null && isGroup == false)
+                throw new DomainException("위치 등록에는 그룹이 필요합니다");
+
             SetParentGroup(parentGroup);
             SetName(name);
             IsGroup = isGroup;
@@ -71,8 +86,8 @@ namespace Drawer.Domain.Models.Inventory
             ParentGroup = parentGroup;
             ParentGroupId = parentGroup?.Id;
             HierarchyLevel = parentGroup == null ? 0 : parentGroup.HierarchyLevel + 1;
+            RootGroupId = parentGroup?.RootGroupId;
         }
-
 
         /// <summary>
         /// 비고를 변경한다.

@@ -25,6 +25,13 @@ namespace Drawer.Infrastructure.EntityTypeConfigurations.Inventory
               .WithMany()
               .HasForeignKey(x => x.ParentGroupId)
               .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Property(x => x.RootGroupId).IsRequired(false);
+            builder.HasOne<Location>()
+                .WithMany()
+                .HasForeignKey(x => x.RootGroupId)
+                .OnDelete(DeleteBehavior.Restrict);
+                
         }
     }
 }

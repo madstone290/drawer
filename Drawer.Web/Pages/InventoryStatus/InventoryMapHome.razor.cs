@@ -99,7 +99,9 @@ namespace Drawer.Web.Pages.InventoryStatus
                         ItemId = item.Id,
                         ItemName = item.Name,
                         // 루트 위치 조회
-                        Quantity = _inventoryItemQueryModels.Where(x => x.ItemId == item.Id).Sum(x => x.Quantity)
+                        Quantity = _inventoryItemQueryModels.Where(x => 
+                            x.ItemId == item.Id && GetRootLocationId(x.LocationId) == value?.Id)
+                        .Sum(x => x.Quantity)
                     }));
 
 
@@ -140,7 +142,7 @@ namespace Drawer.Web.Pages.InventoryStatus
 
                 _inventoryItemList.Clear();
                 _inventoryItemList.AddRange(_inventoryItemQueryModels
-                    .Where(x => x.ItemId == value.ItemId)
+                    .Where(x => x.ItemId == value.ItemId && GetRootLocationId(x.LocationId) == SelectedLocationGroup?.Id)
                     .Select(x => new InventoryItemModel()
                     {
                         ItemId = x.ItemId,
@@ -235,6 +237,11 @@ namespace Drawer.Web.Pages.InventoryStatus
         private void LoadDefaultValues()
         {
             SelectedLocationGroup = _rootLocationGroups.FirstOrDefault();
+        }
+
+        private long GetRootLocationId(long locationId)
+        {
+            return _locationQueryModels.First(x => x.Id == locationId).RootGroupId;
         }
     }
 }

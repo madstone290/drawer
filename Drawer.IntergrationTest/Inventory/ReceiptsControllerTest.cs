@@ -38,11 +38,26 @@ namespace Drawer.IntergrationTest.Inventory
             return itemId;
         }
 
+        async Task<long> NewRootLocationGroup()
+        {
+            var request = new LocationAddCommandModel()
+            {
+                Name = Guid.NewGuid().ToString(),
+                IsGroup = true
+            };
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Add);
+            requestMessage.Content = JsonContent.Create(request);
+            var ResponseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
+            var locationId = await ResponseMessage.Content.ReadFromJsonAsync<long>();
+            return locationId;
+        }
+
         async Task<long> NewLocation()
         {
             var request = new LocationAddCommandModel()
             {
                 Name = Guid.NewGuid().ToString(),
+                ParentGroupId = await NewRootLocationGroup()
             };
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Add);
             requestMessage.Content = JsonContent.Create(request);

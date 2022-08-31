@@ -55,6 +55,8 @@ namespace Drawer.Infrastructure.Repos.Inventory
                 IsGroup = x.IsGroup,
                 ParentGroupId = x.ParentGroupId,
                 HierarchyLevel = x.HierarchyLevel,
+                RootGroupId = x.ActualRootGroupId,
+                IsRootGroup = x.IsRootGroup
             });
         }
     }
