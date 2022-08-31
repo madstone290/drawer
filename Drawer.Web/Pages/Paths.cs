@@ -47,10 +47,8 @@
         public const string LocationView = "/Location/View/{id}";
         public const string LocationEdit = "/Location/Edit/{id}";
 
-        public const string InventoryStatusHome = "/ItemInventoryHome";
-        public const string ItemLocationInventoryHome = "/ItemLocationInventoryHome";
-        public const string LocationItemInventoryHome = "/LocationItemInventoryHome";
-        public const string InventoryMapHome = "/InventoryMapHome";
+        public const string InventoryStatusHome = "/InventoryStatus";
+        public const string InventoryMapHome = "/InventoryMap";
 
         public const string ReceiptHome = "/Receipt";
         public const string ReceiptBatchAdd = "/Receipt/BatchAdd";
