@@ -10,11 +10,11 @@ namespace Drawer.Web.Pages.InventoryStatus
 {
     public partial class InventoryStatusHome
     {
-        private AidTable<ItemInventoryModel> table = null!;
-        private readonly List<ItemInventoryModel> _inventoryItems = new();
+        private AidTable<InventorySumItemModel> table = null!;
+        private readonly List<InventorySumItemModel> _inventoryItems = new();
         private readonly ExcelOptions _excelOptions = new ExcelOptionsBuilder()
-            .AddColumn(nameof(ItemInventoryModel.ItemName), "아이템")
-            .AddColumn(nameof(ItemInventoryModel.Quantity), "수량")
+            .AddColumn(nameof(InventorySumItemModel.ItemName), "아이템")
+            .AddColumn(nameof(InventorySumItemModel.Quantity), "수량")
             .Build();
 
         private bool _isTableLoading;
@@ -44,7 +44,7 @@ namespace Drawer.Web.Pages.InventoryStatus
             await Load_Click();
         }
 
-        private bool FilterInventoryDetails(ItemInventoryModel model)
+        private bool FilterInventoryDetails(InventorySumItemModel model)
         {
             if (string.IsNullOrWhiteSpace(searchText))
                 return true;
@@ -76,7 +76,7 @@ namespace Drawer.Web.Pages.InventoryStatus
             _inventoryItems.Clear();
             foreach (var item in itemResponse.Data)
             {
-                var inventoryDetail = new ItemInventoryModel()
+                var inventoryDetail = new InventorySumItemModel()
                 {
                     ItemId = item.Id,
                     ItemName = item.Name,

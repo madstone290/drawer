@@ -12,6 +12,7 @@
 </style>
 
 <MudTable @attributes="@Attributes"
+          @ref="_mudTable"
           T="@T"
           Items="@Items"
           Class="@Class"
@@ -21,6 +22,7 @@
           MultiSelection="@MultiSelection"
           Loading="@Loading"
           ReadOnly="@ReadOnly"
+          Style="@Style"
           HorizontalScrollbar="@true"
           LoadingProgressColor="@Color.Info"
           Dense="@true"
@@ -46,6 +48,8 @@
 
 @code {
     private const string BaseHeight = "100%";
+
+    private MudTable<T>? _mudTable;
 
     /// <summary>
     /// 현재 선택된 아이템.
@@ -75,7 +79,6 @@
                 attributes.Add(nameof(MudTable<T>.OnRowClick), new EventCallback<TableRowClickEventArgs<T>>(this, Row_Click));
                 attributes.Add(nameof(MudTable<T>.RowClassFunc), new Func<T, int, string>(GetRowClass));
             }
-
             if (Filter != null)
                 attributes.Add(nameof(MudTable<T>.Filter), Filter);
             return attributes;
@@ -98,17 +101,19 @@
     [Parameter] public FlexSpace FlexSpace { get; set; } = FlexSpace.ColumnFill;
     [Parameter] public bool UseRowSelection { get; set; } = true;
     [Parameter] public bool MultiSelection { get; set; }
+    [Parameter] public string? Style { get; set; }
 
     /// <summary>
     /// 현재 선택된 아이템.
     /// SelectedItem속성은 마지막 클릭 로우를 제공하고 선택 취소된 아이템을 판단하지 못한다.
     /// </summary>
     [Parameter]
-    public T? FocusedItem { 
+    public T? FocusedItem 
+    { 
         get => _focusedItem;
         set
         {
-            if (EqualityComparer<T>.Default.Equals(value))
+            if (EqualityComparer<T>.Default.Equals(_focusedItem, value))
                 return;
             _focusedItem = value;
             FocusedItemChanged.InvokeAsync(value);
@@ -117,6 +122,10 @@
 
     [Parameter] public EventCallback<T?> FocusedItemChanged { get; set; }
 
+    public IEnumerable<T>? GetFilteredItems()
+    {
+        return _mudTable?.FilteredItems;
+    }
 
     void Row_Click(TableRowClickEventArgs<T> model)
     {

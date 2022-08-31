@@ -1,7 +1,7 @@
 ﻿let drawer;
 
-export function initDrawer(canvasMediatorRef, canvasId, paletteItems) {
-    drawer = new Drawer(canvasId);
+export function initDrawer(canvasMediatorRef, canvasId, paletteItems, useInterval) {
+    drawer = new Drawer(canvasId, useInterval);
 
     for (const item of paletteItems) {
         drawer.setPaletteItem(item.elementId,
@@ -75,7 +75,7 @@ export function deleteItem(id) {
     drawer.deleteItem(item);
 }
 
-export function clearCanvas(id) {
+export function clearCanvas() {
     drawer.clear();
 }
 
@@ -89,4 +89,18 @@ export function importItemList(itemList) {
 
 export function setInteraction(enabled) {
     drawer.setInteraction(enabled);
+}
+
+export function setBlink(itemIdList) {
+    let itemList = new Array();
+    for (const id of itemIdList) {
+        console.log(id);
+        itemList.push(drawer.getItemById(id));
+    }
+    drawer.setBlink(itemList);
+}
+
+export function dispose() {
+    drawer.dispose();
+    drawer = null;
 }

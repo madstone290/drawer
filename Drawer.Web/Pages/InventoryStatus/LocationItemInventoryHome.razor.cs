@@ -12,11 +12,11 @@ namespace Drawer.Web.Pages.InventoryStatus
     public partial class LocationItemInventoryHome
     {
 
-        private readonly List<ItemLocationInventoryModel> _modelList = new();
+        private readonly List<InventoryItemModel> _modelList = new();
         private readonly ExcelOptions _excelOptions = new ExcelOptionsBuilder()
-            .AddColumn(nameof(ItemLocationInventoryModel.ItemName), "아이템")
-            .AddColumn(nameof(ItemLocationInventoryModel.LocationName), "위치")
-            .AddColumn(nameof(ItemLocationInventoryModel.Quantity), "수량")
+            .AddColumn(nameof(InventoryItemModel.ItemName), "아이템")
+            .AddColumn(nameof(InventoryItemModel.LocationName), "위치")
+            .AddColumn(nameof(InventoryItemModel.Quantity), "수량")
             .Build();
 
         private readonly List<LocationQueryModel> _locations = new();
@@ -50,7 +50,7 @@ namespace Drawer.Web.Pages.InventoryStatus
             await Load_Click();
         }
 
-        private bool FilterInventoryDetails(ItemLocationInventoryModel model)
+        private bool FilterInventoryDetails(InventoryItemModel model)
         {
             if (string.IsNullOrWhiteSpace(searchText))
                 return true;

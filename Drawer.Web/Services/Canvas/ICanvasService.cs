@@ -7,7 +7,7 @@ namespace Drawer.Web.Services.Canvas
     /// </summary>
     public interface ICanvasService
     {
-        Task InitCanvas(string canvasId, IEnumerable<PaletteItem> paletteItems, CanvasCallbacks callbacks, bool drawGridLines);
+        Task InitCanvas(string canvasId, IEnumerable<PaletteItem> paletteItems, CanvasCallbacks callbacks, bool drawGridLines, bool useInterval = false);
         Task SetBackColor(string id, string? colorCode);
         Task SetDegree(string id, string degree);
         Task SetHAlignment(string id, string horizontalAlignment);
@@ -21,7 +21,14 @@ namespace Drawer.Web.Services.Canvas
         Task ImportItemList(List<CanvasItem> result);
         Task SetInteraction(bool enabled);
         Task Zoom(double level);
-        
+        /// <summary>
+        /// 캔버스 아이템이 깜빡이도록 한다.
+        /// </summary>
+        /// <param name="itemIdList"></param>
+        /// <returns></returns>
+        Task SetBlink(List<string> itemIdList);
+
+        Task DisposeAsync();
     }
 
     public class CanvasService : ICanvasService
@@ -51,12 +58,12 @@ namespace Drawer.Web.Services.Canvas
             return await _module.InvokeAsync<T>(identifier, args);
         }
 
-        public async Task InitCanvas(string canvasId, IEnumerable<PaletteItem> paletteItems, CanvasCallbacks callbacks, bool drawGridLines)
+        public async Task InitCanvas(string canvasId, IEnumerable<PaletteItem> paletteItems, CanvasCallbacks callbacks, bool drawGridLines, bool useInterval)
         {
             _module = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", JS_FILE);
             _canvasCallbacks = DotNetObjectReference.Create(callbacks);
 
-            await InvokeVoidAsync("initDrawer", _canvasCallbacks, canvasId, paletteItems);
+            await InvokeVoidAsync("initDrawer", _canvasCallbacks, canvasId, paletteItems, useInterval);
 
             if(drawGridLines)
                 await InvokeVoidAsync("drawGridLines");
@@ -129,6 +136,20 @@ namespace Drawer.Web.Services.Canvas
             await InvokeVoidAsync("zoom", level);
         }
 
+        public async Task SetBlink(List<string> itemIdList)
+        {
+            await InvokeVoidAsync("setBlink", itemIdList);
+        }
+
+        public async Task DisposeAsync()
+        {
+            if(_module != null)
+            {
+                await _module.InvokeVoidAsync("dispose");
+                await _module.DisposeAsync();
+            }
+                
+        }
     }
 
 }

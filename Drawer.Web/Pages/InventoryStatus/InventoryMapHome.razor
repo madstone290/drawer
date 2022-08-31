@@ -1,0 +1,143 @@
+﻿@using Drawer.Application.Services.Inventory.QueryModels
+@using Drawer.Web.Authentication
+@using Drawer.Web.Pages.InventoryStatus.Models
+@using Drawer.Web.Services.Canvas
+
+@attribute [Route(Paths.InventoryMapHome)]
+
+<ContentTitle Text="재고 지도" />
+<AuthorizeView Context="AuthorizeView" Policy="@Policies.CompanyMember">
+    <NotAuthorized>
+        <NeedCompany />
+    </NotAuthorized>
+    <Authorized>
+        <AidToolBar>
+            <AidButton Enabled="@(_canAccess)"
+                       Color="Color.Secondary"
+                       StartIcon="@Icons.Material.Filled.Refresh"
+                       OnClick=@(() => Load_Click())>
+                조회
+            </AidButton>
+        </AidToolBar>
+
+        <AidToolBar>
+            <MudGrid Spacing="1">
+                <MudItem xs="2">
+                    <MudSelect T="@LocationQueryModel"
+                               ToStringFunc="@((loc) => loc?.Name)"
+                               Label="루트 위치그룹"
+                               @bind-Value="@SelectedLocationGroup">
+                        @foreach (var location in _rootLocationGroups)
+                        {
+                            <MudSelectItem Value="@location" />
+                        }
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="2">
+                    <AidSearchField Label="검색" @bind-Value="@SearchText" />
+                </MudItem>
+            </MudGrid>
+
+        </AidToolBar>
+
+
+        <div class="main">
+            <div class="main-left">
+                <div class="main-left-top">
+                    <div>
+                        <MudText Typo="@Typo.body1">재고 아이템</MudText>
+                    </div>
+                    <AidTable @ref="_sumItemTable"
+                                Style="height:100%;"
+                              Loading="@_isLoading"
+                              T="@InventorySumItemModel"
+                              Items="@_inventorySumItemList"
+                              @bind-FocusedItem="@FocusedInventorySumItem"
+                              Filter="@(new Func<InventorySumItemModel,bool>(FilterInventoryItem))">
+                        <Header>
+                            <MudTHeadRow>
+                                <MudTh>
+                                    <MudTableSortLabel T="InventorySumItemModel"
+                                                       SortBy="x => x.ItemName">
+                                        아이템
+                                    </MudTableSortLabel>
+                                </MudTh>
+                                <MudTh>
+                                    <MudTableSortLabel T="InventorySumItemModel"
+                                                       SortBy="x => x.Quantity">
+                                        수량
+                                    </MudTableSortLabel>
+                                </MudTh>
+                            </MudTHeadRow>
+                        </Header>
+
+                        <Row>
+                            <MudTd>
+                                <MudHighlighter Text="@context.ItemName" HighlightedText="@_searchText" />
+                            </MudTd>
+                            <MudTd>
+                                <MudHighlighter Text="@context.Quantity.ToString()" HighlightedText="@_searchText" />
+                            </MudTd>
+                        </Row>
+
+                        <Footer>
+                            <MudTFootRow>
+                                <MudTd colSpan="100">총 @(InventorySumItemTotal)개의 행</MudTd>
+                            </MudTFootRow>
+                        </Footer>
+                    </AidTable>
+                </div>
+
+
+                <div class="main-left-bottom">
+                    <div>
+                        <MudText Typo="@Typo.body1">재고 위치</MudText>
+                    </div>
+                    <AidTable T="@InventoryItemModel"
+                              Items="@_inventoryItemList">
+                        <Header>
+                            <MudTHeadRow>
+                                <MudTh>
+                                    <MudTableSortLabel T="InventoryItemModel" SortBy="x => x.LocationName">위치</MudTableSortLabel>
+                                </MudTh>
+                                <MudTh>
+                                    <MudTableSortLabel T="InventoryItemModel" SortBy="x => x.Quantity">수량</MudTableSortLabel>
+                                </MudTh>
+                            </MudTHeadRow>
+                        </Header>
+
+                        <Row>
+                            <MudTd>
+                                @context.LocationName
+                            </MudTd>
+                            <MudTd>
+                                @context.Quantity.ToString()
+                            </MudTd>
+                        </Row>
+
+                        <Footer>
+                            <MudTFootRow>
+                                <MudTd colSpan="100">총 @(InventoryItemTotal)개의 행</MudTd>
+                            </MudTFootRow>
+                        </Footer>
+                    </AidTable>
+                </div>
+            </div>
+
+            <div class="main-center">
+                <canvas id="@CANVAS_ID" style="border:solid; border-color:#ccc; border-width:1px;"
+                        width="@CanvasDefaults.Width" height="@CanvasDefaults.Height">
+                </canvas>
+            </div>
+
+
+
+        </div>
+
+
+
+
+
+    </Authorized>
+</AuthorizeView>
+

@@ -11,23 +11,23 @@ namespace Drawer.Web.Pages.InventoryStatus
     public partial class ItemLocationInventoryHome
     {
         private readonly ExcelOptions _excelOptions = new ExcelOptionsBuilder()
-            .AddColumn(nameof(ItemLocationInventoryModel.ItemName), "아이템")
-            .AddColumn(nameof(ItemLocationInventoryModel.LocationName), "위치")
-            .AddColumn(nameof(ItemLocationInventoryModel.Quantity), "수량")
+            .AddColumn(nameof(InventoryItemModel.ItemName), "아이템")
+            .AddColumn(nameof(InventoryItemModel.LocationName), "위치")
+            .AddColumn(nameof(InventoryItemModel.Quantity), "수량")
             .Build();
 
         /// <summary>
         /// 전체 재고 정보
         /// </summary>
-        private readonly List<ItemLocationInventoryModel> _modelList = new();
+        private readonly List<InventoryItemModel> _modelList = new();
 
         /// <summary>
         /// 화면에 표시할 재고 정보
         /// </summary>
-        private readonly List<ItemLocationInventoryModel> _displayModelList = new();
+        private readonly List<InventoryItemModel> _displayModelList = new();
 
 
-        private AidTable<ItemLocationInventoryModel> _table = null!;
+        private AidTable<InventoryItemModel> _table = null!;
 
         private bool _hideZeroQuantity;
         private bool _isTableLoading;
@@ -70,7 +70,7 @@ namespace Drawer.Web.Pages.InventoryStatus
             await Load_Click();
         }
 
-        private bool FilterInventoryDetails(ItemLocationInventoryModel model)
+        private bool FilterInventoryDetails(InventoryItemModel model)
         {
             if (string.IsNullOrWhiteSpace(searchText))
                 return true;
@@ -109,7 +109,7 @@ namespace Drawer.Web.Pages.InventoryStatus
                     var quantity = inventoryResponse.Data
                         .Where(x => x.ItemId == item.Id && x.LocationId == location.Id)
                         .Sum(x => x.Quantity);
-                    var inventoryItemLocation = new ItemLocationInventoryModel()
+                    var inventoryItemLocation = new InventoryItemModel()
                     {
                         ItemId = item.Id,
                         ItemName = item.Name,

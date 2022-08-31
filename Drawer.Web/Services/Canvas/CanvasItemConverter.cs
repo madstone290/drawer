@@ -1,7 +1,6 @@
 ﻿using Drawer.Domain.Models.Inventory;
-using Drawer.Web.Services.Canvas;
 
-namespace Drawer.Web.Pages.Layout
+namespace Drawer.Web.Services.Canvas
 {
     public static class CanvasItemConverter
     {
@@ -34,7 +33,7 @@ namespace Drawer.Web.Pages.Layout
             return new LayoutItem()
             {
                 ItemId = canvasItem.ItemId,
-                
+
                 Shape = canvasItem.Shape,
                 Top = canvasItem.Top,
                 Left = canvasItem.Left,

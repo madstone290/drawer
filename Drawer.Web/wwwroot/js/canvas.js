@@ -152,10 +152,10 @@ fabric.Group.prototype.refresh = function () {
 
     let nextWidth = Math.max(groupScaledWidth, textScaledWidth);
     let nextHeight = Math.max(groupScaledHeight, textScaledHeight);
-    
+
     this.remove(shapeItem);
     this.remove(textItem);
-    
+
     shapeItem.set({
         left: this.left,
         top: this.top,
@@ -263,9 +263,12 @@ class Drawer {
 
     getImage;
 
+    // 블링크 인터벌
+    interval;
 
+    blinkItemSet = new Set();
 
-    constructor(canvasId) {
+    constructor(canvasId, useInterval = false) {
         const canvasElement = document.getElementById(canvasId);
         this.canvas = this.createFabricCanvas(canvasElement);
     }
@@ -396,6 +399,32 @@ class Drawer {
         });
     }
 
+    startBlink() {
+        let self = this;
+        let blinkItemVisible = false;
+
+        let blinkFunc = function () {
+            for (const item of self.blinkItemSet) {
+                item.visible = blinkItemVisible;
+            }
+            self.canvas.renderAll();
+            blinkItemVisible = !blinkItemVisible;
+        };
+
+        blinkFunc();
+        this.interval = setInterval(blinkFunc, 500);
+    }
+
+    stopBlink() {
+        if (this.interval)
+            clearInterval(this.interval);
+        for (const item of this.blinkItemSet) {
+            item.visible = true;
+        }
+        this.blinkItemSet.clear();
+
+        this.canvas.renderAll();
+    }
 
     snapLeftToGrid(canvasItem) {
         return this.snapToGrid(canvasItem.left);
@@ -530,7 +559,9 @@ class Drawer {
     }
 
     dispose() {
+        this.stopBlink();
         this.canvas.dispose();
+        console.log("Drawer is disposed");
     }
 
     getImageUrlById(imageId) {
@@ -811,15 +842,15 @@ class Drawer {
 
         let itemInfo = new ItemInfo();
         itemInfo.itemId = groupItem.id;
-        itemInfo.isPattern= isPattern;
-        itemInfo.backColor= backColor;
-        itemInfo.patternImageId= patternImageId;
-            
-        itemInfo.text= groupItem.text;
-        itemInfo.fontSize= groupItem.fontSize;
-        itemInfo.vAlignment= groupItem.vAlignment;
-        itemInfo.hAlignment= groupItem.hAlignment;
-        itemInfo.degree= groupItem.degree
+        itemInfo.isPattern = isPattern;
+        itemInfo.backColor = backColor;
+        itemInfo.patternImageId = patternImageId;
+
+        itemInfo.text = groupItem.text;
+        itemInfo.fontSize = groupItem.fontSize;
+        itemInfo.vAlignment = groupItem.vAlignment;
+        itemInfo.hAlignment = groupItem.hAlignment;
+        itemInfo.degree = groupItem.degree
 
         return itemInfo;
     }
@@ -895,5 +926,21 @@ class Drawer {
             item.selectable = enabled;
         }
     }
+
+    /**
+     * 캔버스 아이템을 깜빡이게 한다
+     * @param {any} itemList 아이템목록
+     */
+    setBlink(itemList) {
+        this.stopBlink();
+
+        for (const item of itemList) {
+            this.blinkItemSet.add(item);
+        }
+
+        if (0 < this.blinkItemSet.size)
+            this.startBlink(itemList)
+    }
+
 
 }

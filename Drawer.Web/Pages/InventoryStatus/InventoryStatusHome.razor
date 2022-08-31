@@ -49,17 +49,17 @@
 
         <AidTable @ref="table"
                   Loading="@_isTableLoading"
-                  T="@ItemInventoryModel"
+                  T="@InventorySumItemModel"
                   UseRowSelection="@false"
                   Items="@_inventoryItems"
-                  Filter="@(new Func<ItemInventoryModel,bool>(FilterInventoryDetails))">
+                  Filter="@(new Func<InventorySumItemModel,bool>(FilterInventoryDetails))">
             <Header>
                 <MudTHeadRow>
                     <MudTh>
-                        <MudTableSortLabel T="ItemInventoryModel" SortBy="x => x.ItemName">아이템</MudTableSortLabel>
+                        <MudTableSortLabel T="InventorySumItemModel" SortBy="x => x.ItemName">아이템</MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel T="ItemInventoryModel" SortBy="x => x.Quantity">수량</MudTableSortLabel>
+                        <MudTableSortLabel T="InventorySumItemModel" SortBy="x => x.Quantity">수량</MudTableSortLabel>
                     </MudTh>
                 </MudTHeadRow>
             </Header>

@@ -9,7 +9,7 @@ using MudBlazor;
 
 namespace Drawer.Web.Pages.Layout
 {
-    public partial class LayoutHome
+    public partial class LayoutHome : IAsyncDisposable
     {
         private const string CANVAS_ID = "canvas";
 
@@ -45,7 +45,6 @@ namespace Drawer.Web.Pages.Layout
             selectedLocation = location;
             
             await CanvasService.ClearCanvas();
-            
 
             if (location == null)
                 return;
@@ -116,6 +115,11 @@ namespace Drawer.Web.Pages.Layout
         void Delete_Click()
         {
 
+        }
+
+        async ValueTask IAsyncDisposable.DisposeAsync()
+        {
+            await CanvasService.DisposeAsync();
         }
     }
 }

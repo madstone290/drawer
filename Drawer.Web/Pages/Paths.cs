@@ -50,6 +50,7 @@
         public const string InventoryStatusHome = "/ItemInventoryHome";
         public const string ItemLocationInventoryHome = "/ItemLocationInventoryHome";
         public const string LocationItemInventoryHome = "/LocationItemInventoryHome";
+        public const string InventoryMapHome = "/InventoryMapHome";
 
         public const string ReceiptHome = "/Receipt";
         public const string ReceiptBatchAdd = "/Receipt/BatchAdd";

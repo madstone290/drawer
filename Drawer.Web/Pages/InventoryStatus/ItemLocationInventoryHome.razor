@@ -52,20 +52,20 @@
 
         <AidTable @ref="@_table"
                   Loading="@_isTableLoading"
-                  T="@ItemLocationInventoryModel"
+                  T="@InventoryItemModel"
                   UseRowSelection="@false"
                   Items="@_displayModelList"
-                  Filter="@(new Func<ItemLocationInventoryModel,bool>(FilterInventoryDetails))">
+                  Filter="@(new Func<InventoryItemModel,bool>(FilterInventoryDetails))">
             <Header>
                 <MudTHeadRow>
                     <MudTh>
-                        <MudTableSortLabel T="ItemLocationInventoryModel" SortBy="x => x.ItemName">아이템</MudTableSortLabel>
+                        <MudTableSortLabel T="InventoryItemModel" SortBy="x => x.ItemName">아이템</MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel T="ItemLocationInventoryModel" SortBy="x => x.LocationName">위치</MudTableSortLabel>
+                        <MudTableSortLabel T="InventoryItemModel" SortBy="x => x.LocationName">위치</MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel T="ItemLocationInventoryModel" SortBy="x => x.Quantity">수량</MudTableSortLabel>
+                        <MudTableSortLabel T="InventoryItemModel" SortBy="x => x.Quantity">수량</MudTableSortLabel>
                     </MudTh>
                 </MudTHeadRow>
             </Header>
