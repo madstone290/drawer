@@ -33,7 +33,7 @@ namespace Drawer.Web.Pages.InventoryStatus
         /// <summary>
         /// 수량합계 재고 아이템. 재고수량 테이블 데이터 소스.
         /// </summary>
-        private readonly List<InventorySumItemModel> _inventorySumItemList = new();
+        private readonly List<InventoryItemModel> _inventorySumItemList = new();
 
         /// <summary>
         /// 현재 선택된 루트 위치그룹
@@ -43,10 +43,10 @@ namespace Drawer.Web.Pages.InventoryStatus
         /// <summary>
         /// 현재 선택된 수량합계 아이템
         /// </summary>
-        private InventorySumItemModel? _focusedInventoryItemSum;
+        private InventoryItemModel? _focusedInventoryItemSum;
 
 
-        private AidBlazor.AidTable<InventorySumItemModel>? _sumItemTable;
+        private AidBlazor.AidTable<InventoryItemModel>? _sumItemTable;
 
         /// <summary>
         /// 데이터 로딩중 여부
@@ -94,7 +94,7 @@ namespace Drawer.Web.Pages.InventoryStatus
 
                 _inventorySumItemList.Clear();
                 _inventorySumItemList.AddRange(_itemQueryModels.Select(item =>
-                    new InventorySumItemModel()
+                    new InventoryItemModel()
                     {
                         ItemId = item.Id,
                         ItemName = item.Name,
@@ -124,12 +124,12 @@ namespace Drawer.Web.Pages.InventoryStatus
             }
         }
 
-        public InventorySumItemModel? FocusedInventorySumItem
+        public InventoryItemModel? FocusedInventorySumItem
         {
             get => _focusedInventoryItemSum;
             set
             {
-                if (EqualityComparer<InventorySumItemModel>.Default.Equals(_focusedInventoryItemSum, value))
+                if (EqualityComparer<InventoryItemModel>.Default.Equals(_focusedInventoryItemSum, value))
                     return;
                 _focusedInventoryItemSum = value;
 
@@ -181,7 +181,7 @@ namespace Drawer.Web.Pages.InventoryStatus
             }
         }
 
-        private bool FilterInventoryItem(InventorySumItemModel inventoryItem)
+        private bool FilterInventoryItem(InventoryItemModel inventoryItem)
         {
             if (string.IsNullOrWhiteSpace(_searchText))
                 return true;

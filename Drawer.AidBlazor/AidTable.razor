@@ -41,6 +41,12 @@
             @Row(context)
         }
     </RowTemplate>
+    <ChildRowContent>
+        @if (ChildRow != null)
+        {
+            @ChildRow(context)
+        }
+    </ChildRowContent>
     <FooterContent>
         @Footer
     </FooterContent>
@@ -81,6 +87,10 @@
             }
             if (Filter != null)
                 attributes.Add(nameof(MudTable<T>.Filter), Filter);
+
+            if (RowClassFunc != null)
+                attributes.Add(nameof(MudTable<T>.RowClassFunc), RowClassFunc);
+
             return attributes;
         }
     }
@@ -88,12 +98,14 @@
     [Parameter] public RenderFragment? ChildContent { get; set; }
     [Parameter] public RenderFragment? Header { get; set; }
     [Parameter] public RenderFragment<T>? Row { get; set; }
+    [Parameter] public RenderFragment<T>? ChildRow { get; set; }
     [Parameter] public RenderFragment? Footer { get; set; }
 
     [Parameter] public bool Visible { get; set; } = true;
     [Parameter] public bool ReadOnly { get; set; } = true;
     [Parameter] public IEnumerable<T>? Items { get; set; }
     [Parameter] public Func<T, bool>? Filter { get; set; }
+    [Parameter] public Func<T, int, string>? RowClassFunc { get; set; }
     /// <summary>
     /// 로딩상태
     /// </summary>

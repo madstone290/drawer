@@ -47,32 +47,35 @@
             <AidSearchField @bind-Value="@searchText" />
         </AidToolBar>
 
-        <AidTable @ref="table"
-                  Loading="@_isTableLoading"
-                  T="@InventorySumItemModel"
+        <AidTable Loading="@_isTableLoading"
+                  T="@TreeNode"
                   UseRowSelection="@false"
-                  Items="@_inventoryItems"
-                  Filter="@(new Func<InventorySumItemModel,bool>(FilterInventoryDetails))">
+                  Items="@_flatInventoryItems" >
             <Header>
                 <MudTHeadRow>
-                    <MudTh>
-                        <MudTableSortLabel T="InventorySumItemModel" SortBy="x => x.ItemName">아이템</MudTableSortLabel>
+                    <MudTh Style="width:35%;">
+                        <MudTableSortLabel T="TreeNode" SortBy="x => x.InventoryItem.ItemName">아이템</MudTableSortLabel>
                     </MudTh>
-                    <MudTh>
-                        <MudTableSortLabel T="InventorySumItemModel" SortBy="x => x.Quantity">수량</MudTableSortLabel>
+                    <MudTh Style="width:35%;">
+                        <MudTableSortLabel T="TreeNode" SortBy="x => x.InventoryItem.Quantity">수량</MudTableSortLabel>
                     </MudTh>
+                    <MudTh Style="width:30%;">위치</MudTh>
                 </MudTHeadRow>
             </Header>
 
             <Row>
-                <MudTd>
-                    <MudHighlighter Text="@context.ItemName" HighlightedText="@searchText" />
-                </MudTd>
-                <MudTd>
-                    <MudHighlighter Text="@context.Quantity.ToString()" HighlightedText="@searchText" />
-                </MudTd>
+                @if (context.Visible)
+                {
+                    <MudTd>@context.InventoryItem.ItemName</MudTd>
+                    <MudTd>
+                        <div style="display:flex; flex-direction:row; align-items:center; margin-left:@(context.Level * 30)px;">
+                            <MudIconButton Style="@(context.Style)" Icon="@(context.Icon)" OnClick="@(()=> Expand_Click(context))"></MudIconButton>
+                            <MudText>@context.InventoryItem.Quantity.ToString()</MudText>
+                        </div>
+                    </MudTd>
+                    <MudTd>@context.InventoryItem.LocationName</MudTd>
+                }
             </Row>
-
             <Footer>
                 <MudTFootRow>
                     <MudTd colSpan="100">총 @(TotalRowCount)개의 행</MudTd>

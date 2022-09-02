@@ -1,4 +1,10 @@
-﻿using Drawer.AidBlazor;
+﻿using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Drawing;
+using DocumentFormat.OpenXml.Drawing.Spreadsheet;
+using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Vml.Spreadsheet;
+using Drawer.AidBlazor;
+using Drawer.Application.Services.Inventory.QueryModels;
 using Drawer.Web.Api.Inventory;
 using Drawer.Web.Pages.InventoryStatus.Models;
 using Drawer.Web.Services;
@@ -10,11 +16,12 @@ namespace Drawer.Web.Pages.InventoryStatus
 {
     public partial class InventoryStatusHome
     {
-        private AidTable<InventorySumItemModel> table = null!;
-        private readonly List<InventorySumItemModel> _inventoryItems = new();
+        private readonly List<TreeNode> _treeInventoryItems = new();
+        private readonly List<TreeNode> _flatInventoryItems = new();
+
         private readonly ExcelOptions _excelOptions = new ExcelOptionsBuilder()
-            .AddColumn(nameof(InventorySumItemModel.ItemName), "아이템")
-            .AddColumn(nameof(InventorySumItemModel.Quantity), "수량")
+            .AddColumn(nameof(InventoryItemModel.ItemName), "아이템")
+            .AddColumn(nameof(InventoryItemModel.Quantity), "수량")
             .Build();
 
         private bool _isTableLoading;
@@ -31,7 +38,7 @@ namespace Drawer.Web.Pages.InventoryStatus
         [Inject] public IDialogService DialogService { get; set; } = null!;
         [Inject] public IExcelFileService ExcelFileService { get; set; } = null!;
 
-        public int TotalRowCount => _inventoryItems.Count;
+        public int TotalRowCount => _treeInventoryItems.Count;
 
 
         protected override async Task OnInitializedAsync()
@@ -44,7 +51,7 @@ namespace Drawer.Web.Pages.InventoryStatus
             await Load_Click();
         }
 
-        private bool FilterInventoryDetails(InventorySumItemModel model)
+        private bool FilterInventoryDetails(InventoryItemModel model)
         {
             if (string.IsNullOrWhiteSpace(searchText))
                 return true;
@@ -60,39 +67,109 @@ namespace Drawer.Web.Pages.InventoryStatus
             _isTableLoading = true;
 
             var itemTask = ItemApiClient.GetItems();
+            var locationTask = LocationApiClient.GetLocations();
             var inventoryTask= InventoryApiClient.GetInventoryDetails();
-            await Task.WhenAll(itemTask, inventoryTask);
+            await Task.WhenAll(itemTask, locationTask, inventoryTask);
 
             var itemResponse = itemTask.Result;
+            var locationResponse = locationTask.Result;
             var inventoryResponse = inventoryTask.Result;
 
-            if (!Snackbar.CheckFail(itemResponse, inventoryResponse))
+            if (!Snackbar.CheckFail(itemResponse, locationResponse, inventoryResponse))
             {
                 _isTableLoading = false;
                 return;
             }
 
-            // 모든 아이템에 대한 상세정보 생성
-            _inventoryItems.Clear();
-            foreach (var item in itemResponse.Data)
-            {
-                var inventoryDetail = new InventorySumItemModel()
-                {
-                    ItemId = item.Id,
-                    ItemName = item.Name,
-                };
-                _inventoryItems.Add(inventoryDetail);
-            }
+            var builder = new TreeNodeBuilder();
 
-            // 서버의 수량정보를 적용한다.
-            foreach (var inventoryDetail in _inventoryItems)
-            {
-                inventoryDetail.Quantity = inventoryResponse.Data
-                    .Where(x => x.ItemId == inventoryDetail.ItemId)
-                    .Sum(x => x.Quantity);
-            }
+            var treeNodes = builder.Build(itemResponse.Data, locationResponse.Data, inventoryResponse.Data);
+            _treeInventoryItems.Clear();
+            _treeInventoryItems.AddRange(treeNodes);
+            
+            var flatItems = Flatten(_treeInventoryItems, (i) => i.Children, 
+                (p, c) => { 
+                    c.Level = p.Level + 1; 
+                    c.InventoryItem.ItemName = ""; 
+                    c.Expanded = false; 
+                });
+
+            _flatInventoryItems.Clear();
+            _flatInventoryItems.AddRange(flatItems);
 
             _isTableLoading = false;
+        }
+
+        private IEnumerable<T> Flatten<T>(IEnumerable<T> source, Func<T, IEnumerable<T>> selector, Action<T, T>? beforePush = null)
+        {
+            var stack = new Stack<T>(source.Reverse());
+            while (stack.Any())
+            {
+                var parent = stack.Pop();
+                yield return parent;
+                foreach (var child in selector(parent).Reverse())
+                {
+                    if(beforePush != null)
+                        beforePush(parent, child);
+                    stack.Push(child);
+                }
+            }
+        }
+
+        private void Flatten<T>(List<T> result, List<T> source, Func<T, List<T>> selector)
+        {
+            var stack = new Stack<T>(source);
+            while (stack.Any())
+            {
+                var next = stack.Pop();
+                result.Add(next);
+
+                Flatten(result, selector(next), selector);
+            }
+        }
+    
+        private void Expand_Click(TreeNode node)
+        {
+            var expanded = !node.Expanded;
+            if (expanded)
+            {
+                SetExpand(node, expanded, false);
+            }
+
+            if (!expanded)
+            {
+                SetExpand(node, expanded, true);
+            }
+        }
+
+        private void SetExpand(TreeNode item, bool expanded, bool recursive = false)
+        {
+            item.Expanded = expanded;
+
+            foreach(var childItem in item.Children)
+            {
+                SetVisible(childItem, expanded);
+            }
+
+            if (!recursive)
+                return;
+            
+            foreach (var childItem in item.Children)
+            {
+                SetExpand(childItem, expanded, recursive);
+            }
+        }
+
+        private void SetVisible(TreeNode from, bool visible, bool recursive = false)
+        {
+            from.Visible = visible;
+            if (!recursive)
+                return;
+
+            foreach (var child in from.Children)
+            {
+                SetVisible(child, visible, recursive);
+            }
         }
 
         private void Receipt_Click()
@@ -113,7 +190,7 @@ namespace Drawer.Web.Pages.InventoryStatus
         private async Task Download_ClickAsync()
         {
             var fileName = $"재고-{DateTime.Now:yyMMdd-HHmmss}.xlsx";
-            await ExcelFileService.Download(fileName, _inventoryItems, _excelOptions);
+            await ExcelFileService.Download(fileName, _treeInventoryItems.Select(x=> x.InventoryItem), _excelOptions);
         }
     }
 }

@@ -50,20 +50,20 @@
                     <AidTable @ref="_sumItemTable"
                                 Style="height:100%;"
                               Loading="@_isLoading"
-                              T="@InventorySumItemModel"
+                              T="@InventoryItemModel"
                               Items="@_inventorySumItemList"
                               @bind-FocusedItem="@FocusedInventorySumItem"
-                              Filter="@(new Func<InventorySumItemModel,bool>(FilterInventoryItem))">
+                              Filter="@(new Func<InventoryItemModel,bool>(FilterInventoryItem))">
                         <Header>
                             <MudTHeadRow>
                                 <MudTh>
-                                    <MudTableSortLabel T="InventorySumItemModel"
+                                    <MudTableSortLabel T="InventoryItemModel"
                                                        SortBy="x => x.ItemName">
                                         아이템
                                     </MudTableSortLabel>
                                 </MudTh>
                                 <MudTh>
-                                    <MudTableSortLabel T="InventorySumItemModel"
+                                    <MudTableSortLabel T="InventoryItemModel"
                                                        SortBy="x => x.Quantity">
                                         수량
                                     </MudTableSortLabel>
