@@ -50,7 +50,8 @@
         <AidTable Loading="@_isTableLoading"
                   T="@TreeNode"
                   UseRowSelection="@false"
-                  Items="@_flatInventoryItems" >
+                  Items="@_flatInventoryItems" 
+                  Filter="@(new Func<TreeNode, bool>(Filter))" >
             <Header>
                 <MudTHeadRow>
                     <MudTh Style="width:35%;">

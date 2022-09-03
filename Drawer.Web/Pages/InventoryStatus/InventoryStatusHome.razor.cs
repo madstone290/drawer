@@ -20,8 +20,8 @@ namespace Drawer.Web.Pages.InventoryStatus
         private readonly List<TreeNode> _flatInventoryItems = new();
 
         private readonly ExcelOptions _excelOptions = new ExcelOptionsBuilder()
-            .AddColumn(nameof(InventoryItemModel.ItemName), "아이템")
-            .AddColumn(nameof(InventoryItemModel.Quantity), "수량")
+            .AddColumn(nameof(ItemQtyLocationModel.ItemName), "아이템")
+            .AddColumn(nameof(ItemQtyLocationModel.Quantity), "수량")
             .Build();
 
         private bool _isTableLoading;
@@ -51,15 +51,17 @@ namespace Drawer.Web.Pages.InventoryStatus
             await Load_Click();
         }
 
-        private bool FilterInventoryDetails(InventoryItemModel model)
+        private bool Filter(TreeNode node)
         {
             if (string.IsNullOrWhiteSpace(searchText))
                 return true;
-            if (model == null)
+            if (node == null)
                 return false;
 
-            return model.ItemName?.Contains(searchText, StringComparison.OrdinalIgnoreCase) == true ||
-                model.Quantity.ToString().Contains(searchText, StringComparison.OrdinalIgnoreCase) == true;
+            var rootNode = node.Root;
+            
+            return rootNode.InventoryItem.ItemName?.Contains(searchText, StringComparison.OrdinalIgnoreCase) == true ||
+                rootNode.InventoryItem.Quantity.ToString().Contains(searchText, StringComparison.OrdinalIgnoreCase) == true;
         }
 
         private async Task Load_Click()
@@ -81,9 +83,9 @@ namespace Drawer.Web.Pages.InventoryStatus
                 return;
             }
 
-            var builder = new TreeNodeBuilder();
+            var treeNodes = new TreeNodeBuilder(itemResponse.Data, locationResponse.Data, inventoryResponse.Data)
+                .Build();
 
-            var treeNodes = builder.Build(itemResponse.Data, locationResponse.Data, inventoryResponse.Data);
             _treeInventoryItems.Clear();
             _treeInventoryItems.AddRange(treeNodes);
             

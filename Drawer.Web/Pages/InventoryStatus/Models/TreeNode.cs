@@ -1,4 +1,5 @@
-﻿using MudBlazor;
+﻿using DocumentFormat.OpenXml.Office2013.PowerPoint;
+using MudBlazor;
 
 namespace Drawer.Web.Pages.InventoryStatus.Models
 {
@@ -16,10 +17,11 @@ namespace Drawer.Web.Pages.InventoryStatus.Models
     {
         public TreeNodeKey Key { get; set; }
 
-        public List<TreeNode> Children { get; set; } = new List<TreeNode>();
+        public TreeNode Root => Parent?.Root ?? this;
         public TreeNode? Parent { get; set; }
+        public List<TreeNode> Children { get; set; } = new List<TreeNode>();
 
-        public InventoryItemModel InventoryItem { get; set; } = null!;
+        public ItemQtyLocationModel InventoryItem { get; set; } = null!;
 
         public bool Visible { get; set; }
 
@@ -46,5 +48,6 @@ namespace Drawer.Web.Pages.InventoryStatus.Models
             if (Parent != null)
                 Parent.AddQuantity(quantity);
         }
+
     }
 }

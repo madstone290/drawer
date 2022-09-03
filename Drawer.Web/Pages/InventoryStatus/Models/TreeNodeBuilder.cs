@@ -7,33 +7,37 @@ namespace Drawer.Web.Pages.InventoryStatus.Models
 {
     public class TreeNodeBuilder
     {
-        private readonly List<ItemQueryModel> _items = new List<ItemQueryModel>();
-        private readonly List<LocationQueryModel> _locations = new List<LocationQueryModel>();
+        private readonly List<ItemQueryModel> _items = new();
+
+        private readonly List<LocationQueryModel> _locations = new();
+
+        private readonly List<InventoryItemQueryModel> _inventoryItems = new();
+
         /// <summary>
         /// 노드 탐색(처리) 여부
         /// </summary>
-        private readonly Dictionary<TreeNodeKey, bool> handled = new Dictionary<TreeNodeKey, bool>();
+        private readonly Dictionary<TreeNodeKey, bool> _handled = new();
 
-        public IEnumerable<TreeNode> Build(
-            IEnumerable<ItemQueryModel> itemQueryModels,
-            IEnumerable<LocationQueryModel> locationQueryModels, 
-            IEnumerable<InventoryItemQueryModel> inventoryItemQueryModels)
+        private readonly Dictionary<TreeNodeKey, TreeNode> _lookup = new();
+
+        public TreeNodeBuilder(IEnumerable<ItemQueryModel> items, IEnumerable<LocationQueryModel> locations, IEnumerable<InventoryItemQueryModel> inventoryItems)
         {
-            _items.Clear();
-            _locations.Clear();
+            _items.AddRange(items);
+            _locations.AddRange(locations);
+            _inventoryItems.AddRange(inventoryItems);
+        }
 
-            _items.AddRange(itemQueryModels);
-            _locations.AddRange(locationQueryModels);
-
+        public IEnumerable<TreeNode> Build()
+        {
             // 전체 아이템 목록
-            var defaultItems = itemQueryModels.Select(item => new InventoryItemModel()
+            var defaultItems = _items.Select(item => new ItemQtyLocationModel()
             {
                 ItemId = item.Id,
                 ItemName = item.Name
             });
 
             // 재고등록된 아이템 목록
-            var inventoryItems = inventoryItemQueryModels.Select(inventoryItem => new InventoryItemModel()
+            var inventoryItems = _inventoryItems.Select(inventoryItem => new ItemQtyLocationModel()
             {
                 ItemId = inventoryItem.ItemId,
                 ItemName = _items.First(x=> x.Id == inventoryItem.ItemId).Name,
@@ -50,12 +54,9 @@ namespace Drawer.Web.Pages.InventoryStatus.Models
             return nodes;
         }
 
-
-    
-
-        public IEnumerable<TreeNode> Build(IEnumerable<InventoryItemModel> inventoryItems)
+        private IEnumerable<TreeNode> Build(IEnumerable<ItemQtyLocationModel> inventoryItems)
         {
-            Dictionary<TreeNodeKey, TreeNode> lookup = new Dictionary<TreeNodeKey, TreeNode>();
+           
             foreach (var item in inventoryItems)
             {
                 var node = new TreeNode()
@@ -64,17 +65,22 @@ namespace Drawer.Web.Pages.InventoryStatus.Models
                     InventoryItem = item
                 };
 
-                lookup.Add(node.Key, node);
-                Fill(lookup, node);
+                _lookup.Add(node.Key, node);
+                FillLookup(_lookup, node);
             }
-            return lookup.Values.Where(x => x.Parent == null);
+            return _lookup.Values.Where(x => x.Parent == null);
         }
 
-        void Fill(Dictionary<TreeNodeKey, TreeNode> lookup, TreeNode node)
+        /// <summary>
+        /// 부모노드를 탐색 후 존재하지 않은 경우 부모노드를 생성하고 룩업 딕셔너리를 채운다.
+        /// </summary>
+        /// <param name="lookup"></param>
+        /// <param name="node"></param>
+        void FillLookup(Dictionary<TreeNodeKey, TreeNode> lookup, TreeNode node)
         {
             // 서로 다른 노드라 하더라도 부모 노드는 동일한 경우가 발생할 수 있으므로 모든 노드는 1번만 처리한다.
 
-            handled[node.Key] = true;
+            _handled[node.Key] = true;
             
             // LocationId가 0인 것은 루트 노드. 
             if (node.Key.LocationId == 0)
@@ -88,7 +94,7 @@ namespace Drawer.Web.Pages.InventoryStatus.Models
                 parentNode = new TreeNode()
                 {
                     Key = parentKey,
-                    InventoryItem = new InventoryItemModel()
+                    InventoryItem = new ItemQtyLocationModel()
                     {
                         ItemId = parentKey.ItemId,
                         LocationId = parentKey.LocationId,
@@ -98,17 +104,19 @@ namespace Drawer.Web.Pages.InventoryStatus.Models
                 };
                 lookup.Add(parentKey, parentNode);
             }
+            
             node.Parent = parentNode;
             parentNode.Children.Add(node);
+            
 
             parentNode.AddQuantity(node.InventoryItem.Quantity);
 
 
             // 노드 탐색이 두번이상 발생하지 않도록 한다.
-            if (handled.GetValueOrDefault(parentKey))
+            if (_handled.GetValueOrDefault(parentKey))
                 return;
 
-            Fill(lookup, parentNode);
+            FillLookup(lookup, parentNode);
         }
 
 

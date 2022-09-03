@@ -47,23 +47,23 @@
                     <div>
                         <MudText Typo="@Typo.body1">재고 아이템</MudText>
                     </div>
-                    <AidTable @ref="_sumItemTable"
+                    <AidTable @ref="_masterItemTable"
                                 Style="height:100%;"
                               Loading="@_isLoading"
-                              T="@InventoryItemModel"
-                              Items="@_inventorySumItemList"
-                              @bind-FocusedItem="@FocusedInventorySumItem"
-                              Filter="@(new Func<InventoryItemModel,bool>(FilterInventoryItem))">
+                              T="@ItemQtyModel"
+                              Items="@_masterItemList"
+                              @bind-FocusedItem="@FocusedMasterItem"
+                              Filter="@(new Func<ItemQtyModel,bool>(FilterInventoryItem))">
                         <Header>
                             <MudTHeadRow>
                                 <MudTh>
-                                    <MudTableSortLabel T="InventoryItemModel"
+                                    <MudTableSortLabel T="ItemQtyModel"
                                                        SortBy="x => x.ItemName">
                                         아이템
                                     </MudTableSortLabel>
                                 </MudTh>
                                 <MudTh>
-                                    <MudTableSortLabel T="InventoryItemModel"
+                                    <MudTableSortLabel T="ItemQtyModel"
                                                        SortBy="x => x.Quantity">
                                         수량
                                     </MudTableSortLabel>
@@ -82,7 +82,7 @@
 
                         <Footer>
                             <MudTFootRow>
-                                <MudTd colSpan="100">총 @(InventorySumItemTotal)개의 행</MudTd>
+                                <MudTd colSpan="100">총 @(MasterItemListCount)개의 행</MudTd>
                             </MudTFootRow>
                         </Footer>
                     </AidTable>
@@ -93,15 +93,15 @@
                     <div>
                         <MudText Typo="@Typo.body1">재고 위치</MudText>
                     </div>
-                    <AidTable T="@InventoryItemModel"
-                              Items="@_inventoryItemList">
+                    <AidTable T="@ItemQtyLocationModel"
+                              Items="@_detailItemList">
                         <Header>
                             <MudTHeadRow>
                                 <MudTh>
-                                    <MudTableSortLabel T="InventoryItemModel" SortBy="x => x.LocationName">위치</MudTableSortLabel>
+                                    <MudTableSortLabel T="ItemQtyLocationModel" SortBy="x => x.LocationName">위치</MudTableSortLabel>
                                 </MudTh>
                                 <MudTh>
-                                    <MudTableSortLabel T="InventoryItemModel" SortBy="x => x.Quantity">수량</MudTableSortLabel>
+                                    <MudTableSortLabel T="ItemQtyLocationModel" SortBy="x => x.Quantity">수량</MudTableSortLabel>
                                 </MudTh>
                             </MudTHeadRow>
                         </Header>
@@ -117,7 +117,7 @@
 
                         <Footer>
                             <MudTFootRow>
-                                <MudTd colSpan="100">총 @(InventoryItemTotal)개의 행</MudTd>
+                                <MudTd colSpan="100">총 @(DetailItemListCount)개의 행</MudTd>
                             </MudTFootRow>
                         </Footer>
                     </AidTable>

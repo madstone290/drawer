@@ -1,4 +1,5 @@
-﻿using Drawer.Application.Services.Inventory.QueryModels;
+﻿using Drawer.AidBlazor;
+using Drawer.Application.Services.Inventory.QueryModels;
 using Drawer.Web.Api.Inventory;
 using Drawer.Web.Pages.InventoryStatus.Models;
 using Drawer.Web.Services.Canvas;
@@ -26,14 +27,14 @@ namespace Drawer.Web.Pages.InventoryStatus
         private readonly List<InventoryItemQueryModel> _inventoryItemQueryModels = new();
 
         /// <summary>
-        /// 재고아이템. 재고위치 테이블 데이터 소스.
-        /// </summary>
-        private readonly List<InventoryItemModel> _inventoryItemList = new();
-
-        /// <summary>
         /// 수량합계 재고 아이템. 재고수량 테이블 데이터 소스.
         /// </summary>
-        private readonly List<InventoryItemModel> _inventorySumItemList = new();
+        private readonly List<ItemQtyModel> _masterItemList = new();
+
+        /// <summary>
+        /// 재고아이템. 재고위치 테이블 데이터 소스.
+        /// </summary>
+        private readonly List<ItemQtyLocationModel> _detailItemList = new();
 
         /// <summary>
         /// 현재 선택된 루트 위치그룹
@@ -41,12 +42,12 @@ namespace Drawer.Web.Pages.InventoryStatus
         private LocationQueryModel? _selectedLocationGroup;
 
         /// <summary>
-        /// 현재 선택된 수량합계 아이템
+        /// 현재 선택된 아이템
         /// </summary>
-        private InventoryItemModel? _focusedInventoryItemSum;
+        private ItemQtyModel? _focusedMasterItem;
 
 
-        private AidBlazor.AidTable<InventoryItemModel>? _sumItemTable;
+        private AidTable<ItemQtyModel>? _masterItemTable;
 
         /// <summary>
         /// 데이터 로딩중 여부
@@ -66,9 +67,9 @@ namespace Drawer.Web.Pages.InventoryStatus
         [Inject] public LayoutApiClient LayoutApiClient { get; set; } = null!;
         [Inject] public ICanvasService CanvasService { get; set; } = null!;
 
-        public int InventorySumItemTotal => _inventorySumItemList.Count;
+        public int MasterItemListCount => _masterItemList.Count;
 
-        public int InventoryItemTotal => _inventoryItemList.Count;
+        public int DetailItemListCount => _detailItemList.Count;
 
         public string? SearchText
         {
@@ -78,8 +79,8 @@ namespace Drawer.Web.Pages.InventoryStatus
                 if (EqualityComparer<string>.Default.Equals(_searchText, value))
                     return;
                 _searchText = value;
-                var filteredItems = _sumItemTable?.GetFilteredItems();
-                FocusedInventorySumItem = filteredItems?.FirstOrDefault();
+                var filteredItems = _masterItemTable?.GetFilteredItems();
+                FocusedMasterItem = filteredItems?.FirstOrDefault();
             }
         }
 
@@ -92,9 +93,9 @@ namespace Drawer.Web.Pages.InventoryStatus
                     return;
                 _selectedLocationGroup = value;
 
-                _inventorySumItemList.Clear();
-                _inventorySumItemList.AddRange(_itemQueryModels.Select(item =>
-                    new InventoryItemModel()
+                _masterItemList.Clear();
+                _masterItemList.AddRange(_itemQueryModels.Select(item =>
+                    new ItemQtyModel()
                     {
                         ItemId = item.Id,
                         ItemName = item.Name,
@@ -124,26 +125,26 @@ namespace Drawer.Web.Pages.InventoryStatus
             }
         }
 
-        public InventoryItemModel? FocusedInventorySumItem
+        public ItemQtyModel? FocusedMasterItem
         {
-            get => _focusedInventoryItemSum;
+            get => _focusedMasterItem;
             set
             {
-                if (EqualityComparer<InventoryItemModel>.Default.Equals(_focusedInventoryItemSum, value))
+                if (EqualityComparer<ItemQtyModel>.Default.Equals(_focusedMasterItem, value))
                     return;
-                _focusedInventoryItemSum = value;
+                _focusedMasterItem = value;
 
                 if (value == null)
                 {
-                    _inventoryItemList.Clear();
+                    _detailItemList.Clear();
                     CanvasService.SetBlink(new List<string>());
                     return;
                 }
 
-                _inventoryItemList.Clear();
-                _inventoryItemList.AddRange(_inventoryItemQueryModels
+                _detailItemList.Clear();
+                _detailItemList.AddRange(_inventoryItemQueryModels
                     .Where(x => x.ItemId == value.ItemId && GetRootLocationId(x.LocationId) == SelectedLocationGroup?.Id)
-                    .Select(x => new InventoryItemModel()
+                    .Select(x => new ItemQtyLocationModel()
                     {
                         ItemId = x.ItemId,
                         ItemName = _itemQueryModels.FirstOrDefault(y => y.Id == x.ItemId)?.Name,
@@ -181,14 +182,14 @@ namespace Drawer.Web.Pages.InventoryStatus
             }
         }
 
-        private bool FilterInventoryItem(InventoryItemModel inventoryItem)
+        private bool FilterInventoryItem(ItemQtyModel masterItem)
         {
             if (string.IsNullOrWhiteSpace(_searchText))
                 return true;
-            if (inventoryItem == null)
+            if (masterItem == null)
                 return false;
 
-            return inventoryItem.ItemName?.Contains(_searchText, StringComparison.OrdinalIgnoreCase) == true;
+            return masterItem.ItemName?.Contains(_searchText, StringComparison.OrdinalIgnoreCase) == true;
         }
 
         private async Task Load_Click()

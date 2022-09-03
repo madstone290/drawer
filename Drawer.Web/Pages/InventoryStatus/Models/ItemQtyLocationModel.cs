@@ -3,7 +3,7 @@
     /// <summary>
     /// 재고아이템 기본 모델
     /// </summary>
-    public class InventoryItemModel
+    public class ItemQtyLocationModel
     {
         public long ItemId { get; set; }
         public string? ItemName { get; set; }
