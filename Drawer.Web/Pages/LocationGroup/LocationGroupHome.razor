@@ -1,0 +1,108 @@
+﻿@using Drawer.Web.Authentication
+@using Pages.LocationGroup.Models
+
+@attribute [Route(Paths.LocationGroupHome)]
+
+<ContentTitle Text="위치그룹" />
+<AuthorizeView Context="AuthorizeView" Policy="@Policies.CompanyMember">
+    <NotAuthorized>
+        <NeedCompany />
+    </NotAuthorized>
+    <Authorized>
+        <AidToolBar>
+            <AidButton Enabled="@(_canAccess)"
+                       Color="Color.Secondary"
+                       StartIcon="@Icons.Material.Filled.Refresh"
+                       OnClick=@(() => Load_Click())>
+                조회
+            </AidButton>
+            <AidButton Enabled="@(_canAccess)"
+                       Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.Add"
+                       OnClick=@(() => Add_Click())>
+                추가
+            </AidButton>
+            <AidButton Enabled="@(_canAccess)"
+                       Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.Update"
+                       OnClick=@(() => Update_Click())>
+                수정
+            </AidButton>
+            <AidButton Enabled="@(_canAccess)"
+                       Color="Color.Warning"
+                       StartIcon="@Icons.Material.Filled.Delete"
+                       OnClick=@(() => Delete_Click())>
+                삭제
+            </AidButton>
+            <AidButton Enabled="@(_canAccess)"
+                       Color="Color.Info"
+                       StartIcon="@Icons.Material.Filled.Queue"
+                       OnClick=@(() => BatchEdit_Click())>
+                일괄 추가
+            </AidButton>
+            <AidButton Enabled="@(_canAccess)"
+                       Color="Color.Info"
+                       StartIcon="@Icons.Material.Filled.Download"
+                       OnClick=@(() => Download_ClickAsync())>
+                엑셀 다운로드
+            </AidButton>
+
+        </AidToolBar>
+
+        <AidToolBar>
+            <MudGrid Spacing="1">
+                <MudItem xs="4" sm="4" md="3" lg="2">
+                    <AidSearchField Label="검색"
+                                    T="@string"
+                                    @bind-Value="@searchText" />
+                </MudItem>
+            </MudGrid>
+        </AidToolBar>
+
+        <AidTable @ref="table"
+                  Loading="@_isTableLoading"
+                  T="@LocationGroupModel"
+                  Items="@_locations"
+                  Filter="@(new Func<LocationGroupModel,bool>(FilterLocationGroups))">
+            <Header>
+                <MudTHeadRow>
+                    <MudTh>
+                        <MudTableSortLabel T="LocationGroupModel" SortBy="x => x.ParentGroupName">상위 그룹</MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel T="LocationGroupModel" SortBy="x => x.Name">이름</MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel T="LocationGroupModel" SortBy="x => x.Note">비고</MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel T="LocationGroupModel" SortBy="x => x.Depth">깊이</MudTableSortLabel>
+                    </MudTh>
+                </MudTHeadRow>
+            </Header>
+
+            <Row>
+                <MudTd>
+                    <MudHighlighter Text="@context.ParentGroupName" HighlightedText="@searchText" />
+                </MudTd>
+                <MudTd>
+                    <MudHighlighter Text="@context.Name" HighlightedText="@searchText" />
+                </MudTd>
+                <MudTd>
+                    <MudHighlighter Text="@context.Note" HighlightedText="@searchText" />
+                </MudTd>
+
+                <MudTd>
+                    <MudHighlighter Text="@context.Depth.ToString()" HighlightedText="@searchText" />
+                </MudTd>
+            </Row>
+
+            <Footer>
+                <MudTFootRow>
+                    <MudTd colSpan="100">총 @(TotalRowCount)개의 행</MudTd>
+                </MudTFootRow>
+            </Footer>
+        </AidTable>
+    </Authorized>
+</AuthorizeView>
+

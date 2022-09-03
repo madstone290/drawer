@@ -115,6 +115,7 @@ namespace Drawer.Infrastructure
 
             services.AddScoped<IInventoryUnitOfWork, InventoryUnitOfWork>();
             services.AddScoped<IItemRepository, ItemRepository>();
+            services.AddScoped<ILocationGroupRepository, LocationGroupRepository>();
             services.AddScoped<ILocationRepository, LocationRepository>();
             services.AddScoped<IInventoryItemRepository, InventoryItemRepository>();
             services.AddScoped<IReceiptRepository, ReceiptRepository>();

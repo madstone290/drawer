@@ -14,9 +14,9 @@
     </DialogActions>
 </MudDialog>
 @code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = null!;
 
-    [Parameter] public string Message { get; set; }
+    [Parameter] public string? Message { get; set; }
 
     void Submit()
     {

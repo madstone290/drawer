@@ -10,6 +10,7 @@
                   Class="@Class"
                   Immediate="@Immediate"
                   Label="@Label"
+                  Disabled="@Disabled"
                   DisableUnderLine="@(DisableUnderLine && !_isInputFocused)"
                   Value="@FieldText"
                   ValueChanged="@TextField_ValueChanged"
@@ -52,7 +53,7 @@
         Value
     }
 
-    private MudTextField<string> _fieldReference = null!;
+    private MudTextField<string>? _fieldReference;
 
     /// <summary>
     /// 컴포넌트 식별용 아이디
@@ -67,7 +68,7 @@
             .Build();
     }
 
-    private string _fieldText;
+    private string? _fieldText;
 
     /// <summary>
     /// 인풋 포커스 여부
@@ -135,7 +136,8 @@
     [Parameter] public int MaxHeight { get; set; } = 200;
     [Parameter] public Expression<Func<string>>? For { get; set; }
     [Parameter] public BindMode Mode { get; set; } = BindMode.Text;
-
+    [Parameter] public bool Disabled{ get; set; }
+    
     /// <summary>
     /// 텍스트 아이템 값 목록
     /// </summary>

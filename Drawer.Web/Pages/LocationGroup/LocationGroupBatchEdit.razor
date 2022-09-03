@@ -1,0 +1,109 @@
+﻿@using Drawer.Application.Services.Inventory.CommandModels
+@using Drawer.Application.Services.Inventory.QueryModels
+@using Drawer.Web.Api.Inventory
+@using Drawer.Web.Authentication
+@using Drawer.Web.Pages.Item.Models
+@using Drawer.Web.Services
+@using Drawer.Web.Utils
+@using Drawer.Web.Pages.LocationGroup.Models;
+
+@attribute [Route(Paths.LocationGroupBatchEdit)]
+
+<CascadingValue IsFixed="true" Value="this">
+    <BatchEdit TitleText="위치그룹 일괄 추가"
+               TModel="LocationGroupModel"
+               HomePath="@Paths.LocationGroupHome"
+               ExcelFormName="위치그룹-양식"
+               SaveAsyncFunc="@Save"
+               ExcelOptions="@_excelOptions">
+        <HeaderRow>
+            <MudTh Style="min-width:100px;">상위 그룹</MudTh>
+            <MudTh Style="min-width:100px;">이름</MudTh>
+            <MudTh Style="min-width:100px;">비고</MudTh>
+        </HeaderRow>
+        <BodyRow>
+            <MudTd>
+                <AidCompleteField TValue="long"
+                                  @bind-Text="context.ParentGroupName"
+                                  ValueChanged="((value) => context.ParentGroupId = value)"
+                                  TextItemList="@(_groups.Select(x=> x.Name).ToList())"
+                                  TextToValueFunc="@((value) => _groups.FirstOrDefault(x=> x.Name == value)?.Id ?? 0)"
+                                  Validation="@((_) => ValidateProperty(context, nameof(LocationGroupModel.ParentGroupName)))"
+                                  DisableUnderLine="true" />
+            </MudTd>
+            <MudTd>
+                <AidTextField @bind-Value="context.Name"
+                              Validation="@((_) => ValidateProperty(context, nameof(LocationGroupModel.Name)))" />
+            </MudTd>
+            <MudTd>
+                <AidTextField @bind-Value="context.Note"
+                              Validation="@((_) => ValidateProperty(context, nameof(LocationGroupModel.Note)))" />
+            </MudTd>
+        </BodyRow>
+    </BatchEdit>
+</CascadingValue>
+@code {
+    private readonly LocationGroupModelValidator _validator = new();
+    private readonly ExcelOptions _excelOptions = new ExcelOptionsBuilder()
+        .AddColumn(nameof(LocationGroupModel.ParentGroupName), "상위 그룹")
+        .AddColumn(nameof(LocationGroupModel.Name), "이름")
+        .AddColumn(nameof(LocationGroupModel.Note), "비고")
+        .Build();
+
+    [Inject] public LocationGroupApiClient LocationGroupApiClient { get; set; } = null!;
+    [Inject] public ILockService LockService { get; set; } = null!;
+
+    private List<LocationGroupQueryModel> _groups = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetLocationGroups();
+    }
+
+    private List<IValidation> validations = new();
+    internal void AddValidation(IValidation validation)
+    {
+        validations.Add(validation);
+    }
+
+    private async Task GetLocationGroups()
+    {
+        await LockService.DoAsync<bool>(async () =>
+        {
+            var response = await LocationGroupApiClient.GetLocationGroups();
+
+            if (Snackbar.CheckFail(response))
+            {
+                _groups.AddRange(response.Data.ToList());
+
+                _validator.GroupNameList = _groups.Select(x => x.Name).ToList();
+            }
+
+            return true;
+        });
+    }
+
+
+    private async Task<bool> Save(IEnumerable<LocationGroupModel> locations)
+    {
+        var groupListDto = locations.Select(x => new LocationGroupAddCommandModel()
+            {
+                ParentGroupId = x.ParentGroupId,
+                Name = x.Name,
+                Note = x.Note,
+            }).ToList();
+        var response = await LocationGroupApiClient.BatchAddLocationGroup(groupListDto);
+
+        return Snackbar.CheckSuccessFail(response);
+    }
+
+    private string? ValidateProperty(LocationGroupModel instance, string property)
+    {
+        var msg = _validator.ValidateProperty(instance, property);
+        return msg;
+    }
+}
+
+
+
+

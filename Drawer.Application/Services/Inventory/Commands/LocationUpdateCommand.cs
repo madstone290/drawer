@@ -31,10 +31,14 @@ namespace Drawer.Application.Services.Inventory.Commands
             var location = await _locationRepository.FindByIdAsync(locationId)
                 ?? throw new EntityNotFoundException<Location>(locationId);
 
-            if (await _locationRepository.ExistByName(locationDto.Name))
-                throw new AppException($"동일한 이름이 존재합니다. {locationDto.Name}");
 
-            location.SetName(locationDto.Name);
+            if (!EqualityComparer<string>.Default.Equals(locationDto.Name, location.Name))
+            {
+                if (await _locationRepository.ExistByName(locationDto.Name))
+                    throw new AppException($"동일한 이름이 존재합니다. {locationDto.Name}");
+                location.SetName(locationDto.Name);
+            }
+      
             location.SetNote(locationDto.Note);
 
             await _locationRepository.SaveChangesAsync();

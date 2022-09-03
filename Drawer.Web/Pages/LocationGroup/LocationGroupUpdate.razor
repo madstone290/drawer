@@ -1,0 +1,8 @@
+﻿@attribute [Route(Paths.LocationGroupUpdate)]
+
+<LocationGroupEdit EditMode="EditMode.Update" LocationGroupId="Convert.ToInt64(Id)" />
+
+@code{
+    [Parameter]
+    public string? Id { get; set; }
+}

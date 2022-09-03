@@ -42,6 +42,7 @@ namespace Drawer.Infrastructure.Data
 
         public DbSet<Item> Items { get; set; } = default!;
         public DbSet<Location> Locations { get; set; } = default!;
+        public DbSet<LocationGroup> LocationGroups { get; set; } = default!;
         public DbSet<InventoryItem> InventoryItems { get; set; } = default!;
         public DbSet<Receipt> Receipts { get; set; } = default!;
         public DbSet<Issue> Issues { get; set; } = default!;

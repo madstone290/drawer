@@ -1,0 +1,49 @@
+﻿@using Drawer.Web.Pages.LocationGroup.Models
+@using Drawer.Web.Utils
+
+@if (_isLoading)
+    return;
+
+<ContentTitle Text="@TitleText" />
+<AidToolBar>
+    <AidButton Color="Color.Error"
+               OnClick="Back_Click">
+        뒤로
+    </AidButton>
+    <AidButton Enabled="@(!IsViewMode && _isFormValid)"
+               Color="Color.Primary"
+               OnClick="Save_Click">
+        저장
+    </AidButton>
+</AidToolBar>
+
+<MudForm @ref="_form"
+         @bind-IsValid="_isFormValid"
+         Model="_group" ValidationDelay="0" Validation="@_validator.ValidateValue()">
+    <MudGrid>
+        <MudItem xs="6" sm="3">
+            <AidCompleteField TValue="long"
+                              Disabled="@(EditMode == EditMode.Update)"
+                              Label="상위 그룹"
+                              @bind-Text="_group.ParentGroupName"
+                              ValueChanged="@((value) => _group.ParentGroupId = value)"
+                              For="()=>_group.ParentGroupName"
+                              TextItemList="@(_groups.Select(x=> x.Name).ToList())"
+                              TextToValueFunc="@((value) => _groups.FirstOrDefault(x=> x.Name == value)?.Id ?? 0)" />
+        </MudItem>
+        <MudItem xs="6" sm="3">
+            <AidTextField @bind-Value="_group.Name"
+                          For="@(() => _group.Name)"
+                          Label="이름"
+                          AutoFocus="true" />
+        </MudItem>
+        <MudItem xs="0" sm="6">
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudTextField @bind-Value="_group.Note"
+                          For="@(() => _group.Note)"
+                          Label="비고" />
+        </MudItem>
+
+    </MudGrid>
+</MudForm>

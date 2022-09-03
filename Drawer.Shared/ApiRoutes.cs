@@ -65,6 +65,16 @@ namespace Drawer.Shared
             public const string BatchCreate = "/Api/Items/Batch";
         }
 
+        public static class LocationGroups
+        {
+            public const string Add = "/Api/LocationGroups";
+            public const string Update = "/Api/LocationGroups/{id}";
+            public const string Remove = "/Api/LocationGroups/{id}";
+            public const string Get = "/Api/LocationGroups/{id}";
+            public const string GetList = "/Api/LocationGroups";
+
+            public const string BatchAdd = "/Api/LocationGroups/Batch";
+        }
 
         public static class Locations
         {
