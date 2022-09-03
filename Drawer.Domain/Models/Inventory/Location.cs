@@ -35,7 +35,7 @@ namespace Drawer.Domain.Models.Inventory
         /// 실제 루트그룹ID.
         /// 루트그룹의 RootGroupId 속성 값은 null이다.
         /// </summary>
-        public long ActualRootGroupId => RootGroupId.HasValue ? RootGroupId.Value : Id;
+        public long ActualRootGroupId => RootGroupId ?? Id;
 
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace Drawer.Domain.Models.Inventory
             ParentGroup = parentGroup;
             ParentGroupId = parentGroup?.Id;
             HierarchyLevel = parentGroup == null ? 0 : parentGroup.HierarchyLevel + 1;
-            RootGroupId = parentGroup?.RootGroupId;
+            RootGroupId = parentGroup?.ActualRootGroupId;
         }
 
         /// <summary>
