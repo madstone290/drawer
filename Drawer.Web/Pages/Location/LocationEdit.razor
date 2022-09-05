@@ -23,7 +23,8 @@
     <MudGrid>
         <MudItem xs="6" sm="3">
             <AidCompleteField TValue="long"
-                              Label="상위 그룹"
+                              Disabled="@(EditMode != EditMode.Add)"
+                              Label="그룹"
                               @bind-Text="_location.GroupName"
                               ValueChanged="@((value) => _location.GroupId = value)"
                               For="()=>_location.GroupName"

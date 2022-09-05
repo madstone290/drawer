@@ -1,4 +1,5 @@
 ﻿using Drawer.AidBlazor;
+using Drawer.Application.Services.Inventory.QueryModels;
 using Drawer.Web.Api.Inventory;
 using Drawer.Web.Pages.Location.Models;
 using Drawer.Web.Services;
@@ -11,7 +12,7 @@ namespace Drawer.Web.Pages.Location
 {
     public partial class LocationHome
     {
-        private AidTable<LocationModel> table = null!;
+        private AidTable<LocationModel>? table;
         private readonly List<LocationModel> _locations = new();
         private readonly ExcelOptions _excelOptions = new ExcelOptionsBuilder()
             .AddColumn(nameof(LocationModel.GroupName), "그룹")
@@ -28,10 +29,11 @@ namespace Drawer.Web.Pages.Location
         private string searchText = string.Empty;
 
         [Inject] public LocationApiClient LocationApiClient { get; set; } = null!;
+        [Inject] public LocationGroupApiClient GroupApiClient { get; set; } = null!;
         [Inject] public IDialogService DialogService { get; set; } = null!;
         [Inject] public IExcelFileService ExcelFileService { get; set; } = null!;
 
-        public LocationModel? SelectedLocation => table.FocusedItem;
+        public LocationModel? SelectedLocation => table?.FocusedItem;
         public int TotalRowCount => _locations.Count;
         
 
@@ -60,15 +62,22 @@ namespace Drawer.Web.Pages.Location
         private async Task Load_Click()
         {
             _isTableLoading = true;
-            var response = await LocationApiClient.GetLocations();
-            if (!Snackbar.CheckFail(response))
+            var locationTask = LocationApiClient.GetLocations();
+            var groupTask = GroupApiClient.GetLocationGroups();
+
+            await Task.WhenAll(locationTask, groupTask);
+
+            var locationResponse = locationTask.Result;
+            var groupResponse = groupTask.Result;
+
+            if (!Snackbar.CheckFail(locationResponse, groupResponse))
             {
                 _isTableLoading = false;
                 return;
             }
 
             _locations.Clear();
-            foreach (var locationDto in response.Data)
+            foreach (var locationDto in locationResponse.Data)
             {
                 var location = new LocationModel()
                 {
@@ -76,7 +85,7 @@ namespace Drawer.Web.Pages.Location
                     Name = locationDto.Name,
                     Note = locationDto.Note,
                     GroupId = locationDto.GroupId,
-                    GroupName = response.Data.FirstOrDefault(x => x.Id == locationDto.GroupId)?.Name,
+                    GroupName = groupResponse.Data.First(x => x.Id == locationDto.GroupId).Name,
                 };
                 _locations.Add(location);
             }
@@ -142,3 +151,4 @@ namespace Drawer.Web.Pages.Location
         }
     }
 }
+

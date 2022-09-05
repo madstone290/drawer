@@ -82,6 +82,7 @@ namespace Drawer.Web.Pages.Location
                 _location.Name = location.Name;
                 _location.Note = location.Note;
                 _location.GroupId = location.GroupId;
+                _location.GroupName = _locationGroups.First(x => x.Id == location.GroupId).Name;
             }
 
             _isLoading = false;
