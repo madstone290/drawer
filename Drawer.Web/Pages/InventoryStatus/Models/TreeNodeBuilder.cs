@@ -1,4 +1,5 @@
-﻿using Drawer.Application.Services.Inventory.QueryModels;
+﻿using DocumentFormat.OpenXml.EMMA;
+using Drawer.Application.Services.Inventory.QueryModels;
 using Drawer.Domain.Models.Inventory;
 using Drawer.Web.Pages.Item;
 using System.Data;
@@ -47,9 +48,28 @@ namespace Drawer.Web.Pages.InventoryStatus.Models
 
         private IEnumerable<TreeNode> BuildTree()
         {
-            foreach(var item in _items)
+            // 아이템 노드(루트노드)
+            foreach (var item in _items)
             {
-                foreach(var group in _groups.OrderBy(x=> x.Depth))
+                var rootNode = new TreeNode()
+                {
+                    Key = new TreeNodeKey()
+                    {
+                        ItemId = item.Id,
+                    },
+                    InventoryItem = new ItemQtyLocationModel()
+                    {
+                        ItemId = item.Id,
+                        ItemName = item.Name,
+                    }
+                };
+                _lookup.Add(rootNode.Key, rootNode);
+            }
+             
+            // 위치그룹 노드 생성
+            foreach (var item in _items)
+            {
+                foreach (var group in _groups.OrderBy(x => x.Depth)) 
                 {
                     var node = new TreeNode()
                     {
@@ -67,41 +87,46 @@ namespace Drawer.Web.Pages.InventoryStatus.Models
                         }
                     };
 
-                    var parentNode = _lookup.Values.FirstOrDefault(x => x.Key.GroupId == group.ParentGroupId);
-                    if(parentNode != null)
-                    {
-                        parentNode.Children.Add(node);
-                        node.Parent = parentNode;
-                    }
+                    // 부모그룹을 포함하는 노드 검색
+                    // 위치그룹 상하관계가 노드에 동일하게 적용된다.
+                    var parentNode = _lookup.Values.First(x => 
+                        x.Key.ItemId == item.Id &&
+                        x.Key.GroupId == group.ParentGroupId);
+
+                    parentNode.Children.Add(node);
+                    node.Parent = parentNode;
 
                     _lookup.Add(node.Key, node);
                 }
             }
 
+            // 위치 노드 생성. 위치의 그룹이 포함된 노드를 검색한 후 부모노드로 설정한다.
             foreach(var invenItem in _inventoryItems)
             {
-                var groupId = GetGroupId(invenItem.LocationId);
-                var node = _lookup.Values.FirstOrDefault(x => x.Key.ItemId == invenItem.ItemId && x.Key.GroupId == groupId);
-                if(node != null)
+                var node = new TreeNode()
                 {
-                    node.Children.Add(new TreeNode()
+                    Key = new TreeNodeKey()
                     {
-                        Key = new TreeNodeKey()
-                        {
-                            ItemId = invenItem.ItemId,
-                            GroupId = groupId,
-                            LocationId = invenItem.LocationId
-                        },
-                        InventoryItem = new ItemQtyLocationModel()
-                        {
-                            ItemId = invenItem.ItemId,
-                            ItemName = _items.First(x=> x.Id == invenItem.ItemId).Name,
-                            LocationId = invenItem.LocationId,
-                            LocationName = _locations.First(x=> x.Id == invenItem.LocationId).Name,
-                        }
-                    });
-                    node.InventoryItem.Quantity += invenItem.Quantity;
-                }
+                        ItemId = invenItem.ItemId,
+                        LocationId = invenItem.LocationId
+                    },
+                    InventoryItem = new ItemQtyLocationModel()
+                    {
+                        ItemId = invenItem.ItemId,
+                        ItemName = _items.First(x => x.Id == invenItem.ItemId).Name,
+                        LocationId = invenItem.LocationId,
+                        LocationName = _locations.First(x => x.Id == invenItem.LocationId).Name,
+                        Quantity = invenItem.Quantity
+                    }
+                };
+
+                var groupId = GetGroupId(invenItem.LocationId);
+                var parentNode = _lookup.Values.First(x => x.Key.ItemId == invenItem.ItemId && x.Key.GroupId == groupId);
+
+                parentNode.Children.Add(node);
+                node.Parent = parentNode;
+
+                parentNode.AddQuantity(node.InventoryItem.Quantity);
             }
             
             return _lookup.Values.Where(x => x.Parent == null);
@@ -112,61 +137,6 @@ namespace Drawer.Web.Pages.InventoryStatus.Models
             var location = _locations.First(x => x.Id == locationId);
             return location.GroupId;
         }
-
-        /// <summary>
-        /// 부모노드를 탐색 후 존재하지 않은 경우 부모노드를 생성하고 룩업 딕셔너리를 채운다.
-        /// </summary>
-        /// <param name="lookup"></param>
-        /// <param name="node"></param>
-        void FillLookup(Dictionary<TreeNodeKey, TreeNode> lookup, TreeNode node)
-        {
-            // 서로 다른 노드라 하더라도 부모 노드는 동일한 경우가 발생할 수 있으므로 모든 노드는 1번만 처리한다.
-
-            _handled[node.Key] = true;
-            
-            // GroupId가 0인 것은 루트 노드. 
-            if (node.Key.GroupId == 0)
-                return;
-
-            // 위치가 아닌 그룹에 대한 재고정보를 생성한다.
-            var parentKey = new TreeNodeKey() 
-            { 
-                ItemId = node.Key.ItemId, 
-                GroupId = GetGroupId(node.Key.LocationId)
-            };
-            lookup.TryGetValue(parentKey, out TreeNode? parentNode);
-
-            if(parentNode == null)
-            {
-                parentNode = new TreeNode()
-                {
-                    Key = parentKey,
-                    InventoryItem = new ItemQtyLocationModel()
-                    {
-                        ItemId = parentKey.ItemId,
-                        GroupId = parentKey.GroupId,
-                        ItemName = _items.First(x=> x.Id == parentKey.ItemId).Name,
-                        LocationName = _groups.FirstOrDefault(x=> x.Id == parentKey.GroupId)?.Name,
-                    }
-                };
-                lookup.Add(parentKey, parentNode);
-            }
-            
-            node.Parent = parentNode;
-            parentNode.Children.Add(node);
-            
-
-            parentNode.AddQuantity(node.InventoryItem.Quantity);
-
-
-            // 노드 탐색이 두번이상 발생하지 않도록 한다.
-            if (_handled.GetValueOrDefault(parentKey))
-                return;
-
-            FillLookup(lookup, parentNode);
-        }
-
-
        
 
     }

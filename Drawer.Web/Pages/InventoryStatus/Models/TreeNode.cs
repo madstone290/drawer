@@ -3,11 +3,25 @@ using MudBlazor;
 
 namespace Drawer.Web.Pages.InventoryStatus.Models
 {
+    /// <summary>
+    /// 노드는 아이템/그룹/위치 총 3가지 종류가 있다.
+    /// </summary>
     public struct TreeNodeKey
     {
+        /// <summary>
+        /// 아이템 ID. 
+        /// </summary>
         public long ItemId { get; set; }
-        public long GroupId { get; set; }
-        public long LocationId { get; set; }
+
+        /// <summary>
+        /// 그룹노드인 경우 그룹의ID
+        /// </summary>
+        public long? GroupId { get; set; }
+
+        /// <summary>
+        /// 위치 노드인 경우 위치의ID
+        /// </summary>
+        public long? LocationId { get; set; }
     }
 
     /// <summary>
@@ -31,6 +45,7 @@ namespace Drawer.Web.Pages.InventoryStatus.Models
         /// 노드레벨. 0부터 시작.
         /// </summary>
         public int Level { get; set; }
+        public bool IsRoot => Parent == null;
         public bool IsLeaf => Children.Count == 0;
 
         public string Style => IsLeaf

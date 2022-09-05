@@ -100,7 +100,7 @@ namespace Drawer.Web.Pages.InventoryStatus
                 });
 
             _flatInventoryItems.Clear();
-            _flatInventoryItems.AddRange(flatItems);
+            _flatInventoryItems.AddRange(flatItems.Where(x=> x.IsRoot || 0 < x.InventoryItem.Quantity));
 
             _isTableLoading = false;
         }
