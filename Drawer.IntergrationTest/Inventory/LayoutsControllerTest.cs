@@ -78,10 +78,10 @@ namespace Drawer.IntergrationTest.Inventory
         public async Task GetLayout_Returns_Ok_With_CreatedLayout()
         {
             // Arrange
-            var locationId = await CreateRootGroup();
+            var groupId = await CreateRootGroup();
             var requestContent = new LayoutEditCommandModel()
             {
-                LocationGroupId = locationId
+                LocationGroupId = groupId
             };
             var createRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Layouts.Edit);
             createRequestMessage.Content = JsonContent.Create(requestContent);
@@ -89,7 +89,7 @@ namespace Drawer.IntergrationTest.Inventory
 
             // Act
             var getRequestMessage = new HttpRequestMessage(HttpMethod.Get,
-                ApiRoutes.Layouts.GetByLocation.Replace("{locationId}", $"{locationId}"));
+                ApiRoutes.Layouts.GetByLocationGroup.Replace("{groupId}", $"{groupId}"));
             var getResponseMessage = await _client.SendAsyncWithMasterAuthentication(getRequestMessage);
 
             // Assert
@@ -140,10 +140,10 @@ namespace Drawer.IntergrationTest.Inventory
         public async Task UpdateLayout_Returns_Ok()
         {
             // Arrange
-            var locationId = await CreateRootGroup();
+            var groupId = await CreateRootGroup();
             var createContent = new LayoutEditCommandModel()
             {
-                LocationGroupId = locationId,
+                LocationGroupId = groupId,
             };
             var createRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Layouts.Edit);
             createRequest.Content = JsonContent.Create(createContent);
@@ -152,7 +152,7 @@ namespace Drawer.IntergrationTest.Inventory
             // Act
             var updateContent = new LayoutEditCommandModel()
             {
-                LocationGroupId = locationId,
+                LocationGroupId = groupId,
                 ItemList = new List<LayoutItem>()
                 {
                     new LayoutItem()
@@ -209,7 +209,7 @@ namespace Drawer.IntergrationTest.Inventory
             updateResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
 
             var getRequest = new HttpRequestMessage(HttpMethod.Get,
-                ApiRoutes.Layouts.GetByLocation.Replace("{locationId}", $"{locationId}"));
+                ApiRoutes.Layouts.GetByLocationGroup.Replace("{groupId}", $"{groupId}"));
             var getResponse = await _client.SendAsyncWithMasterAuthentication(getRequest);
             getResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
             var layout = await getResponse.Content.ReadFromJsonAsync<LayoutQueryModel?>() ?? null!;

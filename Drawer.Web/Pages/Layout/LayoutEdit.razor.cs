@@ -147,7 +147,7 @@ namespace Drawer.Web.Pages.Layout
 
         [Parameter]
         [SupplyParameterFromQuery]
-        public string LocationId { get; set; } = null!;
+        public string LocationGroupId { get; set; } = null!;
 
         [Inject] public ICanvasService CanvasService { get; set; } = null!;
         [Inject] public LayoutApiClient LayoutApiClient { get; set; } = null!;
@@ -161,13 +161,13 @@ namespace Drawer.Web.Pages.Layout
 
         async Task LoadData()
         {
-            if (!long.TryParse(LocationId, out long locationId))
+            if (!long.TryParse(LocationGroupId, out long groupId))
             {
                 Snackbar.Add("레이아웃을 찾을 수 없습니다", Severity.Error);
                 return;
             }
 
-            var layoutTask = LayoutApiClient.GetLayoutByLocation(locationId);
+            var layoutTask = LayoutApiClient.GetLayoutByLocationGroup(groupId);
             var locationTask = LocationApiClient.GetLocations();
 
             await Task.WhenAll(layoutTask, locationTask);
@@ -182,17 +182,17 @@ namespace Drawer.Web.Pages.Layout
             if (layoutResponse.Data == null)
             {
                 // 임시
-                _layout.LocationId = locationId;
+                _layout.LocationGroupId = groupId;
                 _layout.ItemList = new List<Domain.Models.Inventory.LayoutItem>();
             }
             else
             {
-                _layout.LocationId = locationId;
+                _layout.LocationGroupId = groupId;
                 _layout.ItemList = layoutResponse.Data.ItemList;
             }
 
             _locationList.Clear();
-            _locationList.AddRange(locationResponse.Data.Where(x=> x.RootGroupId == locationId));
+            _locationList.AddRange(locationResponse.Data.Where(x=> x.RootGroupId == groupId));
 
             foreach(var item in _layout.ItemList)
             {
@@ -249,7 +249,7 @@ namespace Drawer.Web.Pages.Layout
 
             var response = await LayoutApiClient.EditLayout(new LayoutEditCommandModel()
             {
-                LocationGroupId = _layout.LocationId,
+                LocationGroupId = _layout.LocationGroupId,
                 ItemList = _layout.ItemList
             });
 

@@ -33,18 +33,18 @@
 
         <div class="main">
             <div class="main-table">
-                <AidTable T="LocationModel"
+                <AidTable T="LocationGroupModel"
                           Loading="@_isLoading"
-                          Items="@_locationList"
+                          Items="@_rootGroupList"
                           FocusedItemChanged="OnFocusedItemChanged">
 
                     <Header>
                         <MudTHeadRow>
                             <MudTh>
-                                <MudTableSortLabel T="LocationModel" SortBy="x => x.Name">이름</MudTableSortLabel>
+                                <MudTableSortLabel T="LocationGroupModel" SortBy="x => x.Name">이름</MudTableSortLabel>
                             </MudTh>
                             <MudTh>
-                                <MudTableSortLabel T="LocationModel" SortBy="x => x.Note">비고</MudTableSortLabel>
+                                <MudTableSortLabel T="LocationGroupModel" SortBy="x => x.Note">비고</MudTableSortLabel>
                             </MudTh>
                         </MudTHeadRow>
                     </Header>

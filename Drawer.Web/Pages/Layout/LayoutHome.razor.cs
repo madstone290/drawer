@@ -13,15 +13,15 @@ namespace Drawer.Web.Pages.Layout
     {
         private const string CANVAS_ID = "canvas";
 
-        private readonly List<LocationModel> _locationList = new List<LocationModel>();
-        private readonly List<LayoutModel> _layoutList = new List<LayoutModel>();
+        private readonly List<LocationGroupModel> _rootGroupList = new();
+        private readonly List<LayoutModel> _layoutList = new();
 
-        private LocationModel? selectedLocation;
+        private LocationGroupModel? selectedGroup;
 
         private bool _canAccess = true;
         private bool _isLoading = false;
 
-        public int TotalRowCount => _locationList.Count;
+        public int TotalRowCount => _rootGroupList.Count;
 
         [Inject] public LocationGroupApiClient LocationGroupApiClient { get; set; } = null!;
         [Inject] public LayoutApiClient LayoutApiClient { get; set; } = null!;
@@ -40,9 +40,9 @@ namespace Drawer.Web.Pages.Layout
             }
         }
 
-        async void OnFocusedItemChanged(LocationModel location)
+        async void OnFocusedItemChanged(LocationGroupModel location)
         {
-            selectedLocation = location;
+            selectedGroup = location;
             
             await CanvasService.ClearCanvas();
 
@@ -51,7 +51,7 @@ namespace Drawer.Web.Pages.Layout
 
             await CanvasService.Zoom(0.6);
 
-            var layout = _layoutList.First(x => x.LocationId == location.Id);
+            var layout = _layoutList.First(x => x.LocationGroupId == location.Id);
             await CanvasService.ImportItemList(
                 layout.ItemList.Select(x => CanvasItemConverter.ToCanvasItem(x)).ToList());
 
@@ -75,25 +75,25 @@ namespace Drawer.Web.Pages.Layout
                 return;
             }
 
-            _locationList.Clear();
-            foreach (var groupDto in groupResponse.Data)
+            _rootGroupList.Clear();
+            foreach (var groupDto in groupResponse.Data.Where(x=> x.IsRoot))
             {
-                var location = new LocationModel()
+                var group = new LocationGroupModel()
                 {
                     Id = groupDto.Id,
                     Name = groupDto.Name,
                     Note = groupDto.Note,
                 };
-                _locationList.Add(location);
+                _rootGroupList.Add(group);
             }
 
             _layoutList.Clear();
-            foreach (var location in _locationList)
+            foreach (var location in _rootGroupList)
             {
                 var layoutDto = layoutResponse.Data.FirstOrDefault(x => x.LocationId == location.Id);
                 var layout = new LayoutModel()
                 {
-                    LocationId = location.Id,
+                    LocationGroupId = location.Id,
                     ItemList = layoutDto?.ItemList ?? new List<Domain.Models.Inventory.LayoutItem>()
                 };
 
@@ -106,9 +106,9 @@ namespace Drawer.Web.Pages.Layout
 
         void Edit_Click()
         {
-            if (selectedLocation != null)
+            if (selectedGroup != null)
             {
-                NavManager.NavigateTo(Paths.LayoutEdit.AddQuery("locationId", $"{selectedLocation.Id}"));
+                NavManager.NavigateTo(Paths.LayoutEdit.AddQuery("LocationGroupId", $"{selectedGroup.Id}"));
             }
         }
 

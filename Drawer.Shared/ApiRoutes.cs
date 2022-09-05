@@ -93,7 +93,7 @@ namespace Drawer.Shared
             public const string Remove = "/Api/Layouts/{id}";
             public const string Get = "/Api/Layouts/{id}";
             public const string GetList = "/Api/Layouts";
-            public const string GetByLocation = "/Api/Layouts/Location/{locationId}";
+            public const string GetByLocationGroup = "/Api/Layouts/Group/{groupId}";
         }
 
         public static class InventoryItems

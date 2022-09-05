@@ -30,7 +30,7 @@ namespace Drawer.Application.Services.Inventory.Commands
         public async Task<Unit> Handle(LayoutEditCommand command, CancellationToken cancellationToken)
         {
             var layoutDto = command.Layout;
-            var layout = await _layoutRepository.FindByLocationId(layoutDto.LocationGroupId);
+            var layout = await _layoutRepository.FindByLocationGroup(layoutDto.LocationGroupId);
             if(layout == null)
                 layout = await CreateLayout(layoutDto);
 

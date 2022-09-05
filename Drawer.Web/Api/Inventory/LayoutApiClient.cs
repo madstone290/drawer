@@ -22,11 +22,11 @@ namespace Drawer.Web.Api.Inventory
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<LayoutQueryModel?>> GetLayoutByLocation(long locationId)
+        public async Task<ApiResponse<LayoutQueryModel?>> GetLayoutByLocationGroup(long groupId)
         {
             var request = new ApiRequest<LayoutQueryModel?>(
                 HttpMethod.Get,
-                ApiRoutes.Layouts.GetByLocation.Replace("{locationId}", $"{locationId}"));
+                ApiRoutes.Layouts.GetByLocationGroup.Replace("{groupId}", $"{groupId}"));
 
             return await SendAsync(request);
         }

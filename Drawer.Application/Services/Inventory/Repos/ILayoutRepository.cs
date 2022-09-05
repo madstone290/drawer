@@ -10,11 +10,11 @@ namespace Drawer.Application.Services.Inventory.Repos
 {
     public interface ILayoutRepository : IRepository<Layout, long>
     {
-        Task<Layout?> FindByLocationId(long locationId);
+        Task<Layout?> FindByLocationGroup(long groupId);
 
         Task<LayoutQueryModel?> QueryById(long id);
 
-        Task<LayoutQueryModel?> QueryByLocation(long locationId);
+        Task<LayoutQueryModel?> QueryByLocationGroup(long groupId);
 
         Task<List<LayoutQueryModel>> QueryAll();
         

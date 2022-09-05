@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Drawer.Application.Services.Inventory.Queries
 {
-    public record GetLayoutByLocationQuery(long LocationId) : IQuery<LayoutQueryModel?>;
+    public record GetLayoutByLocationQuery(long LocationGroupId) : IQuery<LayoutQueryModel?>;
 
     public class GetLayoutByLocationQueryHandler : IQueryHandler<GetLayoutByLocationQuery, LayoutQueryModel?>
     {
@@ -22,7 +22,7 @@ namespace Drawer.Application.Services.Inventory.Queries
 
         public async Task<LayoutQueryModel?> Handle(GetLayoutByLocationQuery query, CancellationToken cancellationToken)
         {
-            var layout = await _layoutRepository.QueryByLocation(query.LocationId);
+            var layout = await _layoutRepository.QueryByLocationGroup(query.LocationGroupId);
 
             return layout;
         }

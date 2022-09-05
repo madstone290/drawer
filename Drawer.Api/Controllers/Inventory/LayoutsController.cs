@@ -39,11 +39,11 @@ namespace Drawer.Api.Controllers.InventoryManagement
         }
 
         [HttpGet]
-        [Route(ApiRoutes.Layouts.GetByLocation)]
+        [Route(ApiRoutes.Layouts.GetByLocationGroup)]
         [ProducesResponseType(typeof(LayoutQueryModel), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetLayoutByLocation([FromRoute] long locationId)
+        public async Task<IActionResult> GetLayoutByLocation([FromRoute] long groupId)
         {
-            var query = new GetLayoutByLocationQuery(locationId);
+            var query = new GetLayoutByLocationQuery(groupId);
             var layout = await _mediator.Send(query);
             return Ok(layout);
         }
