@@ -57,6 +57,7 @@ namespace Drawer.Api.Controllers.Authentication
                     ApiRoutes.Account.ConfirmEmail + $"?RedirectUri={Uri.EscapeDataString(confirmation.RedirectUri)}";
             }
 
+            confirmation.RedirectUri = returnUri;
             var command = new ConfirmEmailCommand(confirmation);
             var result = await _mediator.Send(command);
             return Ok();
