@@ -27,7 +27,7 @@
                                ToStringFunc="@((loc) => loc?.Name)"
                                Label="루트 위치그룹"
                                @bind-Value="@SelectedLocationGroup">
-                        @foreach (var group in _locationGroupQueryModels)
+                        @foreach (var group in _locationGroupQueryModels.Where(x=> x.IsRoot))
                         {
                             <MudSelectItem Value="@group" />
                         }

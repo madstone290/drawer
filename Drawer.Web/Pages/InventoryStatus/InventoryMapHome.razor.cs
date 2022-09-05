@@ -126,6 +126,9 @@ namespace Drawer.Web.Pages.InventoryStatus
             }
         }
 
+        /// <summary>
+        /// 선택된 재고 품목
+        /// </summary>
         public ItemQtyModel? FocusedMasterItem
         {
             get => _focusedMasterItem;
@@ -144,7 +147,9 @@ namespace Drawer.Web.Pages.InventoryStatus
 
                 _detailItemList.Clear();
                 _detailItemList.AddRange(_inventoryItemQueryModels
-                    .Where(x => x.ItemId == value.ItemId && GetRootLocationId(x.LocationId) == SelectedLocationGroup?.Id)
+                    .Where(x => x.ItemId == value.ItemId)
+                    .Where(x=> 0 < x.Quantity)
+                    .Where(x=> GetRootLocationId(x.LocationId) == SelectedLocationGroup?.Id)
                     .Select(x => new ItemQtyLocationModel()
                     {
                         ItemId = x.ItemId,
@@ -158,7 +163,9 @@ namespace Drawer.Web.Pages.InventoryStatus
                 if (selectedLayout == null)
                     return;
 
-                var itemLocationList = _inventoryItemQueryModels.Where(x => x.ItemId == value.ItemId).Select(x => x.LocationId);
+                var itemLocationList = _inventoryItemQueryModels
+                    .Where(x => x.ItemId == value.ItemId && x.Quantity > 0)
+                    .Select(x => x.LocationId);
                 var layoutItemsToFlash = selectedLayout.ItemList
                     .Where(x => x.ConnectedLocations.Any(locId => itemLocationList.Contains(locId)));
 
