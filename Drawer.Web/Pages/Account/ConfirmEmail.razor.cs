@@ -14,11 +14,6 @@ namespace Drawer.Web.Pages.Account
         public string? Error { get; set; }
 
         /// <summary>
-        /// 이메일 전송 여부
-        /// </summary>
-        public bool IsEmailSent { get; set; }
-
-        /// <summary>
         /// 대상 이메일
         /// </summary>
         [Parameter]
@@ -27,12 +22,12 @@ namespace Drawer.Web.Pages.Account
 
         [Inject] HttpClient HttpClient { get; set; } = null!;
 
-        protected override Task OnInitializedAsync()
+        protected override async Task OnInitializedAsync()
         {
-            return base.OnInitializedAsync();
+            await SendEmail();
         }
 
-        async Task Send()
+        async Task SendEmail()
         {
             var registerCompletedUri = NavManager.BaseUri.AddPath(Paths.Account.RegisterCompleted);
             var confirmationDto = new EmailConfirmationCommandModel()
@@ -51,11 +46,6 @@ namespace Drawer.Web.Pages.Account
                     ? result.Data.Message
                     : confirmResponseMessage.StatusCode.ToString();
             }
-            else
-            {
-                IsEmailSent = true;
-            }
-            
         }
     }
 }

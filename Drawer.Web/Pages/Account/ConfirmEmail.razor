@@ -1,23 +1,26 @@
 ﻿@attribute [Route(Paths.Account.ConfirmEmail)]
 @attribute [AllowAnonymous]
 
-@if (!string.IsNullOrWhiteSpace(@Error))
-{
-    <MudText Typo="Typo.body1" Color="Color.Error">@Error</MudText>
-}
+
+<MudGrid>
+    @if (!string.IsNullOrWhiteSpace(@Error))
+    {
+        <MudItem xs="12">
+            <MudText Typo="Typo.body1" Color="Color.Error">@Error</MudText>
+        </MudItem>
+    }
+  
+    <MudItem xs="6">
+        <MudText Typo="Typo.body1" Color="Color.Info">@(Email)으로 인증메일을 전송하였습니다. 수신함을 확인하세요. 수신된 메일이 없을 경우 스팸 메일함을 확인해주세요.</MudText>
+    </MudItem>
+    <MudItem xs="6">
+    </MudItem>
+    <MudItem xs="2">
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="@SendEmail">인증 이메일 다시 보내기</MudButton>
+    </MudItem>
+</MudGrid>
 
 
 
 
-@if (!@IsEmailSent)
-{
-    <MudText Typo="Typo.body1" Color="Color.Primary">@Email</MudText>
-    <MudText Typo="Typo.body1" Color="Color.Primary">이메일 인증이 완료되어야 로그인을 할 수 있습니다</MudText>
-    <MudButton Color="Color.Secondary" OnClick="@Send">인증 이메일 보내기</MudButton>
-}
-else
-{
-    <MudText Typo="Typo.body1" Color="Color.Primary">인증 이메일을 전송하였습니다. 수신함을 확인하세요. 수신된 메일이 없을 경우 스팸 메일함을 확인해주세요.</MudText>
-    <MudButton Color="Color.Secondary" OnClick="@Send">인증 이메일 다시 보내기</MudButton>
-}
 
