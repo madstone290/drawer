@@ -7,6 +7,7 @@
     <MudTextField @ref="_fieldReference"
                   @attributes="Attributes"
                   T="string"
+                  AutoFocus="@AutoFocus"
                   Class="@Class"
                   Immediate="@Immediate"
                   Label="@Label"
@@ -137,6 +138,7 @@
     [Parameter] public Expression<Func<string>>? For { get; set; }
     [Parameter] public BindMode Mode { get; set; } = BindMode.Text;
     [Parameter] public bool Disabled { get; set; }
+    [Parameter] public bool AutoFocus { get; set; }
     
     /// <summary>
     /// 텍스트 아이템 값 목록

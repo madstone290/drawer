@@ -24,6 +24,10 @@ namespace Drawer.Web.Pages.Location.Models
                  .NotEmpty()
                  .WithMessage("* 필수");
 
+            RuleFor(x => x.GroupId)
+                .GreaterThan(0)
+                .WithMessage("* 필수");
+
             RuleFor(x => x.GroupName)
                 .Custom((value, context) =>
                 {
@@ -32,13 +36,17 @@ namespace Drawer.Web.Pages.Location.Models
                         context.AddFailure("그룹목록이 없습니다");
                         return;
                     }
-
                     if (string.IsNullOrWhiteSpace(value))
+                    {
+                        context.AddFailure("* 그룹 필수");
                         return;
-                    if (GroupNames.Any(name => string.Equals(name, value, StringComparison.OrdinalIgnoreCase)))
-                        return;
-                    else
+                    }
+
+                    if (!GroupNames.Any(name => string.Equals(name, value, StringComparison.OrdinalIgnoreCase)))
+                    {
                         context.AddFailure("목록에 없는 그룹입니다");
+                        return;
+                    }
                 });
         }
     }
