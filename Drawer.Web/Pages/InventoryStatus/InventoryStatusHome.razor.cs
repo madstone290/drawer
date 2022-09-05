@@ -33,6 +33,7 @@ namespace Drawer.Web.Pages.InventoryStatus
         private string searchText = string.Empty;
 
         [Inject] public ItemApiClient ItemApiClient { get; set; } = null!;
+        [Inject] public LocationGroupApiClient LocationGroupApiClient { get; set; } = null!;
         [Inject] public LocationApiClient LocationApiClient { get; set; } = null!;
         [Inject] public InventoryItemApiClient InventoryApiClient { get; set; } = null!;
         [Inject] public IDialogService DialogService { get; set; } = null!;
@@ -69,21 +70,23 @@ namespace Drawer.Web.Pages.InventoryStatus
             _isTableLoading = true;
 
             var itemTask = ItemApiClient.GetItems();
+            var groupTask = LocationGroupApiClient.GetLocationGroups();
             var locationTask = LocationApiClient.GetLocations();
             var inventoryTask= InventoryApiClient.GetInventoryDetails();
-            await Task.WhenAll(itemTask, locationTask, inventoryTask);
+            await Task.WhenAll(itemTask, groupTask, locationTask, inventoryTask);
 
             var itemResponse = itemTask.Result;
+            var gropuResponse = groupTask.Result;
             var locationResponse = locationTask.Result;
             var inventoryResponse = inventoryTask.Result;
 
-            if (!Snackbar.CheckFail(itemResponse, locationResponse, inventoryResponse))
+            if (!Snackbar.CheckFail(itemResponse, gropuResponse, locationResponse, inventoryResponse))
             {
                 _isTableLoading = false;
                 return;
             }
 
-            var treeNodes = new TreeNodeBuilder(itemResponse.Data, locationResponse.Data, inventoryResponse.Data)
+            var treeNodes = new TreeNodeBuilder(itemResponse.Data, gropuResponse.Data, locationResponse.Data, inventoryResponse.Data)
                 .Build();
 
             _treeInventoryItems.Clear();

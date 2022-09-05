@@ -10,9 +10,9 @@ namespace Drawer.Application.Services.Inventory.Repos
 {
     public interface ILocationRepository : IRepository<Location, long>
     {
-        Task<bool> ExistByName(string name);
+        Task<bool> ExistByGroup(long groupId);
 
-        Task<bool> ExistByUpperLocationId(long locationId);
+        Task<bool> ExistByName(string name);
 
         Task<List<LocationQueryModel>> QueryAll();
 

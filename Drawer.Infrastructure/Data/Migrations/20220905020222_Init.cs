@@ -11,6 +11,23 @@ namespace Drawer.Infrastructure.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "__AuditEvents",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    DateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    EventType = table.Column<string>(type: "text", nullable: false),
+                    EntityType = table.Column<string>(type: "text", nullable: false),
+                    EntityAuditId = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    Payload = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK___AuditEvents", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
                 {
@@ -57,12 +74,7 @@ namespace Drawer.Infrastructure.Data.Migrations
                     Name = table.Column<string>(type: "text", nullable: false),
                     OwnerId = table.Column<string>(type: "text", nullable: false),
                     PhoneNumber = table.Column<string>(type: "text", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    CreatedBy = table.Column<string>(type: "text", nullable: false),
-                    LastModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    LastModifiedBy = table.Column<string>(type: "text", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeletedBy = table.Column<string>(type: "text", nullable: true)
+                    AuditId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -78,12 +90,7 @@ namespace Drawer.Infrastructure.Data.Migrations
                     CompanyId = table.Column<string>(type: "text", nullable: false),
                     UserId = table.Column<string>(type: "text", nullable: false),
                     IsOwner = table.Column<bool>(type: "boolean", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    CreatedBy = table.Column<string>(type: "text", nullable: false),
-                    LastModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    LastModifiedBy = table.Column<string>(type: "text", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeletedBy = table.Column<string>(type: "text", nullable: true)
+                    AuditId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -101,12 +108,7 @@ namespace Drawer.Infrastructure.Data.Migrations
                     Number = table.Column<string>(type: "text", nullable: true),
                     Sku = table.Column<string>(type: "text", nullable: true),
                     QuantityUnit = table.Column<string>(type: "text", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    CreatedBy = table.Column<string>(type: "text", nullable: false),
-                    LastModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    LastModifiedBy = table.Column<string>(type: "text", nullable: true),
-                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeletedBy = table.Column<string>(type: "text", nullable: true),
+                    AuditId = table.Column<Guid>(type: "uuid", nullable: false),
                     CompanyId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -115,53 +117,34 @@ namespace Drawer.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Locations",
+                name: "LocationGroups",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Note = table.Column<string>(type: "text", nullable: true),
-                    UpperLocationId = table.Column<long>(type: "bigint", nullable: true),
-                    HierarchyLevel = table.Column<int>(type: "integer", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    CreatedBy = table.Column<string>(type: "text", nullable: false),
-                    LastModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    LastModifiedBy = table.Column<string>(type: "text", nullable: true),
-                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeletedBy = table.Column<string>(type: "text", nullable: true),
+                    ParentGroupId = table.Column<long>(type: "bigint", nullable: true),
+                    Depth = table.Column<int>(type: "integer", nullable: false),
+                    RootGroupIdDBValue = table.Column<long>(type: "bigint", nullable: true),
+                    AuditId = table.Column<Guid>(type: "uuid", nullable: false),
                     CompanyId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Locations", x => x.Id);
+                    table.PrimaryKey("PK_LocationGroups", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Locations_Locations_UpperLocationId",
-                        column: x => x.UpperLocationId,
-                        principalTable: "Locations",
+                        name: "FK_LocationGroups_LocationGroups_ParentGroupId",
+                        column: x => x.ParentGroupId,
+                        principalTable: "LocationGroups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "WorkPlaces",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Note = table.Column<string>(type: "text", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    CreatedBy = table.Column<string>(type: "text", nullable: false),
-                    LastModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    LastModifiedBy = table.Column<string>(type: "text", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeletedBy = table.Column<string>(type: "text", nullable: true),
-                    CompanyId = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_WorkPlaces", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LocationGroups_LocationGroups_RootGroupIdDBValue",
+                        column: x => x.RootGroupIdDBValue,
+                        principalTable: "LocationGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -314,7 +297,92 @@ namespace Drawer.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "InventoryDetails",
+                name: "Layouts",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    LocationGroupId = table.Column<long>(type: "bigint", nullable: false),
+                    AuditId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CompanyId = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Layouts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Layouts_LocationGroups_LocationGroupId",
+                        column: x => x.LocationGroupId,
+                        principalTable: "LocationGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Locations",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Note = table.Column<string>(type: "text", nullable: true),
+                    GroupId = table.Column<long>(type: "bigint", nullable: false),
+                    RootGroupId = table.Column<long>(type: "bigint", nullable: false),
+                    AuditId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CompanyId = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Locations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Locations_LocationGroups_GroupId",
+                        column: x => x.GroupId,
+                        principalTable: "LocationGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Locations_LocationGroups_RootGroupId",
+                        column: x => x.RootGroupId,
+                        principalTable: "LocationGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LayoutItem",
+                columns: table => new
+                {
+                    LayoutId = table.Column<long>(type: "bigint", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ConnectedLocationsString = table.Column<string>(type: "text", nullable: true),
+                    ItemId = table.Column<string>(type: "text", nullable: false),
+                    Shape = table.Column<string>(type: "text", nullable: false),
+                    Left = table.Column<int>(type: "integer", nullable: false),
+                    Top = table.Column<int>(type: "integer", nullable: false),
+                    Width = table.Column<int>(type: "integer", nullable: false),
+                    Height = table.Column<int>(type: "integer", nullable: false),
+                    IsPattern = table.Column<bool>(type: "boolean", nullable: false),
+                    BackColor = table.Column<string>(type: "text", nullable: true),
+                    PatternImageId = table.Column<string>(type: "text", nullable: true),
+                    Text = table.Column<string>(type: "text", nullable: false),
+                    FontSize = table.Column<int>(type: "integer", nullable: false),
+                    Degree = table.Column<string>(type: "text", nullable: false),
+                    VAlignment = table.Column<string>(type: "text", nullable: false),
+                    HAlignment = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LayoutItem", x => new { x.LayoutId, x.Id });
+                    table.ForeignKey(
+                        name: "FK_LayoutItem_Layouts_LayoutId",
+                        column: x => x.LayoutId,
+                        principalTable: "Layouts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "InventoryItems",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -322,25 +390,20 @@ namespace Drawer.Infrastructure.Data.Migrations
                     ItemId = table.Column<long>(type: "bigint", nullable: false),
                     LocationId = table.Column<long>(type: "bigint", nullable: false),
                     Quantity = table.Column<decimal>(type: "numeric", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    CreatedBy = table.Column<string>(type: "text", nullable: false),
-                    LastModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    LastModifiedBy = table.Column<string>(type: "text", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeletedBy = table.Column<string>(type: "text", nullable: true),
+                    AuditId = table.Column<Guid>(type: "uuid", nullable: false),
                     CompanyId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_InventoryDetails", x => x.Id);
+                    table.PrimaryKey("PK_InventoryItems", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_InventoryDetails_Items_ItemId",
+                        name: "FK_InventoryItems_Items_ItemId",
                         column: x => x.ItemId,
                         principalTable: "Items",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_InventoryDetails_Locations_LocationId",
+                        name: "FK_InventoryItems_Locations_LocationId",
                         column: x => x.LocationId,
                         principalTable: "Locations",
                         principalColumn: "Id",
@@ -348,57 +411,67 @@ namespace Drawer.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Zones",
+                name: "Issues",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    WorkPlaceId = table.Column<long>(type: "bigint", nullable: false),
+                    TransactionNumber = table.Column<string>(type: "text", nullable: false),
+                    IssueDateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ItemId = table.Column<long>(type: "bigint", nullable: false),
+                    LocationId = table.Column<long>(type: "bigint", nullable: false),
+                    Quantity = table.Column<decimal>(type: "numeric", nullable: false),
+                    Buyer = table.Column<string>(type: "text", nullable: true),
                     Note = table.Column<string>(type: "text", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    CreatedBy = table.Column<string>(type: "text", nullable: false),
-                    LastModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    LastModifiedBy = table.Column<string>(type: "text", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeletedBy = table.Column<string>(type: "text", nullable: true),
+                    AuditId = table.Column<Guid>(type: "uuid", nullable: false),
                     CompanyId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Zones", x => x.Id);
+                    table.PrimaryKey("PK_Issues", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Zones_WorkPlaces_WorkPlaceId",
-                        column: x => x.WorkPlaceId,
-                        principalTable: "WorkPlaces",
+                        name: "FK_Issues_Items_ItemId",
+                        column: x => x.ItemId,
+                        principalTable: "Items",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Issues_Locations_LocationId",
+                        column: x => x.LocationId,
+                        principalTable: "Locations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Spots",
+                name: "Receipts",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    ZoneId = table.Column<long>(type: "bigint", nullable: false),
+                    TransactionNumber = table.Column<string>(type: "text", nullable: false),
+                    ReceiptDateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ItemId = table.Column<long>(type: "bigint", nullable: false),
+                    LocationId = table.Column<long>(type: "bigint", nullable: false),
+                    Quantity = table.Column<decimal>(type: "numeric", nullable: false),
+                    Seller = table.Column<string>(type: "text", nullable: true),
                     Note = table.Column<string>(type: "text", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    CreatedBy = table.Column<string>(type: "text", nullable: false),
-                    LastModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    LastModifiedBy = table.Column<string>(type: "text", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeletedBy = table.Column<string>(type: "text", nullable: true),
+                    AuditId = table.Column<Guid>(type: "uuid", nullable: false),
                     CompanyId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Spots", x => x.Id);
+                    table.PrimaryKey("PK_Receipts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Spots_Zones_ZoneId",
-                        column: x => x.ZoneId,
-                        principalTable: "Zones",
+                        name: "FK_Receipts_Items_ItemId",
+                        column: x => x.ItemId,
+                        principalTable: "Items",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Receipts_Locations_LocationId",
+                        column: x => x.LocationId,
+                        principalTable: "Locations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -447,33 +520,77 @@ namespace Drawer.Infrastructure.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_InventoryDetails_ItemId",
-                table: "InventoryDetails",
+                name: "IX_InventoryItems_ItemId",
+                table: "InventoryItems",
                 column: "ItemId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_InventoryDetails_LocationId",
-                table: "InventoryDetails",
+                name: "IX_InventoryItems_LocationId",
+                table: "InventoryItems",
+                column: "LocationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Issues_ItemId",
+                table: "Issues",
+                column: "ItemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Issues_LocationId",
+                table: "Issues",
                 column: "LocationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Items_Name_CompanyId",
                 table: "Items",
                 columns: new[] { "Name", "CompanyId" },
-                unique: true,
-                filter: "deleted_at IS NULL");
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Layouts_LocationGroupId",
+                table: "Layouts",
+                column: "LocationGroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LocationGroups_Name_CompanyId",
+                table: "LocationGroups",
+                columns: new[] { "Name", "CompanyId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LocationGroups_ParentGroupId",
+                table: "LocationGroups",
+                column: "ParentGroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LocationGroups_RootGroupIdDBValue",
+                table: "LocationGroups",
+                column: "RootGroupIdDBValue");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Locations_GroupId",
+                table: "Locations",
+                column: "GroupId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Locations_Name_CompanyId",
                 table: "Locations",
                 columns: new[] { "Name", "CompanyId" },
-                unique: true,
-                filter: "deleted_at IS NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Locations_UpperLocationId",
+                name: "IX_Locations_RootGroupId",
                 table: "Locations",
-                column: "UpperLocationId");
+                column: "RootGroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Receipts_ItemId",
+                table: "Receipts",
+                column: "ItemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Receipts_LocationId",
+                table: "Receipts",
+                column: "LocationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RefreshTokens_UserId",
@@ -481,23 +598,16 @@ namespace Drawer.Infrastructure.Data.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Spots_ZoneId",
-                table: "Spots",
-                column: "ZoneId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_UserInfos_UserId",
                 table: "UserInfos",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Zones_WorkPlaceId",
-                table: "Zones",
-                column: "WorkPlaceId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "__AuditEvents");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -520,13 +630,19 @@ namespace Drawer.Infrastructure.Data.Migrations
                 name: "CompanyMembers");
 
             migrationBuilder.DropTable(
-                name: "InventoryDetails");
+                name: "InventoryItems");
+
+            migrationBuilder.DropTable(
+                name: "Issues");
+
+            migrationBuilder.DropTable(
+                name: "LayoutItem");
+
+            migrationBuilder.DropTable(
+                name: "Receipts");
 
             migrationBuilder.DropTable(
                 name: "RefreshTokens");
-
-            migrationBuilder.DropTable(
-                name: "Spots");
 
             migrationBuilder.DropTable(
                 name: "UserInfos");
@@ -535,19 +651,19 @@ namespace Drawer.Infrastructure.Data.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
+                name: "Layouts");
+
+            migrationBuilder.DropTable(
                 name: "Items");
 
             migrationBuilder.DropTable(
                 name: "Locations");
 
             migrationBuilder.DropTable(
-                name: "Zones");
-
-            migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "WorkPlaces");
+                name: "LocationGroups");
         }
     }
 }

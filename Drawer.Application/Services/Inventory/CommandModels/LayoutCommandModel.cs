@@ -9,7 +9,7 @@ namespace Drawer.Application.Services.Inventory.CommandModels
 {
     public class LayoutEditCommandModel
     {
-        public long LocationId { get; set; }
+        public long LocationGroupId { get; set; }
 
         public List<LayoutItem> ItemList { get; set; } = new List<LayoutItem>();
     }

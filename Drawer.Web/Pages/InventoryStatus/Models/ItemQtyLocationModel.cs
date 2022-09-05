@@ -7,8 +7,11 @@
     {
         public long ItemId { get; set; }
         public string? ItemName { get; set; }
-        public long LocationId { get; set; }
+        
         public string? LocationName { get; set; }
         public decimal Quantity { get; set; }
+
+        public long LocationId { get; set; }
+        public long GroupId { get; set; }
     }
 }

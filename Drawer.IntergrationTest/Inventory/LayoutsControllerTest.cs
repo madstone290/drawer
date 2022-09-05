@@ -27,18 +27,17 @@ namespace Drawer.IntergrationTest.Inventory
             _outputHelper = outputHelper;
         }
 
-        async Task<long> CreateRootLocation()
+        async Task<long> CreateRootGroup()
         {
-            var requestContent = new LocationAddCommandModel()
+            var requestContent = new LocationGroupAddCommandModel()
             {
                 Name = Guid.NewGuid().ToString(),
-                IsGroup = true
             };
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Add);
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.LocationGroups.Add);
             requestMessage.Content = JsonContent.Create(requestContent);
             var ResponseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
-            var locationId = await ResponseMessage.Content.ReadFromJsonAsync<long>();
-            return locationId;
+            var groupId = await ResponseMessage.Content.ReadFromJsonAsync<long>();
+            return groupId;
         }
 
         async Task<long> CreateLocation()
@@ -46,7 +45,7 @@ namespace Drawer.IntergrationTest.Inventory
             var requestContent = new LocationAddCommandModel()
             {
                 Name = Guid.NewGuid().ToString(),
-                ParentGroupId = await CreateRootLocation(),
+                GroupId = await CreateRootGroup(),
             };
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Add);
             requestMessage.Content = JsonContent.Create(requestContent);
@@ -60,10 +59,10 @@ namespace Drawer.IntergrationTest.Inventory
         public async Task CreateLayout_Returns_Ok()
         {
             // Arrange
-            var locationId = await CreateRootLocation();
+            var locationId = await CreateRootGroup();
             var requestContent = new LayoutEditCommandModel()
             {
-                LocationId = locationId
+                LocationGroupId = locationId
             };
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Layouts.Edit);
             requestMessage.Content = JsonContent.Create(requestContent);
@@ -79,10 +78,10 @@ namespace Drawer.IntergrationTest.Inventory
         public async Task GetLayout_Returns_Ok_With_CreatedLayout()
         {
             // Arrange
-            var locationId = await CreateRootLocation();
+            var locationId = await CreateRootGroup();
             var requestContent = new LayoutEditCommandModel()
             {
-                LocationId = locationId
+                LocationGroupId = locationId
             };
             var createRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Layouts.Edit);
             createRequestMessage.Content = JsonContent.Create(requestContent);
@@ -97,7 +96,7 @@ namespace Drawer.IntergrationTest.Inventory
             getResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
             var layout = await getResponseMessage.Content.ReadFromJsonAsync<LayoutQueryModel>() ?? null!;
             layout.Should().NotBeNull();
-            layout.LocationId.Should().Be(requestContent.LocationId);
+            layout.LocationId.Should().Be(requestContent.LocationGroupId);
             // TODO 아이템 비교할 것
         }
 
@@ -105,19 +104,19 @@ namespace Drawer.IntergrationTest.Inventory
         public async Task GetLayouts_Returns_Ok_With_CreatedLayouts()
         {
             // Arrange
-            var locationId1 = await CreateRootLocation();
+            var locationId1 = await CreateRootGroup();
             var requestContent1 = new LayoutEditCommandModel()
             {
-                LocationId = locationId1,
+                LocationGroupId = locationId1,
             };
             var createRequestMessage1 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Layouts.Edit);
             createRequestMessage1.Content = JsonContent.Create(requestContent1);
             var createResponseMessage1 = await _client.SendAsyncWithMasterAuthentication(createRequestMessage1);
 
-            var locationId2 = await CreateRootLocation();
+            var locationId2 = await CreateRootGroup();
             var requestContent2 = new LayoutEditCommandModel()
             {
-                LocationId = locationId2,
+                LocationGroupId = locationId2,
             };
             var createRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Layouts.Edit);
             createRequestMessage2.Content = JsonContent.Create(requestContent2);
@@ -132,19 +131,19 @@ namespace Drawer.IntergrationTest.Inventory
             var layoutList = await getLayoutsResponseMessage.Content.ReadFromJsonAsync<List<LayoutQueryModel>>() ?? null!;
             layoutList.Should().NotBeNull();
             layoutList.Should().Contain(x =>
-                x.LocationId == requestContent1.LocationId);
+                x.LocationId == requestContent1.LocationGroupId);
             layoutList.Should().Contain(x =>
-                x.LocationId == requestContent2.LocationId);
+                x.LocationId == requestContent2.LocationGroupId);
         }
 
         [Fact]
         public async Task UpdateLayout_Returns_Ok()
         {
             // Arrange
-            var locationId = await CreateRootLocation();
+            var locationId = await CreateRootGroup();
             var createContent = new LayoutEditCommandModel()
             {
-                LocationId = locationId,
+                LocationGroupId = locationId,
             };
             var createRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Layouts.Edit);
             createRequest.Content = JsonContent.Create(createContent);
@@ -153,7 +152,7 @@ namespace Drawer.IntergrationTest.Inventory
             // Act
             var updateContent = new LayoutEditCommandModel()
             {
-                LocationId = locationId,
+                LocationGroupId = locationId,
                 ItemList = new List<LayoutItem>()
                 {
                     new LayoutItem()
@@ -226,10 +225,10 @@ namespace Drawer.IntergrationTest.Inventory
         public async Task UpdateLayout_With_WrongOptions_Returns_BadRequest(string shape, string degree, string hAlignment, string vAlignment)
         {
             // Arrange
-            var locationId = await CreateRootLocation();
+            var locationId = await CreateRootGroup();
             var createContent = new LayoutEditCommandModel()
             {
-                LocationId = locationId,
+                LocationGroupId = locationId,
             };
             var createRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Layouts.Edit);
             createRequest.Content = JsonContent.Create(createContent);

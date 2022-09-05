@@ -67,7 +67,7 @@
             <Header>
                 <MudTHeadRow>
                     <MudTh>
-                        <MudTableSortLabel T="LocationModel" SortBy="x => x.ParentGroupName">상위 그룹</MudTableSortLabel>
+                        <MudTableSortLabel T="LocationModel" SortBy="x => x.GroupName">그룹</MudTableSortLabel>
                     </MudTh>
                     <MudTh>
                         <MudTableSortLabel T="LocationModel" SortBy="x => x.Name">이름</MudTableSortLabel>
@@ -75,31 +75,18 @@
                     <MudTh>
                         <MudTableSortLabel T="LocationModel" SortBy="x => x.Note">비고</MudTableSortLabel>
                     </MudTh>
-                    <MudTh>
-                        <MudTableSortLabel T="LocationModel" SortBy="x => x.HierarchyLevel">계층 레벨</MudTableSortLabel>
-                    </MudTh>
-                    <MudTh>
-                        그룹 구분
-                    </MudTh>
                 </MudTHeadRow>
             </Header>
 
             <Row>
                 <MudTd>
-                    <MudHighlighter Text="@context.ParentGroupName" HighlightedText="@searchText" />
+                    <MudHighlighter Text="@context.GroupName" HighlightedText="@searchText" />
                 </MudTd>
                 <MudTd>
                     <MudHighlighter Text="@context.Name" HighlightedText="@searchText" />
                 </MudTd>
                 <MudTd>
                     <MudHighlighter Text="@context.Note" HighlightedText="@searchText" />
-                </MudTd>
-
-                <MudTd>
-                    <MudHighlighter Text="@context.HierarchyLevel.ToString()" HighlightedText="@searchText" />
-                </MudTd>
-                <MudTd>
-                    <MudCheckBox Checked="@context.IsGroup" ReadOnly="@true" />
                 </MudTd>
             </Row>
 

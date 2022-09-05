@@ -6,13 +6,13 @@ namespace Drawer.Web.Pages.InventoryStatus.Models
     public struct TreeNodeKey
     {
         public long ItemId { get; set; }
+        public long GroupId { get; set; }
         public long LocationId { get; set; }
-        public override string ToString()
-        {
-            return $"{ItemId}   {LocationId}";
-        }
     }
 
+    /// <summary>
+    /// 위치 혹은 위치그룹에 존재하는 재고수량을 트리로 표현한다.
+    /// </summary>
     public class TreeNode
     {
         public TreeNodeKey Key { get; set; }

@@ -28,10 +28,6 @@ namespace Drawer.Application.Services.Inventory.Commands
             var location = await _locationRepository.FindByIdAsync(command.Id)
                 ?? throw new EntityNotFoundException<Location>(command.Id);
 
-            var followerExist = await _locationRepository.ExistByUpperLocationId(location.Id);
-            if (followerExist)
-                throw new AppException($"{location.Name}에 포함된 위치가 존재합니다");
-
             _locationRepository.Remove(location);
             await _locationRepository.SaveChangesAsync();
             return Unit.Value;

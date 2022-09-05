@@ -16,15 +16,15 @@ namespace Drawer.Domain.Models.Inventory
         private readonly ISet<LayoutItem> _items = new HashSet<LayoutItem>();
 
         private Layout() { }
-        public Layout(long locationId)
+        public Layout(long locationGroupId)
         {
-            LocationId = locationId;
+            LocationGroupId = locationGroupId;
         }
 
         /// <summary>
         /// 위치그룹 ID
         /// </summary>
-        public long LocationId { get; private set; }
+        public long LocationGroupId { get; private set; }
 
         /// <summary>
         /// 레이아웃에 포함된 아이템

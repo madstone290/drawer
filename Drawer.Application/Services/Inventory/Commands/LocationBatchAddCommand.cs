@@ -1,4 +1,5 @@
 ﻿using Drawer.Application.Config;
+using Drawer.Application.Exceptions;
 using Drawer.Application.Services.Inventory.CommandModels;
 using Drawer.Application.Services.Inventory.Repos;
 using Drawer.Domain.Models.Inventory;
@@ -15,25 +16,25 @@ namespace Drawer.Application.Services.Inventory.Commands
     public class LocationBatchAddCommandHandler : ICommandHandler<LocationBatchAddCommand, List<long>>
     {
         private readonly ILocationRepository _locationRepository;
+        private readonly ILocationGroupRepository _groupRepository;
 
-        public LocationBatchAddCommandHandler(ILocationRepository LocationRepository)
+        public LocationBatchAddCommandHandler(ILocationRepository locationRepository, ILocationGroupRepository groupRepository)
         {
-            _locationRepository = LocationRepository;
+            _locationRepository = locationRepository;
+            _groupRepository = groupRepository;
         }
-
         public async Task<List<long>> Handle(LocationBatchAddCommand command, CancellationToken cancellationToken)
         {
             var locationList = new List<Location>();
             foreach (var locationDto in command.LocationList)
             {
-                var parentGroup = locationDto.ParentGroupId.HasValue
-                    ? await _locationRepository.FindByIdAsync(locationDto.ParentGroupId.Value)
-                    : null;
-
                 if (await _locationRepository.ExistByName(locationDto.Name))
                     throw new AppException($"동일한 이름이 존재합니다. {locationDto.Name}");
 
-                var location = new Location(parentGroup, locationDto.Name, locationDto.IsGroup);
+                var group = await _groupRepository.FindByIdAsync(locationDto.GroupId)
+                    ?? throw new EntityNotFoundException<LocationGroup>(locationDto.GroupId);
+
+                var location = new Location(group, locationDto.Name);
                 location.SetNote(locationDto.Note);
 
                 await _locationRepository.AddAsync(location);

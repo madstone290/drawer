@@ -7,18 +7,16 @@ namespace Drawer.Web.Pages.Location.Models
         public long Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string? Note { get; set; }
-        public long ParentGroupId { get; set; }
-        public string? ParentGroupName { get; set; }
-        public int HierarchyLevel { get; set; }
-        public bool IsGroup { get; set; }
+        public long GroupId { get; set; }
+        public string? GroupName { get; set; }
     }
 
     public class LocationModelValidator : AbstractValidator<LocationModel>
     {
         /// <summary>
-        /// 위치명 목록
+        /// 그룹명 목록
         /// </summary>
-        public List<string>? LocationNames { get; set; }
+        public List<string>? GroupNames { get; set; }
 
         public LocationModelValidator()
         {
@@ -26,21 +24,21 @@ namespace Drawer.Web.Pages.Location.Models
                  .NotEmpty()
                  .WithMessage("* 필수");
 
-            RuleFor(x => x.ParentGroupName)
+            RuleFor(x => x.GroupName)
                 .Custom((value, context) =>
                 {
-                    if(LocationNames == null)
+                    if(GroupNames == null)
                     {
-                        context.AddFailure("이름목록이 없습니다");
+                        context.AddFailure("그룹목록이 없습니다");
                         return;
                     }
 
                     if (string.IsNullOrWhiteSpace(value))
                         return;
-                    if (LocationNames.Any(name => string.Equals(name, value, StringComparison.OrdinalIgnoreCase)))
+                    if (GroupNames.Any(name => string.Equals(name, value, StringComparison.OrdinalIgnoreCase)))
                         return;
                     else
-                        context.AddFailure("목록에 없는 위치입니다");
+                        context.AddFailure("목록에 없는 그룹입니다");
                 });
         }
     }

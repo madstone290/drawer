@@ -13,9 +13,9 @@ namespace Drawer.Infrastructure.EntityTypeConfigurations.Inventory
     {
         public void Configure(EntityTypeBuilder<Layout> builder)
         {
-            builder.HasOne<Location>()
+            builder.HasOne<LocationGroup>()
                 .WithMany()
-                .HasForeignKey(x => x.LocationId)
+                .HasForeignKey(x => x.LocationGroupId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.OwnsMany(x => x.Items)

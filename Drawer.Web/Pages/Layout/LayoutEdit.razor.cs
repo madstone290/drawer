@@ -192,7 +192,7 @@ namespace Drawer.Web.Pages.Layout
             }
 
             _locationList.Clear();
-            _locationList.AddRange(locationResponse.Data.Where(x=> x.RootGroupId == locationId && x.IsGroup == false));
+            _locationList.AddRange(locationResponse.Data.Where(x=> x.RootGroupId == locationId));
 
             foreach(var item in _layout.ItemList)
             {
@@ -249,7 +249,7 @@ namespace Drawer.Web.Pages.Layout
 
             var response = await LayoutApiClient.EditLayout(new LayoutEditCommandModel()
             {
-                LocationId = _layout.LocationId,
+                LocationGroupId = _layout.LocationId,
                 ItemList = _layout.ItemList
             });
 

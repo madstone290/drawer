@@ -135,7 +135,7 @@ namespace Drawer.Web.Pages.Receipt
                     if (Snackbar.CheckFail(locationResponse))
                     {
                         _locationList.Clear();
-                        _locationList.AddRange(locationResponse.Data.Where(x => x.IsGroup == false));
+                        _locationList.AddRange(locationResponse.Data);
                     }
                 });
 

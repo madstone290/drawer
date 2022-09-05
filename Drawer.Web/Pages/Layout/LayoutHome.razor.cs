@@ -23,7 +23,7 @@ namespace Drawer.Web.Pages.Layout
 
         public int TotalRowCount => _locationList.Count;
 
-        [Inject] public LocationApiClient LocationApiClient { get; set; } = null!;
+        [Inject] public LocationGroupApiClient LocationGroupApiClient { get; set; } = null!;
         [Inject] public LayoutApiClient LayoutApiClient { get; set; } = null!;
         [Inject] public ICanvasService CanvasService { get; set; } = null!;
 
@@ -62,27 +62,27 @@ namespace Drawer.Web.Pages.Layout
         async Task Load_Click()
         {
             _isLoading = true;
-            var locationTask = LocationApiClient.GetLocations();
+            var groupTask = LocationGroupApiClient.GetLocationGroups();
             var layoutTask = LayoutApiClient.GetLayouts();
-            await Task.WhenAll(locationTask, layoutTask);
+            await Task.WhenAll(groupTask, layoutTask);
 
-            var locationResponse = locationTask.Result;
+            var groupResponse = groupTask.Result;
             var layoutResponse = layoutTask.Result;
 
-            if (!Snackbar.CheckFail(locationResponse) || !Snackbar.CheckFail(layoutResponse))
+            if (!Snackbar.CheckFail(groupResponse) || !Snackbar.CheckFail(layoutResponse))
             {
                 _isLoading = false;
                 return;
             }
 
             _locationList.Clear();
-            foreach (var locationDto in locationResponse.Data.Where(x => x.IsGroup && x.HierarchyLevel == 0))
+            foreach (var groupDto in groupResponse.Data)
             {
                 var location = new LocationModel()
                 {
-                    Id = locationDto.Id,
-                    Name = locationDto.Name,
-                    Note = locationDto.Note,
+                    Id = groupDto.Id,
+                    Name = groupDto.Name,
+                    Note = groupDto.Note,
                 };
                 _locationList.Add(location);
             }

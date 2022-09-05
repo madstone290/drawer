@@ -14,11 +14,9 @@ namespace Drawer.Web.Pages.Location
         private AidTable<LocationModel> table = null!;
         private readonly List<LocationModel> _locations = new();
         private readonly ExcelOptions _excelOptions = new ExcelOptionsBuilder()
-            .AddColumn(nameof(LocationModel.ParentGroupName), "상위 그룹")
+            .AddColumn(nameof(LocationModel.GroupName), "그룹")
             .AddColumn(nameof(LocationModel.Name), "이름")
             .AddColumn(nameof(LocationModel.Note), "비고")
-            .AddColumn(nameof(LocationModel.IsGroup), "그룹 구분")
-            .AddColumn(nameof(LocationModel.HierarchyLevel), "계층 레벨")
             .Build();
 
         private bool _isTableLoading;
@@ -56,7 +54,7 @@ namespace Drawer.Web.Pages.Location
 
             return model.Note?.Contains(searchText, StringComparison.OrdinalIgnoreCase) == true|| 
                 model.Name?.Contains(searchText, StringComparison.OrdinalIgnoreCase) == true||
-                model.ParentGroupName?.Contains(searchText, StringComparison.OrdinalIgnoreCase) == true;
+                model.GroupName?.Contains(searchText, StringComparison.OrdinalIgnoreCase) == true;
         }
 
         private async Task Load_Click()
@@ -77,10 +75,8 @@ namespace Drawer.Web.Pages.Location
                     Id = locationDto.Id,
                     Name = locationDto.Name,
                     Note = locationDto.Note,
-                    ParentGroupId = locationDto.ParentGroupId ?? 0,
-                    ParentGroupName = response.Data.FirstOrDefault(x => x.Id == locationDto.ParentGroupId)?.Name,
-                    HierarchyLevel = locationDto.HierarchyLevel,
-                    IsGroup = locationDto.IsGroup
+                    GroupId = locationDto.GroupId,
+                    GroupName = response.Data.FirstOrDefault(x => x.Id == locationDto.GroupId)?.Name,
                 };
                 _locations.Add(location);
             }

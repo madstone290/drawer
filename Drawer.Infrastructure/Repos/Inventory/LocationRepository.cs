@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Drawer.Infrastructure.Repos.Inventory
 {
@@ -17,14 +18,14 @@ namespace Drawer.Infrastructure.Repos.Inventory
         {
         }
 
+        public async Task<bool> ExistByGroup(long groupId)
+        {
+            return await _dbContext.Locations.AnyAsync(x => x.GroupId == groupId);
+        }
+
         public async Task<bool> ExistByName(string name)
         {
             return await _dbContext.Locations.AnyAsync(x => x.Name == name);
-        }
-
-        public async Task<bool> ExistByUpperLocationId(long locationId)
-        {
-            return await _dbContext.Locations.AnyAsync(x => x.ParentGroupId == locationId);
         }
 
         public async Task<List<LocationQueryModel>> QueryAll()
@@ -52,11 +53,8 @@ namespace Drawer.Infrastructure.Repos.Inventory
                 Id = x.Id,
                 Name = x.Name,
                 Note = x.Note,
-                IsGroup = x.IsGroup,
-                ParentGroupId = x.ParentGroupId,
-                HierarchyLevel = x.HierarchyLevel,
-                RootGroupId = x.ActualRootGroupId,
-                IsRootGroup = x.IsRootGroup
+                GroupId = x.GroupId,
+                RootGroupId = x.RootGroupId
             });
         }
     }

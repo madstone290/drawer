@@ -1,5 +1,6 @@
 ﻿using Drawer.Application.Services.Inventory.QueryModels;
 using Drawer.Domain.Models.Inventory;
+using Drawer.Web.Pages.Item;
 using System.Data;
 
 
@@ -11,6 +12,8 @@ namespace Drawer.Web.Pages.InventoryStatus.Models
 
         private readonly List<LocationQueryModel> _locations = new();
 
+        private readonly List<LocationGroupQueryModel> _groups = new();
+
         private readonly List<InventoryItemQueryModel> _inventoryItems = new();
 
         /// <summary>
@@ -20,55 +23,94 @@ namespace Drawer.Web.Pages.InventoryStatus.Models
 
         private readonly Dictionary<TreeNodeKey, TreeNode> _lookup = new();
 
-        public TreeNodeBuilder(IEnumerable<ItemQueryModel> items, IEnumerable<LocationQueryModel> locations, IEnumerable<InventoryItemQueryModel> inventoryItems)
+        public TreeNodeBuilder(
+            IEnumerable<ItemQueryModel> items, 
+            IEnumerable<LocationGroupQueryModel> groups, 
+            IEnumerable<LocationQueryModel> locations, 
+            IEnumerable<InventoryItemQueryModel> inventoryItems)
         {
             _items.AddRange(items);
+            _groups.AddRange(groups);
             _locations.AddRange(locations);
             _inventoryItems.AddRange(inventoryItems);
         }
 
         public IEnumerable<TreeNode> Build()
         {
-            // 전체 아이템 목록
-            var defaultItems = _items.Select(item => new ItemQtyLocationModel()
-            {
-                ItemId = item.Id,
-                ItemName = item.Name
-            });
+            var treeNodes = BuildTree();
 
-            // 재고등록된 아이템 목록
-            var inventoryItems = _inventoryItems.Select(inventoryItem => new ItemQtyLocationModel()
-            {
-                ItemId = inventoryItem.ItemId,
-                ItemName = _items.First(x=> x.Id == inventoryItem.ItemId).Name,
-                Quantity = inventoryItem.Quantity,
-                LocationId = inventoryItem.LocationId,
-                LocationName = _locations.First(x=> x.Id == inventoryItem.LocationId).Name
-            });
-            
-            var nodes = Build(defaultItems.Concat(inventoryItems));
-
-            foreach (var node in nodes)
+            foreach (var node in treeNodes)
                 node.Visible = true;
 
-            return nodes;
+            return treeNodes;
         }
 
-        private IEnumerable<TreeNode> Build(IEnumerable<ItemQtyLocationModel> inventoryItems)
+        private IEnumerable<TreeNode> BuildTree()
         {
-           
-            foreach (var item in inventoryItems)
+            foreach(var item in _items)
             {
-                var node = new TreeNode()
+                foreach(var group in _groups.OrderBy(x=> x.Depth))
                 {
-                    Key = new TreeNodeKey() { ItemId = item.ItemId, LocationId = item.LocationId },
-                    InventoryItem = item
-                };
+                    var node = new TreeNode()
+                    {
+                        Key = new TreeNodeKey()
+                        {
+                            ItemId = item.Id,
+                            GroupId = group.Id,
+                        },
+                        InventoryItem = new ItemQtyLocationModel()
+                        {
+                            ItemId = item.Id,
+                            ItemName = item.Name,
+                            GroupId = group.Id,
+                            LocationName = group.Name,
+                        }
+                    };
 
-                _lookup.Add(node.Key, node);
-                FillLookup(_lookup, node);
+                    var parentNode = _lookup.Values.FirstOrDefault(x => x.Key.GroupId == group.ParentGroupId);
+                    if(parentNode != null)
+                    {
+                        parentNode.Children.Add(node);
+                        node.Parent = parentNode;
+                    }
+
+                    _lookup.Add(node.Key, node);
+                }
             }
+
+            foreach(var invenItem in _inventoryItems)
+            {
+                var groupId = GetGroupId(invenItem.LocationId);
+                var node = _lookup.Values.FirstOrDefault(x => x.Key.ItemId == invenItem.ItemId && x.Key.GroupId == groupId);
+                if(node != null)
+                {
+                    node.Children.Add(new TreeNode()
+                    {
+                        Key = new TreeNodeKey()
+                        {
+                            ItemId = invenItem.ItemId,
+                            GroupId = groupId,
+                            LocationId = invenItem.LocationId
+                        },
+                        InventoryItem = new ItemQtyLocationModel()
+                        {
+                            ItemId = invenItem.ItemId,
+                            ItemName = _items.First(x=> x.Id == invenItem.ItemId).Name,
+                            LocationId = invenItem.LocationId,
+                            LocationName = _locations.First(x=> x.Id == invenItem.LocationId).Name,
+                        }
+                    });
+                    node.InventoryItem.Quantity += invenItem.Quantity;
+                }
+            }
+            
             return _lookup.Values.Where(x => x.Parent == null);
+        }
+
+        long GetGroupId(long locationId)
+        {
+            var location = _locations.First(x => x.Id == locationId);
+            return location.GroupId;
         }
 
         /// <summary>
@@ -82,11 +124,16 @@ namespace Drawer.Web.Pages.InventoryStatus.Models
 
             _handled[node.Key] = true;
             
-            // LocationId가 0인 것은 루트 노드. 
-            if (node.Key.LocationId == 0)
+            // GroupId가 0인 것은 루트 노드. 
+            if (node.Key.GroupId == 0)
                 return;
 
-            var parentKey = new TreeNodeKey() { ItemId = node.Key.ItemId, LocationId = GetParentLocationId(node.Key.LocationId) };
+            // 위치가 아닌 그룹에 대한 재고정보를 생성한다.
+            var parentKey = new TreeNodeKey() 
+            { 
+                ItemId = node.Key.ItemId, 
+                GroupId = GetGroupId(node.Key.LocationId)
+            };
             lookup.TryGetValue(parentKey, out TreeNode? parentNode);
 
             if(parentNode == null)
@@ -97,9 +144,9 @@ namespace Drawer.Web.Pages.InventoryStatus.Models
                     InventoryItem = new ItemQtyLocationModel()
                     {
                         ItemId = parentKey.ItemId,
-                        LocationId = parentKey.LocationId,
+                        GroupId = parentKey.GroupId,
                         ItemName = _items.First(x=> x.Id == parentKey.ItemId).Name,
-                        LocationName = _locations.FirstOrDefault(x=> x.Id == parentKey.LocationId)?.Name,
+                        LocationName = _groups.FirstOrDefault(x=> x.Id == parentKey.GroupId)?.Name,
                     }
                 };
                 lookup.Add(parentKey, parentNode);
@@ -120,11 +167,7 @@ namespace Drawer.Web.Pages.InventoryStatus.Models
         }
 
 
-        long GetParentLocationId(long locationId)
-        {
-            var location = _locations.First(x => x.Id == locationId);
-            return location.ParentGroupId ?? 0;
-        }
+       
 
     }
 }

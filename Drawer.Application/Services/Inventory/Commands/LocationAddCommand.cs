@@ -1,4 +1,5 @@
 ﻿using Drawer.Application.Config;
+using Drawer.Application.Exceptions;
 using Drawer.Application.Services.Inventory.CommandModels;
 using Drawer.Application.Services.Inventory.Repos;
 using Drawer.Domain.Models.Inventory;
@@ -10,10 +11,12 @@ namespace Drawer.Application.Services.Inventory.Commands
     public class LocationAddCommandHandler : ICommandHandler<LocationAddCommand, long>
     {
         private readonly ILocationRepository _locationRepository;
+        private readonly ILocationGroupRepository _groupRepository;
 
-        public LocationAddCommandHandler(ILocationRepository locationRepository)
+        public LocationAddCommandHandler(ILocationRepository locationRepository, ILocationGroupRepository groupRepository)
         {
             _locationRepository = locationRepository;
+            _groupRepository = groupRepository;
         }
 
         public async Task<long> Handle(LocationAddCommand command, CancellationToken cancellationToken)
@@ -23,10 +26,10 @@ namespace Drawer.Application.Services.Inventory.Commands
             if (await _locationRepository.ExistByName(locationDto.Name))
                 throw new AppException($"동일한 이름이 존재합니다. {locationDto.Name}");
 
-            var parentGroup = locationDto.ParentGroupId.HasValue
-                ? await _locationRepository.FindByIdAsync(locationDto.ParentGroupId.Value)
-                : null;
-            var location = new Location(parentGroup, locationDto.Name, locationDto.IsGroup);
+            var group = await _groupRepository.FindByIdAsync(locationDto.GroupId)
+                ?? throw new EntityNotFoundException<LocationGroup>(locationDto.GroupId);
+
+            var location = new Location(group, locationDto.Name);
             location.SetNote(locationDto.Note);
 
             await _locationRepository.AddAsync(location);

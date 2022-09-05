@@ -17,19 +17,18 @@
                SaveAsyncFunc="@Save"
                ExcelOptions="@_excelOptions">
         <HeaderRow>
-            <MudTh Style="min-width:100px;">상위 그룹</MudTh>
+            <MudTh Style="min-width:100px;">그룹</MudTh>
             <MudTh Style="min-width:100px;">이름</MudTh>
             <MudTh Style="min-width:100px;">비고</MudTh>
-            <MudTh Style="min-width:100px;">그룹 구분</MudTh>
         </HeaderRow>
         <BodyRow>
             <MudTd>
                 <AidCompleteField TValue="long"
-                                  @bind-Text="context.ParentGroupName"
-                                  ValueChanged="((value) => context.ParentGroupId = value)"
+                                  @bind-Text="context.GroupName"
+                                  ValueChanged="((value) => context.GroupId = value)"
                                   TextItemList="@(_locationGroups.Select(x=> x.Name).ToList())"
                                   TextToValueFunc="@((value) => _locationGroups.FirstOrDefault(x=> x.Name == value)?.Id ?? 0)"
-                                  Validation="@((_) => ValidateProperty(context, nameof(LocationModel.ParentGroupName)))"
+                                  Validation="@((_) => ValidateProperty(context, nameof(LocationModel.GroupName)))"
                                   DisableUnderLine="true" />
             </MudTd>
             <MudTd>
@@ -40,26 +39,23 @@
                 <AidTextField @bind-Value="context.Note"
                               Validation="@((_) => ValidateProperty(context, nameof(LocationModel.Note)))" />
             </MudTd>
-            <MudTd>
-                <MudCheckBox @bind-Checked="context.IsGroup" />
-            </MudTd>
-        </BodyRow>
+                  </BodyRow>
     </BatchEdit>
 </CascadingValue>
 @code {
     private readonly LocationModelValidator _validator = new();
     private readonly ExcelOptions _excelOptions = new ExcelOptionsBuilder()
-        .AddColumn(nameof(LocationModel.ParentGroupName), "상위 그룹")
+        .AddColumn(nameof(LocationModel.GroupName), "그룹")
         .AddColumn(nameof(LocationModel.Name), "이름")
         .AddColumn(nameof(LocationModel.Note), "비고")
-        .AddColumn(nameof(LocationModel.IsGroup), "그룹 구분")
         .Build();
 
     [Inject] public LocationApiClient LocationApiClient { get; set; } = null!;
+    [Inject] public LocationGroupApiClient LocationGroupApiClient { get; set; } = null!;
     [Inject] public ILockService LockService { get; set; } = null!;
 
     private List<LocationQueryModel> _locations = new();
-    private List<LocationQueryModel> _locationGroups = new();
+    private List<LocationGroupQueryModel> _locationGroups = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -76,14 +72,15 @@
     {
         await LockService.DoAsync<bool>(async () =>
         {
-            var response = await LocationApiClient.GetLocations();
+            var locationResponse = await LocationApiClient.GetLocations();
+            var groupResponse = await LocationGroupApiClient.GetLocationGroups();
 
-            if (Snackbar.CheckFail(response))
+            if (Snackbar.CheckFail(locationResponse, groupResponse))
             {
-                _locations.AddRange(response.Data.ToList());
-                _locationGroups.AddRange(_locations.Where(x => x.IsGroup));
+                _locations.AddRange(locationResponse.Data);
+                _locationGroups.AddRange(groupResponse.Data);
 
-                _validator.LocationNames = _locationGroups.Select(x => x.Name).ToList();
+                _validator.GroupNames = _locationGroups.Select(x => x.Name).ToList();
             }
 
             return true;
@@ -95,10 +92,9 @@
     {
         var locationListDto = locations.Select(x => new LocationAddCommandModel()
             {
-                ParentGroupId = x.ParentGroupId,
+                GroupId = x.GroupId,
                 Name = x.Name,
                 Note = x.Note,
-                IsGroup = x.IsGroup
             }).ToList();
         var response = await LocationApiClient.BatchAddLocation(locationListDto);
 

@@ -10,14 +10,13 @@ namespace Drawer.Web.Pages.Location
 {
     public partial class LocationEdit
     {
-        private MudForm _form = null!;
+        private MudForm? _form;
         private bool _isFormValid;
         private bool _isLoading;
 
         private readonly LocationModel _location = new();
         private readonly LocationModelValidator _validator = new();
-        private readonly List<LocationQueryModel> _locations = new();
-        private readonly List<LocationQueryModel> _locationGroups = new();
+        private readonly List<LocationGroupQueryModel> _locationGroups = new();
 
         public string TitleText
         {
@@ -38,34 +37,51 @@ namespace Drawer.Web.Pages.Location
         [Parameter] public long LocationId { get; set; }
 
         [Inject] public LocationApiClient LocationApiClient { get; set; } = null!;
+        [Inject] public LocationGroupApiClient GroupApiClient { get; set; } = null!;
 
 
         protected override async Task OnInitializedAsync()
         {
             _isLoading = true;
 
-            var response = await LocationApiClient.GetLocations();
-            if (Snackbar.CheckFail(response))
+            var groupTask = GroupApiClient.GetLocationGroups();
+            var locationTask = EditMode == EditMode.Update
+                ? LocationApiClient.GetLocation(LocationId)
+                : null;
+            
+
+            if (locationTask == null)
+                await Task.WhenAll(groupTask);
+            else
+                await Task.WhenAll(locationTask, groupTask);
+
+            var groupResponse = groupTask.Result;
+            if (!Snackbar.CheckFail(groupResponse))
             {
-                _locations.Clear();
-                _locations.AddRange(response.Data);
-
-                _locationGroups.Clear();
-                _locationGroups.AddRange(_locations.Where(x => x.IsGroup));
-
-                _validator.LocationNames = _locationGroups.Select(x => x.Name).ToList();
+                _isLoading = false;
+                return;
             }
 
+            _locationGroups.Clear();
+            _locationGroups.AddRange(groupResponse.Data);
+            _validator.GroupNames = _locationGroups.Select(x => x.Name).ToList();
 
-            if (EditMode == EditMode.Update)
+
+            if (locationTask != null)
             {
-                var location = _locations.FirstOrDefault(x => x.Id == LocationId);
+                var locationResponse = locationTask.Result;
+                var location = locationResponse.Data;
                 if (location == null)
+                {
+                    Snackbar.Add("위치가 유효하지 않습니다", Severity.Error);
+                    _isLoading = false;
                     return;
+                }
+
                 _location.Id = location.Id;
                 _location.Name = location.Name;
                 _location.Note = location.Note;
-                _location.ParentGroupId = location.ParentGroupId ?? 0;
+                _location.GroupId = location.GroupId;
             }
 
             _isLoading = false;
@@ -78,6 +94,9 @@ namespace Drawer.Web.Pages.Location
 
         async Task Save_Click()
         {
+            if (_form == null)
+                return;
+
             await _form.Validate();
             if (_isFormValid)
             {
@@ -85,10 +104,9 @@ namespace Drawer.Web.Pages.Location
                 {
                     var locationDto = new LocationAddCommandModel()
                     {
-                        ParentGroupId = _location.ParentGroupId,
+                        GroupId = _location.GroupId,
                         Name = _location.Name!,
                         Note = _location.Note,
-                        IsGroup = _location.IsGroup
                     };
                     var response = await LocationApiClient.AddLocation(locationDto);
                     if (Snackbar.CheckSuccessFail(response))

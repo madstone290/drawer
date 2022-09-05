@@ -66,7 +66,7 @@ namespace Drawer.Web.Pages.Receipt
                     _validator.ItemNames = _itemList.Select(x => x.Name).ToList();
 
                     _locationList.Clear();
-                    _locationList.AddRange(locationResponse.Data.Where(x => x.IsGroup == false));
+                    _locationList.AddRange(locationResponse.Data);
                     _validator.LocationNames = _locationList.Select(x => x.Name).ToList();
 
                     if (receiptTask == null)

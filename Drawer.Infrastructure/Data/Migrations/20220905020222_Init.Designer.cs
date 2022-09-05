@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Drawer.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(DrawerDbContext))]
-    [Migration("20220804074733_AddAuditId")]
-    partial class AddAuditId
+    [Migration("20220905020222_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -53,7 +53,7 @@ namespace Drawer.Infrastructure.Data.Migrations
                     b.ToTable("RefreshTokens");
                 });
 
-            modelBuilder.Entity("Drawer.Domain.Models.InventoryManagement.InventoryDetail", b =>
+            modelBuilder.Entity("Drawer.Domain.Models.Inventory.InventoryItem", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -68,27 +68,8 @@ namespace Drawer.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("text");
-
                     b.Property<long>("ItemId")
                         .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("LastModifiedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
 
                     b.Property<long>("LocationId")
                         .HasColumnType("bigint");
@@ -102,10 +83,56 @@ namespace Drawer.Infrastructure.Data.Migrations
 
                     b.HasIndex("LocationId");
 
-                    b.ToTable("InventoryDetails");
+                    b.ToTable("InventoryItems");
                 });
 
-            modelBuilder.Entity("Drawer.Domain.Models.InventoryManagement.Item", b =>
+            modelBuilder.Entity("Drawer.Domain.Models.Inventory.Issue", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<Guid>("AuditId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Buyer")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CompanyId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("IssueDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("ItemId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("LocationId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("TransactionNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("LocationId");
+
+                    b.ToTable("Issues");
+                });
+
+            modelBuilder.Entity("Drawer.Domain.Models.Inventory.Item", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -121,26 +148,6 @@ namespace Drawer.Infrastructure.Data.Migrations
 
                     b.Property<string>("CompanyId")
                         .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("LastModifiedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
@@ -159,13 +166,12 @@ namespace Drawer.Infrastructure.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Name", "CompanyId")
-                        .IsUnique()
-                        .HasFilter("deleted_at IS NULL");
+                        .IsUnique();
 
                     b.ToTable("Items");
                 });
 
-            modelBuilder.Entity("Drawer.Domain.Models.InventoryManagement.Location", b =>
+            modelBuilder.Entity("Drawer.Domain.Models.Inventory.Layout", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -180,28 +186,33 @@ namespace Drawer.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<long>("LocationGroupId")
+                        .HasColumnType("bigint");
 
-                    b.Property<string>("CreatedBy")
+                    b.HasKey("Id");
+
+                    b.HasIndex("LocationGroupId");
+
+                    b.ToTable("Layouts");
+                });
+
+            modelBuilder.Entity("Drawer.Domain.Models.Inventory.Location", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<Guid>("AuditId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CompanyId")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("text");
-
-                    b.Property<int>("HierarchyLevel")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("LastModifiedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
+                    b.Property<long>("GroupId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -210,21 +221,22 @@ namespace Drawer.Infrastructure.Data.Migrations
                     b.Property<string>("Note")
                         .HasColumnType("text");
 
-                    b.Property<long?>("UpperLocationId")
+                    b.Property<long>("RootGroupId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UpperLocationId");
+                    b.HasIndex("GroupId");
+
+                    b.HasIndex("RootGroupId");
 
                     b.HasIndex("Name", "CompanyId")
-                        .IsUnique()
-                        .HasFilter("deleted_at IS NULL");
+                        .IsUnique();
 
                     b.ToTable("Locations");
                 });
 
-            modelBuilder.Entity("Drawer.Domain.Models.Locations.Spot", b =>
+            modelBuilder.Entity("Drawer.Domain.Models.Inventory.LocationGroup", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -239,24 +251,8 @@ namespace Drawer.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("LastModifiedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
+                    b.Property<int>("Depth")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -265,17 +261,25 @@ namespace Drawer.Infrastructure.Data.Migrations
                     b.Property<string>("Note")
                         .HasColumnType("text");
 
-                    b.Property<long>("ZoneId")
+                    b.Property<long?>("ParentGroupId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("RootGroupIdDBValue")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ZoneId");
+                    b.HasIndex("ParentGroupId");
 
-                    b.ToTable("Spots");
+                    b.HasIndex("RootGroupIdDBValue");
+
+                    b.HasIndex("Name", "CompanyId")
+                        .IsUnique();
+
+                    b.ToTable("LocationGroups");
                 });
 
-            modelBuilder.Entity("Drawer.Domain.Models.Locations.Workplace", b =>
+            modelBuilder.Entity("Drawer.Domain.Models.Inventory.Receipt", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -290,86 +294,35 @@ namespace Drawer.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<long>("ItemId")
+                        .HasColumnType("bigint");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("LastModifiedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<long>("LocationId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Note")
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("numeric");
 
-                    b.ToTable("WorkPlaces");
-                });
-
-            modelBuilder.Entity("Drawer.Domain.Models.Locations.Zone", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<Guid>("AuditId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("CompanyId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime>("ReceiptDateTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("CreatedBy")
+                    b.Property<string>("Seller")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TransactionNumber")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("LastModifiedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Note")
-                        .HasColumnType("text");
-
-                    b.Property<long>("WorkPlaceId")
-                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("WorkPlaceId");
+                    b.HasIndex("ItemId");
 
-                    b.ToTable("Zones");
+                    b.HasIndex("LocationId");
+
+                    b.ToTable("Receipts");
                 });
 
             modelBuilder.Entity("Drawer.Domain.Models.Organization.Company", b =>
@@ -379,25 +332,6 @@ namespace Drawer.Infrastructure.Data.Migrations
 
                     b.Property<Guid>("AuditId")
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("LastModifiedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -433,27 +367,8 @@ namespace Drawer.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("text");
-
                     b.Property<bool>("IsOwner")
                         .HasColumnType("boolean");
-
-                    b.Property<DateTime?>("LastModifiedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -729,55 +644,162 @@ namespace Drawer.Infrastructure.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Drawer.Domain.Models.InventoryManagement.InventoryDetail", b =>
+            modelBuilder.Entity("Drawer.Domain.Models.Inventory.InventoryItem", b =>
                 {
-                    b.HasOne("Drawer.Domain.Models.InventoryManagement.Item", "Item")
+                    b.HasOne("Drawer.Domain.Models.Inventory.Item", null)
                         .WithMany()
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Drawer.Domain.Models.InventoryManagement.Location", "Location")
+                    b.HasOne("Drawer.Domain.Models.Inventory.Location", null)
                         .WithMany()
                         .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("Item");
-
-                    b.Navigation("Location");
                 });
 
-            modelBuilder.Entity("Drawer.Domain.Models.InventoryManagement.Location", b =>
+            modelBuilder.Entity("Drawer.Domain.Models.Inventory.Issue", b =>
                 {
-                    b.HasOne("Drawer.Domain.Models.InventoryManagement.Location", "UpperLocation")
+                    b.HasOne("Drawer.Domain.Models.Inventory.Item", null)
                         .WithMany()
-                        .HasForeignKey("UpperLocationId")
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Drawer.Domain.Models.Inventory.Location", null)
+                        .WithMany()
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Drawer.Domain.Models.Inventory.Layout", b =>
+                {
+                    b.HasOne("Drawer.Domain.Models.Inventory.LocationGroup", null)
+                        .WithMany()
+                        .HasForeignKey("LocationGroupId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.OwnsMany("Drawer.Domain.Models.Inventory.LayoutItem", "Items", b1 =>
+                        {
+                            b1.Property<long>("LayoutId")
+                                .HasColumnType("bigint");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("integer");
+
+                            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b1.Property<int>("Id"));
+
+                            b1.Property<string>("BackColor")
+                                .HasColumnType("text");
+
+                            b1.Property<string>("ConnectedLocationsString")
+                                .HasColumnType("text");
+
+                            b1.Property<string>("Degree")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<int>("FontSize")
+                                .HasColumnType("integer");
+
+                            b1.Property<string>("HAlignment")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<int>("Height")
+                                .HasColumnType("integer");
+
+                            b1.Property<bool>("IsPattern")
+                                .HasColumnType("boolean");
+
+                            b1.Property<string>("ItemId")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<int>("Left")
+                                .HasColumnType("integer");
+
+                            b1.Property<string>("PatternImageId")
+                                .HasColumnType("text");
+
+                            b1.Property<string>("Shape")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<string>("Text")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<int>("Top")
+                                .HasColumnType("integer");
+
+                            b1.Property<string>("VAlignment")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<int>("Width")
+                                .HasColumnType("integer");
+
+                            b1.HasKey("LayoutId", "Id");
+
+                            b1.ToTable("LayoutItem");
+
+                            b1.WithOwner()
+                                .HasForeignKey("LayoutId");
+                        });
+
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("Drawer.Domain.Models.Inventory.Location", b =>
+                {
+                    b.HasOne("Drawer.Domain.Models.Inventory.LocationGroup", "Group")
+                        .WithMany()
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Drawer.Domain.Models.Inventory.LocationGroup", null)
+                        .WithMany()
+                        .HasForeignKey("RootGroupId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Group");
+                });
+
+            modelBuilder.Entity("Drawer.Domain.Models.Inventory.LocationGroup", b =>
+                {
+                    b.HasOne("Drawer.Domain.Models.Inventory.LocationGroup", "ParentGroup")
+                        .WithMany()
+                        .HasForeignKey("ParentGroupId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.Navigation("UpperLocation");
+                    b.HasOne("Drawer.Domain.Models.Inventory.LocationGroup", null)
+                        .WithMany()
+                        .HasForeignKey("RootGroupIdDBValue")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ParentGroup");
                 });
 
-            modelBuilder.Entity("Drawer.Domain.Models.Locations.Spot", b =>
+            modelBuilder.Entity("Drawer.Domain.Models.Inventory.Receipt", b =>
                 {
-                    b.HasOne("Drawer.Domain.Models.Locations.Zone", "Zone")
+                    b.HasOne("Drawer.Domain.Models.Inventory.Item", null)
                         .WithMany()
-                        .HasForeignKey("ZoneId")
+                        .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Zone");
-                });
-
-            modelBuilder.Entity("Drawer.Domain.Models.Locations.Zone", b =>
-                {
-                    b.HasOne("Drawer.Domain.Models.Locations.Workplace", "WorkPlace")
+                    b.HasOne("Drawer.Domain.Models.Inventory.Location", null)
                         .WithMany()
-                        .HasForeignKey("WorkPlaceId")
+                        .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("WorkPlace");
                 });
 
             modelBuilder.Entity("Drawer.Domain.Models.UserInformation.UserInfo", b =>

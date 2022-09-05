@@ -10,7 +10,6 @@ namespace Drawer.Application.Services.Inventory.CommandModels
     {
         public string Name { get; set; } = default!;
         public string? Note { get; set; }
-        public long? ParentGroupId { get; set; }
-        public bool IsGroup { get; set; }
+        public long GroupId { get; set; }
     }
 }

@@ -17,18 +17,20 @@ namespace Drawer.Application.Services.Inventory.Commands
     public class LayoutUpdateCommandHandler : ICommandHandler<LayoutEditCommand>
     {
         private readonly ILayoutRepository _layoutRepository;
+        private readonly ILocationGroupRepository _groupRepository;
         private readonly ILocationRepository _locationRepository;
 
-        public LayoutUpdateCommandHandler(ILayoutRepository layoutRepository, ILocationRepository locationRepository)
+        public LayoutUpdateCommandHandler(ILayoutRepository layoutRepository, ILocationGroupRepository groupRepository, ILocationRepository locationRepository)
         {
             _layoutRepository = layoutRepository;
+            _groupRepository = groupRepository;
             _locationRepository = locationRepository;
         }
 
         public async Task<Unit> Handle(LayoutEditCommand command, CancellationToken cancellationToken)
         {
             var layoutDto = command.Layout;
-            var layout = await _layoutRepository.FindByLocationId(layoutDto.LocationId);
+            var layout = await _layoutRepository.FindByLocationId(layoutDto.LocationGroupId);
             if(layout == null)
                 layout = await CreateLayout(layoutDto);
 
@@ -47,13 +49,12 @@ namespace Drawer.Application.Services.Inventory.Commands
         async Task<Layout> CreateLayout(LayoutEditCommandModel layoutDto)
         {
             // validate location Id and Type
-            var location = await _locationRepository.FindByIdAsync(layoutDto.LocationId);
-            if (location == null)
-                throw new EntityNotFoundException<Location>(layoutDto.LocationId);
-            if (!location.IsRootGroup)
+            var group = await _groupRepository.FindByIdAsync(layoutDto.LocationGroupId)
+                ?? throw new EntityNotFoundException<LocationGroup>(layoutDto.LocationGroupId);
+            if (!group.IsRoot)
                 throw new AppException("루트그룹만 레이아웃을 가질 수 있습니다");
 
-            var layout = new Layout(layoutDto.LocationId);
+            var layout = new Layout(layoutDto.LocationGroupId);
 
             await _layoutRepository.AddAsync(layout);
 

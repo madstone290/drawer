@@ -19,19 +19,16 @@ namespace Drawer.Infrastructure.EntityTypeConfigurations.Inventory
                 x.CompanyId,
             }).IsUnique();
 
-            builder.Property(x => x.ParentGroupId).IsRequired(false);
-
-            builder.HasOne(x => x.ParentGroup)
+            builder.HasOne(x => x.Group)
               .WithMany()
-              .HasForeignKey(x => x.ParentGroupId)
+              .HasForeignKey(x => x.GroupId)
+              .OnDelete(DeleteBehavior.Restrict);
+            
+            builder.HasOne<LocationGroup>()
+              .WithMany()
+              .HasForeignKey(x => x.RootGroupId)
               .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Property(x => x.RootGroupId).IsRequired(false);
-            builder.HasOne<Location>()
-                .WithMany()
-                .HasForeignKey(x => x.RootGroupId)
-                .OnDelete(DeleteBehavior.Restrict);
-                
         }
     }
 }

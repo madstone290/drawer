@@ -40,16 +40,15 @@ namespace Drawer.IntergrationTest.Inventory
 
         async Task<long> NewRootLocationGroup()
         {
-            var request = new LocationAddCommandModel()
+            var request = new LocationGroupAddCommandModel()
             {
                 Name = Guid.NewGuid().ToString(),
-                IsGroup = true
             };
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Add);
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.LocationGroups.Add);
             requestMessage.Content = JsonContent.Create(request);
             var ResponseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
-            var locationId = await ResponseMessage.Content.ReadFromJsonAsync<long>();
-            return locationId;
+            var groupId = await ResponseMessage.Content.ReadFromJsonAsync<long>();
+            return groupId;
         }
 
         async Task<long> NewLocation()
@@ -57,7 +56,7 @@ namespace Drawer.IntergrationTest.Inventory
             var request = new LocationAddCommandModel()
             {
                 Name = Guid.NewGuid().ToString(),
-                ParentGroupId = await NewRootLocationGroup()
+                GroupId = await NewRootLocationGroup()
             };
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Add);
             requestMessage.Content = JsonContent.Create(request);

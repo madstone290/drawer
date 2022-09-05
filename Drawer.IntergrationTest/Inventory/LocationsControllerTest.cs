@@ -26,31 +26,29 @@ namespace Drawer.IntergrationTest.Inventory
             _outputHelper = outputHelper;
         }
 
-        async Task<long> CreateParentGroup()
+        async Task<long> CreateGroup()
         {
-            var requestContent = new LocationAddCommandModel()
+            var requestContent = new LocationGroupAddCommandModel()
             {
                 Name = Guid.NewGuid().ToString(),
-                IsGroup = true
             };
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Add);
-            requestMessage.Content = JsonContent.Create(requestContent);
-            var ResponseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
-            var locationId = await ResponseMessage.Content.ReadFromJsonAsync<long>();
-            return locationId;
+            var request = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.LocationGroups.Add);
+            request.Content = JsonContent.Create(requestContent);
+            var response = await _client.SendAsyncWithMasterAuthentication(request);
+            var groupId = await response.Content.ReadFromJsonAsync<long>();
+            return groupId;
         }
 
         [Fact]
         public async Task CreateLocation_Returns_Ok_With_Content()
         {
             // Arrange
-            var parentGroupId = await CreateParentGroup();
+            var groupId = await CreateGroup();
             var requestContent = new LocationAddCommandModel()
             {
-                ParentGroupId = parentGroupId,
+                GroupId = groupId,
                 Name = Guid.NewGuid().ToString(),
                 Note = Guid.NewGuid().ToString(),
-                IsGroup = false
             };
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Add);
             requestMessage.Content = JsonContent.Create(requestContent);
@@ -67,23 +65,21 @@ namespace Drawer.IntergrationTest.Inventory
         [Fact]
         public async Task BatchCreateLocation_Returns_Ok_With_Content()
         {
-            var parentGroupId = await CreateParentGroup();
+            var groupId = await CreateGroup();
             // Arrange
             var requestContent = new List<LocationAddCommandModel>()
             {
                 new LocationAddCommandModel()
                 {
-                    ParentGroupId = parentGroupId,
+                    GroupId = groupId,
                     Name = Guid.NewGuid().ToString(),
                     Note = Guid.NewGuid().ToString(),
-                    IsGroup = false
                 },
                 new LocationAddCommandModel()
                 {
-                    ParentGroupId = parentGroupId,
+                    GroupId = groupId,
                     Name = Guid.NewGuid().ToString(),
                     Note = Guid.NewGuid().ToString(),
-                    IsGroup = false
                 }
             };
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.BatchAdd);
@@ -103,13 +99,12 @@ namespace Drawer.IntergrationTest.Inventory
         public async Task GetLocation_Returns_Ok_With_CreatedLocation()
         {
             // Arrange
-            var parentGroupId = await CreateParentGroup();
+            var groupId = await CreateGroup();
             var requestContent = new LocationAddCommandModel()
             {
-                ParentGroupId = parentGroupId,
+                GroupId = groupId,
                 Name = Guid.NewGuid().ToString(),
                 Note = Guid.NewGuid().ToString(),
-                IsGroup = false
             };
             var createRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Add);
             createRequestMessage.Content = JsonContent.Create(requestContent);
@@ -126,7 +121,7 @@ namespace Drawer.IntergrationTest.Inventory
             var location = await getResponseMessage.Content.ReadFromJsonAsync<LocationQueryModel>() ?? null!;
             location.Should().NotBeNull();
             location.Id.Should().Be(locationId);
-            location.ParentGroupId.Should().Be(requestContent.ParentGroupId);
+            location.GroupId.Should().Be(requestContent.GroupId);
             location.Name.Should().Be(requestContent.Name);
             location.Note.Should().Be(requestContent.Note);
         }
@@ -135,25 +130,23 @@ namespace Drawer.IntergrationTest.Inventory
         public async Task GetLocations_Returns_Ok_With_CreatedLocations()
         {
             // Arrange
-            var parentGroupId1 = await CreateParentGroup();
+            var groupId1 = await CreateGroup();
             var requestContent1 = new LocationAddCommandModel()
             {
-                ParentGroupId = parentGroupId1,
+                GroupId = groupId1,
                 Name = Guid.NewGuid().ToString(),
                 Note = Guid.NewGuid().ToString(),
-                IsGroup = false
             };
             var createRequestMessage1 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Add);
             createRequestMessage1.Content = JsonContent.Create(requestContent1);
             var createResponseMessage1 = await _client.SendAsyncWithMasterAuthentication(createRequestMessage1);
 
-            var parentGroupId2 = await CreateParentGroup();
+            var groupId2 = await CreateGroup();
             var requestContent2 = new LocationAddCommandModel()
             {
-                ParentGroupId = parentGroupId2,
+                GroupId = groupId2,
                 Name = Guid.NewGuid().ToString(),
                 Note = Guid.NewGuid().ToString(),
-                IsGroup = false
             };
             var createRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Add);
             createRequestMessage2.Content = JsonContent.Create(requestContent2);
@@ -168,11 +161,11 @@ namespace Drawer.IntergrationTest.Inventory
             var locationList = await getLocationsResponseMessage.Content.ReadFromJsonAsync<List<LocationQueryModel>>() ?? null!;
             locationList.Should().NotBeNull();
             locationList.Should().Contain(x =>
-                x.ParentGroupId == requestContent1.ParentGroupId &&
+                x.GroupId == requestContent1.GroupId &&
                 x.Name == requestContent1.Name &&
                 x.Note == requestContent1.Note);
             locationList.Should().Contain(x =>
-                x.ParentGroupId == requestContent2.ParentGroupId &&
+                x.GroupId == requestContent2.GroupId &&
                 x.Name == requestContent2.Name &&
                 x.Note == requestContent2.Note);
         }
@@ -181,13 +174,12 @@ namespace Drawer.IntergrationTest.Inventory
         public async Task UpdateLocation_Returns_Ok()
         {
             // Arrange
-            var parentGroupId = await CreateParentGroup();
+            var groupId = await CreateGroup();
             var createContent = new LocationAddCommandModel()
             {
-                ParentGroupId = parentGroupId,
+                GroupId = groupId,
                 Name = Guid.NewGuid().ToString(),
                 Note = Guid.NewGuid().ToString(),
-                IsGroup = false
             };
             var createRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Add);
             createRequest.Content = JsonContent.Create(createContent);
@@ -223,13 +215,12 @@ namespace Drawer.IntergrationTest.Inventory
         public async Task DeleteLocation_Returns_Ok()
         {
             // Arrange
-            var parentGroupId = await CreateParentGroup();
+            var groupId = await CreateGroup();
             var createContent = new LocationAddCommandModel()
             {
-                ParentGroupId = parentGroupId,
+                GroupId = groupId,
                 Name = Guid.NewGuid().ToString(),
                 Note = Guid.NewGuid().ToString(),
-                IsGroup = false
             };
             var createRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Add);
             createRequest.Content = JsonContent.Create(createContent);

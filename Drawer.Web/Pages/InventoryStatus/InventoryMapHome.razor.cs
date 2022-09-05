@@ -19,7 +19,7 @@ namespace Drawer.Web.Pages.InventoryStatus
 
         private readonly List<LocationQueryModel> _locationQueryModels = new();
 
-        private readonly List<LocationQueryModel> _rootLocationGroups = new();
+        private readonly List<LocationGroupQueryModel> _locationGroupQueryModels = new();
 
         /// <summary>
         /// 재고아이템 쿼리모델. 아이템의 위치를 조회할 때 사용한다.
@@ -39,7 +39,7 @@ namespace Drawer.Web.Pages.InventoryStatus
         /// <summary>
         /// 현재 선택된 루트 위치그룹
         /// </summary>
-        private LocationQueryModel? _selectedLocationGroup;
+        private LocationGroupQueryModel? _selectedLocationGroup;
 
         /// <summary>
         /// 현재 선택된 아이템
@@ -62,6 +62,7 @@ namespace Drawer.Web.Pages.InventoryStatus
         private string? _searchText;
 
         [Inject] public ItemApiClient ItemApiClient { get; set; } = null!;
+        [Inject] public LocationGroupApiClient LocationGroupApiClient { get; set; } = null!;
         [Inject] public LocationApiClient LocationApiClient { get; set; } = null!;
         [Inject] public InventoryItemApiClient InventoryApiClient { get; set; } = null!;
         [Inject] public LayoutApiClient LayoutApiClient { get; set; } = null!;
@@ -84,12 +85,12 @@ namespace Drawer.Web.Pages.InventoryStatus
             }
         }
 
-        public LocationQueryModel? SelectedLocationGroup
+        public LocationGroupQueryModel? SelectedLocationGroup
         {
             get => _selectedLocationGroup;
             set
             {
-                if (EqualityComparer<LocationQueryModel>.Default.Equals(_selectedLocationGroup, value))
+                if (EqualityComparer<LocationGroupQueryModel>.Default.Equals(_selectedLocationGroup, value))
                     return;
                 _selectedLocationGroup = value;
 
@@ -197,13 +198,15 @@ namespace Drawer.Web.Pages.InventoryStatus
             _isLoading = true;
 
             var itemTask = ItemApiClient.GetItems();
+            var groupTask = LocationGroupApiClient.GetLocationGroups();
             var locationTask = LocationApiClient.GetLocations();
             var inventoryTask = InventoryApiClient.GetInventoryDetails();
             var layoutTask = LayoutApiClient.GetLayouts();
 
-            await Task.WhenAll(itemTask, locationTask, inventoryTask, layoutTask);
+            await Task.WhenAll(itemTask, groupTask, locationTask, inventoryTask, layoutTask);
 
             var itemResponse = itemTask.Result;
+            var groupResponse = groupTask.Result;
             var locationResponse = locationTask.Result;
             var inventoryResponse = inventoryTask.Result;
             var layoutResponse = layoutTask.Result;
@@ -216,13 +219,13 @@ namespace Drawer.Web.Pages.InventoryStatus
 
             _itemQueryModels.Clear();
             _locationQueryModels.Clear();
-            _rootLocationGroups.Clear();
+            _locationGroupQueryModels.Clear();
             _layoutQueryModels.Clear();
             _inventoryItemQueryModels.Clear();
 
             _itemQueryModels.AddRange(itemResponse.Data);
             _locationQueryModels.AddRange(locationResponse.Data);
-            _rootLocationGroups.AddRange(_locationQueryModels.Where(x => x.IsGroup && x.HierarchyLevel == 0));
+            _locationGroupQueryModels.AddRange(groupResponse.Data);
             _layoutQueryModels.AddRange(layoutResponse.Data);
             _inventoryItemQueryModels.AddRange(inventoryResponse.Data);
  
@@ -237,7 +240,7 @@ namespace Drawer.Web.Pages.InventoryStatus
         /// <exception cref="NotImplementedException"></exception>
         private void LoadDefaultValues()
         {
-            SelectedLocationGroup = _rootLocationGroups.FirstOrDefault();
+            SelectedLocationGroup = _locationGroupQueryModels.FirstOrDefault();
         }
 
         private long GetRootLocationId(long locationId)

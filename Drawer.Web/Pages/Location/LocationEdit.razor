@@ -24,9 +24,9 @@
         <MudItem xs="6" sm="3">
             <AidCompleteField TValue="long"
                               Label="상위 그룹"
-                              @bind-Text="_location.ParentGroupName"
-                              ValueChanged="@((value) => _location.ParentGroupId = value)"
-                              For="()=>_location.ParentGroupName"
+                              @bind-Text="_location.GroupName"
+                              ValueChanged="@((value) => _location.GroupId = value)"
+                              For="()=>_location.GroupName"
                               TextItemList="@(_locationGroups.Select(x=> x.Name).ToList())"
                               TextToValueFunc="@((value) => _locationGroups.FirstOrDefault(x=> x.Name == value)?.Id ?? 0)" />
         </MudItem>
@@ -37,13 +37,6 @@
                           AutoFocus="true" />
         </MudItem>
         <MudItem xs="0" sm="6">
-        </MudItem>
-        <MudItem xs="6" sm="3">
-            <MudCheckBox @bind-Checked="_location.IsGroup"
-                         For="@(() => _location.IsGroup)"
-                         Label="그룹 구분" />
-        </MudItem>
-        <MudItem xs="0" sm="9">
         </MudItem>
         <MudItem xs="12" sm="6">
             <MudTextField @bind-Value="_location.Note"

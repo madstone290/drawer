@@ -23,13 +23,13 @@
         <AidToolBar>
             <MudGrid Spacing="1">
                 <MudItem xs="2">
-                    <MudSelect T="@LocationQueryModel"
+                    <MudSelect T="@LocationGroupQueryModel"
                                ToStringFunc="@((loc) => loc?.Name)"
                                Label="루트 위치그룹"
                                @bind-Value="@SelectedLocationGroup">
-                        @foreach (var location in _rootLocationGroups)
+                        @foreach (var group in _locationGroupQueryModels)
                         {
-                            <MudSelectItem Value="@location" />
+                            <MudSelectItem Value="@group" />
                         }
                     </MudSelect>
                 </MudItem>

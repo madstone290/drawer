@@ -34,7 +34,7 @@ namespace Drawer.Application.Services.Inventory.Commands
             if (childGroupExist)
                 throw new AppException($"{group.Name}에 포함된 그룹이 존재합니다");
 
-            var childLocationExist = await _locationRepository.ExistByUpperLocationId(group.Id);
+            var childLocationExist = await _locationRepository.ExistByGroup(group.Id);
             if(childLocationExist)
                 throw new AppException($"{group.Name}에 포함된 위치가 존재합니다");
 

@@ -66,7 +66,7 @@ namespace Drawer.Web.Pages.Issue
                         return;
 
                     _locationList.Clear();
-                    _locationList.AddRange(locationResponse.Data.Where(x => x.IsGroup == false));
+                    _locationList.AddRange(locationResponse.Data);
                     _validator.LocationNames = _locationList.Select(x => x.Name).ToList();
                 });
 

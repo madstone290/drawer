@@ -184,12 +184,12 @@ namespace Drawer.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long>("LocationId")
+                    b.Property<long>("LocationGroupId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LocationId");
+                    b.HasIndex("LocationGroupId");
 
                     b.ToTable("Layouts");
                 });
@@ -209,11 +209,8 @@ namespace Drawer.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("HierarchyLevel")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsGroup")
-                        .HasColumnType("boolean");
+                    b.Property<long>("GroupId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -222,15 +219,12 @@ namespace Drawer.Infrastructure.Data.Migrations
                     b.Property<string>("Note")
                         .HasColumnType("text");
 
-                    b.Property<long?>("ParentGroupId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("RootGroupId")
+                    b.Property<long>("RootGroupId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ParentGroupId");
+                    b.HasIndex("GroupId");
 
                     b.HasIndex("RootGroupId");
 
@@ -680,9 +674,9 @@ namespace Drawer.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Drawer.Domain.Models.Inventory.Layout", b =>
                 {
-                    b.HasOne("Drawer.Domain.Models.Inventory.Location", null)
+                    b.HasOne("Drawer.Domain.Models.Inventory.LocationGroup", null)
                         .WithMany()
-                        .HasForeignKey("LocationId")
+                        .HasForeignKey("LocationGroupId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -761,17 +755,19 @@ namespace Drawer.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Drawer.Domain.Models.Inventory.Location", b =>
                 {
-                    b.HasOne("Drawer.Domain.Models.Inventory.Location", "ParentGroup")
+                    b.HasOne("Drawer.Domain.Models.Inventory.LocationGroup", "Group")
                         .WithMany()
-                        .HasForeignKey("ParentGroupId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("Drawer.Domain.Models.Inventory.Location", null)
+                    b.HasOne("Drawer.Domain.Models.Inventory.LocationGroup", null)
                         .WithMany()
                         .HasForeignKey("RootGroupId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.Navigation("ParentGroup");
+                    b.Navigation("Group");
                 });
 
             modelBuilder.Entity("Drawer.Domain.Models.Inventory.LocationGroup", b =>
