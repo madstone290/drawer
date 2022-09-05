@@ -5,14 +5,14 @@ namespace Drawer.Web.Pages.Organization.Models
 {
     public class EditCompanyModel
     {
-        public string Id { get; set; } = string.Empty;
+        public long Id { get; set; } 
 
         public string Name { get; set; } = string.Empty;
 
         public string PhoneNumber { get; set; } = string.Empty;
 
         public EditCompanyModel() { }
-        public EditCompanyModel(string id, string name, string phoneNumber)
+        public EditCompanyModel(long id, string name, string phoneNumber)
         {
             Id = id;
             Name = name;

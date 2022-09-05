@@ -18,7 +18,7 @@ namespace Drawer.Web.Pages.Organization.Presenters
             _apiClient = apiClient;
         }
 
-        public async Task<ApiResponse<string>> CreateCompanyAsync()
+        public async Task<ApiResponse<long>> CreateCompanyAsync()
         {
             var companyDto = new CompanyAddUpdateCommandModel()
             {

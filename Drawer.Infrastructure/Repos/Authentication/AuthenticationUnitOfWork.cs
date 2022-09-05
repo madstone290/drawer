@@ -15,12 +15,12 @@ namespace Drawer.Infrastructure.Repos.Authentication
     {
         private readonly DrawerDbContext _dbContext;
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly IUserInfoRepository _userInfoRepository;
+        private readonly IUserRepository _userInfoRepository;
         private IDbContextTransaction _transacion;
 
         public AuthenticationUnitOfWork(DrawerDbContext dbContext,
                                         UserManager<IdentityUser> userManager,
-                                        IUserInfoRepository userInfoRepository)
+                                        IUserRepository userInfoRepository)
         {
             _dbContext = dbContext;
             _userManager = userManager;
@@ -29,7 +29,7 @@ namespace Drawer.Infrastructure.Repos.Authentication
         }
 
         public UserManager<IdentityUser> UserManager => _userManager;
-        public IUserInfoRepository UserInfoRepository => _userInfoRepository;
+        public IUserRepository UserRepository => _userInfoRepository;
 
         public async Task SaveChangesAsync()
         {

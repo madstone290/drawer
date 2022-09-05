@@ -11,22 +11,18 @@ using System.Threading.Tasks;
 
 namespace Drawer.Infrastructure.Repos.Organization
 {
-    public class CompanyRepository : Repository<Company>, ICompanyRepository
+    public class CompanyRepository : Repository<Company, long>, ICompanyRepository
     {
         public CompanyRepository(DrawerDbContext dbContext) : base(dbContext)
         {
         }
 
-        public async Task<Company?> FindByIdAsync(string id)
-        {
-            return await _dbContext.Companies.FindAsync(id);
-        }
-        public async Task<bool> ExistByOwnerId(string ownerId)
+        public async Task<bool> ExistByOwnerId(long ownerId)
         {
             return await _dbContext.Companies.AnyAsync(x => x.OwnerId == ownerId);
         }
 
-        public async Task<CompanyQueryModel?> QueryById(string id)
+        public async Task<CompanyQueryModel?> QueryById(long id)
         {
             return await _dbContext.Companies
                 .Where(x => x.Id == id)

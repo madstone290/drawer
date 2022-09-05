@@ -107,7 +107,7 @@ namespace Drawer.Infrastructure
 
             services.AddScoped<IAuthenticationUnitOfWork, AuthenticationUnitOfWork>();
 
-            services.AddScoped<IUserInfoRepository, UserInfoRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddScoped<IOrganizationUnitOfWork, OrganizationUnitOfWork>();
             services.AddScoped<ICompanyRepository, CompanyRepository>();

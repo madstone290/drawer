@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Drawer.Application.Services.Organization.Queries
 {
-    public record class GetCompanyMembersQuery(string CompanyId) : IQuery<List<CompanyMemberQueryModel>>;
+    public record class GetCompanyMembersQuery(long CompanyId) : IQuery<List<CompanyMemberQueryModel>>;
 
     public class GetCompanyMembersQueryHandler : IQueryHandler<GetCompanyMembersQuery, List<CompanyMemberQueryModel>>
     {

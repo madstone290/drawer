@@ -1,4 +1,5 @@
 ﻿using Drawer.Shared;
+using Drawer.Web.Pages.Receipt;
 using FluentValidation;
 
 namespace Drawer.Web.Pages.Issue.Models
@@ -24,7 +25,9 @@ namespace Drawer.Web.Pages.Issue.Models
             {
                 if (IssueDate == null || IssueTime == null)
                     throw new Exception("Date or Time is null");
-                return IssueDate.Value.Add(IssueTime.Value);
+                return new DateTime(IssueDate.Value.Ticks, DateTimeKind.Local)
+                      .Add(IssueTime.Value)
+                      .ToUniversalTime();
             }
         }
         public string? IssueDateString { get; set; }

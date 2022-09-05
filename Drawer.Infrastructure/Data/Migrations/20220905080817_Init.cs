@@ -14,7 +14,8 @@ namespace Drawer.Infrastructure.Data.Migrations
                 name: "__AuditEvents",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     DateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     EventType = table.Column<string>(type: "text", nullable: false),
                     EntityType = table.Column<string>(type: "text", nullable: false),
@@ -67,37 +68,6 @@ namespace Drawer.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Companies",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    OwnerId = table.Column<string>(type: "text", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
-                    AuditId = table.Column<Guid>(type: "uuid", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Companies", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CompanyMembers",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CompanyId = table.Column<string>(type: "text", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    IsOwner = table.Column<bool>(type: "boolean", nullable: false),
-                    AuditId = table.Column<Guid>(type: "uuid", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CompanyMembers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Items",
                 columns: table => new
                 {
@@ -109,7 +79,7 @@ namespace Drawer.Infrastructure.Data.Migrations
                     Sku = table.Column<string>(type: "text", nullable: true),
                     QuantityUnit = table.Column<string>(type: "text", nullable: true),
                     AuditId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CompanyId = table.Column<string>(type: "text", nullable: false)
+                    CompanyId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -128,7 +98,7 @@ namespace Drawer.Infrastructure.Data.Migrations
                     Depth = table.Column<int>(type: "integer", nullable: false),
                     RootGroupIdDBValue = table.Column<long>(type: "bigint", nullable: true),
                     AuditId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CompanyId = table.Column<string>(type: "text", nullable: false)
+                    CompanyId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -276,24 +246,24 @@ namespace Drawer.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserInfos",
+                name: "Users",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: false),
+                    IdentityUserId = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
-                    DisplayName = table.Column<string>(type: "text", nullable: false)
+                    Name = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserInfos", x => x.Id);
+                    table.PrimaryKey("PK_Users", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserInfos_AspNetUsers_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Users_AspNetUsers_IdentityUserId",
+                        column: x => x.IdentityUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -304,7 +274,7 @@ namespace Drawer.Infrastructure.Data.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     LocationGroupId = table.Column<long>(type: "bigint", nullable: false),
                     AuditId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CompanyId = table.Column<string>(type: "text", nullable: false)
+                    CompanyId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -328,7 +298,7 @@ namespace Drawer.Infrastructure.Data.Migrations
                     GroupId = table.Column<long>(type: "bigint", nullable: false),
                     RootGroupId = table.Column<long>(type: "bigint", nullable: false),
                     AuditId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CompanyId = table.Column<string>(type: "text", nullable: false)
+                    CompanyId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -343,6 +313,28 @@ namespace Drawer.Infrastructure.Data.Migrations
                         name: "FK_Locations_LocationGroups_RootGroupId",
                         column: x => x.RootGroupId,
                         principalTable: "LocationGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Companies",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    OwnerId = table.Column<long>(type: "bigint", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
+                    AuditId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Companies", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Companies_Users_OwnerId",
+                        column: x => x.OwnerId,
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -391,7 +383,7 @@ namespace Drawer.Infrastructure.Data.Migrations
                     LocationId = table.Column<long>(type: "bigint", nullable: false),
                     Quantity = table.Column<decimal>(type: "numeric", nullable: false),
                     AuditId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CompanyId = table.Column<string>(type: "text", nullable: false)
+                    CompanyId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -424,7 +416,7 @@ namespace Drawer.Infrastructure.Data.Migrations
                     Buyer = table.Column<string>(type: "text", nullable: true),
                     Note = table.Column<string>(type: "text", nullable: true),
                     AuditId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CompanyId = table.Column<string>(type: "text", nullable: false)
+                    CompanyId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -457,7 +449,7 @@ namespace Drawer.Infrastructure.Data.Migrations
                     Seller = table.Column<string>(type: "text", nullable: true),
                     Note = table.Column<string>(type: "text", nullable: true),
                     AuditId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CompanyId = table.Column<string>(type: "text", nullable: false)
+                    CompanyId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -472,6 +464,34 @@ namespace Drawer.Infrastructure.Data.Migrations
                         name: "FK_Receipts_Locations_LocationId",
                         column: x => x.LocationId,
                         principalTable: "Locations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CompanyMembers",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    CompanyId = table.Column<long>(type: "bigint", nullable: false),
+                    UserId = table.Column<long>(type: "bigint", nullable: false),
+                    IsOwner = table.Column<bool>(type: "boolean", nullable: false),
+                    AuditId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CompanyMembers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CompanyMembers_Companies_CompanyId",
+                        column: x => x.CompanyId,
+                        principalTable: "Companies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_CompanyMembers_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -518,6 +538,21 @@ namespace Drawer.Infrastructure.Data.Migrations
                 table: "Companies",
                 columns: new[] { "Id", "OwnerId" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Companies_OwnerId",
+                table: "Companies",
+                column: "OwnerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CompanyMembers_CompanyId",
+                table: "CompanyMembers",
+                column: "CompanyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CompanyMembers_UserId",
+                table: "CompanyMembers",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_InventoryItems_ItemId",
@@ -598,9 +633,9 @@ namespace Drawer.Infrastructure.Data.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserInfos_UserId",
-                table: "UserInfos",
-                column: "UserId");
+                name: "IX_Users_IdentityUserId",
+                table: "Users",
+                column: "IdentityUserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -624,9 +659,6 @@ namespace Drawer.Infrastructure.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Companies");
-
-            migrationBuilder.DropTable(
                 name: "CompanyMembers");
 
             migrationBuilder.DropTable(
@@ -645,10 +677,10 @@ namespace Drawer.Infrastructure.Data.Migrations
                 name: "RefreshTokens");
 
             migrationBuilder.DropTable(
-                name: "UserInfos");
+                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles");
+                name: "Companies");
 
             migrationBuilder.DropTable(
                 name: "Layouts");
@@ -660,10 +692,13 @@ namespace Drawer.Infrastructure.Data.Migrations
                 name: "Locations");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "LocationGroups");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
         }
     }
 }

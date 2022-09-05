@@ -45,13 +45,12 @@ namespace Drawer.Shared
         /// </summary>
         public static class Company
         {
-            private const string Controller = "/Company";
-            private const string Index = Base + Controller;
-
-            public const string Create = Index;
-            public const string Update = Index;
-            public const string Get = Index;
-            public const string GetMembers = Index + "/Members";
+            public const string Add = "/Api/Companies";
+            public const string Update = "/Api/Companies";
+            public const string Get = "/Api/Companies";
+            public const string GetMembers = "/Api/Companies/Members";
+            public const string AddMember = "/Api/Companies/Member";
+            public const string RemoveMemeber = "/Api/Companies/Members";
         }
 
         public static class Items

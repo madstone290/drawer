@@ -1,13 +1,26 @@
 ﻿@using Drawer.Web.Pages.Organization.Components
 @using Authentication
-@attribute [Route(Paths.Organization.Company)]
+@attribute [Route(Paths.CompanyHome)]
 
+<ContentTitle Text="회사" />
 <AuthorizeView Policy="@Policies.CompanyMember">
-    <Authorized>
-        <CompanyDetail />
-    </Authorized>
 
     <NotAuthorized>
-           <RegisterCompany />
+        <RegisterCompany />
     </NotAuthorized>
+
+    <Authorized>
+        <MudTabs Elevation="25" Color="Color.Transparent" Rounded="true" PanelClass="mt-6">
+            <MudTabPanel Text="기본 정보">
+                <CompanyDetail />
+            </MudTabPanel>
+            <MudTabPanel Text="회사 구성원">
+                <CompanyMemberList />
+            </MudTabPanel>
+            <MudTabPanel Text="가입 요청">
+                <CompanyMemberRequest />
+            </MudTabPanel>
+        </MudTabs>
+    </Authorized>
+
 </AuthorizeView>

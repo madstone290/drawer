@@ -13,13 +13,13 @@ using System.Threading.Tasks;
 
 namespace Drawer.Application.Services.UserInformation.Commands
 {
-    public record UpdateUserInfoCommand(string UserId, UserInfoCommandModel UserInfo) : ICommand;
+    public record UpdateUserInfoCommand(string IdentityUserId, UserCommandModel UserInfo) : ICommand;
 
     public class UpdateUserCommandHandler : ICommandHandler<UpdateUserInfoCommand>
     {
-        private readonly IUserInfoRepository _userInfoRepository;
+        private readonly IUserRepository _userInfoRepository;
 
-        public UpdateUserCommandHandler(IUserInfoRepository userInfoRepository)
+        public UpdateUserCommandHandler(IUserRepository userInfoRepository)
         {
             _userInfoRepository = userInfoRepository;
         }
@@ -28,11 +28,11 @@ namespace Drawer.Application.Services.UserInformation.Commands
         {
             var userInfoDto = command.UserInfo;
 
-            var userInfo = await _userInfoRepository.FindByUserIdAsync(command.UserId);
-            if (userInfo == null)
+            var user = await _userInfoRepository.FindByIdentityUserId(command.IdentityUserId);
+            if (user == null)
                 throw new InvalidUserIdException();
 
-            userInfo.SetDisplayName(userInfoDto.DisplayName);
+            user.SetName(userInfoDto.Name);
             await _userInfoRepository.SaveChangesAsync();
 
             return Unit.Value;

@@ -10,7 +10,7 @@ namespace Drawer.Infrastructure.Services.Organization
 {
     public class CompanyIdProvider : ICompanyIdProvider
     {
-        private readonly string? _companyId;
+        private readonly long? _companyId;
 
         public CompanyIdProvider(IHttpContextAccessor accessor)
         {
@@ -20,13 +20,14 @@ namespace Drawer.Infrastructure.Services.Organization
             }
             else
             {
-                _companyId = accessor.HttpContext.User
+                
+                _companyId = Convert.ToInt64(accessor.HttpContext.User
                     .Claims.FirstOrDefault(x => x.Type == DrawerClaimTypes.CompanyId)
-                    ?.Value;
+                    ?.Value);
             }
         }
 
-        public string? GetCompanyId()
+        public long? GetCompanyId()
         {
             return _companyId;
         }

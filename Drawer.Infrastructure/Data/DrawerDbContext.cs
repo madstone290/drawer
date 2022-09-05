@@ -35,8 +35,7 @@ namespace Drawer.Infrastructure.Data
 
         public DbSet<RefreshToken> RefreshTokens { get; set; } = default!;
 
-        public DbSet<UserInfo> UserInfos { get; set; } = default!;
-
+        public new DbSet<User> Users { get; set; } = default!;
         public DbSet<Company> Companies { get; set; } = default!;
         public DbSet<CompanyMember> CompanyMembers { get; set; } = default!;
 
@@ -101,11 +100,11 @@ namespace Drawer.Infrastructure.Data
                 return;
 
             var companyId = _companyIdProvider.GetCompanyId();
-            if (companyId == null)
+            if (!companyId.HasValue)
                 throw new Exception("회사 리소스 식별을 위한 회사Id를 찾을 수 없습니다");
             foreach (var entry in addedEntries)
             {
-                entry.Entity.CompanyId = companyId;
+                entry.Entity.CompanyId = companyId.Value;
             }
         }
 

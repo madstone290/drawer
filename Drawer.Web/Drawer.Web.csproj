@@ -21,7 +21,6 @@
 		<EmbeddedResource Remove="Data\**" />
 		<EmbeddedResource Remove="Pages\LocationOld\**" />
 		<None Remove="Data\**" />
-		<None Remove="Pages\LocationOld\**" />
 	</ItemGroup>
 
 	<ItemGroup>

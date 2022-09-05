@@ -10,9 +10,11 @@ namespace Drawer.Application.Services.Organization.Repos
 {
     public interface ICompanyMemberRepository : IRepository<CompanyMember>
     {
-        Task<CompanyMember?> FindByUserIdAsync(string userId);
+        Task<bool> ExistByUserId(long userId);
 
-        Task<List<CompanyMemberQueryModel>> QueryByCompanyId(string companyId);
+        Task<CompanyMember?> FindByUserIdAsync(long userId);
+
+        Task<List<CompanyMemberQueryModel>> QueryByCompanyId(long companyId);
 
     }
 }

@@ -8,10 +8,11 @@ using System.Threading.Tasks;
 
 namespace Drawer.Application.Services.UserInformation.Repos
 {
-    public interface IUserInfoRepository : IRepository<UserInfo>
+    public interface IUserRepository : IRepository<User, long>
     {
-        Task<UserInfo?> FindByUserIdAsync(string userId);
+        Task<User?> FindByIdentityUserId(string identityUserId);
 
-        Task<UserInfoQueryModel?> QueryByUserId(string userId);
+        Task<UserQueryModel?> QueryById(long id);
+        Task<UserQueryModel?> QueryByIdentityUserId(string identityUserId);
     }
 }

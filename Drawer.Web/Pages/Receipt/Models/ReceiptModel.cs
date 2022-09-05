@@ -24,7 +24,9 @@ namespace Drawer.Web.Pages.Receipt.Models
             {
                 if (ReceiptDate == null || ReceiptTime == null)
                     throw new Exception("Date or Time is null");
-                return ReceiptDate.Value.Add(ReceiptTime.Value);
+                return new DateTime(ReceiptDate.Value.Ticks, DateTimeKind.Local)
+                    .Add(ReceiptTime.Value)
+                    .ToUniversalTime();
             }
         }
         public string? ReceiptDateString { get; set; }

@@ -14,21 +14,21 @@ namespace Drawer.Application.Services.UserInformation.Queries
     /// <summary>
     /// 로그인한 사용자 정보를 조회한다.
     /// </summary>
-    /// <param name="UserId">사용자 아이디</param>
-    public record GetUserInfoQuery(string UserId) : IQuery<UserInfoQueryModel?>;
+    /// <param name="IdentityUserId">IdentityUser 아이디</param>
+    public record GetUserQuery(string IdentityUserId) : IQuery<UserQueryModel?>;
 
-    public class GetUserQueryHandler : IQueryHandler<GetUserInfoQuery, UserInfoQueryModel?>
+    public class GetUserQueryHandler : IQueryHandler<GetUserQuery, UserQueryModel?>
     {
-        private readonly IUserInfoRepository _userInfoRepository;
+        private readonly IUserRepository _userInfoRepository;
 
-        public GetUserQueryHandler(IUserInfoRepository userInfoRepository)
+        public GetUserQueryHandler(IUserRepository userInfoRepository)
         {
             _userInfoRepository = userInfoRepository;
         }
 
-        public async Task<UserInfoQueryModel?> Handle(GetUserInfoQuery request, CancellationToken cancellationToken)
+        public async Task<UserQueryModel?> Handle(GetUserQuery request, CancellationToken cancellationToken)
         {
-            var user = await _userInfoRepository.QueryByUserId(request.UserId);
+            var user = await _userInfoRepository.QueryByIdentityUserId(request.IdentityUserId);
             return user;
 
         }

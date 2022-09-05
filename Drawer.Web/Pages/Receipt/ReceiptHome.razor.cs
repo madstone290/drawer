@@ -98,6 +98,7 @@ namespace Drawer.Web.Pages.Receipt
                     if (!Snackbar.CheckFail(receiptResponse))
                         return;
 
+                    _receiptList.Clear();
                     foreach (var receiptDto in receiptResponse.Data)
                     {
                         var receipt = new ReceiptTableModel()

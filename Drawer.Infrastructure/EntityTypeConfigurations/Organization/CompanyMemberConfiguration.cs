@@ -9,18 +9,22 @@ using System.Threading.Tasks;
 
 namespace Drawer.Infrastructure.EntityTypeConfigurations.Organization
 {
-    public class CompanyConfiguration : IEntityTypeConfiguration<Company>
+    public class CompanyMemberConfiguration : IEntityTypeConfiguration<CompanyMember>
     {
-        public void Configure(EntityTypeBuilder<Company> builder)
+        public void Configure(EntityTypeBuilder<CompanyMember> builder)
         {
             builder.HasKey(x => x.Id);
-            builder.HasIndex(x => new { x.Id, x.OwnerId })
-                .IsUnique();
 
-            builder.HasOne(x => x.Owner)
+            builder.HasOne(x => x.Company)
                 .WithMany()
-                .HasForeignKey(x => x.OwnerId)
+                .HasForeignKey(x => x.CompanyId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(x => x.User)
+                .WithMany()
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 }

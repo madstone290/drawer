@@ -18,12 +18,12 @@ namespace Drawer.Api.Controllers.Organization
         }
 
         [HttpPost]
-        [Route(ApiRoutes.Company.Create)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [Route(ApiRoutes.Company.Add)]
+        [ProducesResponseType(typeof(long), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateCompany([FromBody] CompanyAddUpdateCommandModel company)
         {
-            var userId = HttpContext.User.Claims.First(x => x.Type == DrawerClaimTypes.UserId).Value;
-            var command = new CreateCompanyCommand(userId, company);
+            var identityUserId = HttpContext.User.Claims.First(x => x.Type == DrawerClaimTypes.IdentityUserId).Value;
+            var command = new CreateCompanyCommand(identityUserId, company);
             var companyId = await _mediator.Send(command);
             return Ok(companyId);
         }
@@ -34,7 +34,7 @@ namespace Drawer.Api.Controllers.Organization
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateCompany([FromBody] CompanyAddUpdateCommandModel company)
         {
-            var companyId = HttpContext.User.Claims.First(x => x.Type == DrawerClaimTypes.CompanyId).Value;
+            var companyId = Convert.ToInt64(HttpContext.User.Claims.FirstOrDefault(x => x.Type == DrawerClaimTypes.CompanyId)?.Value);
             var command = new UpdateCompanyCommand(companyId, company);
             await _mediator.Send(command);
             return Ok();
@@ -45,10 +45,7 @@ namespace Drawer.Api.Controllers.Organization
         [ProducesResponseType(typeof(CompanyQueryModel), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetCompany()
         {
-            var companyId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == DrawerClaimTypes.CompanyId)?.Value;
-            if (companyId == null)
-                return Ok();
-
+            var companyId = Convert.ToInt64(HttpContext.User.Claims.FirstOrDefault(x => x.Type == DrawerClaimTypes.CompanyId)?.Value);
             var query = new GetCompanyByIdQuery(companyId);
             var company = await _mediator.Send(query);
             return Ok(company);
@@ -59,12 +56,33 @@ namespace Drawer.Api.Controllers.Organization
         [ProducesResponseType(typeof(List<CompanyMemberQueryModel>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetCompanyMembers()
         {
-            var companyId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == DrawerClaimTypes.CompanyId)?.Value;
-            if (companyId == null)
-                return NoContent();
+            var companyId = Convert.ToInt64(HttpContext.User.Claims.FirstOrDefault(x => x.Type == DrawerClaimTypes.CompanyId)?.Value);
             var query = new GetCompanyMembersQuery(companyId);
             var members = await _mediator.Send(query);
             return Ok(members);
         }
+
+        [HttpPost]
+        [Route(ApiRoutes.Company.AddMember)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> AddCompanyMember(CompanyMemberCommandModel companyMember)
+        {
+            var companyId = Convert.ToInt64(HttpContext.User.Claims.FirstOrDefault(x => x.Type == DrawerClaimTypes.CompanyId)?.Value);
+            var command = new CompanyMemberAddCommand(companyId, companyMember);
+            await _mediator.Send(command);
+            return Ok();
+        }
+
+        [HttpDelete]
+        [Route(ApiRoutes.Company.RemoveMemeber)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> RemoveCompanyMember(CompanyMemberCommandModel companyMember)
+        {
+            var companyId = Convert.ToInt64(HttpContext.User.Claims.FirstOrDefault(x => x.Type == DrawerClaimTypes.CompanyId)?.Value);
+            var command = new CompanyMemberRemoveCommand(companyId, companyMember);
+            await _mediator.Send(command);
+            return Ok();
+        }
+
     }
 }

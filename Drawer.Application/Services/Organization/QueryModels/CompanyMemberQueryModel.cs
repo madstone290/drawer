@@ -8,7 +8,9 @@ namespace Drawer.Application.Services.Organization.QueryModels
 {
     public class CompanyMemberQueryModel
     {
-        public string CompanyId { get; set; } = null!;
-        public string UserId { get; set; } = null!;
+        public long CompanyId { get; set; }
+        public long UserId { get; set; }
+        public string UserEmail { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
     }
 }

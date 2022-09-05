@@ -8,8 +8,9 @@
         public const string AccessToken = "AccessToken";
         public const string RefreshToken = "RefreshToken";
         public const string CompanyId = "CompanyId";
-        
         public const string UserId = "UserId";
+
+        public const string IdentityUserId = "IdentityUserId";
         public const string IsCompanyOwner = "IsCompanyOwner";
         public const string IsCompanyMember = "IsCompanyMember";
     }

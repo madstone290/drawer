@@ -1,0 +1,47 @@
+﻿@using Authentication
+@using Drawer.Web.Pages.Organization.Models
+
+<AidToolBar FlexSpace="FlexSpace.Stay">
+    <AidButton Color="Color.Secondary"
+               StartIcon="@Icons.Material.Filled.Refresh"
+               OnClick=@(() => Load_Click())>
+        조회
+    </AidButton>
+    <AidButton Color="Color.Secondary"
+               StartIcon="@Icons.Material.Filled.Add"
+               OnClick=@(() => Accept_Click())>
+        가입 승인
+    </AidButton>
+</AidToolBar>
+
+<AidTable T="@CompanyMemberModel"
+          MultiSelection="true"
+          Items="@_companyMemberList">
+    <Header>
+        <MudTHeadRow>
+            <MudTh>
+                <MudTableSortLabel SortBy="@(new Func<CompanyMemberModel, object>(x => x.UserEmail))">이메일</MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="@(new Func<CompanyMemberModel, object>(x => x.UserName))">이름</MudTableSortLabel>
+            </MudTh>
+        </MudTHeadRow>
+    </Header>
+
+    <Row>
+        <MudTd DataLabel="이메일">
+            @context.UserEmail
+        </MudTd>
+        <MudTd DataLabel="이름">
+            @context.UserName
+        </MudTd>
+    </Row>
+    <Footer>
+        <MudTFootRow>
+            <MudTd colSpan="100">총 @(MemberCount)개의 행</MudTd>
+        </MudTFootRow>
+    </Footer>
+</AidTable>
+
+
+

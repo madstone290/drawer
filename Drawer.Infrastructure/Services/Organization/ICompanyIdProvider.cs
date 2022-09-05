@@ -12,6 +12,6 @@ namespace Drawer.Infrastructure.Services.Organization
         /// 현재 사용자의 회사Id를 가져온다.
         /// </summary>
         /// <returns></returns>
-        string? GetCompanyId();
+        long? GetCompanyId();
     }
 }

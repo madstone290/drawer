@@ -13,6 +13,8 @@ namespace Drawer.Infrastructure.Data.Audit
         public void Configure(EntityTypeBuilder<AuditEvent> builder)
         {
             builder.ToTable("__AuditEvents");
+
+            builder.HasKey(x => x.Id);
         }
     }
 }

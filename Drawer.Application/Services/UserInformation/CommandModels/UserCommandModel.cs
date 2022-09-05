@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Drawer.Application.Services.UserInformation.CommandModels
 {
-    public class UserInfoCommandModel
+    public class UserCommandModel
     {
-        public string DisplayName { get; set; } = default!;
+        public string Name { get; set; } = default!;
     }
 }

@@ -98,6 +98,7 @@ namespace Drawer.Web.Pages.Issue
                     if (!Snackbar.CheckFail(issueResponse))
                         return;
 
+                    _issueList.Clear();
                     foreach (var issueDto in issueResponse.Data)
                     {
                         var issue = new IssueTableModel()

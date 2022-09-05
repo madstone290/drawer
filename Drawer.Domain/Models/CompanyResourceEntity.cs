@@ -12,19 +12,16 @@ namespace Drawer.Domain.Models
     /// </summary>
     public abstract class CompanyResourceEntity<TId> : AuditableEntity<TId>, ICompanyResource
     {
-        private string _companyId = string.Empty;
+        private long _companyId;
+        
         /// <summary>
         /// 회사 ID
         /// </summary>
-        public string CompanyId 
+        public long CompanyId 
         {
             get => _companyId;
             set
             {
-                if (string.IsNullOrWhiteSpace(value))
-                    throw new Exception("유효하지 않은 회사Id입니다");
-                if (!string.IsNullOrWhiteSpace(_companyId))
-                    throw new Exception("회사Id가 이미 설정되었습니다");
                 _companyId = value;
             } 
         } 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Drawer.Domain.Models.UserInformation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,20 +8,27 @@ using System.Threading.Tasks;
 namespace Drawer.Domain.Models.Organization
 {
     /// <summary>
-    /// 회사 구성원
+    /// 회사 구성원.
+    /// 사용자는 하나의 회사에만 속할 수 있다.
     /// </summary>
     public class CompanyMember : AuditableEntity<long>
     {
-        public string CompanyId { get; private set; }
+        public Company Company { get; private set; } = null!;
+        public long CompanyId { get; private set; }
 
-        public string UserId { get; private set; }
+        public User User { get; private set; } = null!;
+        public long UserId { get; private set; }
 
         public bool IsOwner { get; private set; }
 
-        public CompanyMember(string companyId, string userId, bool isOwner)
+
+        private CompanyMember() { }
+        public CompanyMember(Company company, User user, bool isOwner)
         {
-            CompanyId = companyId;
-            UserId = userId;
+            Company = company;
+            CompanyId = company.Id;
+            User = user;
+            UserId = user.Id;
             IsOwner = isOwner;
         }
     }

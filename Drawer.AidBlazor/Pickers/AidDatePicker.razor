@@ -38,7 +38,7 @@
     private const string BaseDateFormart = "yyyy-MM-dd";
     private const string ErrorText = "유효한 날짜가 아닙니다";
 
-    private MudDatePicker _pickerReference = null!;
+    private MudDatePicker? _pickerReference;
 
     private string? _pickerText;
     private DateTime? _date;
@@ -160,16 +160,22 @@
 
     private async void Today_Click()
     {
+        if (_pickerReference == null)
+            return;
         await _pickerReference.GoToDate(DateTime.Today);
     }
 
     private void Cancel_Click()
     {
+        if (_pickerReference == null)
+            return;
         _pickerReference.Close(false);
     }
 
     private void Ok_Click()
     {
+        if (_pickerReference == null)
+            return;
         _pickerReference.Close();
     }
 

@@ -28,10 +28,8 @@
             public const string Dashboard = "/Statistics/Dashboard";
         }
 
-        public static class Organization
-        {
-            public const string Company = "/Organization/Company";
-        }
+        public const string CompanyHome = "/Company";
+        public const string CompanyMemberHome = "/CompanyMember";
 
         public const string ItemHome = "/Item";
         public const string ItemBatchEdit = "/Item/BatchEdit";

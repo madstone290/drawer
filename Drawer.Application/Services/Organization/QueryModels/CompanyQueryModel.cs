@@ -8,8 +8,8 @@ namespace Drawer.Application.Services.Organization.QueryModels
 {
     public class CompanyQueryModel
     {
-        public string Id { get; set; } = null!;
-        public string OwnerId { get; set; } = null!;
+        public long Id { get; set; }
+        public long OwnerId { get; set; }
         public string Name { get; set; } = null!;
         public string? PhoneNumber { get; set; }
     }

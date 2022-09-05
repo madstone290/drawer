@@ -25,7 +25,7 @@ namespace Drawer.Infrastructure.Services.UserInformation
             else
             {
                 _userId = accessor.HttpContext.User
-                    .Claims.FirstOrDefault(x => x.Type == DrawerClaimTypes.UserId)
+                    .Claims.FirstOrDefault(x => x.Type == DrawerClaimTypes.IdentityUserId)
                     ?.Value;
             }
         }

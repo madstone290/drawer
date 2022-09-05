@@ -8,13 +8,11 @@ using System.Threading.Tasks;
 
 namespace Drawer.Application.Services.Organization.Repos
 {
-    public interface ICompanyRepository : IRepository<Company>
+    public interface ICompanyRepository : IRepository<Company, long>
     {
-        Task<Company?> FindByIdAsync(string id);
-
-        Task<bool> ExistByOwnerId(string ownerId);
+        Task<bool> ExistByOwnerId(long ownerId);
         
-        Task<CompanyQueryModel?> QueryById(string id);
-
+        Task<CompanyQueryModel?> QueryById(long id);
+        
     }
 }

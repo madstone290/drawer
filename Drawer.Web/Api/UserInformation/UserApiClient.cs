@@ -11,16 +11,16 @@ namespace Drawer.Web.Api.UserInformation
         {
         }
 
-        public async Task<ApiResponse<UserInfoQueryModel>> GetUser()
+        public async Task<ApiResponse<UserQueryModel>> GetUser()
         {
-            var request = new ApiRequest<UserInfoQueryModel>(
+            var request = new ApiRequest<UserQueryModel>(
                   HttpMethod.Get,
                   ApiRoutes.User.Get);
 
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<Unit>> SaveUser(UserInfoCommandModel userInfo)
+        public async Task<ApiResponse<Unit>> SaveUser(UserCommandModel userInfo)
         {
             var request = new ApiRequest<Unit>(
                     HttpMethod.Put,

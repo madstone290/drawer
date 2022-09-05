@@ -83,7 +83,7 @@ namespace Drawer.Domain.Models.Inventory
         }
 
         public void SetIssueTime(DateTime issueTime)
-        {
+        { 
             IssueDateTime = issueTime.ToUniversalTime();
         }
 

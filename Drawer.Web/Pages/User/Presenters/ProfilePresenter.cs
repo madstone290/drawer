@@ -26,15 +26,15 @@ namespace Drawer.Web.Pages.User.Presenters
             if (response.IsSuccessful && response.Data != null)
             {
                 View.Model.Email = response.Data.Email;
-                View.Model.DisplayName = response.Data.DisplayName;
+                View.Model.DisplayName = response.Data.Name;
             }
         }
 
         public async Task SaveUserAsync()
         {
-            var userInfoDto = new UserInfoCommandModel()
+            var userInfoDto = new UserCommandModel()
             {
-                DisplayName = View.Model.DisplayName!
+                Name = View.Model.DisplayName!
             };
             var response = await _apiClient.SaveUser(userInfoDto);
             CheckSuccessFail(response);

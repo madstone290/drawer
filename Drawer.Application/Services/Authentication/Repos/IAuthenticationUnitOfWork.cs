@@ -12,7 +12,7 @@ namespace Drawer.Application.Services.Authentication.Repos
     {
         public UserManager<IdentityUser> UserManager { get; }
 
-        public IUserInfoRepository UserInfoRepository { get; }
+        public IUserRepository UserRepository { get; }
 
     }
 }

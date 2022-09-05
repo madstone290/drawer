@@ -12,7 +12,7 @@ namespace Drawer.Web.Pages.Item
 {
     public partial class ItemHome
     {
-        private AidTable<ItemTableModel> table = null!;
+        private AidTable<ItemTableModel>? table;
         private readonly ExcelOptions _excelOptions = new ExcelOptionsBuilder()
             .AddColumn(nameof(ItemTableModel.Name), "이름")
             .AddColumn(nameof(ItemTableModel.Code), "코드")
@@ -33,7 +33,7 @@ namespace Drawer.Web.Pages.Item
         [Inject] public IDialogService DialogService { get; set; } = null!;
         [Inject] public IExcelFileService ExcelFileService { get; set; } = null!;
 
-        public ItemTableModel? SelectedItem => table.FocusedItem;
+        public ItemTableModel? SelectedItem => table?.FocusedItem;
 
         public IList<ItemTableModel> ItemList { get; private set; } = new List<ItemTableModel>();
 

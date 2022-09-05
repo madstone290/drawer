@@ -11,7 +11,7 @@ namespace Drawer.Web.Pages.Receipt
 {
     public partial class ReceiptEdit
     {
-        private MudForm _form = null!;
+        private MudForm? _form;
         private bool _isFormValid;
         private readonly ReceiptModel _receipt = new();
         private readonly ReceiptModelValidator _validator = new();

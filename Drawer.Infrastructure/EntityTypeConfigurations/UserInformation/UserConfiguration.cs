@@ -10,16 +10,16 @@ using System.Threading.Tasks;
 
 namespace Drawer.Infrastructure.EntityTypeConfigurations.UserInformation
 {
-    public class UserInfoConfiguration : IEntityTypeConfiguration<UserInfo>
+    public class UserConfiguration : IEntityTypeConfiguration<User>
     {
-        public void Configure(EntityTypeBuilder<UserInfo> builder)
+        public void Configure(EntityTypeBuilder<User> builder)
         {
             builder.HasKey(x => x.Id);
 
-            builder.Property(x => x.UserId).IsRequired();
-            builder.HasOne<IdentityUser>()
+            builder.HasOne(x => x.IdentityUser)
                 .WithMany()
-                .HasForeignKey(x => x.UserId);
+                .HasForeignKey(x => x.IdentityUserId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

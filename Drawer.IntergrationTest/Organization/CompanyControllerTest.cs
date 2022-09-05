@@ -54,14 +54,14 @@ namespace Drawer.IntergrationTest.Organization
             var getUserRequestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.User.Get);
             getUserRequestMessage.SetBearerToken(loginResponse!.AccessToken);
             var getUserResponseMessage = await _client.SendAsync(getUserRequestMessage);
-            var getUserResponse = await getUserResponseMessage.Content!.ReadFromJsonAsync<UserInfoQueryModel>();
+            var getUserResponse = await getUserResponseMessage.Content!.ReadFromJsonAsync<UserQueryModel>();
 
             var companyDto1 = new CompanyAddUpdateCommandModel()
             {
                 Name = name,
                 PhoneNumber = phoneNumber
             };
-            var createCompanyRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.Create);
+            var createCompanyRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.Add);
             createCompanyRequestMessage.Content = JsonContent.Create(companyDto1);
             createCompanyRequestMessage.SetBearerToken(loginResponse!.AccessToken);
 
@@ -73,7 +73,7 @@ namespace Drawer.IntergrationTest.Organization
                 Name = name2,
                 PhoneNumber = phoneNumber2
             };
-            var createCompanyRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.Create);
+            var createCompanyRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.Add);
             createCompanyRequestMessage2.Content = JsonContent.Create(companyDto2);
             createCompanyRequestMessage2.SetBearerToken(loginResponse!.AccessToken);
             var createCompanyResponseMessage2 = await _client.SendAsync(createCompanyRequestMessage2);
@@ -101,14 +101,14 @@ namespace Drawer.IntergrationTest.Organization
             var getUserRequestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.User.Get);
             getUserRequestMessage.SetBearerToken(loginResponse!.AccessToken);
             var getUserResponseMessage = await _client.SendAsync(getUserRequestMessage);
-            var userInfo = await getUserResponseMessage.Content!.ReadFromJsonAsync<UserInfoQueryModel>();
+            var userInfo = await getUserResponseMessage.Content!.ReadFromJsonAsync<UserQueryModel>();
 
             var companyDto = new CompanyAddUpdateCommandModel()
             {
                 Name = name,
                 PhoneNumber = phoneNumber
             };
-            var companyRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.Create);
+            var companyRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.Add);
             companyRequest.Content = JsonContent.Create(companyDto);
             companyRequest.SetBearerToken(loginResponse!.AccessToken);
             // Act
@@ -134,16 +134,15 @@ namespace Drawer.IntergrationTest.Organization
                 Name = name,
                 PhoneNumber = phoneNumber
             }; 
-            var createCompanyRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.Create);
+            var createCompanyRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.Add);
             createCompanyRequestMessage.Content = JsonContent.Create(companyDto);
             createCompanyRequestMessage.SetBearerToken(loginResponse!.AccessToken);
 
             // Act
             var createCompanyResponseMessage = await _client.SendAsync(createCompanyRequestMessage);
             createCompanyResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var companyId = await createCompanyResponseMessage.Content.ReadFromJsonAsync<string>();
-            companyId.Should().NotBeNull();
-
+            var companyId = await createCompanyResponseMessage.Content.ReadFromJsonAsync<long>();
+            
             // CompanyId클레임 획득을 위한 재로그인
             loginRequest = new LoginCommandModel(email, password);
             loginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, loginRequest);
@@ -174,14 +173,14 @@ namespace Drawer.IntergrationTest.Organization
             var getUserRequestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.User.Get);
             getUserRequestMessage.SetBearerToken(loginResponse!.AccessToken);
             var userResponse = await _client.SendAsync(getUserRequestMessage);
-            var userInfo = await userResponse.Content.ReadFromJsonAsync<UserInfoQueryModel>() ?? default;
+            var userInfo = await userResponse.Content.ReadFromJsonAsync<UserQueryModel>() ?? default;
 
             var companyDto = new CompanyAddUpdateCommandModel()
             {
                 Name = name,
                 PhoneNumber = phoneNumber
             };
-            var createCompanyRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.Create);
+            var createCompanyRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.Add);
             createCompanyRequestMessage.Content = JsonContent.Create(companyDto);
             createCompanyRequestMessage.SetBearerToken(loginResponse!.AccessToken);
 
@@ -203,7 +202,7 @@ namespace Drawer.IntergrationTest.Organization
             getCompanyMemberResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
             var members = await getCompanyMemberResponseMessage.Content.ReadFromJsonAsync<List<CompanyMemberQueryModel>>();
             members.Should().NotBeNull();
-            members.Should().Contain(m => m.UserId == userInfo.UserId);
+            members.Should().Contain(m => m.UserId == userInfo.Id);
         }
       
     }

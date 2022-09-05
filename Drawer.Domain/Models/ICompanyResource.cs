@@ -12,6 +12,6 @@ namespace Drawer.Domain.Models
     /// </summary>
     public interface ICompanyResource
     {
-        string CompanyId { get; set; }
+        long CompanyId { get; set; }
     }
 }

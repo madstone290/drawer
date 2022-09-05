@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Drawer.Application.Services.UserInformation.QueryModels
 {
-    public class UserInfoQueryModel
+    public class UserQueryModel
     {
-        public string UserId { get; set; } = null!;
+        public long Id { get; set; }
         public string Email { get; set; } = null!;
-        public string DisplayName { get; set; } = null!;
+        public string Name { get; set; } = null!;
     }
 }

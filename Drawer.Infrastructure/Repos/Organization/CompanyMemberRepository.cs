@@ -17,14 +17,19 @@ namespace Drawer.Infrastructure.Repos.Organization
         {
         }
 
-        public async Task<CompanyMember?> FindByUserIdAsync(string userId)
+        public async Task<bool> ExistByUserId(long userId)
+        {
+            return await _dbContext.CompanyMembers.AnyAsync(x => x.UserId == userId);
+        }
+
+        public async Task<CompanyMember?> FindByUserIdAsync(long userId)
         {
             return await _dbContext.CompanyMembers
                 .FirstOrDefaultAsync(x => x.UserId == userId);
          
         }
 
-        public async Task<List<CompanyMemberQueryModel>> QueryByCompanyId(string companyId)
+        public async Task<List<CompanyMemberQueryModel>> QueryByCompanyId(long companyId)
         {
             return await _dbContext.CompanyMembers.Where(x => x.CompanyId == companyId)
                 .Select(x=> new CompanyMemberQueryModel() 

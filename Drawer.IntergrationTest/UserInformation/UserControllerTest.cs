@@ -57,10 +57,10 @@ namespace Drawer.IntergrationTest.UserInformation
 
             // Assert
             responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var userInfo = await responseMessage.Content.ReadFromJsonAsync<UserInfoQueryModel>() ?? default!;
+            var userInfo = await responseMessage.Content.ReadFromJsonAsync<UserQueryModel>() ?? default!;
             userInfo.Should().NotBeNull();
             userInfo.Email.Should().Be(email);
-            userInfo.DisplayName.Should().Be(displayName);
+            userInfo.Name.Should().Be(displayName);
         }
 
 
@@ -74,9 +74,9 @@ namespace Drawer.IntergrationTest.UserInformation
             var loginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, loginRequest);
             var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponseCommandModel>();
 
-            var userInfoDto = new UserInfoCommandModel()
+            var userInfoDto = new UserCommandModel()
             {
-                DisplayName = displayName
+                Name = displayName
             };
 
             var updateUserRequestMessage = new HttpRequestMessage(HttpMethod.Put, ApiRoutes.User.Update);

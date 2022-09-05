@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Drawer.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(DrawerDbContext))]
-    [Migration("20220905020222_Init")]
+    [Migration("20220905080817_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -64,9 +64,8 @@ namespace Drawer.Infrastructure.Data.Migrations
                     b.Property<Guid>("AuditId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("CompanyId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<long>("CompanyId")
+                        .HasColumnType("bigint");
 
                     b.Property<long>("ItemId")
                         .HasColumnType("bigint");
@@ -100,9 +99,8 @@ namespace Drawer.Infrastructure.Data.Migrations
                     b.Property<string>("Buyer")
                         .HasColumnType("text");
 
-                    b.Property<string>("CompanyId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<long>("CompanyId")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("IssueDateTime")
                         .HasColumnType("timestamp with time zone");
@@ -146,9 +144,8 @@ namespace Drawer.Infrastructure.Data.Migrations
                     b.Property<string>("Code")
                         .HasColumnType("text");
 
-                    b.Property<string>("CompanyId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<long>("CompanyId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -182,9 +179,8 @@ namespace Drawer.Infrastructure.Data.Migrations
                     b.Property<Guid>("AuditId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("CompanyId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<long>("CompanyId")
+                        .HasColumnType("bigint");
 
                     b.Property<long>("LocationGroupId")
                         .HasColumnType("bigint");
@@ -207,9 +203,8 @@ namespace Drawer.Infrastructure.Data.Migrations
                     b.Property<Guid>("AuditId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("CompanyId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<long>("CompanyId")
+                        .HasColumnType("bigint");
 
                     b.Property<long>("GroupId")
                         .HasColumnType("bigint");
@@ -247,9 +242,8 @@ namespace Drawer.Infrastructure.Data.Migrations
                     b.Property<Guid>("AuditId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("CompanyId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<long>("CompanyId")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("Depth")
                         .HasColumnType("integer");
@@ -290,9 +284,8 @@ namespace Drawer.Infrastructure.Data.Migrations
                     b.Property<Guid>("AuditId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("CompanyId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<long>("CompanyId")
+                        .HasColumnType("bigint");
 
                     b.Property<long>("ItemId")
                         .HasColumnType("bigint");
@@ -327,8 +320,11 @@ namespace Drawer.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Drawer.Domain.Models.Organization.Company", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<Guid>("AuditId")
                         .HasColumnType("uuid");
@@ -337,14 +333,15 @@ namespace Drawer.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("OwnerId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<long>("OwnerId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
 
                     b.HasIndex("Id", "OwnerId")
                         .IsUnique();
@@ -363,23 +360,25 @@ namespace Drawer.Infrastructure.Data.Migrations
                     b.Property<Guid>("AuditId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("CompanyId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<long>("CompanyId")
+                        .HasColumnType("bigint");
 
                     b.Property<bool>("IsOwner")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("CompanyMembers");
                 });
 
-            modelBuilder.Entity("Drawer.Domain.Models.UserInformation.UserInfo", b =>
+            modelBuilder.Entity("Drawer.Domain.Models.UserInformation.User", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -387,30 +386,32 @@ namespace Drawer.Infrastructure.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<string>("DisplayName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("UserId")
+                    b.Property<string>("IdentityUserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("IdentityUserId");
 
-                    b.ToTable("UserInfos");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Drawer.Infrastructure.Data.Audit.AuditEvent", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("timestamp with time zone");
@@ -802,13 +803,45 @@ namespace Drawer.Infrastructure.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Drawer.Domain.Models.UserInformation.UserInfo", b =>
+            modelBuilder.Entity("Drawer.Domain.Models.Organization.Company", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("Drawer.Domain.Models.UserInformation.User", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("Drawer.Domain.Models.Organization.CompanyMember", b =>
+                {
+                    b.HasOne("Drawer.Domain.Models.Organization.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Drawer.Domain.Models.UserInformation.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Company");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Drawer.Domain.Models.UserInformation.User", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "IdentityUser")
+                        .WithMany()
+                        .HasForeignKey("IdentityUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("IdentityUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

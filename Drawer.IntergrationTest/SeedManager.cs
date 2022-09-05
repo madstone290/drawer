@@ -61,20 +61,20 @@ namespace Drawer.IntergrationTest
             foreach (var userRequest in new UserSeeds().Users)
             {
                 // Email인증을 우회하기 위해 API대신 직접 사용자를 등록한다
-                var user = new IdentityUser()
+                var identityUser = new IdentityUser()
                 {
                     Email = userRequest.Email,
                     UserName = userRequest.Email,
                     EmailConfirmed = true
                 };
                 var creatResult = authenticationUnitOfWork.UserManager
-                    .CreateAsync(user, userRequest.Password).GetAwaiter().GetResult();
+                    .CreateAsync(identityUser, userRequest.Password).GetAwaiter().GetResult();
 
                 if (!creatResult.Succeeded)
                     throw new Exception(string.Join(", ", creatResult.Errors.Select(x => x.Description)));
 
-                var userInfo = new UserInfo(user.Id, user.Email, userRequest.DisplayName);
-                await authenticationUnitOfWork.UserInfoRepository.AddAsync(userInfo);
+                var user = new User(identityUser, identityUser.Email, userRequest.DisplayName);
+                await authenticationUnitOfWork.UserRepository.AddAsync(user);
             }
             await authenticationUnitOfWork.SaveChangesAsync();
         }
@@ -87,7 +87,7 @@ namespace Drawer.IntergrationTest
         public static async Task UsingApiAsync(HttpClient client)
         {
             // 회사 시드 등록
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.Create);
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.Add);
             requestMessage.Content = JsonContent.Create(CompanySeeds.MasterCompany);
             await client.SendAsyncWithMasterAuthentication(requestMessage);
         }

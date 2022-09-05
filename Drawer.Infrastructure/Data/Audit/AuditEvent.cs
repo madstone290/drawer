@@ -8,7 +8,7 @@ namespace Drawer.Infrastructure.Data.Audit
 {
     public class AuditEvent
     {
-        public Guid Id { get; private set; } 
+        public long Id { get; private set; } 
 
         public DateTime DateTime { get; private set; }
 
@@ -43,7 +43,6 @@ namespace Drawer.Infrastructure.Data.Audit
         private AuditEvent() { }
         public AuditEvent(string eventType, string entityType, string entityAuditId, string userId, string? payload)
         {
-            Id = Guid.NewGuid();
             DateTime = DateTime.UtcNow;
             EventType = eventType;
             EntityType = entityType;

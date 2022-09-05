@@ -1,4 +1,5 @@
 ﻿using Drawer.Domain.Exceptions;
+using Drawer.Domain.Models.UserInformation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Drawer.Domain.Models.Organization
 {
-    public class Company : AuditableEntity<string>
+    public class Company : AuditableEntity<long>
     {
         /// <summary>
         /// 회사명
@@ -15,24 +16,30 @@ namespace Drawer.Domain.Models.Organization
         public string Name { get; private set; } = default!;
 
         /// <summary>
-        /// 회사를 생성한 사용자의 Id
+        /// 회사 소유자
         /// </summary>
-        public string OwnerId { get; private set; }
+        public User Owner { get; private set; } = null!;
+
+        /// <summary>
+        /// 회사 소유자 Id
+        /// </summary>
+        public long OwnerId { get; private set; }
 
         /// <summary>
         /// 회사번호
         /// </summary>
         public string? PhoneNumber { get; private set; }
 
+        private Company() { }
         /// <summary>
         /// 회사를 생성한다
         /// </summary>
         /// <param name="ownerId">회사를 소유한 사용자의 Id</param>
         /// <param name="name">회사명</param>
-        public Company(string ownerId, string name) 
+        public Company(User owner, string name) 
         {
-            OwnerId = ownerId;
-            Id = Guid.NewGuid().ToString();
+            Owner = owner;
+            OwnerId = owner.Id;
             SetName(name);
         }
 
