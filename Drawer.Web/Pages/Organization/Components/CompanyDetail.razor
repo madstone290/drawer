@@ -1,5 +1,4 @@
-﻿<ContentTitle Text="회사 정보" />
-<MudToolBar Class="px-0">
+﻿<MudToolBar Class="px-0">
     <MudButton DisableElevation
                Variant="Variant.Filled" 
                Color="Color.Primary" 
@@ -10,12 +9,6 @@
 
 
 <MudGrid>
-    <MudItem xs="12" sm="12" md="12">
-        <MudTextField @bind-Value="Model.Id"
-                      For="@(() => Model.Id)"
-                      Label="Id"
-                      Disabled />
-    </MudItem>
     <MudItem xs="12" sm="4" md="3">
         <MudTextField @bind-Value="Model.Name"
                       For="@(() => Model.Name)"

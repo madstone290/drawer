@@ -2,7 +2,7 @@
 {
     public class CompanyMemberModel
     {
-        public string UserId { get; set; } = string.Empty;
+        public long UserId { get; set; }
         public string UserEmail { get; set; } = string.Empty;
         public string UserName { get; set; } = string.Empty;
     }

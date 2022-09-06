@@ -29,7 +29,6 @@
         }
 
         public const string CompanyHome = "/Company";
-        public const string CompanyMemberHome = "/CompanyMember";
 
         public const string ItemHome = "/Item";
         public const string ItemBatchEdit = "/Item/BatchEdit";

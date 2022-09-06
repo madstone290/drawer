@@ -32,10 +32,13 @@ namespace Drawer.Infrastructure.Repos.Organization
         public async Task<List<CompanyMemberQueryModel>> QueryByCompanyId(long companyId)
         {
             return await _dbContext.CompanyMembers.Where(x => x.CompanyId == companyId)
+                .Include(x=> x.User)
                 .Select(x=> new CompanyMemberQueryModel() 
                 { 
                     CompanyId = x.CompanyId,
-                    UserId = x.UserId
+                    UserId = x.UserId,
+                    UserEmail = x.User.Email,
+                    UserName = x.User.Name
                 })
                 .ToListAsync();
         }
