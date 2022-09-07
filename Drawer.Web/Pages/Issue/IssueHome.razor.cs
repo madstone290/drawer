@@ -12,7 +12,7 @@ namespace Drawer.Web.Pages.Issue
 {
     public partial class IssueHome
     {
-        private AidTable<IssueTableModel> table = null!;
+        private AidTable<IssueTableModel>? table;
         private readonly List<IssueTableModel> _issueList = new();
         private readonly List<ItemQueryModel> _itemList = new();
         private readonly List<LocationQueryModel> _locationList = new();
@@ -51,7 +51,7 @@ namespace Drawer.Web.Pages.Issue
         [Inject] public IDialogService DialogService { get; set; } = null!;
         [Inject] public IExcelFileService ExcelFileService { get; set; } = null!;
 
-        public IssueTableModel? SelectedIssue => table.FocusedItem;
+        public IssueTableModel? SelectedIssue => table?.FocusedItem;
         public int TotalRowCount => _issueList.Count;
 
 

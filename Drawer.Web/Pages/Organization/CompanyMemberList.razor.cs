@@ -1,4 +1,5 @@
-﻿using Drawer.Web.Api.Inventory;
+﻿using Drawer.Application.Services.Organization.CommandModels;
+using Drawer.Web.Api.Inventory;
 using Drawer.Web.Api.Organization;
 using Drawer.Web.Pages.Organization.Models;
 using Drawer.Web.Utils;
@@ -11,6 +12,8 @@ namespace Drawer.Web.Pages.Organization
         private readonly List<CompanyMemberModel> _companyMemberList = new();
 
         private bool _isLoading = false;
+        private CompanyMemberModel? _selectedMemeber;
+
 
         public int MemberCount => _companyMemberList.Count;
 
@@ -21,7 +24,7 @@ namespace Drawer.Web.Pages.Organization
             await Load_Click();
         }
 
-        async Task Load_Click()
+        private async Task Load_Click()
         {
             _isLoading = true;
             var memberResponse = await CompanyApiClient.GetMembers();
@@ -42,6 +45,24 @@ namespace Drawer.Web.Pages.Organization
             }));
 
             _isLoading = false;
+        }
+
+        private async Task Delete_Click()
+        {
+            if (_selectedMemeber == null)
+                return;
+
+            var memberResponse = await CompanyApiClient.RemoveMember(new MemberCommandModel()
+            {
+                UserId = _selectedMemeber.UserId,
+            });
+            
+            if(Snackbar.CheckFail(memberResponse))
+            {
+                await Load_Click();
+            }
+
+
         }
     }
 }

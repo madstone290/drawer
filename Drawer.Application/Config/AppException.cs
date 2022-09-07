@@ -8,8 +8,20 @@ namespace Drawer.Application.Config
 {
     public class AppException : Exception
     {
-        public AppException(string? message) : base(message)
+        /// <summary>
+        /// 에러 상세 데이터 객체
+        /// </summary>
+        public object? Tag { get; set; }
+
+        /// <summary>
+        /// 에러 식별을 위한 코드
+        /// </summary>
+        public string? Code { get; set; }
+
+        public AppException(string message, object? tag = null, string? code = null) : base(message)
         {
+            Tag = tag;
+            Code = code;
         }
     }
 }

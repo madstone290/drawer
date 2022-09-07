@@ -9,7 +9,7 @@ namespace Drawer.IntergrationTest.Seeds
 {
     public static class CompanySeeds
     {
-        public static CompanyAddUpdateCommandModel MasterCompany => new CompanyAddUpdateCommandModel()
+        public static CompanyCommandModel MasterCompany => new CompanyCommandModel()
         {
             Name = "MasterCompany",
             PhoneNumber = "01-2345-6789"

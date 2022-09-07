@@ -6,7 +6,7 @@
 <ContentTitle Text="위치" />
 <AuthorizeView Context="AuthorizeView" Policy="@Policies.CompanyMember">
     <NotAuthorized>
-        <NeedCompany />
+        <RedirectToCompanyRegister />
     </NotAuthorized>
     <Authorized>
         <AidToolBar>

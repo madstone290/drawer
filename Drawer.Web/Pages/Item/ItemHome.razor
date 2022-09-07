@@ -5,7 +5,7 @@
 <ContentTitle Text="아이템" />
 <AuthorizeView Context="AuthorizeView" Policy="@Policies.CompanyMember">
     <NotAuthorized>
-        <NeedCompany />
+        <RedirectToCompanyRegister />
     </NotAuthorized>
     <Authorized>
         <AidToolBar FlexSpace="FlexSpace.Stay">

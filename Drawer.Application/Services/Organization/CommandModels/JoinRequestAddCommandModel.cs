@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Drawer.Application.Services.Organization.CommandModels
 {
-    public class CompanyMemberCommandModel
+    public class JoinRequestAddCommandModel
     {
-        public long UserId { get; set; }
+        public string OwnerEmail { get; set; } = string.Empty;
     }
 }

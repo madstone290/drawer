@@ -47,7 +47,7 @@ namespace Drawer.Infrastructure.Repos
             return await _dbContext.Set<TEntity>().AnyAsync(lambda);
         }
 
-        public async Task<TEntity?> FindByIdAsync(TId id)
+        public virtual async Task<TEntity?> FindByIdAsync(TId id)
         {
             return await _dbContext.FindAsync<TEntity>(id);
         }

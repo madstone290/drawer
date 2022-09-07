@@ -10,8 +10,8 @@ namespace Drawer.Web.Pages.Organization.Components
     {
         [CascadingParameter]
         public MudDialogInstance Dialog { get; private set; } = null!;
-        
-        public MudForm Form { get; private set; } = null!;
+
+        private MudForm? _form;
         public bool IsFormValid { get; private set; }
         public EditCompanyModelValidator Validator { get; private set; } = new ();
 
@@ -67,7 +67,11 @@ namespace Drawer.Web.Pages.Organization.Components
 
         async Task Save_Click()
         {
-            await Form.Validate();
+            if (_form == null)
+                return;
+
+            await _form.Validate();
+
             if (IsFormValid)
             {
                 if(EditMode == EditMode.Add)

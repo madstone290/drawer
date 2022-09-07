@@ -12,7 +12,7 @@
 <ContentTitle Text="@TitleText" />
 <AuthorizeView Context="AuthorizeView" Policy="@Policies.CompanyMember">
     <NotAuthorized>
-        <NeedCompany />
+        <RedirectToCompanyRegister />
     </NotAuthorized>
 
     <Authorized>

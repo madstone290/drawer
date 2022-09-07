@@ -5,7 +5,7 @@ namespace Drawer.Web.Utils
 {
     public static class SnackbarExtensions
     {
-        public static string SuccessMessage { get; set; } = "저장하였습니다";
+        public static string SuccessMessage { get; set; } = "성공하였습니다";
 
         /// <summary>
         /// Api 응답이 실패한 경우 메시지를 출력한다. 응답 성공여부 반환.

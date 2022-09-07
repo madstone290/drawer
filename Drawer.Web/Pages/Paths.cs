@@ -28,6 +28,8 @@
             public const string Dashboard = "/Statistics/Dashboard";
         }
 
+        public const string CompanyRegister = "/CompanyRegister";
+
         public const string CompanyHome = "/Company";
 
         public const string ItemHome = "/Item";

@@ -1,0 +1,29 @@
+﻿@using Drawer.Web.Utils
+<AidContainer>
+    <MudForm @ref="_form"
+             @bind-IsValid="_isFormValid"
+             Model="_company"
+             ValidationDelay="0"
+             Validation="@_validator.ValidateValue()">
+
+
+        <MudGrid>
+            <MudItem xs="6">
+                <AidTextField Label="회사명"
+                              @bind-Value="@_company.Name"
+                              For="@(()=> _company.Name)" />
+            </MudItem>
+
+            <MudItem xs="6">
+            </MudItem>
+
+            <MudItem xs="6">
+
+                <MudButton DisableElevation
+                           Disabled="@(!_isFormValid)"
+                           OnClick="@Save_Click"
+                           Variant="Variant.Filled" Color="Color.Primary">생성</MudButton>
+            </MudItem>
+        </MudGrid>
+    </MudForm>
+</AidContainer>

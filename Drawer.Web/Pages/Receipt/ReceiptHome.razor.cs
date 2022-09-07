@@ -12,7 +12,7 @@ namespace Drawer.Web.Pages.Receipt
 {
     public partial class ReceiptHome
     {
-        private AidTable<ReceiptTableModel> table = null!;
+        private AidTable<ReceiptTableModel>? table;
         private readonly List<ReceiptTableModel> _receiptList = new();
         private readonly List<ItemQueryModel> _itemList = new();
         private readonly List<LocationQueryModel> _locationList = new();
@@ -51,7 +51,7 @@ namespace Drawer.Web.Pages.Receipt
         [Inject] public IDialogService DialogService { get; set; } = null!;
         [Inject] public IExcelFileService ExcelFileService { get; set; } = null!;
 
-        public ReceiptTableModel? SelectedReceipt => table.FocusedItem;
+        public ReceiptTableModel? SelectedReceipt => table?.FocusedItem;
         public int TotalRowCount => _receiptList.Count;
 
 

@@ -12,6 +12,7 @@ namespace Drawer.Application.Services.Organization
     public interface IOrganizationUnitOfWork : IUnitOfWork
     {
         public ICompanyRepository CompanyRepository { get; }
-        public ICompanyMemberRepository CompanyMemberRepository { get; }
+        public ICompanyMemberRepository MemberRepository { get; }
+        public ICompanyJoinRequestRepository JoinRequestRepository { get; }
     }
 }

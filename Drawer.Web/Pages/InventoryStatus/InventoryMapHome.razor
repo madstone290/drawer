@@ -8,7 +8,7 @@
 <ContentTitle Text="재고 지도" />
 <AuthorizeView Context="AuthorizeView" Policy="@Policies.CompanyMember">
     <NotAuthorized>
-        <NeedCompany />
+        <RedirectToCompanyRegister />
     </NotAuthorized>
     <Authorized>
         <AidToolBar>

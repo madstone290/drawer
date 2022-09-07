@@ -45,13 +45,24 @@ namespace Drawer.Shared
         /// </summary>
         public static class Company
         {
-            public const string Add = "/Api/Companies";
-            public const string Update = "/Api/Companies";
-            public const string Get = "/Api/Companies";
-            public const string GetMembers = "/Api/Companies/Members";
-            public const string AddMember = "/Api/Companies/Member";
-            public const string RemoveMemeber = "/Api/Companies/Members";
+            public const string Add = "/Api/Company";
+            public const string Update = "/Api/Company";
+            public const string Get = "/Api/Company";
+            public const string GetMembers = "/Api/Company/Members";
+            public const string AddMember = "/Api/Company/Member";
+            public const string RemoveMemeber = "/Api/Company/Members";
         }
+
+        /// <summary>
+        /// 회사 가입 요청
+        /// </summary>
+        public static class JoinRequests
+        {
+            public const string Add = "/Api/JoinRequests";
+            public const string Handle = "/Api/JoinRequests/{id}/Handle";
+            public const string GetList = "/Api/JoinRequests";
+        }
+
 
         public static class Items
         {

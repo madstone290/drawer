@@ -26,7 +26,7 @@ namespace Drawer.IntergrationTest
             
             dbContext.Database.Migrate();
 
-            dbContext.Users.Truncate();
+            dbContext.IdentityUsers.Truncate();
             dbContext.UserRoles.Truncate();
             dbContext.UserClaims.Truncate();
             dbContext.UserLogins.Truncate();
@@ -35,14 +35,20 @@ namespace Drawer.IntergrationTest
             dbContext.RoleClaims.Truncate();
             dbContext.RefreshTokens.Truncate();
 
+            dbContext.Users.Truncate();
+
             dbContext.CompanyMembers.Truncate();
             dbContext.Companies.Truncate();
+            dbContext.CompanyJoinRequests.Truncate();
+
+            dbContext.Receipts.Truncate();
+            dbContext.Issues.Truncate();
+            dbContext.InventoryItems.Truncate();
 
             dbContext.Items.Truncate();
             dbContext.Locations.Truncate();
-            dbContext.InventoryItems.Truncate();
-            dbContext.Receipts.Truncate();
-            dbContext.Issues.Truncate();
+            dbContext.LocationGroups.Truncate();
+            dbContext.Layouts.Truncate();
 
             await dbContext.SaveChangesAsync();
         }
@@ -93,3 +99,4 @@ namespace Drawer.IntergrationTest
         }
     }
 }
+

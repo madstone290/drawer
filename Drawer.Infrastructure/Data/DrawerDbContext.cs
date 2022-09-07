@@ -6,6 +6,7 @@ using Drawer.Domain.Models.UserInformation;
 using Drawer.Infrastructure.Data.Audit;
 using Drawer.Infrastructure.Services.Organization;
 using Drawer.Infrastructure.Services.UserInformation;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
@@ -31,6 +32,8 @@ namespace Drawer.Infrastructure.Data
             _userIdProvider = userIdProvider;
         }
 
+        public DbSet<IdentityUser> IdentityUsers => base.Users;
+
         public DbSet<AuditEvent> AuditEvents { get; set; } = default!;
 
         public DbSet<RefreshToken> RefreshTokens { get; set; } = default!;
@@ -38,6 +41,7 @@ namespace Drawer.Infrastructure.Data
         public new DbSet<User> Users { get; set; } = default!;
         public DbSet<Company> Companies { get; set; } = default!;
         public DbSet<CompanyMember> CompanyMembers { get; set; } = default!;
+        public DbSet<CompanyJoinRequest> CompanyJoinRequests { get; set; } = default!;
 
         public DbSet<Item> Items { get; set; } = default!;
         public DbSet<Location> Locations { get; set; } = default!;

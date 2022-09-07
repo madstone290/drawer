@@ -20,7 +20,7 @@ namespace Drawer.Web.Pages.Organization.Presenters
 
         public async Task<ApiResponse<long>> CreateCompanyAsync()
         {
-            var companyDto = new CompanyAddUpdateCommandModel()
+            var companyDto = new CompanyCommandModel()
             {
                 Name = View.Model.Name,
                 PhoneNumber = View.Model.PhoneNumber
@@ -38,7 +38,7 @@ namespace Drawer.Web.Pages.Organization.Presenters
 
         public async Task<ApiResponse<Unit>> UpdateCompanyAsync()
         {
-            var companyDto = new CompanyAddUpdateCommandModel()
+            var companyDto = new CompanyCommandModel()
             {
                 Name = View.Model.Name,
                 PhoneNumber = View.Model.PhoneNumber

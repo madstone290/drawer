@@ -41,6 +41,8 @@ namespace Drawer.Web.Pages.Item
                 var response = await ApiClient.GetItem(ItemId.Value);
                 if (Snackbar.CheckFail(response))
                 {
+                    if (response.Data == null)
+                        return;
                     _item.Id = response.Data.Id;
                     _item.Name = response.Data.Name;
                     _item.Code = response.Data.Code ?? string.Empty;

@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Drawer.Application.Services.Organization.Commands
 {
-    public record UpdateCompanyCommand(long Id, CompanyAddUpdateCommandModel Company) : ICommand;
+    public record UpdateCompanyCommand(long Id, CompanyCommandModel Company) : ICommand;
 
     public class UpdateCompanyCommandHandler : ICommandHandler<UpdateCompanyCommand>
     {

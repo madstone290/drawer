@@ -6,7 +6,7 @@
 <AuthorizeView Policy="@Policies.CompanyMember">
 
     <NotAuthorized>
-        <RegisterCompany />
+        <RedirectToCompanyRegister />
     </NotAuthorized>
 
     <Authorized>

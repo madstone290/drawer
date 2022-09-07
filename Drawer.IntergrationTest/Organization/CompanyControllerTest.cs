@@ -56,7 +56,7 @@ namespace Drawer.IntergrationTest.Organization
             var getUserResponseMessage = await _client.SendAsync(getUserRequestMessage);
             var getUserResponse = await getUserResponseMessage.Content!.ReadFromJsonAsync<UserQueryModel>();
 
-            var companyDto1 = new CompanyAddUpdateCommandModel()
+            var companyDto1 = new CompanyCommandModel()
             {
                 Name = name,
                 PhoneNumber = phoneNumber
@@ -68,7 +68,7 @@ namespace Drawer.IntergrationTest.Organization
             // Act
             var createCompanyResponseMessage = await _client.SendAsync(createCompanyRequestMessage);
 
-            var companyDto2 = new CompanyAddUpdateCommandModel()
+            var companyDto2 = new CompanyCommandModel()
             {
                 Name = name2,
                 PhoneNumber = phoneNumber2
@@ -80,8 +80,7 @@ namespace Drawer.IntergrationTest.Organization
 
             // Assert
             createCompanyResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var companyId = await createCompanyResponseMessage.Content.ReadFromJsonAsync<string>();
-            companyId.Should().NotBeNull();
+            var companyId = await createCompanyResponseMessage.Content.ReadFromJsonAsync<long>();
 
             createCompanyResponseMessage2.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
             var createCompanyResponse2 = await createCompanyResponseMessage2.Content.ReadFromJsonAsync<ErrorResponse>();
@@ -103,7 +102,7 @@ namespace Drawer.IntergrationTest.Organization
             var getUserResponseMessage = await _client.SendAsync(getUserRequestMessage);
             var userInfo = await getUserResponseMessage.Content!.ReadFromJsonAsync<UserQueryModel>();
 
-            var companyDto = new CompanyAddUpdateCommandModel()
+            var companyDto = new CompanyCommandModel()
             {
                 Name = name,
                 PhoneNumber = phoneNumber
@@ -116,8 +115,8 @@ namespace Drawer.IntergrationTest.Organization
 
             // Assert
             companyResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var companyId = await companyResponse.Content.ReadFromJsonAsync<string>();
-            companyId.Should().NotBeNull();
+            var companyId = await companyResponse.Content.ReadFromJsonAsync<long>();
+            companyId.Should().BeGreaterThan(0);
         }
 
         [Theory]
@@ -129,7 +128,7 @@ namespace Drawer.IntergrationTest.Organization
             var loginResponseMessage = await _client.PostAsJsonAsync(ApiRoutes.Account.Login, loginRequest);
             var loginResponse = await loginResponseMessage.Content.ReadFromJsonAsync<LoginResponseCommandModel>();
 
-            var companyDto = new CompanyAddUpdateCommandModel()
+            var companyDto = new CompanyCommandModel()
             {
                 Name = name,
                 PhoneNumber = phoneNumber
@@ -173,9 +172,9 @@ namespace Drawer.IntergrationTest.Organization
             var getUserRequestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.User.Get);
             getUserRequestMessage.SetBearerToken(loginResponse!.AccessToken);
             var userResponse = await _client.SendAsync(getUserRequestMessage);
-            var userInfo = await userResponse.Content.ReadFromJsonAsync<UserQueryModel>() ?? default;
+            var user = await userResponse.Content.ReadFromJsonAsync<UserQueryModel>() ?? null!;
 
-            var companyDto = new CompanyAddUpdateCommandModel()
+            var companyDto = new CompanyCommandModel()
             {
                 Name = name,
                 PhoneNumber = phoneNumber
@@ -187,7 +186,7 @@ namespace Drawer.IntergrationTest.Organization
             // Act
             var createCompanyResponseMessage = await _client.SendAsync(createCompanyRequestMessage);
             createCompanyResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            var companyId = await createCompanyResponseMessage.Content.ReadFromJsonAsync<string>();
+            var companyId = await createCompanyResponseMessage.Content.ReadFromJsonAsync<long>();
 
             // CompanyId클레임 획득을 위한 재로그인
             loginRequest = new LoginCommandModel(email, password);
@@ -202,7 +201,7 @@ namespace Drawer.IntergrationTest.Organization
             getCompanyMemberResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
             var members = await getCompanyMemberResponseMessage.Content.ReadFromJsonAsync<List<CompanyMemberQueryModel>>();
             members.Should().NotBeNull();
-            members.Should().Contain(m => m.UserId == userInfo.Id);
+            members.Should().Contain(m => m.UserId == user.Id);
         }
       
     }

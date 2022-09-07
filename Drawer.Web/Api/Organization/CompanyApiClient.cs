@@ -20,7 +20,7 @@ namespace Drawer.Web.Api.Organization
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<long>> CreateCompany(CompanyAddUpdateCommandModel company)
+        public async Task<ApiResponse<long>> CreateCompany(CompanyCommandModel company)
         {
             var request = new ApiRequest<long>(
                    HttpMethod.Post,
@@ -30,7 +30,7 @@ namespace Drawer.Web.Api.Organization
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<Unit>> UpdateCompany(CompanyAddUpdateCommandModel company)
+        public async Task<ApiResponse<Unit>> UpdateCompany(CompanyCommandModel company)
         {
             var request = new ApiRequest(
                    HttpMethod.Put,
@@ -41,7 +41,7 @@ namespace Drawer.Web.Api.Organization
         }
 
 
-        public async Task<ApiResponse<Unit>> AddMember(CompanyMemberCommandModel member)
+        public async Task<ApiResponse<Unit>> AddMember(MemberCommandModel member)
         {
             var request = new ApiRequest(
                    HttpMethod.Post,
@@ -51,10 +51,10 @@ namespace Drawer.Web.Api.Organization
             return await SendAsync(request);
         }
 
-        public async Task<ApiResponse<Unit>> RemoveMember(CompanyMemberCommandModel member)
+        public async Task<ApiResponse<Unit>> RemoveMember(MemberCommandModel member)
         {
             var request = new ApiRequest(
-                   HttpMethod.Post,
+                   HttpMethod.Delete,
                    ApiRoutes.Company.RemoveMemeber,
                    member);
 

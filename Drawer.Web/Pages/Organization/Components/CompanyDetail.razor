@@ -1,24 +1,26 @@
-﻿<MudToolBar Class="px-0">
-    <MudButton DisableElevation
-               Variant="Variant.Filled" 
-               Color="Color.Primary" 
-               OnClick="(() => Edit_ClickAsync())" 
-               StartIcon="@Icons.Material.Filled.Edit" 
-               IconColor="Color.Surface">수정</MudButton>
-</MudToolBar>
+﻿<div style="display:flex; flex-direction:column;" >
+    <MudToolBar Style="flex: 0 0 auto;" Class="px-0">
+        <MudButton DisableElevation
+                   Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   OnClick="(() => Edit_ClickAsync())"
+                   StartIcon="@Icons.Material.Filled.Edit"
+                   IconColor="Color.Surface">수정</MudButton>
+    </MudToolBar>
 
+    <MudGrid Style="flex:1 1 auto; width:100%;">
+        <MudItem xs="6">
+            <MudTextField @bind-Value="Model.Name"
+                          For="@(() => Model.Name)"
+                          Label="이름"
+                          Disabled />
+        </MudItem>
+        <MudItem xs="6">
+            <MudTextField @bind-Value="Model.PhoneNumber"
+                          For="@(() => Model.PhoneNumber)"
+                          Label="연락처"
+                          Disabled />
+        </MudItem>
+    </MudGrid>
 
-<MudGrid>
-    <MudItem xs="12" sm="4" md="3">
-        <MudTextField @bind-Value="Model.Name"
-                      For="@(() => Model.Name)"
-                      Label="이름"
-                      Disabled />
-    </MudItem>
-    <MudItem xs="12" sm="4" md="3">
-        <MudTextField @bind-Value="Model.PhoneNumber"
-                      For="@(() => Model.PhoneNumber)"
-                      Label="연락처"
-                      Disabled />
-    </MudItem>
-</MudGrid>
+</div>

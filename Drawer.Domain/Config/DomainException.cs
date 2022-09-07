@@ -8,8 +8,14 @@ namespace Drawer.Domain.Config
 {
     public class DomainException : Exception
     {
-        public DomainException(string? message) : base(message)
+        /// <summary>
+        /// 에러 상세 데이터 객체
+        /// </summary>
+        public object? Tag { get; set; }
+
+        public DomainException(string? message, object? tag = null) : base(message)
         {
+            Tag = tag;
         }
     }
 }

@@ -8,7 +8,7 @@
     </TitleContent>
 
     <DialogContent>
-        <MudForm @ref="Form" @bind-IsValid="IsFormValid"
+        <MudForm @ref="_form" @bind-IsValid="IsFormValid"
                  Model="Model" ValidationDelay="0" Validation="@Validator.ValidateValue()">
             <MudGrid>
                 @if (EditMode == EditMode.View || EditMode == EditMode.Update)

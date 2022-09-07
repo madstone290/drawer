@@ -347,6 +347,38 @@ namespace Drawer.Infrastructure.Data.Migrations
                     b.ToTable("Companies");
                 });
 
+            modelBuilder.Entity("Drawer.Domain.Models.Organization.CompanyJoinRequest", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("CompanyId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsAccepted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsHandled")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("RequestTimeUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CompanyJoinRequests");
+                });
+
             modelBuilder.Entity("Drawer.Domain.Models.Organization.CompanyMember", b =>
                 {
                     b.Property<long>("Id")
@@ -810,6 +842,25 @@ namespace Drawer.Infrastructure.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("Drawer.Domain.Models.Organization.CompanyJoinRequest", b =>
+                {
+                    b.HasOne("Drawer.Domain.Models.Organization.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Drawer.Domain.Models.UserInformation.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Drawer.Domain.Models.Organization.CompanyMember", b =>

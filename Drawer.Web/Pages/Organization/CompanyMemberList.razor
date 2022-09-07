@@ -3,14 +3,20 @@
 
 <div style="height:100%; display:flex; flex-direction:column;">
     <AidToolBar FlexSpace="FlexSpace.Stay">
-        <AidButton Color="Color.Secondary"
+        <AidButton Color="Color.Info"
                    StartIcon="@Icons.Material.Filled.Refresh"
                    OnClick=@(() => Load_Click())>
             조회
         </AidButton>
+        <AidButton Color="Color.Error"
+                   StartIcon="@Icons.Material.Filled.Delete"
+                   OnClick=@(() => Delete_Click())>
+            삭제
+        </AidButton>
     </AidToolBar>
 
     <AidTable T="@CompanyMemberModel"
+              @bind-FocusedItem="@_selectedMemeber"
               Loading="@_isLoading"
               Items="@_companyMemberList">
         <Header>

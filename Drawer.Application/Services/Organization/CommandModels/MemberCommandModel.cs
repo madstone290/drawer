@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace Drawer.Application.Services.Organization.CommandModels
 {
-    public class CompanyAddUpdateCommandModel
+    public class MemberCommandModel
     {
-        public string Name { get; set; } = null!;
-        public string? PhoneNumber { get; set; }
+        public long UserId { get; set; }
     }
 }

@@ -20,7 +20,7 @@ namespace Drawer.Api.Controllers.Organization
         [HttpPost]
         [Route(ApiRoutes.Company.Add)]
         [ProducesResponseType(typeof(long), StatusCodes.Status200OK)]
-        public async Task<IActionResult> CreateCompany([FromBody] CompanyAddUpdateCommandModel company)
+        public async Task<IActionResult> CreateCompany([FromBody] CompanyCommandModel company)
         {
             var identityUserId = HttpContext.User.Claims.First(x => x.Type == DrawerClaimTypes.IdentityUserId).Value;
             var command = new CreateCompanyCommand(identityUserId, company);
@@ -32,7 +32,7 @@ namespace Drawer.Api.Controllers.Organization
         [HttpPut]
         [Route(ApiRoutes.Company.Update)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> UpdateCompany([FromBody] CompanyAddUpdateCommandModel company)
+        public async Task<IActionResult> UpdateCompany([FromBody] CompanyCommandModel company)
         {
             var companyId = Convert.ToInt64(HttpContext.User.Claims.FirstOrDefault(x => x.Type == DrawerClaimTypes.CompanyId)?.Value);
             var command = new UpdateCompanyCommand(companyId, company);
@@ -62,24 +62,13 @@ namespace Drawer.Api.Controllers.Organization
             return Ok(members);
         }
 
-        [HttpPost]
-        [Route(ApiRoutes.Company.AddMember)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> AddCompanyMember(CompanyMemberCommandModel companyMember)
-        {
-            var companyId = Convert.ToInt64(HttpContext.User.Claims.FirstOrDefault(x => x.Type == DrawerClaimTypes.CompanyId)?.Value);
-            var command = new CompanyMemberAddCommand(companyId, companyMember);
-            await _mediator.Send(command);
-            return Ok();
-        }
-
         [HttpDelete]
         [Route(ApiRoutes.Company.RemoveMemeber)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> RemoveCompanyMember(CompanyMemberCommandModel companyMember)
+        public async Task<IActionResult> RemoveCompanyMember(MemberCommandModel companyMember)
         {
             var companyId = Convert.ToInt64(HttpContext.User.Claims.FirstOrDefault(x => x.Type == DrawerClaimTypes.CompanyId)?.Value);
-            var command = new CompanyMemberRemoveCommand(companyId, companyMember);
+            var command = new MemberRemoveCommand(companyId, companyMember);
             await _mediator.Send(command);
             return Ok();
         }

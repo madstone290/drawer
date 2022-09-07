@@ -112,6 +112,7 @@ namespace Drawer.Infrastructure
             services.AddScoped<IOrganizationUnitOfWork, OrganizationUnitOfWork>();
             services.AddScoped<ICompanyRepository, CompanyRepository>();
             services.AddScoped<ICompanyMemberRepository, CompanyMemberRepository>();
+            services.AddScoped<ICompanyJoinRequestRepository, CompanyJoinRequestRepository>();
 
             services.AddScoped<IInventoryUnitOfWork, InventoryUnitOfWork>();
             services.AddScoped<IItemRepository, ItemRepository>();

@@ -14,20 +14,25 @@ namespace Drawer.Infrastructure.Repos.Organization
         private readonly DrawerDbContext _dbContext;
         private readonly ICompanyRepository _companyRepository;
         private readonly ICompanyMemberRepository _companyMemberRepository;
+        private readonly ICompanyJoinRequestRepository _joinRequestRepository;
 
         public OrganizationUnitOfWork(
             DrawerDbContext dbContext,
             ICompanyRepository companyRepository,
-            ICompanyMemberRepository companyMemberRepository)
+            ICompanyMemberRepository companyMemberRepository,
+            ICompanyJoinRequestRepository joinRequestRepository)
         {
             _dbContext = dbContext;
             _companyRepository = companyRepository;
             _companyMemberRepository = companyMemberRepository;
+            _joinRequestRepository = joinRequestRepository;
         }
 
         public ICompanyRepository CompanyRepository => _companyRepository;
 
-        public ICompanyMemberRepository CompanyMemberRepository => _companyMemberRepository;
+        public ICompanyMemberRepository MemberRepository => _companyMemberRepository;
+
+        public ICompanyJoinRequestRepository JoinRequestRepository => _joinRequestRepository;
 
         public async Task SaveChangesAsync()
         {

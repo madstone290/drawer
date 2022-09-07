@@ -1,0 +1,34 @@
+﻿@using Drawer.Web.Utils
+
+<MudPaper>
+    @if (_requestSent)
+    {
+        <MudText>
+            가입 요청을 전송하였습니다. 가입 승인을 기다려주세요.
+        </MudText>
+    }
+    else
+    {
+        <MudForm @ref="_form"
+             @bind-IsValid="_isFormValid"
+             Model="_joinRequest" ValidationDelay="0" Validation="@_validator.ValidateValue()">
+            <MudGrid>
+                <MudItem xs="6">
+                    <AidTextField Label="소유자 이메일"
+                              @bind-Value="@_joinRequest.OwnerEmail"
+                              For="@(()=> _joinRequest.OwnerEmail)" />
+                </MudItem>
+
+                <MudItem xs="6">
+                </MudItem>
+                <MudItem xs="6">
+
+                    <MudButton DisableElevation
+                           Disabled="@(!_isFormValid)"
+                           OnClick="@Request_ClickAsync"
+                           Variant="Variant.Filled" Color="Color.Primary">요청</MudButton>
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    }
+</MudPaper>

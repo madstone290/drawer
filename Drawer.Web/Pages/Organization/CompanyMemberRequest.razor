@@ -2,29 +2,38 @@
 @using Drawer.Web.Pages.Organization.Models
 <div style="height:100%; display:flex; flex-direction:column;">
 <AidToolBar FlexSpace="FlexSpace.Stay">
-    <AidButton Color="Color.Secondary"
+    <AidButton Color="Color.Info"
                StartIcon="@Icons.Material.Filled.Refresh"
                OnClick=@(() => Load_Click())>
         조회
     </AidButton>
-    <AidButton Color="Color.Secondary"
+    <AidButton Color="Color.Primary"
                StartIcon="@Icons.Material.Filled.Add"
-               OnClick=@(() => Accept_Click())>
+               OnClick=@(() => Accept_ClickAsync())>
         가입 승인
+    </AidButton>
+    <AidButton Color="Color.Secondary"
+                StartIcon="@Icons.Material.Filled.Remove"
+                OnClick=@(() => Refuse_ClickAsync())>
+        가입 거절
     </AidButton>
 </AidToolBar>
 
-<AidTable T="@CompanyMemberModel"
+<AidTable T="@JoinRequestModel"
           MultiSelection="true"
-          Items="@_companyMemberList">
+          @bind-SelectedItems="@_selectedRequests"
+          Items="@_requestList">
     <Header>
         <MudTHeadRow>
             <MudTh>
-                <MudTableSortLabel SortBy="@(new Func<CompanyMemberModel, object>(x => x.UserEmail))">이메일</MudTableSortLabel>
+                    <MudTableSortLabel SortBy="@(new Func<JoinRequestModel, object>(x => x.UserEmail))">이메일</MudTableSortLabel>
             </MudTh>
             <MudTh>
-                <MudTableSortLabel SortBy="@(new Func<CompanyMemberModel, object>(x => x.UserName))">이름</MudTableSortLabel>
+                    <MudTableSortLabel SortBy="@(new Func<JoinRequestModel, object>(x => x.UserName))">이름</MudTableSortLabel>
             </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="@(new Func<JoinRequestModel, object>(x => x.RequestTimeLocal))">요청 시간</MudTableSortLabel>
+                </MudTh>
         </MudTHeadRow>
     </Header>
 
@@ -35,10 +44,13 @@
         <MudTd DataLabel="이름">
             @context.UserName
         </MudTd>
+            <MudTd DataLabel="요청시간">
+                @context.RequestTimeLocal.ToString("yyyy-MM-dd HH:mm")
+            </MudTd>
     </Row>
     <Footer>
         <MudTFootRow>
-            <MudTd colSpan="100">총 @(MemberCount)개의 행</MudTd>
+            <MudTd colSpan="100">총 @(RequestCount)개의 행</MudTd>
         </MudTFootRow>
     </Footer>
 </AidTable>

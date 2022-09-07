@@ -106,6 +106,9 @@ namespace Drawer.Web.Pages.Receipt
 
         async Task Save_Click()
         {
+            if (_form == null)
+                return;
+
             await _form.Validate();
             if (_isFormValid)
             {

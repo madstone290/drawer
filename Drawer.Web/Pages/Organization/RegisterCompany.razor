@@ -1,0 +1,31 @@
+﻿@attribute [Route(Paths.CompanyRegister)]
+
+<ContentTitle Text="회사 등록" />
+<MudAlert Severity="Severity.Info">
+    다른 기능을 사용하기 위해선 먼저 회사 구성원으로 등록되어야 합니다.
+    회사를 직접 만들거나 다른 소유자에게 구성원 등록요청을 할 수 있습니다.
+</MudAlert>
+@{
+    if (_selectedRegisterType == RegisterType.CreateCompany)
+    {
+        <Drawer.Web.Pages.Organization.Components.CreateCompany />
+    }
+    else if (_selectedRegisterType == RegisterType.JoinRequest)
+    {
+        <Drawer.Web.Pages.Organization.Components.JoinRequest />
+    }
+    else
+    {
+        <MudStack>
+            <AidButton Size="Size.Large"
+               Color="Color.Primary"
+               OnClick="CreateCompany_Click">회사 만들기</AidButton>
+            <AidButton Size="Size.Large"
+               Color="Color.Secondary"
+               OnClick="Request_Click">가입 요청하기</AidButton>
+        </MudStack>
+    }
+}
+
+
+

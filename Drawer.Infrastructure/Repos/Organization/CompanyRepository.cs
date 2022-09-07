@@ -22,6 +22,13 @@ namespace Drawer.Infrastructure.Repos.Organization
             return await _dbContext.Companies.AnyAsync(x => x.OwnerId == ownerId);
         }
 
+        public async Task<Company?> FindByOwnerEmail(string companyOwnerEmail)
+        {
+            return await _dbContext.Companies
+                .Include(x=> x.Owner)
+                .FirstOrDefaultAsync(x => x.Owner.Email == companyOwnerEmail);
+        }
+
         public async Task<CompanyQueryModel?> QueryById(long id)
         {
             return await _dbContext.Companies
