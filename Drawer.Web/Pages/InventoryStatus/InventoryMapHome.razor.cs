@@ -5,11 +5,13 @@ using Drawer.Web.Pages.InventoryStatus.Models;
 using Drawer.Web.Services.Canvas;
 using Drawer.Web.Utils;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using MudBlazor;
+using PSC.Blazor.Components.BrowserDetect;
 
 namespace Drawer.Web.Pages.InventoryStatus
 {
-    public partial class InventoryMapHome
+    public partial class InventoryMapHome : IAsyncDisposable
     {
         private const string CANVAS_ID = "canvas";
 
@@ -61,12 +63,16 @@ namespace Drawer.Web.Pages.InventoryStatus
 
         private string? _searchText;
 
+        private bool _isMobile;
+        private BrowserDetectJsInterop? browserDetectJsInterop;
+
         [Inject] public ItemApiClient ItemApiClient { get; set; } = null!;
         [Inject] public LocationGroupApiClient LocationGroupApiClient { get; set; } = null!;
         [Inject] public LocationApiClient LocationApiClient { get; set; } = null!;
         [Inject] public InventoryItemApiClient InventoryApiClient { get; set; } = null!;
         [Inject] public LayoutApiClient LayoutApiClient { get; set; } = null!;
         [Inject] public ICanvasService CanvasService { get; set; } = null!;
+        [Inject] public IJSRuntime JSRuntime { get; set; } = null!;
 
         public int MasterItemListCount => _masterItemList.Count;
 
@@ -187,6 +193,12 @@ namespace Drawer.Web.Pages.InventoryStatus
             {
                 await CanvasService.InitCanvas(CANVAS_ID, Enumerable.Empty<PaletteItem>(), new CanvasCallbacks(), false, true);
                 await CanvasService.Zoom(0.6);
+
+                browserDetectJsInterop = new BrowserDetectJsInterop(JSRuntime);
+                var info = await browserDetectJsInterop.BrowserInfo();
+
+                _isMobile = info.IsMobile ?? false;
+
             }
         }
 
@@ -253,6 +265,14 @@ namespace Drawer.Web.Pages.InventoryStatus
         private long GetRootLocationId(long locationId)
         {
             return _locationQueryModels.First(x => x.Id == locationId).RootGroupId;
+        }
+
+        async ValueTask IAsyncDisposable.DisposeAsync()
+        {
+            if (browserDetectJsInterop != null)
+                await browserDetectJsInterop.DisposeAsync();
+
+            await CanvasService.DisposeAsync();
         }
     }
 }

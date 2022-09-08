@@ -5,7 +5,9 @@ using Drawer.Web.Services.Canvas;
 using Drawer.Web.Shared;
 using Drawer.Web.Utils;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using MudBlazor;
+using PSC.Blazor.Components.BrowserDetect;
 
 namespace Drawer.Web.Pages.Layout
 {
@@ -18,10 +20,16 @@ namespace Drawer.Web.Pages.Layout
 
         private LocationGroupModel? selectedGroup;
 
+        private bool _isMobile;
         private bool _canAccess = true;
         private bool _isLoading = false;
+        
+
+        private BrowserDetectJsInterop? browserDetectJsInterop;
 
         public int TotalRowCount => _rootGroupList.Count;
+
+        [Inject] public IJSRuntime JSRuntime { get; set; } = null!;
 
         [Inject] public LocationGroupApiClient LocationGroupApiClient { get; set; } = null!;
         [Inject] public LayoutApiClient LayoutApiClient { get; set; } = null!;
@@ -36,6 +44,11 @@ namespace Drawer.Web.Pages.Layout
         {
             if (firstRender)
             {
+                browserDetectJsInterop = new BrowserDetectJsInterop(JSRuntime);
+                var info = await browserDetectJsInterop.BrowserInfo();
+
+                _isMobile = info.IsMobile ?? false;
+
                 await CanvasService.InitCanvas(CANVAS_ID, Enumerable.Empty<PaletteItem>(), new CanvasCallbacks(), false);
             }
         }
@@ -119,7 +132,18 @@ namespace Drawer.Web.Pages.Layout
 
         async ValueTask IAsyncDisposable.DisposeAsync()
         {
-            await CanvasService.DisposeAsync();
+            try
+            {
+                if(browserDetectJsInterop != null)
+                    await browserDetectJsInterop.DisposeAsync();
+
+                await CanvasService.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // 페이지를 갱신할 경우 JSDisconnectedException 예외 발생
+            }
+
         }
     }
 }

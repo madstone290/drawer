@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
-		<AssemblyVersion>1.1.6.0</AssemblyVersion>
+		<AssemblyVersion>1.1.7.0</AssemblyVersion>
 		<TargetFramework>net6.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -24,6 +24,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Content Remove="C:\Users\Admin\.nuget\packages\psc.blazor.components.browserdetect\1.0.6\contentFiles\any\net6.0\wwwroot\js\browserDetect.js" />
 	  <Content Remove="Pages\InventoryStatus\InventoryItemRow.razor" />
 	</ItemGroup>
 
@@ -31,6 +32,7 @@
 		<PackageReference Include="Blazored.LocalStorage" Version="4.2.0" />
 		<PackageReference Include="ClosedXML" Version="0.96.0" />
 		<PackageReference Include="FluentValidation" Version="11.0.3" />
+		<PackageReference Include="PSC.Blazor.Components.BrowserDetect" Version="1.0.6" />
 		<PackageReference Include="Scrutor" Version="4.2.0" />
 	</ItemGroup>
 
