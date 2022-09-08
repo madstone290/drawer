@@ -14,6 +14,8 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
+using Drawer.Application.Services;
+using Drawer.Application.Services.UserInformation.Repos;
 
 namespace Drawer.IntergrationTest
 {
@@ -60,8 +62,12 @@ namespace Drawer.IntergrationTest
         /// <exception cref="Exception"></exception>
         public static async Task UsingScopeAsync(IServiceScope scope)
         {
-            var authenticationUnitOfWork = scope.ServiceProvider.GetService<IAuthenticationUnitOfWork>()
-               ?? default!;
+            var unitOfWork = scope.ServiceProvider.GetService<IUnitOfWork>();
+            var userManager = scope.ServiceProvider.GetService<UserManager<IdentityUser>>();
+            var userRepository = scope.ServiceProvider.GetService<IUserRepository>();
+            if (unitOfWork == null || userManager == null || userRepository == null)
+                throw new Exception("서비스를 로드하지 못했습니다");
+
 
             // 사용자 Seed
             foreach (var userRequest in new UserSeeds().Users)
@@ -73,16 +79,15 @@ namespace Drawer.IntergrationTest
                     UserName = userRequest.Email,
                     EmailConfirmed = true
                 };
-                var creatResult = authenticationUnitOfWork.UserManager
-                    .CreateAsync(identityUser, userRequest.Password).GetAwaiter().GetResult();
+                var creatResult = userManager.CreateAsync(identityUser, userRequest.Password).GetAwaiter().GetResult();
 
                 if (!creatResult.Succeeded)
                     throw new Exception(string.Join(", ", creatResult.Errors.Select(x => x.Description)));
 
                 var user = new User(identityUser, identityUser.Email, userRequest.DisplayName);
-                await authenticationUnitOfWork.UserRepository.AddAsync(user);
+                await userRepository.AddAsync(user);
             }
-            await authenticationUnitOfWork.SaveChangesAsync();
+            await unitOfWork.CommitAsync();
         }
 
         /// <summary>

@@ -26,20 +26,27 @@ namespace Drawer.Application.Services.Organization.Commands
 
     public class JoinRequestHandleCommandHandler : ICommandHandler<JoinRequestHandleCommand>
     {
-        private readonly IOrganizationUnitOfWork _organizationUnitOfWork;
         private readonly ICompanyJoinService _companyJoinService;
+        private readonly ICompanyJoinRequestRepository _joinRequestRepository;
+        private readonly ICompanyMemberRepository _memberRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public JoinRequestHandleCommandHandler(IOrganizationUnitOfWork organizationUnitOfWork, ICompanyJoinService companyJoinService)
+        public JoinRequestHandleCommandHandler(ICompanyJoinService companyJoinService,
+                                               ICompanyJoinRequestRepository joinRequestRepository,
+                                               ICompanyMemberRepository memberRepository,
+                                               IUnitOfWork unitOfWork)
         {
-            _organizationUnitOfWork = organizationUnitOfWork;
             _companyJoinService = companyJoinService;
+            _joinRequestRepository = joinRequestRepository;
+            _memberRepository = memberRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Unit> Handle(JoinRequestHandleCommand command, CancellationToken cancellationToken)
         {
             var requestDto = command.JoinRequest;
 
-            var joinRequest = await _organizationUnitOfWork.JoinRequestRepository.FindByIdAsync(command.JoinRequestId)
+            var joinRequest = await _joinRequestRepository.FindByIdAsync(command.JoinRequestId)
                 ?? throw new EntityNotFoundException("가입요청을 찾을 수 없습니다", new { command.JoinRequestId });
 
             joinRequest.Handle(requestDto.IsAccepted);
@@ -50,13 +57,13 @@ namespace Drawer.Application.Services.Organization.Commands
             var result = await _companyJoinService.Join(joinRequest.Company, joinRequest.User, true);
 
             var companyMember = result.Item1;
-            await _organizationUnitOfWork.MemberRepository.AddAsync(companyMember);
+            await _memberRepository.AddAsync(companyMember);
 
             var requestsToDelete = result.Item2;
             foreach (var request in requestsToDelete)
-                _organizationUnitOfWork.JoinRequestRepository.Remove(request);
+                _joinRequestRepository.Remove(request);
 
-            await _organizationUnitOfWork.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
             return Unit.Value;
         }
     }

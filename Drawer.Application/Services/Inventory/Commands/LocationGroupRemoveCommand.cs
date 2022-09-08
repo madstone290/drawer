@@ -17,11 +17,13 @@ namespace Drawer.Application.Services.Inventory.Commands
     {
         private readonly ILocationGroupRepository _groupRepository;
         private readonly ILocationRepository _locationRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public LocationGroupRemoveCommandHandler(ILocationGroupRepository groupRepository, ILocationRepository locationRepository)
+        public LocationGroupRemoveCommandHandler(ILocationGroupRepository groupRepository, ILocationRepository locationRepository, IUnitOfWork unitOfWork)
         {
             _groupRepository = groupRepository;
             _locationRepository = locationRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Unit> Handle(LocationGroupRemoveCommand command, CancellationToken cancellationToken)
@@ -39,7 +41,8 @@ namespace Drawer.Application.Services.Inventory.Commands
                 throw new AppException($"{group.Name}에 포함된 위치가 존재합니다");
 
             _groupRepository.Remove(group);
-            await _groupRepository.SaveChangesAsync();
+
+            await _unitOfWork.CommitAsync();
             return Unit.Value;
 
         }

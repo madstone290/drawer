@@ -17,10 +17,12 @@ namespace Drawer.Application.Services.Inventory.Commands
     public class ItemUpdateCommandHandler : ICommandHandler<ItemUpdateCommand>
     {
         private readonly IItemRepository _itemRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ItemUpdateCommandHandler(IItemRepository itemRepository)
+        public ItemUpdateCommandHandler(IItemRepository itemRepository, IUnitOfWork unitOfWork)
         {
             _itemRepository = itemRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Unit> Handle(ItemUpdateCommand command1, CancellationToken cancellationToken)
@@ -38,7 +40,7 @@ namespace Drawer.Application.Services.Inventory.Commands
             item.SetSku(itemDto.Sku);
             item.SetQuantityUnit(itemDto.QuantityUnit);
 
-            await _itemRepository.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
             return Unit.Value;
         }
     }

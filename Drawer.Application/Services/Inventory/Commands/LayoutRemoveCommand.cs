@@ -16,10 +16,12 @@ namespace Drawer.Application.Services.Inventory.Commands
     public class LayoutRemoveCommandHandler : ICommandHandler<LayoutRemoveCommand>
     {
         private readonly ILayoutRepository _layoutRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public LayoutRemoveCommandHandler(ILayoutRepository layoutRepository)
+        public LayoutRemoveCommandHandler(ILayoutRepository layoutRepository, IUnitOfWork unitOfWork)
         {
             _layoutRepository = layoutRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Unit> Handle(LayoutRemoveCommand command, CancellationToken cancellationToken)
@@ -29,7 +31,7 @@ namespace Drawer.Application.Services.Inventory.Commands
 
             _layoutRepository.Remove(layout);
 
-            await _layoutRepository.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
             return Unit.Value;
 
         }

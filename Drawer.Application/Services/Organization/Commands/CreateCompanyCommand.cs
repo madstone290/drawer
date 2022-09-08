@@ -2,9 +2,11 @@
 using Drawer.Application.DomainServices;
 using Drawer.Application.Exceptions;
 using Drawer.Application.Services.Organization.CommandModels;
+using Drawer.Application.Services.Organization.Repos;
 using Drawer.Application.Services.UserInformation.Repos;
 using Drawer.Domain.Models.Organization;
 using Drawer.Domain.Services;
+using System.Runtime.CompilerServices;
 
 namespace Drawer.Application.Services.Organization.Commands
 {
@@ -13,14 +15,25 @@ namespace Drawer.Application.Services.Organization.Commands
     public class CreateCompanyCommandHandler : ICommandHandler<CreateCompanyCommand, long>
     {
         private readonly IUserRepository _userRepository;
-        private readonly IOrganizationUnitOfWork _organizationUnitOfWork;
         private readonly ICompanyJoinService _companyJoinService;
+        private readonly ICompanyRepository _companyRepository;
+        private readonly ICompanyJoinRequestRepository _joinRequestRepository;
+        private readonly ICompanyMemberRepository _memberRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CreateCompanyCommandHandler(IUserRepository userRepository, IOrganizationUnitOfWork organizationUnitOfWork, ICompanyJoinService companyJoinService)
+        public CreateCompanyCommandHandler(IUserRepository userRepository,
+                                           ICompanyJoinService companyJoinService,
+                                           ICompanyRepository companyRepository,
+                                           ICompanyJoinRequestRepository joinRequestRepository,
+                                           ICompanyMemberRepository memberRepository,
+                                           IUnitOfWork unitOfWork)
         {
             _userRepository = userRepository;
-            _organizationUnitOfWork = organizationUnitOfWork;
             _companyJoinService = companyJoinService;
+            _companyRepository = companyRepository;
+            _joinRequestRepository = joinRequestRepository;
+            _memberRepository = memberRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<long> Handle(CreateCompanyCommand command, CancellationToken cancellationToken)
@@ -29,25 +42,25 @@ namespace Drawer.Application.Services.Organization.Commands
             var user = await _userRepository.FindByIdentityUserId(command.IdentityUserId)
                 ?? throw new EntityNotFoundException("사용자를 찾을 수 없습니다", new { command.IdentityUserId });
 
-            if (await _organizationUnitOfWork.CompanyRepository.ExistByOwnerId(user.Id))
+            if (await _companyRepository.ExistByOwnerId(user.Id))
                 throw new CompanyAlreadyExistException();
 
             var companyDto = command.Company;
 
             var company = new Company(user, companyDto.Name);
             company.SetPhoneNumber(companyDto.PhoneNumber);
-            await _organizationUnitOfWork.CompanyRepository.AddAsync(company);
+            await _companyRepository.AddAsync(company);
 
             var result = await _companyJoinService.Join(company, user, true);
 
             var companyMember = result.Item1;
-            await _organizationUnitOfWork.MemberRepository.AddAsync(companyMember);
+            await _memberRepository.AddAsync(companyMember);
 
             var requestsToDelete = result.Item2;
             foreach (var request in requestsToDelete)
-                _organizationUnitOfWork.JoinRequestRepository.Remove(request);
+                _joinRequestRepository.Remove(request);
 
-            await _organizationUnitOfWork.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
             return company.Id;
         }
     }

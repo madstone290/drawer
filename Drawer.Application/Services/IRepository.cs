@@ -13,8 +13,6 @@ namespace Drawer.Application.Services
         Task AddAsync(TEntity entity);
 
         void Remove(TEntity entity);
-
-        Task SaveChangesAsync();
     }
 
     public interface IRepository<TEntity, TId> : IRepository<TEntity> 

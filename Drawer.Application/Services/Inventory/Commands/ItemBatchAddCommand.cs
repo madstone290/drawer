@@ -13,10 +13,12 @@ namespace Drawer.Application.Services.Inventory.Commands
     public class ItemBatchAddCommandHandler : ICommandHandler<ItemBatchAddCommand, List<long>>
     {
         private readonly IItemRepository _itemRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ItemBatchAddCommandHandler(IItemRepository itemRepository)
+        public ItemBatchAddCommandHandler(IItemRepository itemRepository, IUnitOfWork unitOfWork)
         {
             _itemRepository = itemRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<List<long>> Handle(ItemBatchAddCommand command, CancellationToken cancellationToken)
@@ -34,7 +36,7 @@ namespace Drawer.Application.Services.Inventory.Commands
                 itemList.Add(item);
             }
 
-            await _itemRepository.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
 
             return itemList.Select(x => x.Id).ToList();
         }

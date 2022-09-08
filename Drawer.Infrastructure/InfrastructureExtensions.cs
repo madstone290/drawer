@@ -1,10 +1,12 @@
-﻿using Drawer.Application.Services.Authentication;
+﻿using Drawer.Application.Services;
+using Drawer.Application.Services.Authentication;
 using Drawer.Application.Services.Authentication.Repos;
 using Drawer.Application.Services.Inventory.Repos;
 using Drawer.Application.Services.Organization;
 using Drawer.Application.Services.Organization.Repos;
 using Drawer.Application.Services.UserInformation.Repos;
 using Drawer.Infrastructure.Data;
+using Drawer.Infrastructure.Repos;
 using Drawer.Infrastructure.Repos.Authentication;
 using Drawer.Infrastructure.Repos.Inventory;
 using Drawer.Infrastructure.Repos.Organization;
@@ -90,9 +92,6 @@ namespace Drawer.Infrastructure
                 };
             });
 
-            // 리파지토리 추가
-            services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
-
             var mailKitOptions = configuration.GetSection("Email").Get<MailKitOptions>();
             if (mailKitOptions == null)
                 throw new Exception("이메일 설정이 없습니다");
@@ -100,21 +99,21 @@ namespace Drawer.Infrastructure
             services.AddScoped<IEmailSender, EmailSender>();
 
             services.AddSingleton(jwtSettings);
+
             services.AddScoped<ITokenGenerator, TokenGenerator>();
 
             services.AddScoped<ICompanyIdProvider, CompanyIdProvider>();
             services.AddScoped<IUserIdProvider, UserIdProvider>();
 
-            services.AddScoped<IAuthenticationUnitOfWork, AuthenticationUnitOfWork>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
-            services.AddScoped<IOrganizationUnitOfWork, OrganizationUnitOfWork>();
             services.AddScoped<ICompanyRepository, CompanyRepository>();
             services.AddScoped<ICompanyMemberRepository, CompanyMemberRepository>();
             services.AddScoped<ICompanyJoinRequestRepository, CompanyJoinRequestRepository>();
 
-            services.AddScoped<IInventoryUnitOfWork, InventoryUnitOfWork>();
             services.AddScoped<IItemRepository, ItemRepository>();
             services.AddScoped<ILocationGroupRepository, LocationGroupRepository>();
             services.AddScoped<ILocationRepository, LocationRepository>();

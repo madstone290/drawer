@@ -24,17 +24,20 @@ namespace Drawer.Application.Services.Authentication.Commands
         private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly ITokenGenerator _tokenGenerator;
         private readonly IUserClaimService _userClaimService;
+        private readonly IUnitOfWork _unitOfWork;
 
 
         public RefreshCommandHandler(UserManager<IdentityUser> userManager,
             ITokenGenerator tokenGenerator,
-            IRefreshTokenRepository refreshTokenRepository, 
-            IUserClaimService userClaimService)
+            IRefreshTokenRepository refreshTokenRepository,
+            IUserClaimService userClaimService,
+            IUnitOfWork unitOfWork)
         {
             _userManager = userManager;
             _tokenGenerator = tokenGenerator;
             _refreshTokenRepository = refreshTokenRepository;
             _userClaimService = userClaimService;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<string> Handle(RefreshCommand command, CancellationToken cancellationToken)
@@ -56,7 +59,8 @@ namespace Drawer.Application.Services.Authentication.Commands
             var expiredTokens = refreshTokens.Where(x => x.IsExpired).ToList();
             foreach(var token in expiredTokens)
                 _refreshTokenRepository.Remove(token);
-            await _refreshTokenRepository.SaveChangesAsync();
+
+            await _unitOfWork.CommitAsync();
 
             var claims = await _userClaimService.GetClaimsAsync(user);
 

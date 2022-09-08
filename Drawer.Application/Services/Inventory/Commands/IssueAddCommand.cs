@@ -15,17 +15,23 @@ namespace Drawer.Application.Services.Inventory.Commands
 
     public class IssueAddCommandHandler : ICommandHandler<IssueAddCommand, long>
     {
-        private readonly IInventoryUnitOfWork _inventoryUnitOfWork;
         private readonly IItemRepository _itemRepository;
         private readonly ILocationRepository _locationRepository;
+        private readonly IInventoryItemRepository _inventoryItemRepository;
+        private readonly IIssueRepository _issueRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public IssueAddCommandHandler(IInventoryUnitOfWork inventoryUnitOfWork,
-                                         IItemRepository itemRepository,
-                                         ILocationRepository locationRepository)
+        public IssueAddCommandHandler(IItemRepository itemRepository,
+                                      ILocationRepository locationRepository,
+                                      IInventoryItemRepository inventoryItemRepository,
+                                      IIssueRepository issueRepository,
+                                      IUnitOfWork unitOfWork)
         {
-            _inventoryUnitOfWork = inventoryUnitOfWork;
             _itemRepository = itemRepository;
             _locationRepository = locationRepository;
+            _inventoryItemRepository = inventoryItemRepository;
+            _issueRepository = issueRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<long> Handle(IssueAddCommand command, CancellationToken cancellationToken)
@@ -34,7 +40,7 @@ namespace Drawer.Application.Services.Inventory.Commands
             // 출고내역 생성 후 재고 감소
 
             // 재고확인
-            var inventoryItem = await _inventoryUnitOfWork.InventoryItemRepository
+            var inventoryItem = await _inventoryItemRepository
                 .FindByItemIdAndLocationIdAsync(issueDto.ItemId, issueDto.LocationId);
             if (inventoryItem == null || inventoryItem.Quantity < issueDto.Quantity)
                 throw new AppException("재고수량이 부족하여 출고내역을 생성할 수 없습니다");
@@ -51,12 +57,12 @@ namespace Drawer.Application.Services.Inventory.Commands
             issue.SetBuyer(issueDto.Buyer);
             issue.SetNote(issueDto.Note);
 
-            await _inventoryUnitOfWork.IssueRepository.AddAsync(issue);
+            await _issueRepository.AddAsync(issue);
 
             // 재고 감소
             inventoryItem.Decrease(issueDto.Quantity);
 
-            await _inventoryUnitOfWork.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
             return issue.Id;
         }
     }

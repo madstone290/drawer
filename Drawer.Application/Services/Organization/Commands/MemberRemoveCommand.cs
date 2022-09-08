@@ -1,6 +1,7 @@
 ﻿using Drawer.Application.Config;
 using Drawer.Application.Exceptions;
 using Drawer.Application.Services.Organization.CommandModels;
+using Drawer.Application.Services.Organization.Repos;
 using Drawer.Domain.Models.Organization;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -16,26 +17,28 @@ namespace Drawer.Application.Services.Organization.Commands
 
     public class MemberRemoveCommandHandler : ICommandHandler<MemberRemoveCommand>
     {
-        private readonly IOrganizationUnitOfWork _organizationUnitOfWork;
+        private readonly ICompanyMemberRepository _memberRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public MemberRemoveCommandHandler(IOrganizationUnitOfWork organizationUnitOfWork)
+        public MemberRemoveCommandHandler(ICompanyMemberRepository memberRepository, IUnitOfWork unitOfWork)
         {
-            _organizationUnitOfWork = organizationUnitOfWork;
+            _memberRepository = memberRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Unit> Handle(MemberRemoveCommand command, CancellationToken cancellationToken)
         {
             var memberDto = command.CompanyMember;
-            var member = await _organizationUnitOfWork.MemberRepository.FindByUserIdAsync(memberDto.UserId)
+            var member = await _memberRepository.FindByUserIdAsync(memberDto.UserId)
                 ?? throw new EntityNotFoundException("멤버를 찾을 수 없습니다", new { memberDto.UserId });
 
             if (member.IsOwner)
                 throw new AppException("회사 소유자를 직접 삭제할 수 없습니다");
 
             if (member != null && command.CompanyId == member.CompanyId)
-                _organizationUnitOfWork.MemberRepository.Remove(member);
+                _memberRepository.Remove(member);
 
-            await _organizationUnitOfWork.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
             return Unit.Value;
         }
     }

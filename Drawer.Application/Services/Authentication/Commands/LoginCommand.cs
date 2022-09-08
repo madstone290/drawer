@@ -19,16 +19,19 @@ namespace Drawer.Application.Services.Authentication.Commands
         private readonly ITokenGenerator _tokenGenerator;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly IUserClaimService _userClaimService;
+        private readonly IUnitOfWork _unitOfWork;
 
         public LoginCommandHandler(UserManager<IdentityUser> userManager,
-            ITokenGenerator tokenGenerator,
-            IRefreshTokenRepository refreshTokenRepository,
-            IUserClaimService userClaimService)
+                                   ITokenGenerator tokenGenerator,
+                                   IRefreshTokenRepository refreshTokenRepository,
+                                   IUserClaimService userClaimService,
+                                   IUnitOfWork unitOfWork)
         {
             _userManager = userManager;
             _tokenGenerator = tokenGenerator;
             _refreshTokenRepository = refreshTokenRepository;
             _userClaimService = userClaimService;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<LoginResponseCommandModel> Handle(LoginCommand command, CancellationToken cancellationToken)
@@ -56,7 +59,8 @@ namespace Drawer.Application.Services.Authentication.Commands
 
             var refreshTokenEntity = new RefreshToken(user.Id, refreshToken, command.RefreshTokenLifetime);
             await _refreshTokenRepository.AddAsync(refreshTokenEntity);
-            await _refreshTokenRepository.SaveChangesAsync();
+            
+            await _unitOfWork.CommitAsync();
 
             return new LoginResponseCommandModel()
             {

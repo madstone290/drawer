@@ -18,10 +18,12 @@ namespace Drawer.Application.Services.Inventory.Commands
     public class ItemAddCommandHandler : ICommandHandler<ItemAddCommand, long>
     {
         private readonly IItemRepository _itemRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ItemAddCommandHandler(IItemRepository itemRepository)
+        public ItemAddCommandHandler(IItemRepository itemRepository, IUnitOfWork unitOfWork)
         {
             _itemRepository = itemRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<long> Handle(ItemAddCommand command, CancellationToken cancellationToken)
@@ -38,7 +40,7 @@ namespace Drawer.Application.Services.Inventory.Commands
             item.SetQuantityUnit(itemDto.QuantityUnit);
 
             await _itemRepository.AddAsync(item);
-            await _itemRepository.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
 
             return item.Id;
         }

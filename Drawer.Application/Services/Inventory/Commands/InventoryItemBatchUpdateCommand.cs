@@ -14,13 +14,15 @@ namespace Drawer.Application.Services.Inventory.Commands
         private readonly IInventoryItemRepository _inventoryDetailRepository;
         private readonly IItemRepository _itemRepository;
         private readonly ILocationRepository _locationRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
         public InventoryItemBatchUpdateCommandHandler(IInventoryItemRepository inventoryDetailRepository,
-            IItemRepository itemRepository, ILocationRepository locationRepository)
+            IItemRepository itemRepository, ILocationRepository locationRepository, IUnitOfWork unitOfWork)
         {
             _inventoryDetailRepository = inventoryDetailRepository;
             _itemRepository = itemRepository;
             _locationRepository = locationRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Unit> Handle(InventoryItemBatchUpdateCommand command, CancellationToken cancellationToken)
@@ -37,7 +39,8 @@ namespace Drawer.Application.Services.Inventory.Commands
 
                     inventoryItem = new InventoryItem(itemDto.ItemId, itemDto.LocationId, itemDto.QuantityChange);
                     await _inventoryDetailRepository.AddAsync(inventoryItem);
-                    await _inventoryDetailRepository.SaveChangesAsync();
+                    
+                    await _unitOfWork.CommitAsync();
                 }
                 else
                 {

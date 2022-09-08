@@ -16,10 +16,12 @@ namespace Drawer.Application.Services.Inventory.Commands
     public class LocationRemoveCommandHandler : ICommandHandler<LocationRemoveCommand>
     {
         private readonly ILocationRepository _locationRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public LocationRemoveCommandHandler(ILocationRepository locationRepository)
+        public LocationRemoveCommandHandler(ILocationRepository locationRepository, IUnitOfWork unitOfWork)
         {
             _locationRepository = locationRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Unit> Handle(LocationRemoveCommand command, CancellationToken cancellationToken)
@@ -29,7 +31,7 @@ namespace Drawer.Application.Services.Inventory.Commands
                 ?? throw new EntityNotFoundException<Location>(command.Id);
 
             _locationRepository.Remove(location);
-            await _locationRepository.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
             return Unit.Value;
 
         }

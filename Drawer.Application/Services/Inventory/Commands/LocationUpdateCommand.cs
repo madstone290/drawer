@@ -17,10 +17,12 @@ namespace Drawer.Application.Services.Inventory.Commands
     public class LocationUpdateCommandHandler : ICommandHandler<LocationUpdateCommand>
     {
         private readonly ILocationRepository _locationRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public LocationUpdateCommandHandler(ILocationRepository locationRepository)
+        public LocationUpdateCommandHandler(ILocationRepository locationRepository, IUnitOfWork unitOfWork)
         {
             _locationRepository = locationRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Unit> Handle(LocationUpdateCommand command, CancellationToken cancellationToken)
@@ -41,7 +43,7 @@ namespace Drawer.Application.Services.Inventory.Commands
       
             location.SetNote(locationDto.Note);
 
-            await _locationRepository.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
             return Unit.Value;
         }
     }

@@ -1,9 +1,7 @@
 ﻿using Drawer.Application.Config;
 using Drawer.Application.Exceptions;
 using Drawer.Application.Services.Authentication.CommandModels;
-using Drawer.Application.Services.Authentication.Repos;
 using Drawer.Application.Services.UserInformation.Repos;
-using Drawer.Domain.Models.Authentication;
 using Drawer.Domain.Models.UserInformation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -19,18 +17,22 @@ namespace Drawer.Application.Services.Authentication.Commands
 
     public class RegisterCommandHandler : ICommandHandler<RegisterCommand>
     {
-        private readonly IAuthenticationUnitOfWork _authenticationUnitOfWork;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly IUserRepository _userRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public RegisterCommandHandler(IAuthenticationUnitOfWork authenticationUnitOfWork)
+        public RegisterCommandHandler(UserManager<IdentityUser> userManager, IUserRepository userRepository, IUnitOfWork unitOfWork)
         {
-            _authenticationUnitOfWork = authenticationUnitOfWork;
+            _userManager = userManager;
+            _userRepository = userRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Unit> Handle(RegisterCommand command, CancellationToken cancellationToken)
         {
             var register = command.Register;
 
-            var identityUser = await _authenticationUnitOfWork.UserManager.FindByEmailAsync(register.Email);
+            var identityUser = await _userManager.FindByEmailAsync(register.Email);
             if (identityUser != null)
                 throw new DuplicateEmailException();
 
@@ -39,14 +41,14 @@ namespace Drawer.Application.Services.Authentication.Commands
                 UserName = register.Email,
                 Email = register.Email,
             };
-            var createResult = await _authenticationUnitOfWork.UserManager.CreateAsync(identityUser, register.Password);
+            var createResult = await _userManager.CreateAsync(identityUser, register.Password);
             if (!createResult.Succeeded)
                 throw new IdentityErrorException(createResult.Errors);
 
             var user = new User(identityUser, identityUser.Email, register.DisplayName);
-            await _authenticationUnitOfWork.UserRepository.AddAsync(user);
+            await _userRepository.AddAsync(user);
            
-            await _authenticationUnitOfWork.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
             return Unit.Value;
         }
     }

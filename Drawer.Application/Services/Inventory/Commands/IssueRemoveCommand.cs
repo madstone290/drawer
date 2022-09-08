@@ -15,35 +15,39 @@ namespace Drawer.Application.Services.Inventory.Commands
 
     public class IssueRemoveCommandHandler : ICommandHandler<IssueRemoveCommand>
     {
-        private readonly IInventoryUnitOfWork _inventoryUnitOfWork;
+        private readonly IInventoryItemRepository _inventoryItemRepository;
+        private readonly IIssueRepository _issueRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public IssueRemoveCommandHandler(IInventoryUnitOfWork inventoryUnitOfWork)
+        public IssueRemoveCommandHandler(IInventoryItemRepository inventoryItemRepository, IIssueRepository issueRepository, IUnitOfWork unitOfWork)
         {
-            _inventoryUnitOfWork = inventoryUnitOfWork;
+            _inventoryItemRepository = inventoryItemRepository;
+            _issueRepository = issueRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Unit> Handle(IssueRemoveCommand command, CancellationToken cancellationToken)
         {
             // 출고내역을 수정하고 재고수량을 증가한다.
 
-            var issue = await _inventoryUnitOfWork.IssueRepository
+            var issue = await _issueRepository
                 .FindByIdAsync(command.Id) ?? throw new EntityNotFoundException<Issue>(command.Id);
 
-            _inventoryUnitOfWork.IssueRepository.Remove(issue);
+            _issueRepository.Remove(issue);
 
-            var inventoryItem = await _inventoryUnitOfWork.InventoryItemRepository
+            var inventoryItem = await _inventoryItemRepository
                 .FindByItemIdAndLocationIdAsync(issue.ItemId, issue.LocationId);
             if (inventoryItem == null)
             {
                 inventoryItem = new InventoryItem(issue.ItemId, issue.LocationId, issue.Quantity);
-                await _inventoryUnitOfWork.InventoryItemRepository.AddAsync(inventoryItem);
+                await _inventoryItemRepository.AddAsync(inventoryItem);
             }
             else
             {
                 inventoryItem.Increase(issue.Quantity);
             }
 
-            await _inventoryUnitOfWork.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
             return Unit.Value;
 
         }

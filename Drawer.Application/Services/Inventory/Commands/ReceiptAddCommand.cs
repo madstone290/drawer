@@ -18,17 +18,23 @@ namespace Drawer.Application.Services.Inventory.Commands
 
     public class ReceiptAddCommandHandler : ICommandHandler<ReceiptAddCommand, long>
     {
-        private readonly IInventoryUnitOfWork _inventoryUnitOfWork;
         private readonly IItemRepository _itemRepository;
         private readonly ILocationRepository _locationRepository;
+        private readonly IInventoryItemRepository _inventoryItemRepository;
+        private readonly IReceiptRepository _receiptRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ReceiptAddCommandHandler(IInventoryUnitOfWork inventoryUnitOfWork,
-                                           IItemRepository itemRepository,
-                                           ILocationRepository locationRepository)
+        public ReceiptAddCommandHandler(IItemRepository itemRepository,
+            ILocationRepository locationRepository,
+            IInventoryItemRepository inventoryItemRepository,
+            IReceiptRepository receiptRepository,
+            IUnitOfWork unitOfWork)
         {
-            _inventoryUnitOfWork = inventoryUnitOfWork;
             _itemRepository = itemRepository;
             _locationRepository = locationRepository;
+            _inventoryItemRepository = inventoryItemRepository;
+            _receiptRepository = receiptRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<long> Handle(ReceiptAddCommand command, CancellationToken cancellationToken)
@@ -49,22 +55,22 @@ namespace Drawer.Application.Services.Inventory.Commands
             receipt.SetSeller(receiptDto.Seller);
             receipt.SetNote(receiptDto.Note);
 
-            await _inventoryUnitOfWork.ReceiptRepository.AddAsync(receipt);
+            await _receiptRepository.AddAsync(receipt);
 
             // 재고 증가
-            var inventoryItem = await _inventoryUnitOfWork.InventoryItemRepository
+            var inventoryItem = await _inventoryItemRepository
                .FindByItemIdAndLocationIdAsync(receiptDto.ItemId, receiptDto.LocationId);
             if (inventoryItem == null)
             {
                 inventoryItem = new InventoryItem(receiptDto.ItemId, receiptDto.LocationId, receiptDto.Quantity);
-                await _inventoryUnitOfWork.InventoryItemRepository.AddAsync(inventoryItem);
+                await _inventoryItemRepository.AddAsync(inventoryItem);
             }
             else
             {
                 inventoryItem.Increase(receiptDto.Quantity);
             }
 
-            await _inventoryUnitOfWork.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
             return receipt.Id;
         }
     }

@@ -20,10 +20,12 @@ namespace Drawer.Application.Services.Inventory.Commands
     public class ItemRemoveCommandHandler : ICommandHandler<ItemRemoveCommand>
     {
         private readonly IItemRepository _itemRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ItemRemoveCommandHandler(IItemRepository itemRepository)
+        public ItemRemoveCommandHandler(IItemRepository itemRepository, IUnitOfWork unitOfWork)
         {
             _itemRepository = itemRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Unit> Handle(ItemRemoveCommand command, CancellationToken cancellationToken)
@@ -35,7 +37,7 @@ namespace Drawer.Application.Services.Inventory.Commands
             // 참조 확인
 
             _itemRepository.Remove(item);
-            await _itemRepository.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
             return Unit.Value;
 
         }

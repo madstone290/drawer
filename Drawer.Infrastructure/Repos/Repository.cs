@@ -27,11 +27,6 @@ namespace Drawer.Infrastructure.Repos
             _dbContext.Remove(entity);
         }
 
-        public async Task SaveChangesAsync()
-        {
-            await _dbContext.SaveChangesAsync();
-        }
-     
     }
 
     public class Repository<TEntity, TId> : Repository<TEntity>, IRepository<TEntity, TId>

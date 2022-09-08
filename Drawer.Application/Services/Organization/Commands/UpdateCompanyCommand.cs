@@ -19,10 +19,12 @@ namespace Drawer.Application.Services.Organization.Commands
     public class UpdateCompanyCommandHandler : ICommandHandler<UpdateCompanyCommand>
     {
         private readonly ICompanyRepository _companyRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public UpdateCompanyCommandHandler(ICompanyRepository companyRepository)
+        public UpdateCompanyCommandHandler(ICompanyRepository companyRepository, IUnitOfWork unitOfWork)
         {
             _companyRepository = companyRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Unit> Handle(UpdateCompanyCommand command, CancellationToken cancellationToken)
@@ -36,7 +38,7 @@ namespace Drawer.Application.Services.Organization.Commands
             company.SetName(companyDto.Name);
             company.SetPhoneNumber(companyDto.PhoneNumber);
 
-            await _companyRepository.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
 
             return Unit.Value;
         }

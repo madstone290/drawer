@@ -16,17 +16,23 @@ namespace Drawer.Application.Services.Inventory.Commands
 
     public class IssueUpdateCommandHandler : ICommandHandler<IssueUpdateCommand>
     {
-        private readonly IInventoryUnitOfWork _inventoryUnitOfWork;
         private readonly IItemRepository _itemRepository;
         private readonly ILocationRepository _locationRepository;
+        private readonly IInventoryItemRepository _inventoryItemRepository;
+        private readonly IIssueRepository _issueRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public IssueUpdateCommandHandler(IInventoryUnitOfWork inventoryUnitOfWork,
-                                         IItemRepository itemRepository,
-                                         ILocationRepository locationRepository)
+        public IssueUpdateCommandHandler(IItemRepository itemRepository,
+            ILocationRepository locationRepository,
+            IInventoryItemRepository inventoryItemRepository,
+            IIssueRepository issueRepository,
+            IUnitOfWork unitOfWork)
         {
-            _inventoryUnitOfWork = inventoryUnitOfWork;
             _itemRepository = itemRepository;
             _locationRepository = locationRepository;
+            _inventoryItemRepository = inventoryItemRepository;
+            _issueRepository = issueRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Unit> Handle(IssueUpdateCommand command, CancellationToken cancellationToken)
@@ -37,7 +43,7 @@ namespace Drawer.Application.Services.Inventory.Commands
             var issueId = command.Id;
             var issueDto = command.Issue;
 
-            var issue = await _inventoryUnitOfWork.IssueRepository
+            var issue = await _issueRepository
                 .FindByIdAsync(issueId) ?? throw new EntityNotFoundException<Issue>(issueId);
 
 
@@ -49,7 +55,7 @@ namespace Drawer.Application.Services.Inventory.Commands
 
                 // 출고내역 수정
                 var quantityDiff = issueDto.Quantity - issue.Quantity;
-                var inventoryItem = await _inventoryUnitOfWork.InventoryItemRepository
+                var inventoryItem = await _inventoryItemRepository
                     .FindByItemIdAndLocationIdAsync(issue.ItemId, issue.LocationId);
                 if (inventoryItem == null || inventoryItem.Quantity - quantityDiff < 0)
                     throw new AppException("재고수량이 부족하여 출고내역을 수정할 수 없습니다");
@@ -73,7 +79,7 @@ namespace Drawer.Application.Services.Inventory.Commands
                 // 3. 이후 재고 감소
 
                 // 재고수량 확인
-                var afterInventoryItem = await _inventoryUnitOfWork.InventoryItemRepository
+                var afterInventoryItem = await _inventoryItemRepository
                     .FindByItemIdAndLocationIdAsync(issueDto.ItemId, issueDto.LocationId);
                 if (afterInventoryItem == null || afterInventoryItem.Quantity - issueDto.Quantity < 0)
                     throw new AppException("재고수량이 부족하여 출고내역을 수정할 수 없습니다");
@@ -94,12 +100,12 @@ namespace Drawer.Application.Services.Inventory.Commands
                 issue.SetNote(issueDto.Note);
 
                 // 이전 재고 증가
-                var beforeInventoryItem = await _inventoryUnitOfWork.InventoryItemRepository
+                var beforeInventoryItem = await _inventoryItemRepository
                     .FindByItemIdAndLocationIdAsync(itemIdBefore, locationIdBefore);
                 if (beforeInventoryItem == null)
                 {
                     beforeInventoryItem = new InventoryItem(itemIdBefore, locationIdBefore, quantityBefore);
-                    await _inventoryUnitOfWork.InventoryItemRepository.AddAsync(beforeInventoryItem);
+                    await _inventoryItemRepository.AddAsync(beforeInventoryItem);
                 }
                 else
                 {
@@ -110,7 +116,7 @@ namespace Drawer.Application.Services.Inventory.Commands
                 afterInventoryItem.Decrease(issueDto.Quantity);
             }
 
-            await _inventoryUnitOfWork.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
             return Unit.Value;
         }
     }

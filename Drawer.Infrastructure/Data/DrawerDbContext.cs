@@ -1,4 +1,5 @@
-﻿using Drawer.Domain.Models;
+﻿using Drawer.Application.Services;
+using Drawer.Domain.Models;
 using Drawer.Domain.Models.Authentication;
 using Drawer.Domain.Models.Inventory;
 using Drawer.Domain.Models.Organization;
@@ -6,6 +7,7 @@ using Drawer.Domain.Models.UserInformation;
 using Drawer.Infrastructure.Data.Audit;
 using Drawer.Infrastructure.Services.Organization;
 using Drawer.Infrastructure.Services.UserInformation;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +23,14 @@ namespace Drawer.Infrastructure.Data
 {
     public class DrawerDbContext : IdentityDbContext
     {
+        /// <summary>
+        /// 회사 리소스필터링을 위한 회사ID를 가져온다
+        /// </summary>
         private readonly ICompanyIdProvider _companyIdProvider;
+        
+        /// <summary>
+        /// 데이터 감사를 위한 사용자ID를 가져온다.
+        /// </summary>
         private readonly IUserIdProvider _userIdProvider;
 
         public DrawerDbContext(DbContextOptions options,
@@ -162,8 +171,6 @@ namespace Drawer.Infrastructure.Data
                 modelBuilder.Entity(entity).HasQueryFilter(expressions);
             }
         }
-
-
 
     }
 }

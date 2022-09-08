@@ -15,10 +15,12 @@ namespace Drawer.Application.Services.Inventory.Commands
     public class LocationGroupBatchAddCommandHandler : ICommandHandler<LocationGroupBatchAddCommand, List<long>>
     {
         private readonly ILocationGroupRepository _groupRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public LocationGroupBatchAddCommandHandler(ILocationGroupRepository groupRepository)
+        public LocationGroupBatchAddCommandHandler(ILocationGroupRepository groupRepository, IUnitOfWork unitOfWork)
         {
             _groupRepository = groupRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<List<long>> Handle(LocationGroupBatchAddCommand command, CancellationToken cancellationToken)
@@ -40,7 +42,7 @@ namespace Drawer.Application.Services.Inventory.Commands
                 groupList.Add(group);
             }
 
-            await _groupRepository.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
 
             return groupList.Select(x => x.Id).ToList();
         }

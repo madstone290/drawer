@@ -15,17 +15,23 @@ namespace Drawer.Application.Services.Inventory.Commands
 
     public class ReceiptBatchAddCommandHandler : ICommandHandler<ReceiptBatchAddCommand, List<long>>
     {
-        private readonly IInventoryUnitOfWork _inventoryUnitOfWork;
         private readonly IItemRepository _itemRepository;
         private readonly ILocationRepository _locationRepository;
+        private readonly IInventoryItemRepository _inventoryItemRepository;
+        private readonly IReceiptRepository _receiptRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ReceiptBatchAddCommandHandler(IInventoryUnitOfWork inventoryUnitOfWork,
-                                           IItemRepository itemRepository,
-                                           ILocationRepository locationRepository)
+        public ReceiptBatchAddCommandHandler(IItemRepository itemRepository,
+                                             ILocationRepository locationRepository,
+                                             IInventoryItemRepository inventoryItemRepository,
+                                             IReceiptRepository receiptRepository,
+                                             IUnitOfWork unitOfWork)
         {
-            _inventoryUnitOfWork = inventoryUnitOfWork;
             _itemRepository = itemRepository;
             _locationRepository = locationRepository;
+            _inventoryItemRepository = inventoryItemRepository;
+            _receiptRepository = receiptRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<List<long>> Handle(ReceiptBatchAddCommand command, CancellationToken cancellationToken)
@@ -48,15 +54,15 @@ namespace Drawer.Application.Services.Inventory.Commands
                 receipt.SetNote(receiptDto.Note);
                 receiptList.Add(receipt);
 
-                await _inventoryUnitOfWork.ReceiptRepository.AddAsync(receipt);
+                await _receiptRepository.AddAsync(receipt);
 
                 // 재고 증가
-                var inventoryItem = await _inventoryUnitOfWork.InventoryItemRepository
+                var inventoryItem = await _inventoryItemRepository
                    .FindByItemIdAndLocationIdAsync(receiptDto.ItemId, receiptDto.LocationId);
                 if (inventoryItem == null)
                 {
                     inventoryItem = new InventoryItem(receiptDto.ItemId, receiptDto.LocationId, receiptDto.Quantity);
-                    await _inventoryUnitOfWork.InventoryItemRepository.AddAsync(inventoryItem);
+                    await _inventoryItemRepository.AddAsync(inventoryItem);
                 }
                 else
                 {
@@ -64,7 +70,7 @@ namespace Drawer.Application.Services.Inventory.Commands
                 }
             }
 
-            await _inventoryUnitOfWork.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
             return receiptList.Select(x => x.Id).ToList();
         }
     }

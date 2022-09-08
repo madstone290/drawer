@@ -19,12 +19,14 @@ namespace Drawer.Application.Services.Inventory.Commands
         private readonly ILayoutRepository _layoutRepository;
         private readonly ILocationGroupRepository _groupRepository;
         private readonly ILocationRepository _locationRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public LayoutUpdateCommandHandler(ILayoutRepository layoutRepository, ILocationGroupRepository groupRepository, ILocationRepository locationRepository)
+        public LayoutUpdateCommandHandler(ILayoutRepository layoutRepository, ILocationGroupRepository groupRepository, ILocationRepository locationRepository, IUnitOfWork unitOfWork)
         {
             _layoutRepository = layoutRepository;
             _groupRepository = groupRepository;
             _locationRepository = locationRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Unit> Handle(LayoutEditCommand command, CancellationToken cancellationToken)
@@ -42,7 +44,7 @@ namespace Drawer.Application.Services.Inventory.Commands
 
             layout.Update(layoutDto.ItemList);
 
-            await _layoutRepository.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
             return Unit.Value;
         }
 

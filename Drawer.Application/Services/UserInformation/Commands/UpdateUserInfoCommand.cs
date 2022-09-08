@@ -17,23 +17,25 @@ namespace Drawer.Application.Services.UserInformation.Commands
 
     public class UpdateUserCommandHandler : ICommandHandler<UpdateUserInfoCommand>
     {
-        private readonly IUserRepository _userInfoRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public UpdateUserCommandHandler(IUserRepository userInfoRepository)
+        public UpdateUserCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork)
         {
-            _userInfoRepository = userInfoRepository;
+            _userRepository = userRepository;
+            _unitOfWork = unitOfWork;
         }
-        
+
         public async Task<Unit> Handle(UpdateUserInfoCommand command, CancellationToken cancellationToken)
         {
             var userInfoDto = command.UserInfo;
 
-            var user = await _userInfoRepository.FindByIdentityUserId(command.IdentityUserId);
+            var user = await _userRepository.FindByIdentityUserId(command.IdentityUserId);
             if (user == null)
                 throw new InvalidUserIdException();
 
             user.SetName(userInfoDto.Name);
-            await _userInfoRepository.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
 
             return Unit.Value;
         }

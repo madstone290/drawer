@@ -20,12 +20,14 @@ namespace Drawer.Application.Services.Organization.Commands
         private readonly ICompanyJoinRequestRepository _joinRequestRepository;
         private readonly ICompanyRepository _companyRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public JoinRequestAddCommandHandler(ICompanyJoinRequestRepository joinRequestRepository, ICompanyRepository companyRepository, IUserRepository userRepository)
+        public JoinRequestAddCommandHandler(ICompanyJoinRequestRepository joinRequestRepository, ICompanyRepository companyRepository, IUserRepository userRepository, IUnitOfWork unitOfWork)
         {
             _joinRequestRepository = joinRequestRepository;
             _companyRepository = companyRepository;
             _userRepository = userRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Unit> Handle(JoinRequestAddCommand command, CancellationToken cancellationToken)
@@ -46,7 +48,7 @@ namespace Drawer.Application.Services.Organization.Commands
 
             var request = new CompanyJoinRequest(company, user, DateTime.UtcNow);
             await _joinRequestRepository.AddAsync(request);
-            await _joinRequestRepository.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
 
             return Unit.Value;
         }
