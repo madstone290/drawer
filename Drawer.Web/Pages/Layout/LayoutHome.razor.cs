@@ -20,7 +20,14 @@ namespace Drawer.Web.Pages.Layout
 
         private LocationGroupModel? selectedGroup;
 
+        /// <summary>
+        /// 모바일 브라우저?
+        /// </summary>
         private bool _isMobile;
+        /// <summary>
+        /// 브라우저 탐지 여부
+        /// </summary>
+        private bool _browerDetected;
         private bool _canAccess = true;
         private bool _isLoading = false;
         
@@ -48,6 +55,9 @@ namespace Drawer.Web.Pages.Layout
                 var info = await browserDetectJsInterop.BrowserInfo();
 
                 _isMobile = info.IsMobile ?? false;
+                _browerDetected = true;
+                if (_isMobile)
+                    return;
 
                 await CanvasService.InitCanvas(CANVAS_ID, Enumerable.Empty<PaletteItem>(), new CanvasCallbacks(), false);
             }

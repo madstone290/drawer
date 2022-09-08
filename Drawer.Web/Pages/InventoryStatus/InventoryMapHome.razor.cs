@@ -63,6 +63,7 @@ namespace Drawer.Web.Pages.InventoryStatus
 
         private string? _searchText;
 
+        private bool _browerDetected;
         private bool _isMobile;
         private BrowserDetectJsInterop? browserDetectJsInterop;
 
@@ -191,13 +192,18 @@ namespace Drawer.Web.Pages.InventoryStatus
         {
             if (firstRender)
             {
-                await CanvasService.InitCanvas(CANVAS_ID, Enumerable.Empty<PaletteItem>(), new CanvasCallbacks(), false, true);
-                await CanvasService.Zoom(0.6);
-
                 browserDetectJsInterop = new BrowserDetectJsInterop(JSRuntime);
                 var info = await browserDetectJsInterop.BrowserInfo();
 
                 _isMobile = info.IsMobile ?? false;
+                _browerDetected = true;
+                if (_isMobile)
+                    return;
+
+                await CanvasService.InitCanvas(CANVAS_ID, Enumerable.Empty<PaletteItem>(), new CanvasCallbacks(), false, true);
+                await CanvasService.Zoom(0.6);
+
+                
 
             }
         }

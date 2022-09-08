@@ -5,6 +5,9 @@
 
 @attribute [Route(Paths.InventoryMapHome)]
 
+@if (!_browerDetected)
+    return;
+
 @if (_isMobile)
 {
     <MudAlert Severity="Severity.Info">

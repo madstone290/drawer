@@ -4,6 +4,9 @@
 
 @attribute [Route(Paths.LayoutHome)]
 
+@if (!_browerDetected)
+    return;
+
 @if(_isMobile){
     <MudAlert Severity="Severity.Info">
         모바일에서 제공하지 않는 기능입니다. 데스크탑 환경에서 사용할 수 있습니다.
