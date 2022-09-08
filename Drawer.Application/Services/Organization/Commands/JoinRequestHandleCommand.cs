@@ -54,14 +54,7 @@ namespace Drawer.Application.Services.Organization.Commands
             if (!requestDto.IsAccepted)
                 return Unit.Value;
 
-            var result = await _companyJoinService.Join(joinRequest.Company, joinRequest.User, true);
-
-            var companyMember = result.Item1;
-            await _memberRepository.AddAsync(companyMember);
-
-            var requestsToDelete = result.Item2;
-            foreach (var request in requestsToDelete)
-                _joinRequestRepository.Remove(request);
+            await _companyJoinService.Join(joinRequest.Company, joinRequest.User, false);
 
             await _unitOfWork.CommitAsync();
             return Unit.Value;

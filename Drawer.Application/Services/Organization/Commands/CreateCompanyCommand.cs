@@ -51,14 +51,7 @@ namespace Drawer.Application.Services.Organization.Commands
             company.SetPhoneNumber(companyDto.PhoneNumber);
             await _companyRepository.AddAsync(company);
 
-            var result = await _companyJoinService.Join(company, user, true);
-
-            var companyMember = result.Item1;
-            await _memberRepository.AddAsync(companyMember);
-
-            var requestsToDelete = result.Item2;
-            foreach (var request in requestsToDelete)
-                _joinRequestRepository.Remove(request);
+            await _companyJoinService.Join(company, user, true);
 
             await _unitOfWork.CommitAsync();
             return company.Id;

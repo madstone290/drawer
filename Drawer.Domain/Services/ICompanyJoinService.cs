@@ -17,7 +17,7 @@ namespace Drawer.Domain.Services
         /// <param name="user"></param>
         /// <param name="isOwner"></param>
         /// <returns>생성한 멤버, 삭제할 가입요청내역</returns>
-        Task<Tuple<CompanyMember, IEnumerable<CompanyJoinRequest>>> Join(Company company, User user, bool isOwner);
+        Task Join(Company company, User user, bool isOwner);
     }
 
     

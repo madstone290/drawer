@@ -23,18 +23,19 @@ namespace Drawer.Application.DomainServices
             _joinRequestRepository = joinRequestRepository;
         }
 
-        public async Task<Tuple<CompanyMember, IEnumerable<CompanyJoinRequest>>> Join(Company company, User user, bool isOwner)
+        public async Task Join(Company company, User user, bool isOwner)
         {
             bool memberExist = await _memberRepository.ExistByUserId(user.Id);
             if (memberExist)
                 throw new AppException("이미 회사에 가입한 사용자 입니다", new { UserId = user.Id });
 
             var companyMember = new CompanyMember(company, user, isOwner);
+            await _memberRepository.AddAsync(companyMember);
 
             var oldRequests = await _joinRequestRepository.FindUnhandledRequestByUserId(user.Id);
             var requestsToDelete = oldRequests.Where(x => x.CompanyId != company.Id);
-
-            return new Tuple<CompanyMember, IEnumerable<CompanyJoinRequest>>(companyMember, requestsToDelete);
+            foreach (var request in requestsToDelete)
+                _joinRequestRepository.Remove(request);
         }
 
     }
