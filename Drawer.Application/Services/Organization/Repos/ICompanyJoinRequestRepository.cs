@@ -19,6 +19,14 @@ namespace Drawer.Application.Services.Organization.Repos
         Task<bool> ExistUnhandledRequestByCompanyIdAndUserId(long companyId, long userId);
 
         /// <summary>
+        /// 미처리 요청을 조회한다
+        /// </summary>
+        /// <param name="companyId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<CompanyJoinRequest?> GetUnhandledRequestByCompanyIdAndUserId(long companyId, long userId);
+
+        /// <summary>
         /// 처리되지 않은 요청을 조회한다.
         /// </summary>
         /// <param name="userId">가입을 요청한 사용자의 ID</param>

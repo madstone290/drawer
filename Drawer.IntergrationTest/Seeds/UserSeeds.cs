@@ -135,7 +135,7 @@ namespace Drawer.IntergrationTest.Seeds
         {
             private readonly IList<object[]> _objectList = new List<object[]>()
             {
-                new object[]{ GetUser1.Email, GetUser1.Password, GetUser1.DisplayName },
+                new object[]{ GetUser1.Email, GetUser1.Password, GetUser1.UserName },
             };
 
             public IEnumerator<object[]> GetEnumerator()

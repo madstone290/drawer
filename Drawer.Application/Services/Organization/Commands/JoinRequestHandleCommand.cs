@@ -28,17 +28,14 @@ namespace Drawer.Application.Services.Organization.Commands
     {
         private readonly ICompanyJoinService _companyJoinService;
         private readonly ICompanyJoinRequestRepository _joinRequestRepository;
-        private readonly ICompanyMemberRepository _memberRepository;
         private readonly IUnitOfWork _unitOfWork;
 
         public JoinRequestHandleCommandHandler(ICompanyJoinService companyJoinService,
                                                ICompanyJoinRequestRepository joinRequestRepository,
-                                               ICompanyMemberRepository memberRepository,
                                                IUnitOfWork unitOfWork)
         {
             _companyJoinService = companyJoinService;
             _joinRequestRepository = joinRequestRepository;
-            _memberRepository = memberRepository;
             _unitOfWork = unitOfWork;
         }
 

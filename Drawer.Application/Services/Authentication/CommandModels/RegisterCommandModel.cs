@@ -9,15 +9,15 @@ namespace Drawer.Application.Services.Authentication.CommandModels
     public class RegisterCommandModel
     {
         public RegisterCommandModel() { }
-        public RegisterCommandModel(string email, string password, string displayName)
+        public RegisterCommandModel(string email, string password, string userName)
         {
             Email = email;
             Password = password;
-            DisplayName = displayName;
+            UserName = userName;
         }
 
         public string Email { get; set; } = default!;
         public string Password { get; set; } = default!;
-        public string DisplayName { get; set; } = default!;
+        public string UserName { get; set; } = default!;
     }
 }

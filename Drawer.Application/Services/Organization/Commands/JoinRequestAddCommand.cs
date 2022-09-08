@@ -13,9 +13,9 @@ using System.Threading.Tasks;
 
 namespace Drawer.Application.Services.Organization.Commands
 {
-    public record JoinRequestAddCommand(long UserId, JoinRequestAddCommandModel Request) : ICommand;
+    public record JoinRequestAddCommand(long UserId, JoinRequestAddCommandModel Request) : ICommand<long>;
 
-    public class JoinRequestAddCommandHandler : ICommandHandler<JoinRequestAddCommand>
+    public class JoinRequestAddCommandHandler : ICommandHandler<JoinRequestAddCommand, long>
     {
         private readonly ICompanyJoinRequestRepository _joinRequestRepository;
         private readonly ICompanyRepository _companyRepository;
@@ -30,7 +30,7 @@ namespace Drawer.Application.Services.Organization.Commands
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Unit> Handle(JoinRequestAddCommand command, CancellationToken cancellationToken)
+        public async Task<long> Handle(JoinRequestAddCommand command, CancellationToken cancellationToken)
         {
             var requestDto = command.Request;
 
@@ -40,17 +40,16 @@ namespace Drawer.Application.Services.Organization.Commands
             var user = await _userRepository.FindByIdAsync(command.UserId)
                ?? throw new EntityNotFoundException("사용자를 찾을 수 없습니다", new { Id = command.UserId });
 
-            var unhandledRequestExist = await _joinRequestRepository
-                .ExistUnhandledRequestByCompanyIdAndUserId(company.Id, user.Id);
+            var unhandledRequest = await _joinRequestRepository.GetUnhandledRequestByCompanyIdAndUserId(company.Id, user.Id);
 
-            if (unhandledRequestExist)
-                return Unit.Value;
+            if (unhandledRequest != null)
+                return unhandledRequest.Id;
 
             var request = new CompanyJoinRequest(company, user, DateTime.UtcNow);
             await _joinRequestRepository.AddAsync(request);
             await _unitOfWork.CommitAsync();
 
-            return Unit.Value;
+            return request.Id;
         }
     }
 }

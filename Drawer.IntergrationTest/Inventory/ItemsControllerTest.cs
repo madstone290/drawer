@@ -42,7 +42,7 @@ namespace Drawer.IntergrationTest.Inventory
             request.Content = JsonContent.Create(itemDto);
 
             // Act
-            var response = await _client.SendAsyncWithMasterAuthentication(request);
+            var response = await _client.SendWithMasterAuthentication(request);
 
             // Assert
             response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
@@ -77,7 +77,7 @@ namespace Drawer.IntergrationTest.Inventory
             request.Content = JsonContent.Create(itemListDto);
 
             // Act
-            var response = await _client.SendAsyncWithMasterAuthentication(request);
+            var response = await _client.SendWithMasterAuthentication(request);
 
             // Assert
             response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
@@ -100,13 +100,13 @@ namespace Drawer.IntergrationTest.Inventory
             };
             var createRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Items.Add);
             createRequest.Content = JsonContent.Create(itemDto);
-            var createResponse = await _client.SendAsyncWithMasterAuthentication(createRequest);
+            var createResponse = await _client.SendWithMasterAuthentication(createRequest);
             var itemId = await createResponse.Content.ReadFromJsonAsync<long>();
 
             // Act
             var getRequest = new HttpRequestMessage(HttpMethod.Get,
                 ApiRoutes.Items.Get.Replace("{id}", $"{itemId}"));
-            var getResponse = await _client.SendAsyncWithMasterAuthentication(getRequest);
+            var getResponse = await _client.SendWithMasterAuthentication(getRequest);
 
             // Assert
             getResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
@@ -134,7 +134,7 @@ namespace Drawer.IntergrationTest.Inventory
             };
             var createRequest1 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Items.Add);
             createRequest1.Content = JsonContent.Create(itemDto1);
-            var createResponse1 = await _client.SendAsyncWithMasterAuthentication(createRequest1);
+            var createResponse1 = await _client.SendWithMasterAuthentication(createRequest1);
 
             var itemDto2 = new ItemCommandModel()
             {
@@ -146,11 +146,11 @@ namespace Drawer.IntergrationTest.Inventory
             };
             var createRequest2 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Items.Add);
             createRequest2.Content = JsonContent.Create(itemDto2);
-            var createResponse2 = await _client.SendAsyncWithMasterAuthentication(createRequest2);
+            var createResponse2 = await _client.SendWithMasterAuthentication(createRequest2);
 
             // Act
             var getItemsRequest = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.Items.GetList);
-            var getItemsResponse = await _client.SendAsyncWithMasterAuthentication(getItemsRequest);
+            var getItemsResponse = await _client.SendWithMasterAuthentication(getItemsRequest);
 
             // Assert
             getItemsResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
@@ -185,7 +185,7 @@ namespace Drawer.IntergrationTest.Inventory
             };
             var createRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Items.Add);
             createRequest.Content = JsonContent.Create(itemDto1);
-            var createResponseMessage = await _client.SendAsyncWithMasterAuthentication(createRequest);
+            var createResponseMessage = await _client.SendWithMasterAuthentication(createRequest);
             var itemId = await createResponseMessage.Content.ReadFromJsonAsync<long>();
 
             // Act
@@ -200,14 +200,14 @@ namespace Drawer.IntergrationTest.Inventory
             var updateRequest = new HttpRequestMessage(HttpMethod.Put,
                 ApiRoutes.Items.Update.Replace("{id}", $"{itemId}"));
             updateRequest.Content = JsonContent.Create(itemDto2);
-            var updateResponse = await _client.SendAsyncWithMasterAuthentication(updateRequest);
+            var updateResponse = await _client.SendWithMasterAuthentication(updateRequest);
 
             // Assert
             updateResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
 
             var getRequest = new HttpRequestMessage(HttpMethod.Get,
                 ApiRoutes.Items.Get.Replace("{id}", $"{itemId}"));
-            var getResponse = await _client.SendAsyncWithMasterAuthentication(getRequest);
+            var getResponse = await _client.SendWithMasterAuthentication(getRequest);
             getResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
             var item = await getResponse.Content.ReadFromJsonAsync<ItemQueryModel>() ?? null!;
             item.Should().NotBeNull();
@@ -233,20 +233,20 @@ namespace Drawer.IntergrationTest.Inventory
             };
             var createRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Items.Add);
             createRequest.Content = JsonContent.Create(itemDto);
-            var createResponse = await _client.SendAsyncWithMasterAuthentication(createRequest);
+            var createResponse = await _client.SendWithMasterAuthentication(createRequest);
             var itemId = await createResponse.Content.ReadFromJsonAsync<long>();
 
             // Act
             var deleteRequest = new HttpRequestMessage(HttpMethod.Delete,
                 ApiRoutes.Items.Remove.Replace("{id}", $"{itemId}"));
-            var deleteResponse = await _client.SendAsyncWithMasterAuthentication(deleteRequest);
+            var deleteResponse = await _client.SendWithMasterAuthentication(deleteRequest);
 
             // Assert
             deleteResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
 
             var getRequest = new HttpRequestMessage(HttpMethod.Get,
                 ApiRoutes.Items.Get.Replace("{id}", $"{itemId}"));
-            var getResponse = await _client.SendAsyncWithMasterAuthentication(getRequest);
+            var getResponse = await _client.SendWithMasterAuthentication(getRequest);
             getResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
 
             var item = await getResponse.Content.ReadFromJsonAsync<ItemQueryModel>();

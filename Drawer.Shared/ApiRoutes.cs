@@ -10,6 +10,8 @@ namespace Drawer.Shared
     {
         private const string Base = "/Api";
 
+        public static object CompanyJoinRequests { get; set; }
+
         /// <summary>
         /// 계정
         /// </summary>

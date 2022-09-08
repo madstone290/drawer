@@ -1,5 +1,6 @@
 using Drawer.Domain.Models.Authentication;
 using Drawer.Infrastructure.Data;
+using FluentAssertions.Common;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,8 @@ namespace Drawer.IntergrationTest
     {
         public HttpClient Client { get; }
 
+        public IServiceProvider ServiceProvider { get; }
+
         public ApiInstance()
         {
             var factory = new WebApplicationFactory<Program>()
@@ -45,15 +48,20 @@ namespace Drawer.IntergrationTest
                         {
                             options.UseNpgsql(connectionString);
                         });
-
-                        var scope = services.BuildServiceProvider().CreateScope();
-                        SeedManager.ClearDatabase(scope).GetAwaiter().GetResult();
-                        SeedManager.UsingScopeAsync(scope).GetAwaiter().GetResult();
+                       
                     });
                 });
 
             Client = factory.CreateClient();
             Client.BaseAddress = new Uri(Client.BaseAddress!.AbsoluteUri + "api/");
+
+            ServiceProvider = factory.Services;
+
+
+
+            var scope = factory.Services.CreateScope();
+            SeedManager.ClearDatabase(scope).GetAwaiter().GetResult();
+            SeedManager.UsingScopeAsync(scope).GetAwaiter().GetResult();
 
             SeedManager.UsingApiAsync(Client).GetAwaiter().GetResult();
         }

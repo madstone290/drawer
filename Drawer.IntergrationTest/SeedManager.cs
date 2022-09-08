@@ -25,7 +25,7 @@ namespace Drawer.IntergrationTest
         {
             var dbContext = scope.ServiceProvider.GetService<DrawerDbContext>()
                           ?? throw new Exception("DrawerIdentityDbContext is null");
-            
+
             dbContext.Database.Migrate();
 
             dbContext.IdentityUsers.Truncate();
@@ -62,32 +62,7 @@ namespace Drawer.IntergrationTest
         /// <exception cref="Exception"></exception>
         public static async Task UsingScopeAsync(IServiceScope scope)
         {
-            var unitOfWork = scope.ServiceProvider.GetService<IUnitOfWork>();
-            var userManager = scope.ServiceProvider.GetService<UserManager<IdentityUser>>();
-            var userRepository = scope.ServiceProvider.GetService<IUserRepository>();
-            if (unitOfWork == null || userManager == null || userRepository == null)
-                throw new Exception("서비스를 로드하지 못했습니다");
-
-
-            // 사용자 Seed
-            foreach (var userRequest in new UserSeeds().Users)
-            {
-                // Email인증을 우회하기 위해 API대신 직접 사용자를 등록한다
-                var identityUser = new IdentityUser()
-                {
-                    Email = userRequest.Email,
-                    UserName = userRequest.Email,
-                    EmailConfirmed = true
-                };
-                var creatResult = userManager.CreateAsync(identityUser, userRequest.Password).GetAwaiter().GetResult();
-
-                if (!creatResult.Succeeded)
-                    throw new Exception(string.Join(", ", creatResult.Errors.Select(x => x.Description)));
-
-                var user = new User(identityUser, identityUser.Email, userRequest.DisplayName);
-                await userRepository.AddAsync(user);
-            }
-            await unitOfWork.CommitAsync();
+            await scope.AddUserAsync(new UserSeeds().Users);
         }
 
         /// <summary>
@@ -100,7 +75,7 @@ namespace Drawer.IntergrationTest
             // 회사 시드 등록
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Company.Add);
             requestMessage.Content = JsonContent.Create(CompanySeeds.MasterCompany);
-            await client.SendAsyncWithMasterAuthentication(requestMessage);
+            await client.SendWithMasterAuthentication(requestMessage);
         }
     }
 }

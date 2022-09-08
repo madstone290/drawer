@@ -19,13 +19,13 @@ namespace Drawer.Api.Controllers.Organization
 
         [HttpPost]
         [Route(ApiRoutes.JoinRequests.Add)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(long), StatusCodes.Status200OK)]
         public async Task<IActionResult> AddRequest([FromBody] JoinRequestAddCommandModel request)
         {
             var userId  = Convert.ToInt64(HttpContext.User.Claims.First(x => x.Type == DrawerClaimTypes.UserId).Value);
             var command = new JoinRequestAddCommand(userId, request);
-            await _mediator.Send(command);
-            return Ok();
+            var requestId = await _mediator.Send(command);
+            return Ok(requestId);
         }
 
         [HttpPut]

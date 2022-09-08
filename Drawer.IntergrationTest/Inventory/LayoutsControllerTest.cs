@@ -35,7 +35,7 @@ namespace Drawer.IntergrationTest.Inventory
             };
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.LocationGroups.Add);
             requestMessage.Content = JsonContent.Create(requestContent);
-            var ResponseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
+            var ResponseMessage = await _client.SendWithMasterAuthentication(requestMessage);
             var groupId = await ResponseMessage.Content.ReadFromJsonAsync<long>();
             return groupId;
         }
@@ -49,7 +49,7 @@ namespace Drawer.IntergrationTest.Inventory
             };
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Add);
             requestMessage.Content = JsonContent.Create(requestContent);
-            var ResponseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
+            var ResponseMessage = await _client.SendWithMasterAuthentication(requestMessage);
             var locationId = await ResponseMessage.Content.ReadFromJsonAsync<long>();
             return locationId;
         }
@@ -68,7 +68,7 @@ namespace Drawer.IntergrationTest.Inventory
             requestMessage.Content = JsonContent.Create(requestContent);
 
             // Act
-            var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
+            var responseMessage = await _client.SendWithMasterAuthentication(requestMessage);
 
             // Assert
             responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
@@ -85,12 +85,12 @@ namespace Drawer.IntergrationTest.Inventory
             };
             var createRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Layouts.Edit);
             createRequestMessage.Content = JsonContent.Create(requestContent);
-            var createResponseMessage = await _client.SendAsyncWithMasterAuthentication(createRequestMessage);
+            var createResponseMessage = await _client.SendWithMasterAuthentication(createRequestMessage);
 
             // Act
             var getRequestMessage = new HttpRequestMessage(HttpMethod.Get,
                 ApiRoutes.Layouts.GetByLocationGroup.Replace("{groupId}", $"{groupId}"));
-            var getResponseMessage = await _client.SendAsyncWithMasterAuthentication(getRequestMessage);
+            var getResponseMessage = await _client.SendWithMasterAuthentication(getRequestMessage);
 
             // Assert
             getResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
@@ -111,7 +111,7 @@ namespace Drawer.IntergrationTest.Inventory
             };
             var createRequestMessage1 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Layouts.Edit);
             createRequestMessage1.Content = JsonContent.Create(requestContent1);
-            var createResponseMessage1 = await _client.SendAsyncWithMasterAuthentication(createRequestMessage1);
+            var createResponseMessage1 = await _client.SendWithMasterAuthentication(createRequestMessage1);
 
             var locationId2 = await CreateRootGroup();
             var requestContent2 = new LayoutEditCommandModel()
@@ -120,11 +120,11 @@ namespace Drawer.IntergrationTest.Inventory
             };
             var createRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Layouts.Edit);
             createRequestMessage2.Content = JsonContent.Create(requestContent2);
-            var createResponseMessage2 = await _client.SendAsyncWithMasterAuthentication(createRequestMessage2);
+            var createResponseMessage2 = await _client.SendWithMasterAuthentication(createRequestMessage2);
 
             // Act
             var getLayoutsRequestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.Layouts.GetList);
-            var getLayoutsResponseMessage = await _client.SendAsyncWithMasterAuthentication(getLayoutsRequestMessage);
+            var getLayoutsResponseMessage = await _client.SendWithMasterAuthentication(getLayoutsRequestMessage);
 
             // Assert
             getLayoutsResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
@@ -147,7 +147,7 @@ namespace Drawer.IntergrationTest.Inventory
             };
             var createRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Layouts.Edit);
             createRequest.Content = JsonContent.Create(createContent);
-            var createResponse = await _client.SendAsyncWithMasterAuthentication(createRequest);
+            var createResponse = await _client.SendWithMasterAuthentication(createRequest);
 
             // Act
             var updateContent = new LayoutEditCommandModel()
@@ -203,14 +203,14 @@ namespace Drawer.IntergrationTest.Inventory
             };
             var updateRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Layouts.Edit);
             updateRequest.Content = JsonContent.Create(updateContent);
-            var updateResponse = await _client.SendAsyncWithMasterAuthentication(updateRequest);
+            var updateResponse = await _client.SendWithMasterAuthentication(updateRequest);
 
             // Assert
             updateResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
 
             var getRequest = new HttpRequestMessage(HttpMethod.Get,
                 ApiRoutes.Layouts.GetByLocationGroup.Replace("{groupId}", $"{groupId}"));
-            var getResponse = await _client.SendAsyncWithMasterAuthentication(getRequest);
+            var getResponse = await _client.SendWithMasterAuthentication(getRequest);
             getResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
             var layout = await getResponse.Content.ReadFromJsonAsync<LayoutQueryModel?>() ?? null!;
             layout.Should().NotBeNull();
@@ -232,7 +232,7 @@ namespace Drawer.IntergrationTest.Inventory
             };
             var createRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Layouts.Edit);
             createRequest.Content = JsonContent.Create(createContent);
-            var createResponse = await _client.SendAsyncWithMasterAuthentication(createRequest);
+            var createResponse = await _client.SendWithMasterAuthentication(createRequest);
 
             // Act
             var updateContent = new LayoutEditCommandModel()
@@ -266,7 +266,7 @@ namespace Drawer.IntergrationTest.Inventory
             var updateRequest = new HttpRequestMessage(HttpMethod.Post,
                 ApiRoutes.Layouts.Edit.Replace("{locationId}", $"{locationId}"));
             updateRequest.Content = JsonContent.Create(updateContent);
-            var updateResponse = await _client.SendAsyncWithMasterAuthentication(updateRequest);
+            var updateResponse = await _client.SendWithMasterAuthentication(updateRequest);
 
             // Assert
             updateResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);

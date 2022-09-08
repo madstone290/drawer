@@ -31,6 +31,12 @@ namespace Drawer.Infrastructure.Repos.Organization
                 .AnyAsync(x => x.CompanyId == companyId && x.UserId == userId && x.IsHandled == false);
         }
 
+        public async Task<CompanyJoinRequest?> GetUnhandledRequestByCompanyIdAndUserId(long companyId, long userId)
+        {
+            return await _dbContext.CompanyJoinRequests
+                   .FirstOrDefaultAsync(x => x.CompanyId == companyId && x.UserId == userId && x.IsHandled == false);
+        }
+
         public async Task<List<CompanyJoinRequest>> FindUnhandledRequestByUserId(long userId)
         {
             return await _dbContext.CompanyJoinRequests
@@ -55,5 +61,7 @@ namespace Drawer.Infrastructure.Repos.Organization
                 })
                 .ToListAsync();
         }
+
+  
     }
 }

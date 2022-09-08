@@ -45,7 +45,7 @@ namespace Drawer.Application.Services.Authentication.Commands
             if (!createResult.Succeeded)
                 throw new IdentityErrorException(createResult.Errors);
 
-            var user = new User(identityUser, identityUser.Email, register.DisplayName);
+            var user = new User(identityUser, identityUser.Email, register.UserName);
             await _userRepository.AddAsync(user);
            
             await _unitOfWork.CommitAsync();

@@ -36,7 +36,7 @@ namespace Drawer.IntergrationTest.Inventory
             };
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Items.Add);
             requestMessage.Content = JsonContent.Create(request);
-            var ResponseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
+            var ResponseMessage = await _client.SendWithMasterAuthentication(requestMessage);
             var itemId = await ResponseMessage.Content.ReadFromJsonAsync<long>();
             return itemId;
         }
@@ -49,7 +49,7 @@ namespace Drawer.IntergrationTest.Inventory
             };
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.LocationGroups.Add);
             requestMessage.Content = JsonContent.Create(requestContent);
-            var ResponseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
+            var ResponseMessage = await _client.SendWithMasterAuthentication(requestMessage);
             var groupId = await ResponseMessage.Content.ReadFromJsonAsync<long>();
             return groupId;
         }
@@ -63,7 +63,7 @@ namespace Drawer.IntergrationTest.Inventory
             };
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Locations.Add);
             requestMessage.Content = JsonContent.Create(request);
-            var ResponseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
+            var ResponseMessage = await _client.SendWithMasterAuthentication(requestMessage);
             var locationId = await ResponseMessage.Content.ReadFromJsonAsync<long>();
             return locationId;
         }
@@ -72,7 +72,7 @@ namespace Drawer.IntergrationTest.Inventory
         {
             var requestMessage = new HttpRequestMessage(HttpMethod.Get,
               ApiRoutes.InventoryItems.Get + $"?ItemId={itemId}&LocationId={locationId}");
-            var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
+            var responseMessage = await _client.SendWithMasterAuthentication(requestMessage);
             var inventoryItemList = await responseMessage.Content.ReadFromJsonAsync<List<InventoryItemQueryModel>>() ?? default!;
             return inventoryItemList.FirstOrDefault()?.Quantity ?? 0;
         }
@@ -88,7 +88,7 @@ namespace Drawer.IntergrationTest.Inventory
             };
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Receipts.Add);
             requestMessage.Content = JsonContent.Create(requestContent);
-            var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
+            var responseMessage = await _client.SendWithMasterAuthentication(requestMessage);
             var receiptId = await responseMessage.Content.ReadFromJsonAsync<long>();
             return receiptId;
         }
@@ -105,7 +105,7 @@ namespace Drawer.IntergrationTest.Inventory
             };
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Issues.Add);
             requestMessage.Content = JsonContent.Create(requestContent);
-            var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
+            var responseMessage = await _client.SendWithMasterAuthentication(requestMessage);
             var issueId = await responseMessage.Content.ReadFromJsonAsync<long>();
             return issueId;
         }
@@ -113,7 +113,7 @@ namespace Drawer.IntergrationTest.Inventory
         async Task<IssueQueryModel?> GetIssue(long issueId)
         {
             var requestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.Issues.Get.Replace("{id}", $"{issueId}"));
-            var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
+            var responseMessage = await _client.SendWithMasterAuthentication(requestMessage);
             var issue = await responseMessage.Content.ReadFromJsonAsync<IssueQueryModel?>();
             return issue;
         }
@@ -141,7 +141,7 @@ namespace Drawer.IntergrationTest.Inventory
             };
             var request = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Issues.Add);
             request.Content = JsonContent.Create(requestContent);
-            var response = await _client.SendAsyncWithMasterAuthentication(request);
+            var response = await _client.SendWithMasterAuthentication(request);
 
             // Assert
             response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
@@ -182,7 +182,7 @@ namespace Drawer.IntergrationTest.Inventory
             };
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Issues.Add);
             requestMessage.Content = JsonContent.Create(requestContent);
-            var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
+            var responseMessage = await _client.SendWithMasterAuthentication(requestMessage);
 
             var afterQuantity = await GetInventoryItemQuantity(itemId, locationId);
 
@@ -223,7 +223,7 @@ namespace Drawer.IntergrationTest.Inventory
             // Act
             var request = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.Issues.BatchAdd);
             request.Content = JsonContent.Create(issueListDto);
-            var response = await _client.SendAsyncWithMasterAuthentication(request);
+            var response = await _client.SendWithMasterAuthentication(request);
 
             // Assert
             response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
@@ -266,7 +266,7 @@ namespace Drawer.IntergrationTest.Inventory
             var requestMessage = new HttpRequestMessage(HttpMethod.Put,
                 ApiRoutes.Issues.Update.Replace("{id}", $"{issueId}"));
             requestMessage.Content = JsonContent.Create(requestContent);
-            var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
+            var responseMessage = await _client.SendWithMasterAuthentication(requestMessage);
 
             // Assert
             responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
@@ -309,7 +309,7 @@ namespace Drawer.IntergrationTest.Inventory
             var requestMessage = new HttpRequestMessage(HttpMethod.Put,
                 ApiRoutes.Issues.Update.Replace("{id}", $"{issueId}"));
             requestMessage.Content = JsonContent.Create(requestContent);
-            var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
+            var responseMessage = await _client.SendWithMasterAuthentication(requestMessage);
 
             // Assert
             responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
@@ -352,7 +352,7 @@ namespace Drawer.IntergrationTest.Inventory
             var requestMessage = new HttpRequestMessage(HttpMethod.Put,
                 ApiRoutes.Issues.Update.Replace("{id}", $"{issueId}"));
             requestMessage.Content = JsonContent.Create(requestContent);
-            var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
+            var responseMessage = await _client.SendWithMasterAuthentication(requestMessage);
 
             // Assert
             responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
@@ -379,13 +379,13 @@ namespace Drawer.IntergrationTest.Inventory
             // Act
             var requestMessage = new HttpRequestMessage(HttpMethod.Delete,
                 ApiRoutes.Issues.Remove.Replace("{id}", $"{issueId}"));
-            var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
+            var responseMessage = await _client.SendWithMasterAuthentication(requestMessage);
 
             // Assert
             responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
 
             var getRequestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.Issues.Get.Replace("{id}", $"{issueId}"));
-            var getResponse = await _client.SendAsyncWithMasterAuthentication(getRequestMessage);
+            var getResponse = await _client.SendWithMasterAuthentication(getRequestMessage);
             getResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
             var issue = await getResponse.Content.ReadFromJsonAsync<IssueQueryModel?>();
             issue.Should().BeNull();
@@ -408,7 +408,7 @@ namespace Drawer.IntergrationTest.Inventory
             // Act
             var requestMessage = new HttpRequestMessage(HttpMethod.Delete,
                 ApiRoutes.Issues.Remove.Replace("{id}", $"{issueId}"));
-            var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
+            var responseMessage = await _client.SendWithMasterAuthentication(requestMessage);
 
             // Assert
             var inventoryQuantityAfter = await GetInventoryItemQuantity(itemId, locationId);
@@ -430,7 +430,7 @@ namespace Drawer.IntergrationTest.Inventory
 
             // Act
             var requestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.Issues.Get.Replace("{id}", $"{issueId}"));
-            var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
+            var responseMessage = await _client.SendWithMasterAuthentication(requestMessage);
 
             // Assert
             responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
@@ -472,7 +472,7 @@ namespace Drawer.IntergrationTest.Inventory
             var requestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.Issues.GetList
                 .AddQuery("From", issueDateTime.Date.ToDateFormat())
                 .AddQuery("To", issueDateTime.Date.ToDateFormat()));
-            var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
+            var responseMessage = await _client.SendWithMasterAuthentication(requestMessage);
 
             // Assert
             responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);

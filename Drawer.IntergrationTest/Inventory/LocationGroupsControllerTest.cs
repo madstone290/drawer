@@ -34,7 +34,7 @@ namespace Drawer.IntergrationTest.Inventory
             };
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.LocationGroups.Add);
             requestMessage.Content = JsonContent.Create(requestContent);
-            var ResponseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
+            var ResponseMessage = await _client.SendWithMasterAuthentication(requestMessage);
             var locationId = await ResponseMessage.Content.ReadFromJsonAsync<long>();
             return locationId;
         }
@@ -54,7 +54,7 @@ namespace Drawer.IntergrationTest.Inventory
             requestMessage.Content = JsonContent.Create(requestContent);
 
             // Act
-            var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
+            var responseMessage = await _client.SendWithMasterAuthentication(requestMessage);
 
             // Assert
             responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
@@ -86,7 +86,7 @@ namespace Drawer.IntergrationTest.Inventory
             requestMessage.Content = JsonContent.Create(requestContent);
 
             // Act
-            var responseMessage = await _client.SendAsyncWithMasterAuthentication(requestMessage);
+            var responseMessage = await _client.SendWithMasterAuthentication(requestMessage);
 
             // Assert
             responseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
@@ -108,13 +108,13 @@ namespace Drawer.IntergrationTest.Inventory
             };
             var createRequestMessage = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.LocationGroups.Add);
             createRequestMessage.Content = JsonContent.Create(requestContent);
-            var createResponseMessage = await _client.SendAsyncWithMasterAuthentication(createRequestMessage);
+            var createResponseMessage = await _client.SendWithMasterAuthentication(createRequestMessage);
             var locationId = await createResponseMessage.Content.ReadFromJsonAsync<long>();
 
             // Act
             var getRequestMessage = new HttpRequestMessage(HttpMethod.Get,
                 ApiRoutes.LocationGroups.Get.Replace("{id}", $"{locationId}"));
-            var getResponseMessage = await _client.SendAsyncWithMasterAuthentication(getRequestMessage);
+            var getResponseMessage = await _client.SendWithMasterAuthentication(getRequestMessage);
 
             // Assert
             getResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
@@ -139,7 +139,7 @@ namespace Drawer.IntergrationTest.Inventory
             };
             var createRequestMessage1 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.LocationGroups.Add);
             createRequestMessage1.Content = JsonContent.Create(requestContent1);
-            var createResponseMessage1 = await _client.SendAsyncWithMasterAuthentication(createRequestMessage1);
+            var createResponseMessage1 = await _client.SendWithMasterAuthentication(createRequestMessage1);
 
             var parentGroupId2 = await CreateParentGroup();
             var requestContent2 = new LocationGroupAddCommandModel()
@@ -150,11 +150,11 @@ namespace Drawer.IntergrationTest.Inventory
             };
             var createRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.LocationGroups.Add);
             createRequestMessage2.Content = JsonContent.Create(requestContent2);
-            var createResponseMessage2 = await _client.SendAsyncWithMasterAuthentication(createRequestMessage2);
+            var createResponseMessage2 = await _client.SendWithMasterAuthentication(createRequestMessage2);
 
             // Act
             var getLocationGroupsRequestMessage = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.LocationGroups.GetList);
-            var getLocationGroupsResponseMessage = await _client.SendAsyncWithMasterAuthentication(getLocationGroupsRequestMessage);
+            var getLocationGroupsResponseMessage = await _client.SendWithMasterAuthentication(getLocationGroupsRequestMessage);
 
             // Assert
             getLocationGroupsResponseMessage.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
@@ -183,7 +183,7 @@ namespace Drawer.IntergrationTest.Inventory
             };
             var createRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.LocationGroups.Add);
             createRequest.Content = JsonContent.Create(createContent);
-            var createResponse = await _client.SendAsyncWithMasterAuthentication(createRequest);
+            var createResponse = await _client.SendWithMasterAuthentication(createRequest);
             var locationId = await createResponse.Content.ReadFromJsonAsync<long>();
 
             // Act
@@ -195,14 +195,14 @@ namespace Drawer.IntergrationTest.Inventory
             var updateRequest = new HttpRequestMessage(HttpMethod.Put,
                 ApiRoutes.LocationGroups.Update.Replace("{id}", $"{locationId}"));
             updateRequest.Content = JsonContent.Create(updateContent);
-            var updateResponse = await _client.SendAsyncWithMasterAuthentication(updateRequest);
+            var updateResponse = await _client.SendWithMasterAuthentication(updateRequest);
 
             // Assert
             updateResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
 
             var getRequest = new HttpRequestMessage(HttpMethod.Get,
                 ApiRoutes.LocationGroups.Get.Replace("{id}", $"{locationId}"));
-            var getResponse = await _client.SendAsyncWithMasterAuthentication(getRequest);
+            var getResponse = await _client.SendWithMasterAuthentication(getRequest);
             getResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
             var location = await getResponse.Content.ReadFromJsonAsync<LocationGroupQueryModel?>() ?? null!;
             location.Should().NotBeNull();
@@ -224,20 +224,20 @@ namespace Drawer.IntergrationTest.Inventory
             };
             var createRequest = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.LocationGroups.Add);
             createRequest.Content = JsonContent.Create(createContent);
-            var createResponse = await _client.SendAsyncWithMasterAuthentication(createRequest);
+            var createResponse = await _client.SendWithMasterAuthentication(createRequest);
             var locationId = await createResponse.Content.ReadFromJsonAsync<long>();
 
             // Act
             var deleteRequest = new HttpRequestMessage(HttpMethod.Delete,
                 ApiRoutes.LocationGroups.Remove.Replace("{id}", $"{locationId}"));
-            var deleteResponse = await _client.SendAsyncWithMasterAuthentication(deleteRequest);
+            var deleteResponse = await _client.SendWithMasterAuthentication(deleteRequest);
 
             // Assert
             deleteResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
 
             var getRequest = new HttpRequestMessage(HttpMethod.Get,
                 ApiRoutes.LocationGroups.Get.Replace("{id}", $"{locationId}"));
-            var getResponse = await _client.SendAsyncWithMasterAuthentication(getRequest);
+            var getResponse = await _client.SendWithMasterAuthentication(getRequest);
             getResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
 
             var location = await getResponse.Content.ReadFromJsonAsync<LocationGroupQueryModel?>();
