@@ -36,7 +36,7 @@ namespace Drawer.Web.Authentication
             if (!loginResponseMessage.IsSuccessStatusCode)
             {
                 var error = await loginResponseMessage.Content.ReadFromJsonAsync<ErrorResponse>();
-                if (error!.Code == ErrorCodes.UnconfirmedEmail)
+                if (error!.Code == ErrorCodes.UNCONFIRMED_EMAIL)
                 {
                     return AuthenticationResult.UnconfirmedEmail();
                 }

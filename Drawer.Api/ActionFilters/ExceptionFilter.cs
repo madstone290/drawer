@@ -11,22 +11,27 @@ namespace Drawer.Api.ActionFilters
     public class DefaultExceptionFilter : IExceptionFilter
     {
         private readonly ILogger<DefaultExceptionFilter> _logger;
-        private readonly ExceptionCodeProvider _codeProvider;
 
-        public DefaultExceptionFilter(ILogger<DefaultExceptionFilter> logger, ExceptionCodeProvider codeProvider)
+        public DefaultExceptionFilter(ILogger<DefaultExceptionFilter> logger)
         {
             _logger = logger;
-            _codeProvider = codeProvider;
         }
 
         public void OnException(ExceptionContext context)
         {
-            if (context.Exception is DomainException || context.Exception is AppException)
+            if (context.Exception is DomainException domainException)
             {
-                _logger.LogInformation(context.Exception, "BadRequest");
+                _logger.LogInformation(domainException, "BadRequest");
 
-                var error = new ErrorResponse(context.Exception.Message, _codeProvider.GetErrorCode(context.Exception));
-                context.Result = new BadRequestObjectResult(error);
+                context.Result = new BadRequestObjectResult(new ErrorResponse(domainException.Message));
+                return;
+            }
+
+            if (context.Exception is AppException appException)
+            {
+                _logger.LogInformation(appException, "BadRequest");
+
+                context.Result = new BadRequestObjectResult(new ErrorResponse(appException.Message, appException.Code));
                 return;
             }
 

@@ -1,4 +1,5 @@
 ﻿using Drawer.Application.Config;
+using Drawer.Shared.Contracts.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,8 @@ namespace Drawer.Application.Exceptions
     /// </summary>
     public class UnconfirmedEmailException : AppException
     {
-        public UnconfirmedEmailException() : base(Messages.UnconfirmedEmail)
+        public UnconfirmedEmailException(string email) 
+            : base(Messages.UnconfirmedEmail, tag: new { Email = email }, code: ErrorCodes.UNCONFIRMED_EMAIL)
         {
         }
     }

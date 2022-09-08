@@ -47,7 +47,7 @@ namespace Drawer.Application.Services.Authentication.Commands
                 throw new InvalidLoginException();
 
             if (!user.EmailConfirmed)
-                throw new UnconfirmedEmailException();
+                throw new UnconfirmedEmailException(user.Email);
 
             var claims = await _userClaimService.GetClaimsAsync(user);
 

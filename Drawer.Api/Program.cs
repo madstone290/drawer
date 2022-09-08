@@ -45,10 +45,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddCustomSwagger();
 
 builder.Services.AddScoped<DefaultExceptionFilter>();
-builder.Services.AddSingleton<ExceptionCodeProvider>();
-
-
-
 
 
 var app = builder.Build();
