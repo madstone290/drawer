@@ -44,15 +44,20 @@ namespace Drawer.Web.Pages.Layout
 
         protected override async Task OnInitializedAsync()
         {
+            await JSRuntime.InvokeVoidAsync("console.log", "Starts loading");
             await Load_Click();
+            await JSRuntime.InvokeVoidAsync("console.log", "Ends loading");
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
             {
+                await JSRuntime.InvokeVoidAsync("console.log", "First rendering has been done");
                 browserDetectJsInterop = new BrowserDetectJsInterop(JSRuntime);
                 var info = await browserDetectJsInterop.BrowserInfo();
+
+                await JSRuntime.InvokeVoidAsync("console.log", "Detecting browser info has been done");
 
                 _isMobile = info.IsMobile ?? false;
                 _browerDetected = true;
