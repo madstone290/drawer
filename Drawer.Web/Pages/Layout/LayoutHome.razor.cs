@@ -24,12 +24,15 @@ namespace Drawer.Web.Pages.Layout
         /// 모바일 브라우저?
         /// </summary>
         private bool _isMobile;
+
         /// <summary>
         /// 브라우저 탐지 여부
         /// </summary>
         private bool _browerDetected;
-        private bool _canAccess = true;
+
         private bool _isLoading = false;
+        private bool _canAccess = true;
+        
         
 
         private BrowserDetectJsInterop? browserDetectJsInterop;
@@ -44,27 +47,26 @@ namespace Drawer.Web.Pages.Layout
 
         protected override async Task OnInitializedAsync()
         {
-            await JSRuntime.InvokeVoidAsync("console.log", "Starts loading");
             await Load_Click();
-            await JSRuntime.InvokeVoidAsync("console.log", "Ends loading");
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
             {
-                await JSRuntime.InvokeVoidAsync("console.log", "First rendering has been done");
                 browserDetectJsInterop = new BrowserDetectJsInterop(JSRuntime);
                 var info = await browserDetectJsInterop.BrowserInfo();
 
-                await JSRuntime.InvokeVoidAsync("console.log", "Detecting browser info has been done");
-
                 _isMobile = info.IsMobile ?? false;
                 _browerDetected = true;
-                if (_isMobile)
-                    return;
 
-                await CanvasService.InitCanvas(CANVAS_ID, Enumerable.Empty<PaletteItem>(), new CanvasCallbacks(), false);
+                StateHasChanged();
+
+                if (!_isMobile)
+                {
+                    await CanvasService.InitCanvas(CANVAS_ID, Enumerable.Empty<PaletteItem>(), new CanvasCallbacks(), false);
+                }
+
             }
         }
 
