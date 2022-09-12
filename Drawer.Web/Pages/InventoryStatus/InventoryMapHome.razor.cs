@@ -197,13 +197,14 @@ namespace Drawer.Web.Pages.InventoryStatus
 
                 _isMobile = info.IsMobile ?? false;
                 _browerDetected = true;
-                if (_isMobile)
-                    return;
 
-                await CanvasService.InitCanvas(CANVAS_ID, Enumerable.Empty<PaletteItem>(), new CanvasCallbacks(), false, true);
-                await CanvasService.Zoom(0.6);
+                StateHasChanged();
 
-                
+                if (!_isMobile)
+                {
+                    await CanvasService.InitCanvas(CANVAS_ID, Enumerable.Empty<PaletteItem>(), new CanvasCallbacks(), false, true);
+                    await CanvasService.Zoom(0.6);
+                }
 
             }
         }
