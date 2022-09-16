@@ -53,7 +53,6 @@ namespace Drawer.IntergrationTest
                 });
 
             Client = factory.CreateClient();
-            Client.BaseAddress = new Uri(Client.BaseAddress!.AbsoluteUri + "api/");
 
             ServiceProvider = factory.Services;
 
