@@ -6,9 +6,6 @@ namespace Drawer.Web.Shared.Dialogs
 {
     public partial class ExcelUploadDialog
     {
-        private MudForm _form = null!;
-        private bool _isFormValid;
-
         private IBrowserFile? _file;
 
         [CascadingParameter]
