@@ -34,7 +34,6 @@ namespace Drawer.Application.Services.Inventory.Commands
                 ?? throw new EntityNotFoundException<Item>(itemId);
 
             item.SetName(itemDto.Name);
-            item.SetNumber(itemDto.Name);
             item.SetCode(itemDto.Code);
             item.SetNumber(itemDto.Number);
             item.SetSku(itemDto.Sku);
