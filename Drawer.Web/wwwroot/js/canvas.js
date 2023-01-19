@@ -405,7 +405,8 @@ class Drawer {
 
         let blinkFunc = function () {
             for (const item of self.blinkItemSet) {
-                item.visible = blinkItemVisible;
+                if(item)
+                    item.visible = blinkItemVisible;
             }
             self.canvas.renderAll();
             blinkItemVisible = !blinkItemVisible;
@@ -419,7 +420,8 @@ class Drawer {
         if (this.interval)
             clearInterval(this.interval);
         for (const item of this.blinkItemSet) {
-            item.visible = true;
+            if(item)
+                item.visible = true;
         }
         this.blinkItemSet.clear();
 
@@ -935,7 +937,8 @@ class Drawer {
         this.stopBlink();
 
         for (const item of itemList) {
-            this.blinkItemSet.add(item);
+            if(item)
+                this.blinkItemSet.add(item);
         }
 
         if (0 < this.blinkItemSet.size)
