@@ -3,6 +3,8 @@
 - 재고 관리 앱입니다
 - 레이아웃을 통해 재고의 위치를 쉽게 파악할 수 있습니다.
 
+![Inventory](./inventory.gif)
+
 [사용해보기](https://drawer.duckdns.org)
 
 ## 인증
