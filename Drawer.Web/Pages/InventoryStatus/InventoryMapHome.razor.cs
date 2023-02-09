@@ -15,6 +15,11 @@ namespace Drawer.Web.Pages.InventoryStatus
     {
         private const string CANVAS_ID = "canvas";
 
+        /// <summary>
+        /// 데이터 불러오기 작업. 작업이 완료된 후 초기 렌더링을 갱신한다.
+        /// </summary>
+        private Task? dataLoadTask;
+
         private readonly List<LayoutQueryModel> _layoutQueryModels = new();
 
         private readonly List<ItemQueryModel> _itemQueryModels = new();
@@ -183,9 +188,8 @@ namespace Drawer.Web.Pages.InventoryStatus
         protected override async Task OnInitializedAsync()
         {
             _canAccess = true;
-            await Load_Click();
-
-            LoadDefaultValues();
+            dataLoadTask = Load_Click();
+            await dataLoadTask;
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -197,15 +201,17 @@ namespace Drawer.Web.Pages.InventoryStatus
 
                 _isMobile = info.IsMobile ?? false;
                 _browerDetected = true;
-
                 StateHasChanged();
 
                 if (!_isMobile)
                 {
                     await CanvasService.InitCanvas(CANVAS_ID, Enumerable.Empty<PaletteItem>(), new CanvasCallbacks(), false, true);
                     await CanvasService.Zoom(0.6);
-                }
 
+                    await dataLoadTask!;
+                    SelectedLocationGroup = _locationGroupQueryModels.FirstOrDefault();
+                    StateHasChanged();
+                }
             }
         }
 
@@ -257,16 +263,6 @@ namespace Drawer.Web.Pages.InventoryStatus
  
 
             _isLoading = false;
-        }
-
-        /// <summary>
-        /// 데이터 로딩 완료 후 기본값을 적용한다.
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        private void LoadDefaultValues()
-        {
-            SelectedLocationGroup = _locationGroupQueryModels.FirstOrDefault();
         }
 
         private long GetRootLocationId(long locationId)
