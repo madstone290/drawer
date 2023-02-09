@@ -97,7 +97,7 @@ namespace Drawer.Web.Pages.InventoryStatus
             get => _selectedLocationGroup;
             set
             {
-                if (EqualityComparer<LocationGroupQueryModel>.Default.Equals(_selectedLocationGroup, value))
+                if (_selectedLocationGroup?.Id == value?.Id)
                     return;
                 _selectedLocationGroup = value;
 
