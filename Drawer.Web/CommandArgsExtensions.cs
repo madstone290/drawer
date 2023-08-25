@@ -10,13 +10,17 @@ namespace Drawer.Web
         /// <param name="args"></param>
         public static void HandleArgs(this ConfigurationManager configuration, string[] args)
         {
-            var colorArg = args.FirstOrDefault(x => x.StartsWith("DeploymentColor=", StringComparison.OrdinalIgnoreCase));
-            if (colorArg != null)
+            var keyValuePairs = args.Select(arg => arg.Split("=")
+                    .Select(x => x.Trim())
+                    .ToArray())
+                .Where(pair => pair.Length == 2)
+                .ToList();
+
+            foreach(var pair in keyValuePairs)
             {
-                var color = colorArg.Substring(colorArg.IndexOf('=') + 1);
                 configuration.AddInMemoryCollection(new List<KeyValuePair<string, string>>()
                 {
-                    new KeyValuePair<string, string>("DeploymentColor", color)
+                    new KeyValuePair<string, string>(pair[0], pair[1])
                 });
             }
         }
